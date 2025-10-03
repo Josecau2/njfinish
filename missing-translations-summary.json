@@ -1,0 +1,212 @@
+[
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\ErrorBoundary.jsx",
+    "MissingTranslations": 1,
+    "HasTranslationHook": false,
+    "Texts": "Something went wrong"
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LanguageSwitcher.jsx",
+    "MissingTranslations": 1,
+    "HasTranslationHook": true,
+    "Texts": "English"
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "MissingTranslations": 17,
+    "HasTranslationHook": false,
+    "Texts": [
+      "Email",
+      "Password",
+      "Keep me logged in",
+      "Reset your password",
+      "Email",
+      "Send reset email",
+      "Sign in",
+      "Benefits",
+      "First name",
+      "Last name",
+      "Email",
+      "Phone",
+      "City",
+      "State",
+      "Company",
+      "Tell us about your projects",
+      "Submit request"
+    ]
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\model\\EditManufacturerModal.jsx",
+    "MissingTranslations": 4,
+    "HasTranslationHook": false,
+    "Texts": [
+      "Edit Manufacturer",
+      "Name",
+      "Email",
+      "Multiplier"
+    ]
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\PageErrorBoundary.jsx",
+    "MissingTranslations": 1,
+    "HasTranslationHook": false,
+    "Texts": "Error Details"
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\pdf\\DesktopPdfViewer.jsx",
+    "MissingTranslations": 1,
+    "HasTranslationHook": false,
+    "Texts": "PDF Preview"
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\StandardCard.jsx",
+    "MissingTranslations": 3,
+    "HasTranslationHook": false,
+    "Texts": [
+      "Title",
+      "Content with padding",
+      "Direct content here"
+    ]
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "MissingTranslations": 50,
+    "HasTranslationHook": true,
+    "Texts": [
+      "Alabama",
+      "Alaska",
+      "Arizona",
+      "Arkansas",
+      "California",
+      "Colorado",
+      "Connecticut",
+      "Delaware",
+      "Florida",
+      "Georgia",
+      "Hawaii",
+      "Idaho",
+      "Illinois",
+      "Indiana",
+      "Iowa",
+      "Kansas",
+      "Kentucky",
+      "Louisiana",
+      "Maine",
+      "Maryland",
+      "Massachusetts",
+      "Michigan",
+      "Minnesota",
+      "Mississippi",
+      "Missouri",
+      "Montana",
+      "Nebraska",
+      "Nevada",
+      "New Hampshire",
+      "New Jersey",
+      "New Mexico",
+      "New York",
+      "North Carolina",
+      "North Dakota",
+      "Ohio",
+      "Oklahoma",
+      "Oregon",
+      "Pennsylvania",
+      "Rhode Island",
+      "South Carolina",
+      "South Dakota",
+      "Tennessee",
+      "Texas",
+      "Utah",
+      "Vermont",
+      "Virginia",
+      "Washington",
+      "West Virginia",
+      "Wisconsin",
+      "Wyoming"
+    ]
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\payments\\PaymentConfiguration.jsx",
+    "MissingTranslations": 2,
+    "HasTranslationHook": true,
+    "Texts": [
+      "Stripe",
+      "Custom"
+    ]
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\proposals\\EditProposal.jsx",
+    "MissingTranslations": 1,
+    "HasTranslationHook": true,
+    "Texts": "Date"
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\customization\\PdfLayoutCustomization.jsx",
+    "MissingTranslations": 1,
+    "HasTranslationHook": true,
+    "Texts": "SPEC BOOK"
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\globalMods\\GlobalModsPage.jsx",
+    "MissingTranslations": 7,
+    "HasTranslationHook": true,
+    "Texts": [
+      "Custom fractions",
+      "Custom fractions",
+      "Custom fractions",
+      "Required Fields",
+      "Custom fractions",
+      "Custom fractions",
+      "Custom fractions"
+    ]
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "MissingTranslations": 33,
+    "HasTranslationHook": true,
+    "Texts": [
+      "per page",
+      "All Types",
+      "All Styles",
+      "Price",
+      "Type",
+      "Template",
+      "Scope",
+      "Style",
+      "Type",
+      "Selected items",
+      "Override price",
+      "Target style",
+      "Target type",
+      "Existing assignments",
+      "Template",
+      "Scope",
+      "Target",
+      "Price",
+      "Template",
+      "Category",
+      "Scope",
+      "Price",
+      "Active",
+      "Add template to this item",
+      "Override price",
+      "Merge items",
+      "Style",
+      "Type",
+      "Description",
+      "Price",
+      "Current Style Name",
+      "New Style Name",
+      "Required Fields"
+    ]
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\TypesTab.jsx",
+    "MissingTranslations": 2,
+    "HasTranslationHook": true,
+    "Texts": [
+      "Rename Type Globally",
+      "Change Type Category"
+    ]
+  }
+]

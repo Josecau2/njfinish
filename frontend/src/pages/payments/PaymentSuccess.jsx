@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Alert, AlertIcon, Box, Button, CardBody, Code, Container, HStack, Heading, Icon, Text, VStack } from '@chakra-ui/react'
+import { Alert, AlertIcon, Box, Button, CardBody, Code, Container, HStack, Heading, Icon, Text, VStack, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import PageHeader from '../../components/PageHeader'
@@ -38,15 +38,15 @@ const PaymentSuccess = () => {
               <Icon
                 as={CheckCircle}
                 boxSize={16}
-                color="green.500"
+                color={useColorModeValue("green.500","green.300")}
                 aria-hidden="true"
               />
 
               <VStack spacing={4}>
-                <Heading as="h4" size="lg" color="gray.800">
+                <Heading as="h4" size="lg" color={useColorModeValue("gray.800","gray.200")}>
                   {t('payment.completed.title', 'Payment Completed')}
                 </Heading>
-                <Text color="gray.600" fontSize="md">
+                <Text color={useColorModeValue("gray.600","gray.300")} fontSize="md">
                   {t('payment.completed.subtitle', 'This payment has already been processed')}
                 </Text>
               </VStack>

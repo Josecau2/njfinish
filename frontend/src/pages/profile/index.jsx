@@ -164,7 +164,7 @@ const ProfilePage = () => {
               <FormControl isRequired isInvalid={!!errors.name}>
                 <FormLabel htmlFor="name" fontSize="sm" fontWeight="medium" color={labelColor}>
                   {t('profile.fullName')}
-                  <Text as="span" color="red.500" ml={1}>*</Text>
+                  <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                 </FormLabel>
                 <Input
                   id="name"
@@ -185,7 +185,7 @@ const ProfilePage = () => {
                   name="email"
                   value={formData.email}
                   isReadOnly
-                  bg="gray.100"
+                  bg={useColorModeValue("gray.100","gray.700")}
                   cursor="not-allowed"
                   aria-readonly="true"
                 />
@@ -221,7 +221,7 @@ const ProfilePage = () => {
                 <FormControl isRequired isInvalid={!!errors.location}>
                   <FormLabel htmlFor="location" fontSize="sm" fontWeight="medium" color={labelColor}>
                     {t('profile.location')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <Select
                     id="location"

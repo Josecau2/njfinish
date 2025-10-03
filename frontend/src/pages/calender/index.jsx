@@ -4,7 +4,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Select, Spinner, Stack, Text } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Select, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import { Calendar, Filter, RefreshCw } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -138,7 +138,7 @@ const CalendarView = () => {
           <CardBody>
             <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>
               <HStack spacing={4} flex="1">
-                <Icon as={Filter} color="gray.400" />
+                <Icon as={Filter} color={useColorModeValue("gray.400","gray.500")} />
                 <Select value={eventType} onChange={handleFilterChange} maxW="240px">
                   {EVENT_TYPES.map((type) => (
                     <option key={type} value={type}>
@@ -165,7 +165,7 @@ const CalendarView = () => {
           <CardBody>
             {loading ? (
               <Flex align="center" justify="center" minH="360px">
-                <Spinner size="lg" color="blue.500" />
+                <Spinner size="lg" color={useColorModeValue("blue.500","blue.300")} />
               </Flex>
             ) : (
               <Stack spacing={6}>
@@ -217,7 +217,7 @@ const CalendarView = () => {
                 </Box>
 
                 {filteredEvents.length === 0 && (
-                  <Flex direction="column" align="center" py={10} color="gray.500" gap={4}>
+                  <Flex direction="column" align="center" py={10} color={useColorModeValue("gray.500","gray.400")} gap={4}>
                     <Icon as={Calendar} boxSize={12} opacity={0.3} />
                     <Text fontSize="lg" fontWeight="medium">
                       No events found
@@ -240,22 +240,22 @@ const CalendarView = () => {
           }
 
           .fc-toolbar {
-            background: var(--chakra-colors-gray-50);
+            background: var(--chakra-colors-chakra-body-bg);
             padding: 1rem;
             border-radius: 8px 8px 0 0;
-            border-bottom: 1px solid var(--chakra-colors-gray-200);
+            border-bottom: 1px solid var(--chakra-colors-chakra-border-color);
           }
 
           .fc-toolbar-title {
-            color: var(--chakra-colors-gray-600);
+            color: var(--chakra-colors-chakra-body-text);
             font-weight: 600;
           }
 
           .fc-button {
             border-radius: 6px !important;
-            border: 1px solid var(--chakra-colors-gray-200) !important;
-            background: white !important;
-            color: var(--chakra-colors-gray-600) !important;
+            border: 1px solid var(--chakra-colors-chakra-border-color) !important;
+            background: var(--chakra-colors-chakra-body-bg) !important;
+            color: var(--chakra-colors-chakra-body-text) !important;
             font-weight: 500;
             transition: all 0.2s ease;
           }
@@ -266,21 +266,33 @@ const CalendarView = () => {
             color: var(--chakra-colors-blue-500) !important;
           }
 
+          [data-theme="dark"] .fc-button:hover {
+            background: var(--chakra-colors-blue-900) !important;
+            border-color: var(--chakra-colors-blue-300) !important;
+            color: var(--chakra-colors-blue-300) !important;
+          }
+
           .fc-button-active {
             background: var(--chakra-colors-blue-500) !important;
             border-color: var(--chakra-colors-blue-500) !important;
             color: white !important;
           }
 
+          [data-theme="dark"] .fc-button-active {
+            background: var(--chakra-colors-blue-300) !important;
+            border-color: var(--chakra-colors-blue-300) !important;
+            color: var(--chakra-colors-gray-900) !important;
+          }
+
           .fc-daygrid-day {
-            border-color: var(--chakra-colors-gray-200);
+            border-color: var(--chakra-colors-chakra-border-color);
           }
 
           .fc-col-header-cell {
-            background: var(--chakra-colors-gray-50);
-            border-color: var(--chakra-colors-gray-200);
+            background: var(--chakra-colors-chakra-body-bg);
+            border-color: var(--chakra-colors-chakra-border-color);
             font-weight: 600;
-            color: var(--chakra-colors-gray-600);
+            color: var(--chakra-colors-chakra-body-text);
           }
 
           .fc-event {
@@ -296,8 +308,16 @@ const CalendarView = () => {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
           }
 
+          [data-theme="dark"] .fc-event:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+          }
+
           .fc-day-today {
             background: rgba(13, 110, 253, 0.05) !important;
+          }
+
+          [data-theme="dark"] .fc-day-today {
+            background: rgba(144, 205, 244, 0.1) !important;
           }
         `}</style>
       </Stack>

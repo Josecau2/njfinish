@@ -26,6 +26,7 @@ import {
   Input,
   Checkbox,
   Text,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { isAdmin } from '../../helpers/permissions'
 
@@ -149,7 +150,7 @@ const ModificationModal = ({
                     onChange={(event) => setExistingModNote(event.target.value)}
                     placeholder={t('modificationModal.existing.notePlaceholder', 'Note (optional)')}
                   />
-                  <Text fontSize="xs" color="gray.500" mt={2}>
+                  <Text fontSize="xs" color={useColorModeValue("gray.500","gray.400")} mt={2}>
                     {t(
                       'modificationModal.existing.instructionsHelper',
                       'If needed, provide custom instructions for applying the modification.',
@@ -218,7 +219,7 @@ const ModificationModal = ({
                       {t('modificationModal.custom.taxable', 'Taxable')}
                     </Checkbox>
                     {!isUserAdmin && (
-                      <Text fontSize="xs" color="gray.500" mt={1}>
+                      <Text fontSize="xs" color={useColorModeValue("gray.500","gray.400")} mt={1}>
                         {t('modificationModal.custom.taxableDisabled', 'Only administrators can change tax status.')}
                       </Text>
                     )}
@@ -232,7 +233,7 @@ const ModificationModal = ({
                     onChange={(event) => setCustomModNote(event.target.value)}
                     placeholder={t('modificationModal.custom.notePlaceholder', 'Note (optional)')}
                   />
-                  <Text fontSize="xs" color="gray.500" mt={2}>
+                  <Text fontSize="xs" color={useColorModeValue("gray.500","gray.400")} mt={2}>
                     {t(
                       'modificationModal.custom.instructionsHelper',
                       'If needed, provide custom instructions for applying the modification.',

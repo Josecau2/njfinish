@@ -629,7 +629,7 @@ body {
 /* Dashboard Styles */
 .dashboard-container {
   padding: 1.5rem;
-  background-color: var(--cui-light);
+  background-color: transparent;
 }
 
 .dashboard-header {

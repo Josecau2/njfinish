@@ -7,6 +7,7 @@ import {
   TabPanels,
   Tabs,
   useBreakpointValue,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import EditManufacturerTab from './tabs/EditManufacturerTab'
 import SettingsTab from './tabs/SettingsTab'
@@ -73,7 +74,7 @@ const EditManufacturer = () => {
           display={{ base: 'grid', md: 'flex' }}
           gridTemplateColumns={tabColumns}
           borderBottom="1px solid"
-          borderColor="gray.200"
+          borderColor={useColorModeValue("gray.200","gray.600")}
           pb={{ base: 2, md: 0 }}
           className="manufacturer-tabs"
           sx={{

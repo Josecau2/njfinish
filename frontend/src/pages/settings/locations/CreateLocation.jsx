@@ -224,7 +224,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.locationName')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
@@ -251,7 +251,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.address')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -305,7 +305,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.website')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -336,7 +336,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.email')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -371,7 +371,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.phone')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement
@@ -426,7 +426,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.country')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <Select
                     name="country"
@@ -456,7 +456,7 @@ const LocationForm = () => {
                 <Box md={6}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.timezone')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <Select
                     name="timezone"

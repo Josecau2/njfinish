@@ -1,6 +1,6 @@
 import StandardCard from '../StandardCard'
 import React, { useState } from 'react'
-import { Badge, Box, Button, CardBody, Flex, Stack, Text, Textarea } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, Flex, Stack, Text, Textarea, useColorModeValue } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
 
@@ -11,11 +11,11 @@ const Bubble = ({ mine, author, text, time }) => (
       px={3}
       py={2}
       borderWidth="1px"
-      borderColor="gray.200"
+      borderColor={useColorModeValue("gray.200","gray.600")}
       bg={mine ? 'blue.50' : 'gray.50'}
       borderRadius="md"
     >
-      <Text fontSize="xs" color="gray.500" mb={1}>
+      <Text fontSize="xs" color={useColorModeValue("gray.500","gray.400")} mb={1}>
         {author} � {new Date(time).toLocaleString()}
       </Text>
       <Text fontWeight="semibold" whiteSpace="pre-wrap">
@@ -83,7 +83,7 @@ const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
 
         {loading ? (
           <Box py={4} textAlign="center">
-            <Text fontSize="sm" color="gray.500">
+            <Text fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>
               {t('common.loading')}
             </Text>
           </Box>
@@ -105,7 +105,7 @@ const ThreadView = ({ loading, thread, onReply, onClose, isAdmin }) => {
 
               {thread.messages?.length === 0 && (
                 <Box textAlign="center" py={6}>
-                  <Text fontSize="sm" color="gray.500">
+                  <Text fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>
                     {t('contact.thread.noMessages')}
                   </Text>
                 </Box>

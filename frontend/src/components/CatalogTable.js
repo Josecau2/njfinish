@@ -116,6 +116,9 @@ const CatalogTable = ({
 
   // Dark mode colors
   const descriptionColor = useColorModeValue("gray.600", "gray.400")
+  const textRed500 = useColorModeValue("red.500", "red.300")
+  const textGreen500 = useColorModeValue("green.500", "green.300")
+  const borderGray400 = useColorModeValue("gray.400", "gray.600")
 
   const [partQuery, setPartQuery] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -673,7 +676,7 @@ const CatalogTable = ({
                             {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                               (!item.hingeSide || item.hingeSide === '-') && (
                                 <Text
-                                  color="red.500"
+                                  color={textRed500}
                                   mb={1}
                                   fontSize="xs"
                                   fontWeight="bold"
@@ -722,7 +725,7 @@ const CatalogTable = ({
                             {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                               (!item.exposedSide || item.exposedSide === '-') && (
                                 <Text
-                                  color="red.500"
+                                  color={textRed500}
                                   mb={1}
                                   fontSize="xs"
                                   fontWeight="bold"
@@ -788,7 +791,7 @@ const CatalogTable = ({
                         />
                         <Icon as={Trash}
                           cursor="pointer"
-                          color="red.500"
+                          color={textRed500}
                           onClick={() => handleDelete(idx)}
                         />
                       </Flex>
@@ -905,7 +908,7 @@ const CatalogTable = ({
                                                 borderRadius="md"
                                                 bg={useColorModeValue("gray.50", "gray.800")}
                                                 border="1px dashed"
-                                                borderColor="gray.400"
+                                                borderColor={borderGray400}
                                               >
                                                 {details}
                                               </Text>
@@ -962,7 +965,7 @@ const CatalogTable = ({
                                             </Flex>
                                           )}
                                       </Td>
-                                      <Td fontWeight="medium" color="green.500">
+                                      <Td fontWeight="medium" color={textGreen500}>
                                         {formatPrice(mod.price || 0)}
                                       </Td>
                                       <Td color={useColorModeValue("gray.500", "gray.400")}>
@@ -971,13 +974,13 @@ const CatalogTable = ({
                                       <Td>
                                         {/* Modifications column (per-item summary) not applicable on sub-rows */}
                                       </Td>
-                                      <Td fontWeight="semibold" color="green.500">
+                                      <Td fontWeight="semibold" color={textGreen500}>
                                         {formatPrice((mod.price || 0) * (mod.qty || 1))}
                                       </Td>
                                       <Td textAlign="center">
                                         <Icon as={Trash}
                                           cursor="pointer"
-                                          color="red.500"
+                                          color={textRed500}
                                           fontSize="14px"
                                           onClick={() => handleDeleteModification(idx, modIdx)}
                                           title="Remove modification"
@@ -1128,7 +1131,7 @@ const CatalogTable = ({
                         {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                           (!item.hingeSide || item.hingeSide === '-') && (
                             <Text
-                              color="red.500"
+                              color={textRed500}
                               mb={2}
                               fontSize="xs"
                               fontWeight="bold"
@@ -1174,7 +1177,7 @@ const CatalogTable = ({
                         {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                           (!item.exposedSide || item.exposedSide === '-') && (
                             <Text
-                              color="red.500"
+                              color={textRed500}
                               mb={2}
                               fontSize="xs"
                               fontWeight="bold"

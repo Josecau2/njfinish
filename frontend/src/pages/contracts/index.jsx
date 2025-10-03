@@ -420,7 +420,7 @@ const Contracts = () => {
               <StandardCard variant="outline">
                 <CardBody>
                   <Center flexDirection="column" gap={4}>
-                    <Icon as={Search} boxSize={10} color="gray.300" />
+                    <Icon as={Search} boxSize={10} color={useColorModeValue("gray.300","gray.600")} />
                     <Text fontWeight="medium">{t('contracts.empty.title')}</Text>
                     <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                       {t('contracts.empty.subtitle')}
@@ -480,7 +480,7 @@ const Contracts = () => {
                               justifyContent="center"
                               rounded="sm"
                               bg={useColorModeValue("green.50", "green.900")}
-                              color="green.600"
+                              color={useColorModeValue("green.600","green.300")}
                               p={1}
                             >
                               <Icon as={Briefcase} boxSize={ICON_BOX_MD} />
@@ -531,7 +531,7 @@ const Contracts = () => {
                       <Tr>
                         <Td colSpan={6}>
                           <Center py={12} flexDirection="column" gap={4}>
-                            <Icon as={Search} boxSize={10} color="gray.300" />
+                            <Icon as={Search} boxSize={10} color={useColorModeValue("gray.300","gray.600")} />
                             <Text>{t('contracts.empty.title')}</Text>
                             <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                               {t('contracts.empty.subtitle')}

@@ -1,7 +1,7 @@
 import StandardCard from '../../../../components/StandardCard'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Box, Button, CardBody, Checkbox, Flex, FormControl, FormLabel, Heading, Icon, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Select, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react'
+import { Box, Button, CardBody, Checkbox, Flex, FormControl, FormLabel, Heading, Icon, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Select, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react'
 import { ChevronDown, Search } from 'lucide-react'
 import PaginationControls from '../../../../components/PaginationControls'
 import axiosInstance from '../../../../helpers/axiosInstance'
@@ -12,6 +12,13 @@ const SettingsTab = ({ manufacturer }) => {
   const [styleCollection, setStyleCollection] = useState([])
   const [catalogData, setCatalogData] = useState([])
   const [loading, setLoading] = useState(false)
+
+  // Dark mode colors
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray600 = useColorModeValue('gray.600', 'gray.300')
+  const textGray700 = useColorModeValue('gray.700', 'gray.200')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
+  const iconGray = useColorModeValue('gray.400', 'gray.500')
 
   const [searchCode1, setSearchCode1] = useState('')
   const [page1, setPage1] = useState(1)
@@ -194,7 +201,7 @@ const SettingsTab = ({ manufacturer }) => {
           </Text>
         </MenuButton>
         <MenuList maxH="300px" overflowY="auto">
-          <Box px={3} py={2} fontSize="xs" color="gray.500">
+          <Box px={3} py={2} fontSize="xs" color={textGray500}>
             {t(
               'settings.manufacturers.settings.dropdownHelp',
               'CODE is always shown. Select styles to see multiplied prices. Max 6 columns total.',
@@ -238,7 +245,7 @@ const SettingsTab = ({ manufacturer }) => {
 
   const renderTable = (data, selectedFields, multiplierCalc) => (
     <Stack spacing={4} mt={4}>
-      <Text fontSize="sm" color="gray.600">
+      <Text fontSize="sm" color={textGray600}>
         {t(
           'settings.manufacturers.settings.sampleItems',
           'Showing {{count}} sample items with code and multiplied prices for selected styles',
@@ -250,7 +257,7 @@ const SettingsTab = ({ manufacturer }) => {
           <Thead>
             <Tr>
               {selectedFields.map((field, index) => (
-                <Th key={`header-${index}`} textTransform="none" fontSize="xs" color="gray.600">
+                <Th key={`header-${index}`} textTransform="none" fontSize="xs" color={textGray600}>
                   {field === 'code'
                     ? 'CODE'
                     : typeof field === 'string' && field
@@ -264,7 +271,7 @@ const SettingsTab = ({ manufacturer }) => {
             {loading ? (
               <Tr>
                 <Td colSpan={selectedFields.length}>
-                  <Flex align="center" justify="center" py={8} color="gray.500">
+                  <Flex align="center" justify="center" py={8} color={textGray500}>
                     <Spinner size="sm" />
                   </Flex>
                 </Td>
@@ -290,7 +297,7 @@ const SettingsTab = ({ manufacturer }) => {
             ) : (
               <Tr>
                 <Td colSpan={selectedFields.length}>
-                  <Text textAlign="center" py={6} color="gray.500">
+                  <Text textAlign="center" py={6} color={textGray500}>
                     {t('common.noData', 'No data found.')}
                   </Text>
                 </Td>
@@ -319,7 +326,7 @@ const SettingsTab = ({ manufacturer }) => {
               px={3}
               py={2}
               fontSize="sm"
-              color="gray.700"
+              color={textGray700}
             >
               {t(
                 'settings.manufacturers.settings.costMultiplierHelp',
@@ -349,14 +356,14 @@ const SettingsTab = ({ manufacturer }) => {
               />
             </FormControl>
             {multiplier1Error && (
-              <Text color="red.500" fontSize="sm">
+              <Text color={textRed500} fontSize="sm">
                 {multiplier1Error}
               </Text>
             )}
             <Stack direction={{ base: 'column', md: 'row' }} spacing={4} align={{ md: 'center' }}>
               <InputGroup maxW={{ base: '100%', md: '320px' }}>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color={iconGray} />
                 </InputLeftElement>
                 <Input
                   value={searchCode1}
@@ -382,7 +389,7 @@ const SettingsTab = ({ manufacturer }) => {
               align={{ base: 'flex-start', md: 'center' }}
               gap={4}
             >
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color={textGray600}>
                 {t('common.pageOf', {
                   page: page1,
                   total: totalPages1,
@@ -390,7 +397,7 @@ const SettingsTab = ({ manufacturer }) => {
                 })}
               </Text>
               <Flex align="center" gap={4}>
-                <FormLabel htmlFor="itemsPerPage1" mb={0} fontSize="sm" color="gray.600">
+                <FormLabel htmlFor="itemsPerPage1" mb={0} fontSize="sm" color={textGray600}>
                   {t('common.itemsPerPage', 'Items per page:')}
                 </FormLabel>
                 <Select
@@ -435,7 +442,7 @@ const SettingsTab = ({ manufacturer }) => {
               px={3}
               py={2}
               fontSize="sm"
-              color="gray.700"
+              color={textGray700}
             >
               {t(
                 'settings.manufacturers.settings.customerMultiplierHelp',
@@ -465,14 +472,14 @@ const SettingsTab = ({ manufacturer }) => {
               />
             </FormControl>
             {multiplier2Error && (
-              <Text color="red.500" fontSize="sm">
+              <Text color={textRed500} fontSize="sm">
                 {multiplier2Error}
               </Text>
             )}
             <Stack direction={{ base: 'column', md: 'row' }} spacing={4} align={{ md: 'center' }}>
               <InputGroup maxW={{ base: '100%', md: '320px' }}>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.400" />
+                  <Icon as={Search} boxSize={ICON_BOX_MD} color={iconGray} />
                 </InputLeftElement>
                 <Input
                   value={searchCode2}
@@ -503,7 +510,7 @@ const SettingsTab = ({ manufacturer }) => {
               align={{ base: 'flex-start', md: 'center' }}
               gap={4}
             >
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color={textGray600}>
                 {t('common.pageOf', {
                   page: page2,
                   total: totalPages2,
@@ -511,7 +518,7 @@ const SettingsTab = ({ manufacturer }) => {
                 })}
               </Text>
               <Flex align="center" gap={4}>
-                <FormLabel htmlFor="itemsPerPage2" mb={0} fontSize="sm" color="gray.600">
+                <FormLabel htmlFor="itemsPerPage2" mb={0} fontSize="sm" color={textGray600}>
                   {t('common.itemsPerPage', 'Items per page:')}
                 </FormLabel>
                 <Select

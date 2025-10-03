@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Box, Button, Flex, Image, Link, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, Image, Link, Text, useColorModeValue } from '@chakra-ui/react'
 
 import ComponentsImg from 'src/assets/images/components.webp'
 
@@ -8,7 +8,7 @@ const DocsComponents = ({ href }) => {
   const documentationLink = href ? `https://coreui.io/react/docs/${href}` : null
 
   return (
-    <Box bg="blue.50" borderWidth="2px" borderColor="blue.500" borderRadius="md" mb={4}>
+    <Box bg={useColorModeValue("blue.50","blue.900")} borderWidth="2px" borderColor="blue.500" borderRadius="md" mb={4}>
       <Flex
         align="center"
         direction={{ base: 'column', xl: 'row' }}
@@ -25,7 +25,7 @@ const DocsComponents = ({ href }) => {
             objectFit="contain"
           />
         </Box>
-        <Text flex="1" color="gray.700" textAlign={{ base: 'center', xl: 'left' }}>
+        <Text flex="1" color={useColorModeValue("gray.700","gray.200")} textAlign={{ base: 'center', xl: 'left' }}>
           Our Admin Panel is not simply a bundle of third-party pieces. It is the only open-source React
           dashboard built on a professional, enterprise-grade UI component library. This example shows the
           basic usage; for extended demos, detailed API docs, and customization guidance, visit the

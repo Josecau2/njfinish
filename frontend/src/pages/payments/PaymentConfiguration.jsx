@@ -48,6 +48,13 @@ const PaymentConfiguration = () => {
 
   const [isDirty, setIsDirty] = useState(false)
 
+  // Dark mode colors
+  const iconBlue = useColorModeValue('blue.500', 'blue.300')
+  const iconGreen = useColorModeValue('green.500', 'green.300')
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray600 = useColorModeValue('gray.600', 'gray.300')
+  const borderGray100 = useColorModeValue('gray.100', 'gray.700')
+
   useEffect(() => {
     dispatch(fetchPaymentConfig())
   }, [dispatch])
@@ -226,7 +233,7 @@ const PaymentConfiguration = () => {
         <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardHeader borderBottomWidth="1px">
             <HStack spacing={4} align="center">
-              <Icon as={CreditCard} boxSize={ICON_BOX_MD} color="blue.500" />
+              <Icon as={CreditCard} boxSize={ICON_BOX_MD} color={iconBlue} />
               <Text fontWeight="semibold" fontSize="lg">
                 {t('paymentConfig.gateway.title', 'Gateway Settings')}
               </Text>
@@ -258,13 +265,13 @@ const PaymentConfiguration = () => {
                   placeholder="USD, EUR, CAD"
                   minH="44px"
                 />
-                <Text fontSize="xs" color="gray.500" mt={1}>
+                <Text fontSize="xs" color={textGray500} mt={1}>
                   {t('paymentConfig.currencies.help', 'Comma-separated list of currency codes (ISO 4217)')}
                 </Text>
               </FormControl>
 
               {formData.gatewayProvider === 'stripe' && (
-                <Stack spacing={4} borderWidth="1px" borderColor="gray.100" borderRadius="lg" p={4}>
+                <Stack spacing={4} borderWidth="1px" borderColor={borderGray100} borderRadius="lg" p={4}>
                   <FormControl>
                     <FormLabel fontWeight="medium" color={labelColor}>
                       {t('paymentConfig.stripe.publishableKey', 'Publishable key')}
@@ -347,7 +354,7 @@ const PaymentConfiguration = () => {
               )}
 
               {showLegacyFields && (
-                <Stack spacing={4} borderWidth="1px" borderColor="gray.100" borderRadius="lg" p={4}>
+                <Stack spacing={4} borderWidth="1px" borderColor={borderGray100} borderRadius="lg" p={4}>
                   <FormControl>
                     <FormLabel fontWeight="medium" color={labelColor}>
                       {t('paymentConfig.gateway.url', 'Gateway URL')}
@@ -370,7 +377,7 @@ const PaymentConfiguration = () => {
                       onChange={(event) => handleInputChange('embedCode', event.target.value)}
                       placeholder={t('paymentConfig.embed.placeholder', "Paste your payment gateway's embed code here...")}
                     />
-                    <Text fontSize="xs" color="gray.500" mt={1}>
+                    <Text fontSize="xs" color={textGray500} mt={1}>
                       {t('paymentConfig.embed.help', 'Optional: HTML/JavaScript code to embed payment forms directly in your pages')}
                     </Text>
                   </FormControl>
@@ -391,7 +398,7 @@ const PaymentConfiguration = () => {
   "allowedPaymentMethods": ["card", "bank_transfer"]
 }`}
                 />
-                <Text fontSize="xs" color="gray.500" mt={1}>
+                <Text fontSize="xs" color={textGray500} mt={1}>
                   {t('paymentConfig.advanced.help', 'Additional configuration options in JSON format')}
                 </Text>
               </FormControl>
@@ -402,24 +409,24 @@ const PaymentConfiguration = () => {
         <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardHeader borderBottomWidth="1px">
             <HStack spacing={4} align="center">
-              <Icon as={CreditCard} boxSize={ICON_BOX_MD} color="green.500" />
+              <Icon as={CreditCard} boxSize={ICON_BOX_MD} color={iconGreen} />
               <Text fontWeight="semibold" fontSize="lg">
                 {t('paymentConfig.preview.title', 'Configuration Preview')}
               </Text>
             </HStack>
           </CardHeader>
           <CardBody>
-            <Stack spacing={4} bg={previewBg} borderRadius="lg" p={4} borderWidth="1px" borderColor="gray.100">
+            <Stack spacing={4} bg={previewBg} borderRadius="lg" p={4} borderWidth="1px" borderColor={borderGray100}>
               {previewDetails.map((item) => (
                 <Flex key={item.label} justify="space-between" wrap="wrap" gap={4}>
-                  <Text fontWeight="semibold" color="gray.600">
+                  <Text fontWeight="semibold" color={textGray600}>
                     {item.label}
                   </Text>
                   <Text>{item.value}</Text>
                 </Flex>
               ))}
               {showLegacyFields && formData.embedCode && (
-                <Text fontSize="sm" color="gray.500">
+                <Text fontSize="sm" color={textGray500}>
                   {t('paymentConfig.preview.embedConfigured', 'Embedded payment form configured.')}
                 </Text>
               )}

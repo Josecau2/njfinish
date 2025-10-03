@@ -419,7 +419,7 @@ const ModificationBrowserModal = ({
               <Text fontWeight="medium">
                 {config.customerUpload.title || t('modificationBrowser.upload.label', 'File Upload')}
               </Text>
-              {config.customerUpload.required && <Text color="red.500">*</Text>}
+              {config.customerUpload.required && <Text color={useColorModeValue("red.500","red.300")}>*</Text>}
             </HStack>
             <Input
               type="file"
@@ -649,7 +649,7 @@ const ModificationBrowserModal = ({
     <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "6xl" }} scrollBehavior="inside">
       <ModalOverlay />
       <ModalContent borderRadius="xl" overflow="hidden">
-        <ModalHeader px={6} py={4} borderBottomWidth="1px" borderColor="gray.100">
+        <ModalHeader px={6} py={4} borderBottomWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
           <HStack justify="space-between" align="center">
             <HStack spacing={4} align="center">
               {showBackButton && (
@@ -750,7 +750,7 @@ const ModificationBrowserModal = ({
           </Stack>
         </ModalBody>
 
-        <Divider borderColor="gray.100" />
+        <Divider borderColor={useColorModeValue("gray.100","gray.700")} />
 
         <ModalFooter px={6} py={4} bg={useColorModeValue("white", "gray.800")}>
           <HStack spacing={4} justify="flex-end" w="full">

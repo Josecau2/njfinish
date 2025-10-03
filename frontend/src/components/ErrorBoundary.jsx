@@ -1,7 +1,8 @@
 import { Component } from 'react';
 import { Box, Button, Heading, Text } from '@chakra-ui/react';
+import { withTranslation } from 'react-i18next';
 
-export class ErrorBoundary extends Component {
+class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, error: undefined };
@@ -16,15 +17,17 @@ export class ErrorBoundary extends Component {
   }
 
   render() {
+    const { t } = this.props;
+
     if (this.state.hasError) {
       return (
         <Box p={8} textAlign="center" maxW="600px" mx="auto" mt={20}>
-          <Heading size="lg" mb={4}>Something went wrong</Heading>
-          <Text mb={4} color="gray.600">
+          <Heading size="lg" mb={4}>{t('errors.somethingWentWrong')}</Heading>
+          <Text mb={4} color="text">
             The application encountered an error. Please refresh to try again.
           </Text>
           {this.state.error && (
-            <Text fontSize="sm" color="gray.500" mb={4} fontFamily="mono">
+            <Text fontSize="sm" color="muted" mb={4} fontFamily="mono">
               {this.state.error.message}
             </Text>
           )}
@@ -38,3 +41,5 @@ export class ErrorBoundary extends Component {
     return this.props.children;
   }
 }
+
+export default withTranslation()(ErrorBoundary);

@@ -151,10 +151,10 @@ const Contractors = () => {
                   <HStack spacing={4} align="center">
                     <Icon as={Users} boxSize={ICON_BOX_MD} color={useColorModeValue("blue.600", "blue.300")} />
                     <Box>
-                      <Text fontSize="xs" color="blue.700" textTransform="uppercase" fontWeight="semibold">
+                      <Text fontSize="xs" color={useColorModeValue("blue.700","blue.300")} textTransform="uppercase" fontWeight="semibold">
                         {t('contractorsAdmin.stats.totalContractors', 'Total Contractors')}
                       </Text>
-                      <Text fontSize="lg" fontWeight="bold" color="blue.800">
+                      <Text fontSize="lg" fontWeight="bold" color={useColorModeValue("blue.800","blue.200")}>
                         {totalContractors}
                       </Text>
                     </Box>
@@ -188,12 +188,12 @@ const Contractors = () => {
                 </Box>
                 <Box bg={useColorModeValue("green.50", "green.900")} borderRadius="lg" p={4}>
                   <HStack spacing={4} align="center">
-                    <Icon as={ChartBar} boxSize={ICON_BOX_MD} color="green.600" />
+                    <Icon as={ChartBar} boxSize={ICON_BOX_MD} color={useColorModeValue("green.600","green.300")} />
                     <Box>
-                      <Text fontSize="xs" color="green.700" textTransform="uppercase" fontWeight="semibold">
+                      <Text fontSize="xs" color={useColorModeValue("green.700","green.300")} textTransform="uppercase" fontWeight="semibold">
                         {t('contractorsAdmin.table.proposals', 'Proposals')}
                       </Text>
-                      <Text fontSize="lg" fontWeight="bold" color="green.800">
+                      <Text fontSize="lg" fontWeight="bold" color={useColorModeValue("green.800","green.200")}>
                         {totalProposals}
                       </Text>
                     </Box>
@@ -224,7 +224,7 @@ const Contractors = () => {
                     <Tr>
                       <Td colSpan={7} textAlign="center" py={10}>
                         <Stack spacing={4} align="center">
-                          <Icon as={Search} boxSize={8} color="gray.300" />
+                          <Icon as={Search} boxSize={8} color={useColorModeValue("gray.300","gray.600")} />
                           <Text color={useColorModeValue("gray.500", "gray.400")}>{t('contractorsAdmin.empty.title', 'No contractors found')}</Text>
                           <Text fontSize="sm" color={useColorModeValue("gray.400", "gray.500")}>
                             {t('contractorsAdmin.empty.tryAdjusting', 'Try adjusting your filters.')}
@@ -339,7 +339,7 @@ const Contractors = () => {
             </Box>
 
             {totalPages > 1 && (
-              <Box mt={6} pt={4} borderTopWidth="1px" borderColor="gray.100">
+              <Box mt={6} pt={4} borderTopWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
                 <PaginationComponent
                   currentPage={currentPage}
                   totalPages={totalPages}

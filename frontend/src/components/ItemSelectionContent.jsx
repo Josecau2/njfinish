@@ -82,6 +82,9 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const tableHeaderBg = useColorModeValue("gray.50", "gray.800");
     const tableRowBg = useColorModeValue("gray.100", "gray.700");
     const tableTotalRowBg = useColorModeValue("green.50", "green.900");
+    const settingsIconColor = useColorModeValue("green.500", "green.300");
+    const separatorBg = useColorModeValue("gray.300", "gray.600");
+    const errorTextColor = useColorModeValue("red.500", "red.300");
     const [itemModificationID, setItemModificationID] = useState('');
     const [modificationItems, setModificationItems] = useState('');
     const [userGroupMultiplier, setUserGroupMultiplier] = useState(1.0);
@@ -1557,7 +1560,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                         </Heading>
                                     </Flex>
                                     <Flex align="center" fontSize="lg">
-                                        <Icon as={Settings} boxSize={ICON_BOX_MD} color="green.500" mr={2} />
+                                        <Icon as={Settings} boxSize={ICON_BOX_MD} color={settingsIconColor} mr={2} />
                                         <Text mr={2}>{t('proposalColumns.assembled')}</Text>
                                         <Switch
                                             size="md"
@@ -1574,7 +1577,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                         <Box
                             className="style-separator"
                             w="1px"
-                            bg="gray.300"
+                            bg={separatorBg}
                             mx={4}
                             display={{ base: 'none', lg: 'block' }}
                         />
@@ -1912,7 +1915,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     </Stack>
 
                     {customItemError && (
-                        <Text color="red.500" mt={1} mb={4}>
+                        <Text color={errorTextColor} mt={1} mb={4}>
                             {customItemError}
                         </Text>
                     )}

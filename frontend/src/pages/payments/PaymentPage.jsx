@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Alert, AlertIcon, Box, Button, CardBody, CardHeader, Container, Flex, HStack, Heading, Icon, Spinner, Stack, Text } from '@chakra-ui/react'
+import { Alert, AlertIcon, Box, Button, CardBody, CardHeader, Container, Flex, HStack, Heading, Icon, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { ArrowLeft, CreditCard } from 'lucide-react'
@@ -232,7 +232,7 @@ const PaymentPage = () => {
   if (loading || !currentPayment) {
     return (
       <PageContainer textAlign="center">
-        <Spinner size="lg" color="blue.500" thickness="4px" speed="0.7s" />
+        <Spinner size="lg" color={useColorModeValue("blue.500","blue.300")} thickness="4px" speed="0.7s" />
       </PageContainer>
     )
   }
@@ -280,15 +280,15 @@ const PaymentPage = () => {
                 <Heading as="h5" size="sm" mb={1}>
                   {t('payment.details.title', 'Payment Details')}
                 </Heading>
-                <Text fontSize="sm" color="gray.500">
+                <Text fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>
                   {t('payment.order', 'Order')} #{currentPayment.orderId}
                 </Text>
               </Box>
               <Box textAlign="right">
-                <Heading as="h4" size="md" color="blue.500">
+                <Heading as="h4" size="md" color={useColorModeValue("blue.500","blue.300")}>
                   {formatCurrency(amountCents, currentPayment.currency)}
                 </Heading>
-                <Text fontSize="xs" color="gray.500" textTransform="uppercase">
+                <Text fontSize="xs" color={useColorModeValue("gray.500","gray.400")} textTransform="uppercase">
                   {currentPayment.currency || 'USD'}
                 </Text>
               </Box>
@@ -367,7 +367,7 @@ const PaymentPage = () => {
 
               {!clientSecret && intentLoading && (
                 <Flex justify="center" py={6}>
-                  <Spinner color="blue.500" />
+                  <Spinner color={useColorModeValue("blue.500","blue.300")} />
                 </Flex>
               )}
 

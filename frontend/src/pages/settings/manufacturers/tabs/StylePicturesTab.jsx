@@ -1,6 +1,6 @@
 import StandardCard from '../../../../components/StandardCard'
 import React, { useState, useEffect, useCallback } from 'react'
-import { Alert, Badge, Box, Button, CardBody, CardHeader, Flex, FormLabel, HStack, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spinner, Text } from '@chakra-ui/react'
+import { Alert, Badge, Box, Button, CardBody, CardHeader, Flex, FormLabel, HStack, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spinner, Text, useColorModeValue } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { Upload, Pencil, Trash, Plus } from '@/icons-lucide'
@@ -37,6 +37,13 @@ const StylePicturesTab = ({ manufacturer }) => {
   // Delete style modal
   const [deleteAsk, setDeleteAsk] = useState({ open: false, styleName: '' })
   const [reassignTo, setReassignTo] = useState('')
+
+  // Dark mode colors
+  const helperTextColor = useColorModeValue("gray.500", "gray.400")
+  const cardBg = useColorModeValue("gray.50", "gray.800")
+  const previewBg = useColorModeValue("gray.50", "gray.800")
+  const previewTextColor = useColorModeValue("gray.600", "gray.300")
+  const dropzoneBg = useColorModeValue("gray.50", "gray.800")
 
   // Image error handler with fallbacks
   const handleImageError = useCallback(
@@ -249,7 +256,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                   </Badge>
                 )}
               </HStack>
-              <Text mt={1} fontSize="sm" color="gray.500">
+              <Text mt={1} fontSize="sm" color={helperTextColor}>
                 {t(
                   'styles.helperText',
                   'View all styles with their associated pictures. Images are used in quote creation to help customers visualize their selections.',
@@ -291,7 +298,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                     borderWidth="1px"
                     borderRadius="md"
                     overflow="hidden"
-                    bg="gray.50"
+                    bg={cardBg}
                   >
                     <LazyLoadImage
                       src={
@@ -484,7 +491,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                     <strong>{t('common.style', 'Style')}:</strong> {selectedStyle.style}
                   </Text>
                 </Box>
-                <Box mb={4} borderWidth="1px" borderRadius="md" p={3} bg="gray.50">
+                <Box mb={4} borderWidth="1px" borderRadius="md" p={3} bg={previewBg}>
                   <Text fontWeight="semibold" mb={2}>
                     {t('types.ui.currentImage', 'Current Image:')}
                   </Text>
@@ -521,7 +528,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                     accept="image/*"
                     onChange={handleFileChange}
                   />
-                  <Text mt={2} color="gray.600" fontSize="sm">
+                  <Text mt={2} color={previewTextColor} fontSize="sm">
                     {selectedFile
                       ? `${t('styles.selected', 'Selected')}: ${selectedFile.name}`
                       : selectedStyle.styleVariants?.[0]?.image
@@ -535,7 +542,7 @@ const StylePicturesTab = ({ manufacturer }) => {
                     <Text fontWeight="semibold" mb={2}>
                       {t('styles.previewNewImage', 'New Image Preview:')}
                     </Text>
-                    <Flex justify="center" borderWidth="1px" borderRadius="md" p={3} bg="gray.50">
+                    <Flex justify="center" borderWidth="1px" borderRadius="md" p={3} bg={dropzoneBg}>
                       <LazyLoadImage
                         src={URL.createObjectURL(selectedFile)}
                         alt="Preview"

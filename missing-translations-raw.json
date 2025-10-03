@@ -1,0 +1,746 @@
+[
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\model\\EditManufacturerModal.jsx",
+    "Line": 73,
+    "Text": "Edit Manufacturer",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\model\\EditManufacturerModal.jsx",
+    "Line": 84,
+    "Text": "Name",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\model\\EditManufacturerModal.jsx",
+    "Line": 96,
+    "Text": "Email",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\model\\EditManufacturerModal.jsx",
+    "Line": 109,
+    "Text": "Multiplier",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\pdf\\DesktopPdfViewer.jsx",
+    "Line": 47,
+    "Text": "PDF Preview",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\ErrorBoundary.jsx",
+    "Line": 22,
+    "Text": "Something went wrong",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LanguageSwitcher.jsx",
+    "Line": 31,
+    "Text": "English",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 152,
+    "Text": "Email",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 156,
+    "Text": "Password",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 178,
+    "Text": "Keep me logged in",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 203,
+    "Text": "Reset your password",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 208,
+    "Text": "Email",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 211,
+    "Text": "Send reset email",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 215,
+    "Text": "Sign in",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 242,
+    "Text": "Benefits",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 253,
+    "Text": "First name",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 257,
+    "Text": "Last name",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 263,
+    "Text": "Email",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 271,
+    "Text": "Phone",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 281,
+    "Text": "City",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 285,
+    "Text": "State",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 294,
+    "Text": "Company",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 302,
+    "Text": "Tell us about your projects",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\LoginPreview.jsx",
+    "Line": 310,
+    "Text": "Submit request",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\PageErrorBoundary.jsx",
+    "Line": 54,
+    "Text": "Error Details",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\StandardCard.jsx",
+    "Line": 10,
+    "Text": "Title",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\StandardCard.jsx",
+    "Line": 11,
+    "Text": "Content with padding",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\components\\StandardCard.jsx",
+    "Line": 73,
+    "Text": "Direct content here",
+    "HasTranslation": false
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 461,
+    "Text": "Alabama",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 462,
+    "Text": "Alaska",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 463,
+    "Text": "Arizona",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 464,
+    "Text": "Arkansas",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 465,
+    "Text": "California",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 466,
+    "Text": "Colorado",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 467,
+    "Text": "Connecticut",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 468,
+    "Text": "Delaware",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 469,
+    "Text": "Florida",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 470,
+    "Text": "Georgia",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 471,
+    "Text": "Hawaii",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 472,
+    "Text": "Idaho",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 473,
+    "Text": "Illinois",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 474,
+    "Text": "Indiana",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 475,
+    "Text": "Iowa",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 476,
+    "Text": "Kansas",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 477,
+    "Text": "Kentucky",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 478,
+    "Text": "Louisiana",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 479,
+    "Text": "Maine",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 480,
+    "Text": "Maryland",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 481,
+    "Text": "Massachusetts",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 482,
+    "Text": "Michigan",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 483,
+    "Text": "Minnesota",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 484,
+    "Text": "Mississippi",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 485,
+    "Text": "Missouri",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 486,
+    "Text": "Montana",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 487,
+    "Text": "Nebraska",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 488,
+    "Text": "Nevada",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 489,
+    "Text": "New Hampshire",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 490,
+    "Text": "New Jersey",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 491,
+    "Text": "New Mexico",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 492,
+    "Text": "New York",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 493,
+    "Text": "North Carolina",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 494,
+    "Text": "North Dakota",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 495,
+    "Text": "Ohio",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 496,
+    "Text": "Oklahoma",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 497,
+    "Text": "Oregon",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 498,
+    "Text": "Pennsylvania",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 499,
+    "Text": "Rhode Island",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 500,
+    "Text": "South Carolina",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 501,
+    "Text": "South Dakota",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 502,
+    "Text": "Tennessee",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 503,
+    "Text": "Texas",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 504,
+    "Text": "Utah",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 505,
+    "Text": "Vermont",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 506,
+    "Text": "Virginia",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 507,
+    "Text": "Washington",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 508,
+    "Text": "West Virginia",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 509,
+    "Text": "Wisconsin",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\customers\\AddCustomerForm.jsx",
+    "Line": 510,
+    "Text": "Wyoming",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\payments\\PaymentConfiguration.jsx",
+    "Line": 246,
+    "Text": "Stripe",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\payments\\PaymentConfiguration.jsx",
+    "Line": 247,
+    "Text": "Custom",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\proposals\\EditProposal.jsx",
+    "Line": 571,
+    "Text": "Date",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\customization\\PdfLayoutCustomization.jsx",
+    "Line": 393,
+    "Text": "SPEC BOOK",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\globalMods\\GlobalModsPage.jsx",
+    "Line": 818,
+    "Text": "Custom fractions",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\globalMods\\GlobalModsPage.jsx",
+    "Line": 890,
+    "Text": "Custom fractions",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\globalMods\\GlobalModsPage.jsx",
+    "Line": 962,
+    "Text": "Custom fractions",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\globalMods\\GlobalModsPage.jsx",
+    "Line": 1484,
+    "Text": "Required Fields",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\globalMods\\GlobalModsPage.jsx",
+    "Line": 1601,
+    "Text": "Custom fractions",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\globalMods\\GlobalModsPage.jsx",
+    "Line": 1673,
+    "Text": "Custom fractions",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\globalMods\\GlobalModsPage.jsx",
+    "Line": 1745,
+    "Text": "Custom fractions",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 2642,
+    "Text": "per page",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 2693,
+    "Text": "All Types",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 2715,
+    "Text": "All Styles",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3093,
+    "Text": "Price",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3097,
+    "Text": "Type",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3253,
+    "Text": "Template",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3273,
+    "Text": "Scope",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3281,
+    "Text": "Style",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3282,
+    "Text": "Type",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3283,
+    "Text": "Selected items",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3287,
+    "Text": "Override price",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3302,
+    "Text": "Target style",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3320,
+    "Text": "Target type",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3343,
+    "Text": "Existing assignments",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3351,
+    "Text": "Template",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3352,
+    "Text": "Scope",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3353,
+    "Text": "Target",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3354,
+    "Text": "Price",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3432,
+    "Text": "Template",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3433,
+    "Text": "Category",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3434,
+    "Text": "Scope",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3435,
+    "Text": "Price",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3436,
+    "Text": "Active",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3496,
+    "Text": "Add template to this item",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 3516,
+    "Text": "Override price",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 4400,
+    "Text": "Merge items",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 4703,
+    "Text": "Style",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 4715,
+    "Text": "Type",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 4727,
+    "Text": "Description",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 4739,
+    "Text": "Price",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 4799,
+    "Text": "Current Style Name",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 4809,
+    "Text": "New Style Name",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+    "Line": 5237,
+    "Text": "Required Fields",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\TypesTab.jsx",
+    "Line": 1616,
+    "Text": "Rename Type Globally",
+    "HasTranslation": true
+  },
+  {
+    "File": "C:\\njtake2\\njcabinets-main\\frontend\\src\\pages\\settings\\manufacturers\\tabs\\TypesTab.jsx",
+    "Line": 1683,
+    "Text": "Change Type Category",
+    "HasTranslation": true
+  }
+]

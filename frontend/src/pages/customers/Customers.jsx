@@ -192,7 +192,7 @@ const CustomerTable = ({
               </Stat>
             </CardBody>
           </StandardCard>
-          <StandardCard variant="outline" borderColor="blue.500">
+          <StandardCard variant="outline" borderColor={useColorModeValue("blue.500","blue.400")}>
             <CardBody>
               <Stat>
                 <StatLabel color={useColorModeValue("gray.500", "gray.400")}>{t('customers.withEmail')}</StatLabel>
@@ -381,7 +381,7 @@ const CustomerTable = ({
                           <Tr>
                             <Td colSpan={8}>
                               <Center py={12} flexDirection="column" gap={4}>
-                                <Icon as={Search} boxSize={10} color="gray.300" />
+                                <Icon as={Search} boxSize={10} color={useColorModeValue("gray.300","gray.600")} />
                                 <Text>{t('customers.noResults')}</Text>
                                 <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                                   {t('customers.tryAdjusting')}
@@ -446,7 +446,7 @@ const CustomerTable = ({
                 <StandardCard variant="outline">
                   <CardBody>
                     <Center flexDirection="column" gap={4}>
-                      <Icon as={Search} boxSize={10} color="gray.300" />
+                      <Icon as={Search} boxSize={10} color={useColorModeValue("gray.300","gray.600")} />
                       <Text>{t('customers.noResults')}</Text>
                       <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
                         {t('customers.tryAdjusting')}

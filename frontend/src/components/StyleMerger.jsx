@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Button, FormControl, FormLabel, Select, Stack } from '@chakra-ui/react'
+import { Box, Button, FormControl, FormLabel, Select, Stack, useColorModeValue } from '@chakra-ui/react'
 
 export default function StyleMerger({ leftStyles = [], rightStyles = [], onMerge }) {
   const [left, setLeft] = useState('')
@@ -18,7 +18,7 @@ export default function StyleMerger({ leftStyles = [], rightStyles = [], onMerge
       <Stack spacing={4}>
         <Stack direction={{ base: 'column', sm: 'row' }} spacing={4} role="group" aria-label="Select styles to merge">
           <FormControl>
-            <FormLabel fontSize="sm" color="gray.500">
+            <FormLabel fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>
               From
             </FormLabel>
             <Select value={left} onChange={(event) => setLeft(event.target.value)} aria-label="Source style">
@@ -34,7 +34,7 @@ export default function StyleMerger({ leftStyles = [], rightStyles = [], onMerge
           </FormControl>
 
           <FormControl>
-            <FormLabel fontSize="sm" color="gray.500">
+            <FormLabel fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>
               Into
             </FormLabel>
             <Select value={right} onChange={(event) => setRight(event.target.value)} aria-label="Target style">

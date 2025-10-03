@@ -178,7 +178,7 @@ const ContractorDashboard = () => {
                 )}
 
                 {showCustomers && (
-                  <StandardCard bg="green.600" color="white" shadow="lg">
+                  <StandardCard bg={useColorModeValue("green.600","green.700")} color="white" shadow="lg">
                     <CardBody display="flex" alignItems="flex-start" justifyContent="space-between" gap={4}>
                       <Stack spacing={4}>
                         <Text fontSize="3xl" fontWeight="semibold" lineHeight="shorter">

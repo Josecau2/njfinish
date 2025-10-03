@@ -4,6 +4,7 @@ import StandardCard from './StandardCard'
 import PageContainer from './PageContainer'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { withTranslation } from 'react-i18next'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 /**
@@ -27,7 +28,7 @@ class PageErrorBoundaryClass extends Component {
 
   render() {
     if (this.state.hasError) {
-      const { navigate, pageName = 'Page' } = this.props
+      const { navigate, pageName = 'Page', t } = this.props
 
       return (
         <PageContainer py={12}>
@@ -39,10 +40,10 @@ class PageErrorBoundaryClass extends Component {
                 </Box>
 
                 <Stack spacing={4}>
-                  <Heading size="lg" color="red.600">
+                  <Heading size="lg" color="red.500">
                     {pageName} Error
                   </Heading>
-                  <Text color="gray.600" fontSize="lg">
+                  <Text color="muted" fontSize="lg">
                     Something went wrong while loading this page.
                   </Text>
                 </Stack>
@@ -51,7 +52,7 @@ class PageErrorBoundaryClass extends Component {
                   <Alert status="error" borderRadius="md" w="full">
                     <AlertIcon />
                     <Box flex="1">
-                      <AlertTitle>Error Details</AlertTitle>
+                      <AlertTitle>{t('errors.errorDetails')}</AlertTitle>
                       <AlertDescription display="block" fontFamily="mono" fontSize="sm">
                         {this.state.error.message}
                       </AlertDescription>
@@ -83,7 +84,7 @@ class PageErrorBoundaryClass extends Component {
                   </Button>
                 </Stack>
 
-                <Text fontSize="sm" color="gray.500">
+                <Text fontSize="sm" color="muted">
                   If this problem persists, please contact support.
                 </Text>
               </Stack>
@@ -103,10 +104,12 @@ class PageErrorBoundaryClass extends Component {
 export function PageErrorBoundary({ children, pageName }) {
   const navigate = useNavigate()
   return (
-    <PageErrorBoundaryClass navigate={navigate} pageName={pageName}>
+    <TranslatedPageErrorBoundaryClass navigate={navigate} pageName={pageName}>
       {children}
-    </PageErrorBoundaryClass>
+    </TranslatedPageErrorBoundaryClass>
   )
 }
+
+const TranslatedPageErrorBoundaryClass = withTranslation()(PageErrorBoundaryClass)
 
 export default PageErrorBoundary

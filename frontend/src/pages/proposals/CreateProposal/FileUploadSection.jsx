@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Badge, Box, Button, CardBody, CardHeader, Flex, Heading, Icon, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Text, useToast } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, CardHeader, Flex, Heading, Icon, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
 import {
@@ -73,6 +73,19 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
   const [dragActive, setDragActive] = useState(false)
   const [previewModal, setPreviewModal] = useState({ open: false, file: null })
   const fileInputRef = useRef(null)
+
+  // Dark mode colors
+  const borderGray100 = useColorModeValue('gray.100', 'gray.700')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const textGray800 = useColorModeValue('gray.800', 'gray.200')
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray600 = useColorModeValue('gray.600', 'gray.300')
+  const textGray700 = useColorModeValue('gray.700', 'gray.200')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
+  const bgBlue50 = useColorModeValue('blue.50', 'blue.900')
+  const borderBlue100 = useColorModeValue('blue.100', 'blue.700')
+  const textBlue700 = useColorModeValue('blue.700', 'blue.300')
+  const textBlue600 = useColorModeValue('blue.600', 'blue.300')
 
   const validateFile = (file) => {
     if (!allAcceptedTypes.includes(file.type)) {
@@ -251,11 +264,11 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
   return (
     <>
       <StandardCard shadow="md" borderRadius="xl" borderColor={dragActive ? 'brand.300' : 'transparent'}>
-        <CardHeader borderBottomWidth="1px" borderColor="gray.100" bg="gray.50">
-          <Heading size="md" color="gray.800">
+        <CardHeader borderBottomWidth="1px" borderColor={borderGray100} bg={bgGray50}>
+          <Heading size="md" color={textGray800}>
             {t('files.sectionTitle', 'Supporting files')}
           </Heading>
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color={textGray500}>
             {t('files.sectionSubtitle', 'Upload drawings, contracts, or reference media')}
           </Text>
         </CardHeader>
@@ -285,7 +298,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
               {uploading ? (
                 <>
                   <Spinner size="xl" color="brand.500" />
-                  <Text color="gray.600">{t('files.uploading')}</Text>
+                  <Text color={textGray600}>{t('files.uploading')}</Text>
                 </>
               ) : (
                 <>
@@ -293,7 +306,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                   <Heading as="h3" size="sm">
                     {t('files.dropOrBrowse', 'Drop files here or browse to upload')}
                   </Heading>
-                  <Text fontSize="sm" color="gray.500">
+                  <Text fontSize="sm" color={textGray500}>
                     {t('files.maxSize', { size: formatFileSize(maxFileSize) })}
                   </Text>
                   <MotionButton
@@ -319,7 +332,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
 
           {files.length > 0 ? (
             <Box mt={8}>
-              <Heading as="h4" size="sm" mb={4} color="gray.700">
+              <Heading as="h4" size="sm" mb={4} color={textGray700}>
                 {t('files.uploadedCount', { count: files.length })}
               </Heading>
               <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
@@ -356,7 +369,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                               <MenuItem
                                 icon={<Icon as={Trash2} boxSize={ICON_BOX_MD} />}
                                 onClick={() => confirmDelete(file)}
-                                color="red.500"
+                                color={textRed500}
                               >
                                 {t('common.delete')}
                               </MenuItem>
@@ -369,7 +382,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                           <Text fontWeight="semibold" noOfLines={2} textAlign="center">
                             {file.name}
                           </Text>
-                          <Text fontSize="sm" color="gray.500">
+                          <Text fontSize="sm" color={textGray500}>
                             {formatFileSize(file.size)}
                           </Text>
                         </Stack>
@@ -380,11 +393,11 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
               </SimpleGrid>
             </Box>
           ) : !uploading ? (
-            <Box mt={6} p={4} borderRadius="lg" bg="blue.50" borderWidth="1px" borderColor="blue.100">
-              <Heading as="h4" size="sm" color="blue.700" mb={1}>
+            <Box mt={6} p={4} borderRadius="lg" bg={bgBlue50} borderWidth="1px" borderColor={borderBlue100}>
+              <Heading as="h4" size="sm" color={textBlue700} mb={1}>
                 {t('files.noneYet')}
               </Heading>
-              <Text fontSize="sm" color="blue.600">
+              <Text fontSize="sm" color={textBlue600}>
                 {t('files.dropHint')}
               </Text>
             </Box>

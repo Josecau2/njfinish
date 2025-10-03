@@ -25,6 +25,18 @@ const ManuMultipliers = () => {
   const { list: multiManufacturers = [] } = useSelector((state) => state.multiManufacturer || {})
   const customization = useSelector((state) => state.customization)
 
+  // Dark mode colors
+  const bgGreen50 = useColorModeValue('green.50', 'green.900')
+  const textGreen500 = useColorModeValue('green.500', 'green.300')
+  const textGreen600 = useColorModeValue('green.600', 'green.300')
+  const bgRed50 = useColorModeValue('red.50', 'red.900')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
+  const textGray300 = useColorModeValue('gray.300', 'gray.600')
+  const iconGray = useColorModeValue('gray.400', 'gray.500')
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray800 = useColorModeValue('gray.800', 'gray.200')
+  const borderGray = useColorModeValue('gray.200', 'gray.600')
+
   const [filterText, setFilterText] = useState('')
   const [sortBy, setSortBy] = useState('name')
   const [sortDirection, setSortDirection] = useState('desc')
@@ -217,14 +229,14 @@ const ManuMultipliers = () => {
           <StandardCard variant="outline" borderColor="green.100">
             <CardBody>
               <HStack spacing={4} align="center">
-                <Flex align="center" justify="center" w={12} h={12} borderRadius="lg" bg="green.50" color="green.500">
+                <Flex align="center" justify="center" w={12} h={12} borderRadius="lg" bg={bgGreen50} color={textGreen500}>
                   <Icon as={Settings} boxSize={6} aria-hidden="true" />
                 </Flex>
                 <Box>
-                  <Text fontSize="lg" fontWeight="semibold" color="green.600">
+                  <Text fontSize="lg" fontWeight="semibold" color={textGreen600}>
                     {enabledCount}
                   </Text>
-                  <Text fontSize="sm" color="gray.500">
+                  <Text fontSize="sm" color={textGray500}>
                     {t('settings.userGroups.multipliers.stats.activeGroups')}
                   </Text>
                 </Box>
@@ -235,14 +247,14 @@ const ManuMultipliers = () => {
           <StandardCard variant="outline" borderColor="red.100">
             <CardBody>
               <HStack spacing={4} align="center">
-                <Flex align="center" justify="center" w={12} h={12} borderRadius="lg" bg="red.50" color="red.500">
+                <Flex align="center" justify="center" w={12} h={12} borderRadius="lg" bg={bgRed50} color={textRed500}>
                   <Icon as={Settings} boxSize={6} aria-hidden="true" />
                 </Flex>
                 <Box>
-                  <Text fontSize="lg" fontWeight="semibold" color="red.500">
+                  <Text fontSize="lg" fontWeight="semibold" color={textRed500}>
                     {disabledCount}
                   </Text>
-                  <Text fontSize="sm" color="gray.500">
+                  <Text fontSize="sm" color={textGray500}>
                     {t('settings.userGroups.multipliers.stats.inactiveGroups')}
                   </Text>
                 </Box>
@@ -268,7 +280,7 @@ const ManuMultipliers = () => {
                   <Text fontSize="lg" fontWeight="semibold" color={accentColor}>
                     {usersGroup.length}
                   </Text>
-                  <Text fontSize="sm" color="gray.500">
+                  <Text fontSize="sm" color={textGray500}>
                     {t('settings.userGroups.multipliers.stats.totalGroups')}
                   </Text>
                 </Box>
@@ -282,7 +294,7 @@ const ManuMultipliers = () => {
             <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>
               <InputGroup maxW={{ base: 'full', md: '360px' }}>
                 <InputLeftElement pointerEvents="none">
-                  <Icon as={Search} color="gray.400" boxSize={ICON_BOX_MD} />
+                  <Icon as={Search} color={iconGray} boxSize={ICON_BOX_MD} />
                 </InputLeftElement>
                 <Input
                   value={filterText}
@@ -296,7 +308,7 @@ const ManuMultipliers = () => {
               </InputGroup>
 
               <Box flex="1" textAlign={{ base: 'left', md: 'right' }}>
-                <Text fontSize="sm" color="gray.500">
+                <Text fontSize="sm" color={textGray500}>
                   {t('settings.userGroups.multipliers.showing', {
                     count: filteredGroups.length,
                     total: mergedGroups.length,
@@ -329,9 +341,9 @@ const ManuMultipliers = () => {
                     <Tr>
                       <Td colSpan={4}>
                         <Center py={12} flexDirection="column" gap={4}>
-                          <Icon as={Search} boxSize={10} color="gray.300" />
+                          <Icon as={Search} boxSize={10} color={textGray300} />
                           <Text>{t('settings.userGroups.multipliers.empty.title')}</Text>
-                          <Text fontSize="sm" color="gray.500">
+                          <Text fontSize="sm" color={textGray500}>
                             {t('settings.userGroups.multipliers.empty.subtitle')}
                           </Text>
                         </Center>
@@ -341,7 +353,7 @@ const ManuMultipliers = () => {
                     paginatedGroups.map((group) => (
                       <Tr key={group.id || `group-${group.user_group.id}`}>
                         <Td py={4}>
-                          <Text fontWeight="medium" color="gray.800">
+                          <Text fontWeight="medium" color={textGray800}>
                             {group.user_group?.name || t('common.na')}
                           </Text>
                         </Td>
@@ -384,7 +396,7 @@ const ManuMultipliers = () => {
                             icon={<Icon as={Pencil} boxSize={ICON_BOX_MD} />}
                             variant="outline"
                             color={accentColor}
-                            borderColor="gray.200"
+                            borderColor={borderGray}
                             _hover={{
                               bg: `${accentColor}20`,
                               borderColor: accentColor,

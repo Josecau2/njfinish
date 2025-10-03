@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addManufacturer } from '../../../store/slices/manufacturersSlice'
 import { getContrastColor } from '../../../utils/colorUtils'
-import { Alert, AlertIcon, Box, Button, CardBody, Checkbox, CloseButton, Container, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Icon, Input, InputGroup, InputLeftAddon, Spinner, Text, Textarea, VStack } from '@chakra-ui/react'
+import { Alert, AlertIcon, Box, Button, CardBody, Checkbox, CloseButton, Container, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, HStack, Icon, Input, InputGroup, InputLeftAddon, SimpleGrid, Spinner, Text, Textarea, useColorModeValue, VStack } from '@chakra-ui/react'
 import {
   Mail,
   Image,
@@ -23,11 +23,15 @@ import {
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
+import { motion } from 'framer-motion'
+
+const MotionButton = motion.create(Button)
 
 // Move component definitions outside to prevent re-creation on every render
 const FormSection = ({ title, icon, children, customization }) => {
   const headerBg = customization?.headerBg || "purple.500"
   const textColor = getContrastColor(headerBg)
+  const titleColor = useColorModeValue('gray.800', 'gray.200')
 
   return (
     <StandardCard border="none" boxShadow="sm" mb={4}>
@@ -45,7 +49,7 @@ const FormSection = ({ title, icon, children, customization }) => {
           >
             <Icon as={icon} boxSize={ICON_BOX_MD} />
           </Flex>
-          <Text as="h6" mb={0} fontWeight="semibold" color="gray.800">{title}</Text>
+          <Text as="h6" mb={0} fontWeight="semibold" color={titleColor}>{title}</Text>
         </Flex>
         {children}
       </CardBody>
@@ -65,33 +69,40 @@ const CustomFormInput = ({
   isInvalid,
   feedback,
   ...props
-}) => (
-  <FormControl mb={3} isRequired={required} isInvalid={isInvalid}>
-    <FormLabel htmlFor={name} fontWeight="medium" color="gray.800" mb={2}>
-      {label}
-      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
-    </FormLabel>
-    <InputGroup>
-      {icon && (
-        <InputLeftAddon bg="gray.50">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
-        </InputLeftAddon>
-      )}
-      <Input
-        type={type}
-        id={name}
-        name={name}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        isInvalid={isInvalid}
-        borderLeftWidth={icon ? 0 : undefined}
-        {...props}
-      />
-      {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
-    </InputGroup>
-  </FormControl>
-)
+}) => {
+  const labelColor = useColorModeValue('gray.800', 'gray.200')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const iconGray = useColorModeValue('gray.500', 'gray.400')
+
+  return (
+    <FormControl mb={3} isRequired={required} isInvalid={isInvalid}>
+      <FormLabel htmlFor={name} fontWeight="medium" color={labelColor} mb={2}>
+        {label}
+        {required && <Text as="span" color={textRed500} ml={1}>*</Text>}
+      </FormLabel>
+      <InputGroup>
+        {icon && (
+          <InputLeftAddon bg={bgGray50}>
+            <Icon as={icon} boxSize={ICON_BOX_MD} color={iconGray} />
+          </InputLeftAddon>
+        )}
+        <Input
+          type={type}
+          id={name}
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          isInvalid={isInvalid}
+          borderLeftWidth={icon ? 0 : undefined}
+          {...props}
+        />
+        {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
+      </InputGroup>
+    </FormControl>
+  )
+}
 
 const CustomFormTextarea = ({
   label,
@@ -105,33 +116,40 @@ const CustomFormTextarea = ({
   isInvalid,
   feedback,
   ...props
-}) => (
-  <FormControl mb={3} isRequired={required} isInvalid={isInvalid}>
-    <FormLabel htmlFor={name} fontWeight="medium" color="gray.800" mb={2}>
-      {label}
-      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
-    </FormLabel>
-    <InputGroup>
-      {icon && (
-        <InputLeftAddon bg="gray.50">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
-        </InputLeftAddon>
-      )}
-      <Textarea
-        id={name}
-        name={name}
-        rows={rows}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        isInvalid={isInvalid}
-        borderLeftWidth={icon ? 0 : undefined}
-        {...props}
-      />
-      {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
-    </InputGroup>
-  </FormControl>
-)
+}) => {
+  const labelColor = useColorModeValue('gray.800', 'gray.200')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const iconGray = useColorModeValue('gray.500', 'gray.400')
+
+  return (
+    <FormControl mb={3} isRequired={required} isInvalid={isInvalid}>
+      <FormLabel htmlFor={name} fontWeight="medium" color={labelColor} mb={2}>
+        {label}
+        {required && <Text as="span" color={textRed500} ml={1}>*</Text>}
+      </FormLabel>
+      <InputGroup>
+        {icon && (
+          <InputLeftAddon bg={bgGray50}>
+            <Icon as={icon} boxSize={ICON_BOX_MD} color={iconGray} />
+          </InputLeftAddon>
+        )}
+        <Textarea
+          id={name}
+          name={name}
+          rows={rows}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          isInvalid={isInvalid}
+          borderLeftWidth={icon ? 0 : undefined}
+          {...props}
+        />
+        {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
+      </InputGroup>
+    </FormControl>
+  )
+}
 
 const FileUploadCard = ({
   title,
@@ -143,13 +161,21 @@ const FileUploadCard = ({
   helpText,
 }) => {
   const { t } = useTranslation()
+  const labelColor = useColorModeValue('gray.800', 'gray.200')
+  const borderGray = useColorModeValue('gray.300', 'gray.600')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const iconGray = useColorModeValue('gray.400', 'gray.500')
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray600 = useColorModeValue('gray.600', 'gray.300')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
+  const textGreen600 = useColorModeValue('green.600', 'green.300')
 
   return (
     <Box>
-      <FormLabel fontWeight="medium" color="gray.800" mb={2}>{title}</FormLabel>
-      <Box border="2px dashed" borderColor="gray.300" borderRadius="lg" p={4} textAlign="center" position="relative" bg="gray.50">
-        <Icon as={icon} boxSize={12} color="gray.400" mb={2} />
-        <Text color="gray.500" mb={2}>{t('common.clickToBrowse')}</Text>
+      <FormLabel fontWeight="medium" color={labelColor} mb={2}>{title}</FormLabel>
+      <Box border="2px dashed" borderColor={borderGray} borderRadius="lg" p={4} textAlign="center" position="relative" bg={bgGray50}>
+        <Icon as={icon} boxSize={12} color={iconGray} mb={2} />
+        <Text color={textGray500} mb={2}>{t('common.clickToBrowse')}</Text>
       <Input
         type="file"
         accept={accept}
@@ -165,20 +191,20 @@ const FileUploadCard = ({
           cursor: 'pointer',
         }}
       />
-      {helpText && <Text fontSize="sm" color="gray.600" display="block">{helpText}</Text>}
+      {helpText && <Text fontSize="sm" color={textGray600} display="block">{helpText}</Text>}
       {selectedFiles && (
         <Box>
           {Array.isArray(selectedFiles) ? (
             selectedFiles.length === 0 ? (
-              <Text as="span" color="red.500" fontSize="sm">{t('common.noFilesSelected')}</Text>
+              <Text as="span" color={textRed500} fontSize="sm">{t('common.noFilesSelected')}</Text>
             ) : (
-              <Flex color="green.600" fontSize="sm" align="center" justify="center">
+              <Flex color={textGreen600} fontSize="sm" align="center" justify="center">
                 <CloudUpload size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
                 {selectedFiles.length} file(s) selected
               </Flex>
             )
           ) : (
-            <Flex color="green.600" fontSize="sm" align="center" justify="center">
+            <Flex color={textGreen600} fontSize="sm" align="center" justify="center">
               <Image size={ICON_SIZE_MD} />
               Image selected: {selectedFiles.name}
             </Flex>
@@ -198,6 +224,13 @@ const ManufacturerForm = () => {
 
   const headerBg = customization.headerBg || "purple.500"
   const textColor = getContrastColor(headerBg)
+
+  // Dark mode colors
+  const textBlue500 = useColorModeValue('blue.500', 'blue.300')
+  const textBlue600 = useColorModeValue('blue.600', 'blue.300')
+  const textGray600 = useColorModeValue('gray.600', 'gray.300')
+  const labelColor = useColorModeValue('gray.800', 'gray.200')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
 
   const [formData, setFormData] = useState({
     name: '',
@@ -368,7 +401,7 @@ const ManufacturerForm = () => {
     const multiplier = parseFloat(formData.costMultiplier)
 
     return (
-      <Text fontSize="sm" color="blue.500" mt={2} display="flex" alignItems="center">
+      <Text fontSize="sm" color={textBlue500} mt={2} display="flex" alignItems="center">
         <Info size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
         Example: If cabinet's MSRP is ${msrp.toFixed(2)} and you pay ${cost.toFixed(2)} to
         manufacturer, your multiplier would be {multiplier.toFixed(1)}
@@ -381,7 +414,7 @@ const ManufacturerForm = () => {
       maxW="full"
       p={2}
       m={2}
-      bg="gray.50"
+      bg={bgGray50}
       minH="100vh"
       className="manufacturer-form"
     >
@@ -447,10 +480,10 @@ const ManufacturerForm = () => {
       <form onSubmit={handleSubmit}>
         {/* Information Notice */}
         <StandardCard border="none" boxShadow="sm" mb={4} borderLeft={`4px solid ${headerBg}`}>
-          <CardBody py={3} px={4} bg="blue.50">
+          <CardBody py={3} px={4} bg={useColorModeValue("blue.50","blue.900")}>
             <HStack align="flex-start" spacing={4}>
               <Info size={ICON_SIZE_MD} style={{ color: "blue.500", marginTop: '0.25rem' }} />
-              <Text mb={0} color="blue.600">
+              <Text mb={0} color={textBlue600}>
                 <Text as="strong">{t('settings.manufacturers.create.infoTitle')}</Text>{' '}
                 {t('settings.manufacturers.create.infoText')}
               </Text>
@@ -549,7 +582,7 @@ const ManufacturerForm = () => {
                 value={formData.assembledEtaDays}
                 onChange={handleChange}
               />
-              <Text fontSize="sm" color="gray.600" ms={3}>
+              <Text fontSize="sm" color={textGray600} ms={3}>
                 {t(
                   'settings.manufacturers.help.assembledEta',
                   'Estimated delivery time for assembled cabinets',
@@ -569,7 +602,7 @@ const ManufacturerForm = () => {
                 value={formData.unassembledEtaDays}
                 onChange={handleChange}
               />
-              <Text fontSize="sm" color="gray.600" ms={3}>
+              <Text fontSize="sm" color={textGray600} ms={3}>
                 {t(
                   'settings.manufacturers.help.unassembledEta',
                   'Estimated delivery time for unassembled cabinets',
@@ -602,7 +635,7 @@ const ManufacturerForm = () => {
           customization={customization}
         >
           <Box>
-            <FormLabel fontWeight="medium" color="gray.800" mb={3}>
+            <FormLabel fontWeight="medium" color={labelColor} mb={3}>
               {t('settings.manufacturers.fields.priceInfoType')}
             </FormLabel>
             <VStack
@@ -693,7 +726,7 @@ const ManufacturerForm = () => {
                 feedback={validationErrors.costMultiplier}
               />
               {formData.costMultiplier && (
-                <Text fontSize="sm" color="blue.500" mt={2} display="flex" alignItems="center">
+                <Text fontSize="sm" color={textBlue500} mt={2} display="flex" alignItems="center">
                   <Info size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
                   {t('settings.manufacturers.example.multiplier', {
                     msrp: (200.0).toFixed(2),
@@ -760,7 +793,7 @@ const ManufacturerForm = () => {
               >
                 {t('common.cancel')}
               </Button>
-              <Button
+              <MotionButton
                 type="submit"
                 colorScheme="green"
                 size="lg"
@@ -784,7 +817,7 @@ const ManufacturerForm = () => {
                     {t('settings.manufacturers.create.submit')}
                   </>
                 )}
-              </Button>
+              </MotionButton>
             </Flex>
           </CardBody>
         </StandardCard>

@@ -48,7 +48,7 @@ const CustomFormInput = ({
     <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
       {label}
       {required && (
-        <Text as="span" color="red.500" ml={1}>
+        <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>
           *
         </Text>
       )}
@@ -95,7 +95,7 @@ const CustomFormSelect = ({
     <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
       {label}
       {required && (
-        <Text as="span" color="red.500" ml={1}>
+        <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>
           *
         </Text>
       )}

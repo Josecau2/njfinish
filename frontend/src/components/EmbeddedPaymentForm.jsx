@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { Box } from '@chakra-ui/react'
+import { Box, useColorModeValue } from '@chakra-ui/react'
 
 export default function EmbeddedPaymentForm({
   src,
@@ -11,6 +11,7 @@ export default function EmbeddedPaymentForm({
   className = '',
 }) {
   const frameRef = useRef(null)
+  const frameBg = useColorModeValue('white', 'gray.800')
 
   useEffect(() => {
     const onMessage = (event) => {
@@ -43,7 +44,7 @@ export default function EmbeddedPaymentForm({
         width="100%"
         border="0"
         borderRadius="lg"
-        bg="white"
+        bg={frameBg}
         boxShadow="sm"
         onLoad={onLoad}
       />

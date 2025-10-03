@@ -1,15 +1,18 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Box, Flex, HStack, Icon, Link } from '@chakra-ui/react'
+import { Box, Flex, HStack, Icon, Link, useColorModeValue } from '@chakra-ui/react'
 import { Code, Play } from 'lucide-react'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 const DocsExample = ({ children, href, tabContentClassName }) => {
   const documentationLink = href ? `https://coreui.io/react/docs/${href}` : null
+  const bgWhite = useColorModeValue('white', 'gray.800')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.700')
+  const borderGray = useColorModeValue('gray.100', 'gray.600')
 
   return (
-    <Box className="example" borderWidth="1px" borderRadius="md" overflow="hidden" bg="white" boxShadow="sm">
-      <Flex justify="flex-end" gap={4} px={4} py={3} bg="gray.50" borderBottomWidth="1px" borderColor="gray.100">
+    <Box className="example" borderWidth="1px" borderRadius="md" overflow="hidden" bg={bgWhite} boxShadow="sm">
+      <Flex justify="flex-end" gap={4} px={4} py={3} bg={bgGray50} borderBottomWidth="1px" borderColor={borderGray}>
         <Link
           minH="44px"
           py={2}
@@ -44,10 +47,10 @@ const DocsExample = ({ children, href, tabContentClassName }) => {
         )}
       </Flex>
       <Box
-        bg="white"
+        bg={bgWhite}
         p={4}
         borderTopWidth="1px"
-        borderColor="gray.100"
+        borderColor={borderGray}
         className={tabContentClassName || ''}
       >
         {children}

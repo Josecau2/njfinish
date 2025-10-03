@@ -16,6 +16,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/blur.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { Pin, PinOff, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import useNavItems from '../_nav'
 import AppSidebarNav from './AppSidebarNav'
 import {
@@ -31,6 +32,7 @@ import { ICON_BOX_MD } from '../constants/iconSizes'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
+  const { t } = useTranslation()
   const { sidebarShow, sidebarUnfoldable, sidebarPinned } = useSelector((state) => state.sidebar)
   const customization = useSelector((state) => state.customization)
   const authUser = useSelector((state) => state.auth?.user)
@@ -306,7 +308,7 @@ const AppSidebar = () => {
               fontSize="xs"
             >
               <Text fontSize="xs" className="pin-label">
-                {sidebarPinned ? 'Unpin' : 'Pin'}
+                {sidebarPinned ? t('nav.sidebar.unpin') : t('nav.sidebar.pin')}
               </Text>
             </Button>
           )}

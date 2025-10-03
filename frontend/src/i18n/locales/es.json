@@ -89,7 +89,8 @@
     "description": "Descripción",
     "items": "elementos",
     "saving": "Guardando...",
-    "uploading": "Subiendo..."
+    "uploading": "Subiendo...",
+    "toggleTheme": "Alternar modo de color"
   },
   "creating": "Creando...",
   "noDescription": "Sin descripción",
@@ -296,7 +297,17 @@
       "success": "Contraseña restablecida correctamente.",
       "error": "No se pudo restablecer la contraseña.",
       "requestError": "Error al restablecer la contraseña."
-    }
+    },
+    "benefits": "Beneficios",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "phone": "Teléfono",
+    "city": "Ciudad",
+    "state": "Estado",
+    "zip": "Código Postal",
+    "company": "Empresa",
+    "projectDescription": "Descripción del Proyecto",
+    "submitRequest": "Enviar Solicitud"
   },
   "nav": {
     "dashboard": "Panel",
@@ -334,7 +345,13 @@
     "uiCustomization": "Personalización de UI",
     "contactUs": "Contáctenos",
     "terms": "Términos y condiciones",
-    "paymentConfig": "Configuración de pagos"
+    "paymentConfig": "Configuración de pagos",
+    "sidebar": {
+      "pin": "Fijar",
+      "unpin": "Desfijar"
+    },
+    "closeSidebar": "Cerrar barra lateral",
+    "openSidebar": "Abrir barra lateral"
   },
   "termsModal": {
     "title": "Términos y Condiciones",
@@ -1329,6 +1346,7 @@
     }
   },
   "globalMods": {
+    "title": "Modificaciones globales",
     "modal": {
       "add": {
         "title": "Agregar modificación",
@@ -1417,6 +1435,127 @@
           "deletedMoved": "Categoría \"{{name}}\" eliminada y modificaciones movidas",
           "deleteFailed": "No se pudo eliminar la categoría"
         }
+      }
+    },
+    "ui": {
+      "buttons": {
+        "addModification": "Agregar modificación",
+        "gallery": "Galería",
+        "assignModification": "Asignar modificación"
+      },
+      "galleryHeader": "Galería de modificaciones"
+    },
+    "category": {
+      "createTitle": "Crear categoría",
+      "nameLabel": "Nombre de la categoría",
+      "namePlaceholder": "Ingresa nombre de la categoría",
+      "orderLabel": "Orden",
+      "actionLabel": "Acciones",
+      "addButton": "Agregar categoría",
+      "editTooltip": "Editar categoría",
+      "deleteTooltip": "Eliminar categoría (con opciones para plantillas)",
+      "imageLabel": "Imagen de la categoría",
+      "imageHint": "Sube una imagen para esta categoría",
+      "imageReady": "Imagen subida"
+    },
+    "template": {
+      "blueprint": "Plano base",
+      "editTooltip": "Editar plantilla y subir imagen de muestra",
+      "createHeader": "Crear plantilla",
+      "requiredFields": "Campos requeridos",
+      "nameLabel": "Nombre de la modificación",
+      "namePlaceholder": "Ingresa nombre de la modificación",
+      "nameRequired": "El nombre de la modificación es requerido",
+      "defaultPriceLabel": "Precio por defecto",
+      "defaultPricePlaceholder": "Ingresa precio por defecto",
+      "defaultPriceRequired": "El precio por defecto es requerido",
+      "categoryOptionalLabel": "Categoría (Opcional)",
+      "noSubmenu": "Sin submenú",
+      "statusLabel": "Estado",
+      "status": {
+        "draft": "Borrador",
+        "ready": "Lista"
+      },
+      "saveButton": "Guardar plantilla"
+    },
+    "builder": {
+      "title": "Campos guiados",
+      "heightSlider": "Control de altura",
+      "widthSlider": "Control de ancho",
+      "depthSlider": "Control de profundidad",
+      "min": "mín",
+      "max": "máx",
+      "step": "paso",
+      "sideSelector": {
+        "label": "Selector de lado",
+        "placeholder": "Opciones separadas por coma ej. I,D"
+      },
+      "quantityLimits": {
+        "label": "Límites de cantidad",
+        "minQty": "cant mín",
+        "maxQty": "cant máx"
+      },
+      "customerNotes": {
+        "label": "Notas del cliente",
+        "placeholder": "Marcador de posición de notas",
+        "showInRed": "Mostrar en rojo para el cliente"
+      },
+      "customerUpload": {
+        "label": "Subida de archivo del cliente",
+        "titlePlaceholder": "Título/razón de subida",
+        "required": "Requerido"
+      },
+      "modSampleImage": {
+        "label": "Imagen de muestra de modificación"
+      },
+      "descriptions": {
+        "internal": "Descripción interna",
+        "customer": "Descripción del cliente",
+        "installer": "Descripción del instalador"
+      },
+      "sampleUpload": {
+        "title": "Subida de imagen de muestra",
+        "uploadLabel": "Subir imagen de muestra",
+        "hint": "Sube una imagen para mostrar a los clientes cómo se ve esta modificación",
+        "previewAlt": "Vista previa de muestra",
+        "uploaded": "✓ Imagen subida: {{name}}",
+        "none": "No se ha subido imagen de muestra"
+      },
+      "fieldsConfig": {
+        "placeholder": "Configuración opcional de campos (JSON): {\"sliders\": {\"width\": {\"min\": 1, \"max\": 60, \"step\": 1}}}"
+      },
+      "errors": {
+        "invalidRangeStep": "Rango o paso inválido",
+        "invalidQtyRange": "Rango de cantidad inválido",
+        "invalidJson": "fieldsConfig debe ser JSON válido"
+      }
+    },
+    "assign": {
+      "header": "Asignar plantilla",
+      "selectTemplate": "Seleccionar plantilla",
+      "selectManufacturer": "Seleccionar fabricante",
+      "scope": {
+        "all": "Todos los ítems",
+        "style": "Estilo",
+        "type": "Tipo",
+        "item": "Ítem individual"
+      },
+      "target": {
+        "styleName": "Estilo objetivo (nombre)",
+        "typeName": "Tipo objetivo (nombre)",
+        "catalogItemId": "ID de ítem del catálogo",
+        "itemWithId": "Ítem con ID",
+        "all": "Todos"
+      },
+      "override": "Sobrescribir precio",
+      "assignButton": "Asignar",
+      "none": "Ninguno",
+      "table": {
+        "template": "Plantilla",
+        "scope": "Alcance",
+        "target": "Objetivo",
+        "price": "Precio",
+        "remove": "Remover"
       }
     }
   },
@@ -3561,5 +3700,82 @@
       "failed": "Fallido",
       "refunded": "Reembolsado"
     }
+  },
+  "manufacturer": {
+    "editTitle": "Editar Fabricante",
+    "name": "Nombre",
+    "email": "Correo Electrónico",
+    "multiplier": "Multiplicador"
+  },
+  "errors": {
+    "somethingWentWrong": "Algo salió mal",
+    "errorDetails": "Detalles del Error"
+  },
+  "states": {
+    "AL": "Alabama",
+    "AK": "Alaska",
+    "AZ": "Arizona",
+    "AR": "Arkansas",
+    "CA": "California",
+    "CO": "Colorado",
+    "CT": "Connecticut",
+    "DE": "Delaware",
+    "FL": "Florida",
+    "GA": "Georgia",
+    "HI": "Hawái",
+    "ID": "Idaho",
+    "IL": "Illinois",
+    "IN": "Indiana",
+    "IA": "Iowa",
+    "KS": "Kansas",
+    "KY": "Kentucky",
+    "LA": "Luisiana",
+    "ME": "Maine",
+    "MD": "Maryland",
+    "MA": "Massachusetts",
+    "MI": "Michigan",
+    "MN": "Minnesota",
+    "MS": "Misisipi",
+    "MO": "Misuri",
+    "MT": "Montana",
+    "NE": "Nebraska",
+    "NV": "Nevada",
+    "NH": "Nuevo Hampshire",
+    "NJ": "Nueva Jersey",
+    "NM": "Nuevo México",
+    "NY": "Nueva York",
+    "NC": "Carolina del Norte",
+    "ND": "Dakota del Norte",
+    "OH": "Ohio",
+    "OK": "Oklahoma",
+    "OR": "Oregón",
+    "PA": "Pensilvania",
+    "RI": "Rhode Island",
+    "SC": "Carolina del Sur",
+    "SD": "Dakota del Sur",
+    "TN": "Tennessee",
+    "TX": "Texas",
+    "UT": "Utah",
+    "VT": "Vermont",
+    "VA": "Virginia",
+    "WA": "Washington",
+    "WV": "Virginia Occidental",
+    "WI": "Wisconsin",
+    "WY": "Wyoming"
+  },
+  "languages": {
+    "english": "Inglés",
+    "spanish": "Español"
+  },
+  "pdf": {
+    "preview": "Vista previa del PDF",
+    "close": "Cerrar",
+    "zoomOut": "Alejar",
+    "zoomIn": "Acercar",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente"
+  },
+  "breadcrumb": {
+    "home": "Inicio"
   }
 }

@@ -117,6 +117,11 @@ const CatalogTableEdit = ({
   })
   const api_url = import.meta.env.VITE_API_URL
 
+  // Dark mode colors
+  const textRed500 = useColorModeValue("red.500", "red.300")
+  const textGreen500 = useColorModeValue("green.500", "green.300")
+  const borderGray400 = useColorModeValue("gray.400", "gray.600")
+
   // Map internal codes to localized short labels
   const codeToLabel = (code) => {
     switch (code) {
@@ -662,7 +667,7 @@ const CatalogTableEdit = ({
                             {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                               (!item.hingeSide || item.hingeSide === '-') && (
                                 <Box
-                                  color="red.500"
+                                  color={textRed500}
                                   mb={1}
                                   fontSize="12px"
                                   fontWeight="bold"
@@ -713,7 +718,7 @@ const CatalogTableEdit = ({
                             {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                               (!item.exposedSide || item.exposedSide === '-') && (
                                 <Box
-                                  color="red.500"
+                                  color={textRed500}
                                   mb={1}
                                   fontSize="12px"
                                   fontWeight="bold"
@@ -780,7 +785,7 @@ const CatalogTableEdit = ({
                             />
                             <Icon as={Trash}
                               cursor="pointer"
-                              color="red.500"
+                              color={textRed500}
                               onClick={() => handleDelete(idx)}
                             />
                           </>
@@ -898,7 +903,7 @@ const CatalogTableEdit = ({
                                                 borderRadius="6px"
                                                 bg={useColorModeValue("gray.50", "gray.800")}
                                                 border="1px dashed"
-                                                borderColor="gray.400"
+                                                borderColor={borderGray400}
                                               >
                                                 {details}
                                               </Text>
@@ -906,7 +911,7 @@ const CatalogTableEdit = ({
                                           })()}
                                         </Flex>
                                       </Td>
-                                      <Td color="green.500" fontWeight="medium">
+                                      <Td color={textGreen500} fontWeight="medium">
                                         {formatPrice(mod.price || 0)}
                                       </Td>
                                       <Td style={{ color: "gray.500" }}>
@@ -915,7 +920,7 @@ const CatalogTableEdit = ({
                                       <Td>
                                         {/* Modifications column (per-item summary) not applicable on sub-rows */}
                                       </Td>
-                                      <Td color="green.500" fontWeight="semibold">
+                                      <Td color={textGreen500} fontWeight="semibold">
                                         {formatPrice((mod.price || 0) * (mod.qty || 1))}
                                       </Td>
                                       <Td style={{ textAlign: 'center' }}>
@@ -923,9 +928,9 @@ const CatalogTableEdit = ({
                                           <Icon as={Trash}
                                             style={{
                                               cursor: 'pointer',
-                                              color: "red.500",
                                               fontSize: "14px",
                                             }}
+                                            color={textRed500}
                                             onClick={() =>
                                               handleDeleteModification(
                                                 idx,
@@ -1096,7 +1101,7 @@ const CatalogTableEdit = ({
                         {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                           (!item.hingeSide || item.hingeSide === '-') && (
                             <Box
-                              color="red.500"
+                              color={textRed500}
                               mb={2}
                               fontSize="12px"
                               fontWeight="bold"
@@ -1143,7 +1148,7 @@ const CatalogTableEdit = ({
                         {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                           (!item.exposedSide || item.exposedSide === '-') && (
                             <Box
-                              color="red.500"
+                              color={textRed500}
                               mb={2}
                               fontSize="12px"
                               fontWeight="bold"

@@ -1,7 +1,7 @@
 import StandardCard from './StandardCard'
 import { useEffect, useState, useCallback, useMemo, startTransition, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, AlertDescription, AlertIcon, Box, Button, Checkbox, CloseButton, Divider, Flex, Heading, HStack, Icon, IconButton, Image, Input, NumberInput, NumberInputField, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { Alert, AlertDescription, AlertIcon, Box, Button, Checkbox, CloseButton, Divider, Flex, Heading, HStack, Icon, IconButton, Image, Input, NumberInput, NumberInputField, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react';
 import { Settings, Home, Brush, ChevronLeft, ChevronRight, List } from 'lucide-react';
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 import ModificationBrowserModal from './model/ModificationBrowserModal'
@@ -76,6 +76,22 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const customization = useSelector((state) => state.customization);
     const isUserAdmin = isAdmin(authUser);
     const hideOtherStyles = readOnly && !isUserAdmin; // contractors in read-only should not see other styles
+
+    // Dark mode colors
+    const textGray500 = useColorModeValue('gray.500', 'gray.400')
+    const textGray600 = useColorModeValue('gray.600', 'gray.300')
+    const textBlue500 = useColorModeValue('blue.500', 'blue.300')
+    const textRed500 = useColorModeValue('red.500', 'red.300')
+    const textGreen500 = useColorModeValue('green.500', 'green.300')
+    const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+    const bgGray100 = useColorModeValue('gray.100', 'gray.700')
+    const bgGreen50 = useColorModeValue('green.50', 'green.900')
+    const bgGray300 = useColorModeValue('gray.300', 'gray.600')
+    const borderBlue = useColorModeValue('blue.500', 'blue.400')
+    const borderGray100 = useColorModeValue('gray.100', 'gray.700')
+    const borderGray200 = useColorModeValue('gray.200', 'gray.600')
+    const borderGray300 = useColorModeValue('gray.300', 'gray.600')
+
     // Cache style items per manufacturer/style to avoid refetching and re-render churn
     const styleItemsCacheRef = useRef(new Map()); // key: `${manufacturerId}:${styleId}` => catalogData array
     // Track last applied summary per version to avoid state update loops
@@ -1343,7 +1359,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                         h="240px"
                                         objectFit="contain"
                                         borderRadius="10px"
-                                        bg="gray.50"
+                                        bg={bgGray50}
                                         onError={(e) => {
                                             const fname = selectedStyleData.styleVariants?.[0]?.image;
                                             if (fname && !e.target.dataset.fallbackTried) {
@@ -1361,19 +1377,19 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                     flex="1"
                                 >
                                     <Flex align="center" fontSize="md">
-                                        <Icon as={Home} boxSize={ICON_BOX_MD} color="blue.500" mr={2} />
+                                        <Icon as={Home} boxSize={ICON_BOX_MD} color={textBlue500} mr={2} />
                                         <Heading size="sm" mb={0}>
                                             {selectVersion?.manufacturerData?.name}
                                         </Heading>
                                     </Flex>
-                                    <Flex align="center" fontSize="md" color="gray.600">
-                                        <Icon as={Brush} boxSize={ICON_BOX_MD} color="gray.500" mr={2} />
+                                    <Flex align="center" fontSize="md" color={textGray600}>
+                                        <Icon as={Brush} boxSize={ICON_BOX_MD} color={textGray500} mr={2} />
                                         <Heading size="sm" mb={0}>
                                             {selectedStyleData.style}
                                         </Heading>
                                     </Flex>
                                     <Flex align="center" fontSize="lg">
-                                        <Icon as={Settings} boxSize={ICON_BOX_MD} color="green.500" mr={2} />
+                                        <Icon as={Settings} boxSize={ICON_BOX_MD} color={textGreen500} mr={2} />
                                         <Text mr={2}>{t('proposalColumns.assembled')}</Text>
                                         <Switch
                                             size="md"
@@ -1395,7 +1411,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                 <Box
                                     className="style-separator"
                                     w="1px"
-                                    bg="gray.300"
+                                    bg={bgGray300}
                                     mx={4}
                                     display={{ base: 'none', lg: 'block' }}
                                 />
@@ -1488,17 +1504,17 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                         className={`other-styles-carousel-container ${isStylesCollapsed ? 'collapsed-view' : ''}`}
                                     >
                                         {collectionsLoading ? (
-                                            <Text py={4} color="gray.500">
+                                            <Text py={4} color={textGray500}>
                                                 {t('proposalUI.loadingStyles')}
                                             </Text>
                                         ) : stylesMeta.length === 0 ? (
-                                            <Text py={4} color="gray.500">
+                                            <Text py={4} color={textGray500}>
                                                 {t('proposalUI.noStyles')}
                                             </Text>
                                         ) : (
                                             <Box className="styles-carousel-container">
                                                 {filteredItems.length === 0 ? (
-                                                    <Text py={4} textAlign="center" color="gray.500" fontSize="sm">
+                                                    <Text py={4} textAlign="center" color={textGray500} fontSize="sm">
                                                         {t('proposalUI.styleComparison.selectItemsMessage')}
                                                     </Text>
                                                 ) : isStylesCollapsed ? (
@@ -1582,7 +1598,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                         h="220px"
                                                                         objectFit="contain"
                                                                         borderRadius="10px"
-                                                                        bg="gray.50"
+                                                                        bg={bgGray50}
                                                                         borderWidth={styleItem.id === selectedStyleData?.id ? '3px' : '1px'}
                                                                         borderStyle="solid"
                                                                         borderColor={styleItem.id === selectedStyleData?.id ? "blue.500" : "gray.100"}
@@ -1609,7 +1625,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                             {styleItem.style}
                                                                         </Text>
                                                                         {styleItem.id === selectedStyleData?.id && (
-                                                                            <Text fontSize="xs" color="blue.500" mb="0.25rem">
+                                                                            <Text fontSize="xs" color={textBlue500} mb="0.25rem">
                                                                                 {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
                                                                             </Text>
                                                                         )}
@@ -1734,7 +1750,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                     </Stack>
 
                     {customItemError && (
-                        <Text color="red.500" mt={1} mb={4}>
+                        <Text color={textRed500} mt={1} mb={4}>
                             {customItemError}
                         </Text>
                     )}
@@ -1776,7 +1792,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         {customItems && customItems.length > 0 && (
                             <Flex
                                 fontWeight="semibold"
-                                color="gray.600"
+                                color={textGray600}
                                 mb={2}
                                 px={2}
                                 fontSize="sm"
@@ -1796,7 +1812,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                 py={2}
                                 px={2}
                                 borderBottom="1px solid"
-                                borderColor="gray.200"
+                                borderColor={borderGray200}
                                 align="center"
                             >
                                 <Text flex="0 0 10%" textAlign="center">{idx + 1}</Text>
@@ -1819,7 +1835,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         ))}
 
                         {(!customItems || customItems.length === 0) && (
-                            <Text color="gray.500" textAlign="center" py={3} fontSize="sm">
+                            <Text color={textGray500} textAlign="center" py={3} fontSize="sm">
                                 No custom items added yet
                             </Text>
                         )}
@@ -1836,27 +1852,27 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         <Table variant="simple" size="sm">
                             <Tbody>
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.cabinets')}</Th>
+                                    <Th bg={bgGray50}>{t('proposalDoc.priceSummary.cabinets')}</Th>
                                     <Td textAlign="center" fontWeight="semibold">
                                         {`$${selectVersion?.summary?.cabinets || '0'}`}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.assembly')}</Th>
+                                    <Th bg={bgGray50}>{t('proposalDoc.priceSummary.assembly')}</Th>
                                     <Td textAlign="center">
                                         {`$${selectVersion?.summary?.assemblyFee || '0'}`}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.modifications')}</Th>
+                                    <Th bg={bgGray50}>{t('proposalDoc.priceSummary.modifications')}</Th>
                                     <Td textAlign="center">
                                         {`$${selectVersion?.summary?.modificationsCost || '0'}`}
                                     </Td>
                                 </Tr>
 
-                                <Tr bg="gray.100">
+                                <Tr bg={bgGray100}>
                                     <Th>{t('proposalDoc.priceSummary.styleTotal')}</Th>
                                     <Td textAlign="center" fontWeight="semibold">
                                         {`$${selectVersion?.summary?.styleTotal || '0'}`}
@@ -1865,7 +1881,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
                                 {isUserAdmin && (
                                     <Tr>
-                                        <Th bg="gray.50">{t('proposalUI.summary.discountPct')}</Th>
+                                        <Th bg={bgGray50}>{t('proposalUI.summary.discountPct')}</Th>
                                         <Td textAlign="center">
                                             <NumberInput
                                                 value={selectVersion?.summary?.discountPercent || 0}
@@ -1895,34 +1911,34 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                 )}
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.total')}</Th>
+                                    <Th bg={bgGray50}>{t('proposalDoc.priceSummary.total')}</Th>
                                     <Td textAlign="center">
                                         {`$${selectVersion?.summary?.total || '0'}`}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('settings.manufacturers.edit.deliveryFee')}</Th>
+                                    <Th bg={bgGray50}>{t('settings.manufacturers.edit.deliveryFee')}</Th>
                                     <Td textAlign="center">
                                         {`$${versionItems.length > 0 ? (selectVersion?.summary?.deliveryFee || '0') : '0'}`}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalUI.summary.taxRate')}</Th>
+                                    <Th bg={bgGray50}>{t('proposalUI.summary.taxRate')}</Th>
                                     <Td textAlign="center">
                                         {`${selectVersion?.summary?.taxRate || '0'}%`}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
-                                    <Th bg="gray.50">{t('proposalDoc.priceSummary.tax')}</Th>
+                                    <Th bg={bgGray50}>{t('proposalDoc.priceSummary.tax')}</Th>
                                     <Td textAlign="center">
                                         {`$${selectVersion?.summary?.taxAmount || '0'}`}
                                     </Td>
                                 </Tr>
 
-                                <Tr bg="green.50">
+                                <Tr bg={bgGreen50}>
                                     <Th>{t('proposalDoc.priceSummary.grandTotal')}</Th>
                                     <Td textAlign="center" fontWeight="bold">
                                         {`$${selectVersion?.summary?.grandTotal || '0'}`}

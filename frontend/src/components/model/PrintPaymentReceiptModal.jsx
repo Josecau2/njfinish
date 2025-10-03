@@ -17,6 +17,7 @@ import {
   HStack,
   Text,
   useToast,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import PageHeader from '../PageHeader'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -228,7 +229,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
               </Alert>
             )}
 
-            <Stack spacing={4} fontSize="sm" bg="gray.50" borderRadius="md" p={4} borderWidth="1px" borderColor="gray.100">
+            <Stack spacing={4} fontSize="sm" bg={useColorModeValue("gray.50","gray.800")} borderRadius="md" p={4} borderWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
               <Text>
                 <Text as="span" fontWeight="semibold">
                   {t('paymentReceipt.modal.paymentAmount', 'Amount')}:
@@ -265,7 +266,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
               )}
             </Stack>
 
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize="sm" color={useColorModeValue("gray.600","gray.300")}>
               {t('paymentReceipt.modal.notice', 'The receipt will include branding, payment summary, and signature-ready footer.')}
             </Text>
           </Stack>

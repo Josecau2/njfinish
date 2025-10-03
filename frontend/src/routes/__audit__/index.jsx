@@ -13,6 +13,7 @@ import {
   HStack,
   Divider,
   Badge,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { RefreshCcw, ExternalLink } from 'lucide-react'
 
@@ -106,7 +107,7 @@ function ManifestHeader({ title, description, actions }) {
         {title}
       </Heading>
       {description ? (
-        <Text color="gray.600" mb={actions?.length ? 4 : 0}>
+        <Text color={useColorModeValue("gray.600","gray.300")} mb={actions?.length ? 4 : 0}>
           {description}
         </Text>
       ) : null}
@@ -229,7 +230,7 @@ function ModalsPlayground() {
             </Button>
           ))}
           {manifest.modals.length === 0 && (
-            <Text color="gray.500">No modals defined in manifest.json</Text>
+            <Text color={useColorModeValue("gray.500","gray.400")}>No modals defined in manifest.json</Text>
           )}
         </Stack>
       </Box>
@@ -250,7 +251,7 @@ function ModalsPlayground() {
       <Button onClick={() => openModal(modalName)} colorScheme="brand" mb={4}>
         Re-open {modalName}
       </Button>
-      {loadError && <Text color="red.500">{loadError}</Text>}
+      {loadError && <Text color={useColorModeValue("red.500","red.300")}>{loadError}</Text>}
       {ModalComponent && (
         <ModalComponent
           isOpen={isOpen}
@@ -278,11 +279,11 @@ function ComponentsGrid() {
             <Heading size="sm" mb={2}>
               {name}
             </Heading>
-            <Text fontSize="sm" color="gray.600">
+            <Text fontSize="sm" color={useColorModeValue("gray.600","gray.300")}>
               Add a bespoke preview if this component needs runtime props.
             </Text>
             {!resolveModuleImporter(name) && (
-              <Text mt={3} fontSize="xs" color="red.500">
+              <Text mt={3} fontSize="xs" color={useColorModeValue("red.500","red.300")}>
                 Component module not found in src/components (check manifest entry)
               </Text>
             )}
@@ -293,7 +294,7 @@ function ComponentsGrid() {
             <Heading size="sm" mb={2}>
               No shared components found
             </Heading>
-            <Text color="gray.600">
+            <Text color={useColorModeValue("gray.600","gray.300")}>
               Populate AUDIT/manifest.json via the generator script.
             </Text>
           </Box>
@@ -362,7 +363,7 @@ function ButtonVariants() {
           )
         })}
         <Divider />
-        <Text fontSize="sm" color="gray.600">
+        <Text fontSize="sm" color={useColorModeValue("gray.600","gray.300")}>
           Need bespoke fixtures? Extend BUTTON_VARIANT_PRESETS in <code>src/routes/__audit__/index.jsx</code>.
         </Text>
       </VStack>

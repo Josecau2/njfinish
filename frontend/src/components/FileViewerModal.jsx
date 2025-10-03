@@ -12,6 +12,7 @@ import {
   Text,
   VStack,
   HStack,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { Download, File, Link2Off } from '@/icons-lucide'
 import axiosInstance from '../helpers/axiosInstance'
@@ -243,7 +244,7 @@ export default function FileViewerModal({
       if (!textContent) {
         return (
           <Center h={FALLBACK_HEIGHT}>
-            <Spinner color="blue.500" />
+            <Spinner color={useColorModeValue("blue.500","blue.300")} />
           </Center>
         )
       }
@@ -278,7 +279,7 @@ export default function FileViewerModal({
       if (!xmlContent) {
         return (
           <Center h={FALLBACK_HEIGHT}>
-            <Spinner color="blue.500" />
+            <Spinner color={useColorModeValue("blue.500","blue.300")} />
           </Center>
         )
       }
@@ -316,7 +317,7 @@ export default function FileViewerModal({
 
     return (
       <VStack spacing={4} py={4} textAlign="center">
-        <Icon as={File} boxSize={12} color="gray.400" />
+        <Icon as={File} boxSize={12} color={useColorModeValue("gray.400","gray.500")} />
         <Text>Preview is not available for this file type.</Text>
         <Button colorScheme="brand" onClick={handleDownload} leftIcon={<Icon as={Download} />}>
           Download

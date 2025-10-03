@@ -1,6 +1,6 @@
 import StandardCard from '../StandardCard'
 import React, { useMemo, useState } from 'react'
-import { Badge, Box, Button, CardBody, Checkbox, FormControl, FormLabel, HStack, Input, SimpleGrid, Stack, Text, Textarea } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, Checkbox, FormControl, FormLabel, HStack, Input, SimpleGrid, Stack, Text, Textarea, useColorModeValue } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
@@ -118,7 +118,7 @@ const ContactInfoEditor = ({ info, onSave }) => {
         />
 
         <Box as="form" mt={4} onSubmit={handleSave}>
-          <Box bg="gray.50" borderRadius="md" px={4} py={3} mb={6} borderWidth="1px" borderColor="gray.100">
+          <Box bg={useColorModeValue("gray.50","gray.800")} borderRadius="md" px={4} py={3} mb={6} borderWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
             <HStack spacing={4} mb={3}>
               <Badge colorScheme="brand">{t('contact.editor.visibilityBadge', 'Settings')}</Badge>
               <Text fontWeight="semibold">{t('contact.editor.visibilitySettings')}</Text>

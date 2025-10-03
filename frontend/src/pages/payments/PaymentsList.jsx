@@ -88,6 +88,11 @@ const PaymentsList = ({ isContractor }) => {
     defaultValues: { method: 'cash', checkNumber: '' }
   })
   const [pendingOrderId, setPendingOrderId] = useState(null)
+
+  // Dark mode colors
+  const iconGray = useColorModeValue('gray.500', 'gray.400')
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray600 = useColorModeValue('gray.600', 'gray.300')
   const [pendingPaymentId, setPendingPaymentId] = useState(null)
 
   const payments = paymentsData?.pages?.flatMap((p) => p.data) || []
@@ -302,7 +307,7 @@ const PaymentsList = ({ isContractor }) => {
         <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
           <InputGroup>
             <InputLeftElement pointerEvents="none">
-              <Icon as={Search} boxSize={ICON_BOX_MD} color="gray.500" />
+              <Icon as={Search} boxSize={ICON_BOX_MD} color={textGray500} />
             </InputLeftElement>
             <Input
               type="search"
@@ -319,7 +324,7 @@ const PaymentsList = ({ isContractor }) => {
               <Text display={{ base: 'none', lg: 'inline' }}>{t('payments.create.button', 'Create Payment')}</Text>
             </Button>
           )}
-          <Text fontSize="sm" color="gray.500" aria-live="polite" aria-atomic="true">
+          <Text fontSize="sm" color={textGray500} aria-live="polite" aria-atomic="true">
             {t('payments.showingCount', { count: filtered.length, total: payments.length })}
           </Text>
         </HStack>
@@ -348,7 +353,7 @@ const PaymentsList = ({ isContractor }) => {
                   <VStack spacing={4}>
                     <CreditCardIcon size={48} />
                     <Text fontSize="md">{t('payments.empty.title', 'No payments found')}</Text>
-                    <Text fontSize="sm" color="gray.500">{t('payments.empty.subtitle', 'Payments will appear here when created')}</Text>
+                    <Text fontSize="sm" color={textGray500}>{t('payments.empty.subtitle', 'Payments will appear here when created')}</Text>
                   </VStack>
                 </Td>
               </Tr>
@@ -371,11 +376,11 @@ const PaymentsList = ({ isContractor }) => {
                       <VStack align="start" spacing={4}>
                         <Badge colorScheme={getStatusColorScheme(payment?.status)} borderRadius="full">{getStatusLabel(payment?.status)}</Badge>
                         {payment?.status === 'completed' && payment?.paidAt ? (
-                          <Text fontSize="xs" color="gray.500">{t('payments.appliedOn', 'Applied on')} {new Date(payment?.paidAt).toLocaleDateString()}</Text>
+                          <Text fontSize="xs" color={textGray500}>{t('payments.appliedOn', 'Applied on')} {new Date(payment?.paidAt).toLocaleDateString()}</Text>
                         ) : null}
                       </VStack>
                     </Td>
-                    <Td color="gray.500">{payment?.transactionId || t('common.na')}</Td>
+                    <Td color={textGray500}>{payment?.transactionId || t('common.na')}</Td>
                     <Td>
                       <HStack spacing={4}>
                         {canPayOnline ? (
@@ -413,7 +418,7 @@ const PaymentsList = ({ isContractor }) => {
           <VStack spacing={4} textAlign="center" py={5}>
             <CreditCardIcon size={48} />
             <Text fontSize="md">{t('payments.empty.title', 'No payments found')}</Text>
-            <Text fontSize="sm" color="gray.500">{t('payments.empty.subtitle', 'Payments will appear here when created')}</Text>
+            <Text fontSize="sm" color={textGray500}>{t('payments.empty.subtitle', 'Payments will appear here when created')}</Text>
           </VStack>
         ) : (
           filtered.map((payment) => {
@@ -426,13 +431,13 @@ const PaymentsList = ({ isContractor }) => {
                       <Badge colorScheme={getStatusColorScheme(payment?.status)} borderRadius="full">{getStatusLabel(payment?.status)}</Badge>
                     </Flex>
                     <VStack align="stretch" spacing={4}>
-                      <Text fontSize="sm" color="gray.600">{payment?.createdAt ? new Date(payment.createdAt).toLocaleDateString() : 'N/A'}</Text>
+                      <Text fontSize="sm" color={textGray600}>{payment?.createdAt ? new Date(payment.createdAt).toLocaleDateString() : 'N/A'}</Text>
                       <Flex justify="space-between" align="center">
                         <Text fontSize="sm">{formatPaymentAmount(payment)} {renderGatewayBadge(payment?.gateway)}</Text>
-                        <Text fontSize="sm" color="gray.600">{t('payments.mobile.orderNumber', 'Order #{{id}}', { id: getDisplayOrderNumber(payment) })}</Text>
+                        <Text fontSize="sm" color={textGray600}>{t('payments.mobile.orderNumber', 'Order #{{id}}', { id: getDisplayOrderNumber(payment) })}</Text>
                       </Flex>
                       {payment?.transactionId ? (
-                        <Text fontSize="sm" color="gray.500">{t('payments.headers.transaction', 'Transaction ID')}: {payment?.transactionId}</Text>
+                        <Text fontSize="sm" color={textGray500}>{t('payments.headers.transaction', 'Transaction ID')}: {payment?.transactionId}</Text>
                       ) : null}
                     </VStack>
                     {canPayOnline ? (

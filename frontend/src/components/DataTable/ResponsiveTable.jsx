@@ -1,5 +1,5 @@
 import StandardCard from '../StandardCard'
-import { useBreakpointValue, Stack, Text, Box } from '@chakra-ui/react'
+import { useBreakpointValue, Stack, Text, Box, useColorModeValue } from '@chakra-ui/react'
 import { DataTable } from './DataTable'
 import { MobileListCard } from '../StandardCard'
 
@@ -25,7 +25,7 @@ export function ResponsiveTable({ columns, data, onRowClick, renderCell }) {
           >
             {columns.map((col) => (
               <Box key={col.key} mb={2}>
-                <Text fontSize="xs" color="gray.500" fontWeight="600" mb={1}>
+                <Text fontSize="xs" color={useColorModeValue("gray.500","gray.400")} fontWeight="600" mb={1}>
                   {col.label}
                 </Text>
                 <Text fontSize="sm">

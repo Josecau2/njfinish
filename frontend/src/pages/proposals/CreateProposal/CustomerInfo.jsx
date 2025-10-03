@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Box, Button, CardBody, Checkbox, Collapse, Divider, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Icon, Input, SimpleGrid, Stack, Text, Textarea, useToast } from '@chakra-ui/react'
+import { Box, Button, CardBody, Checkbox, Collapse, Divider, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Icon, Input, Select, SimpleGrid, Stack, Text, Textarea, useToast, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { useForm, Controller } from 'react-hook-form'
-import CreatableSelect from 'react-select/creatable'
 import { motion, useReducedMotion } from 'framer-motion'
 import axiosInstance from '../../../helpers/axiosInstance'
 import { hasPermission } from '../../../helpers/permissions'
@@ -15,36 +14,6 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const MotionButton = motion.create(Button)
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
-const buildSelectStyles = (hasError) => ({
-  control: (provided, state) => ({
-    ...provided,
-    minHeight: '44px',
-    borderColor: hasError ? 'red.500' : state.isFocused ? 'blue.500' : provided.borderColor,
-    boxShadow: 'none',
-    '&:hover': {
-      bordercolor: "blue.500",
-    },
-  }),
-  menu: (provided) => ({
-    ...provided,
-    zIndex: 20,
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    fontSize: "md",
-    backgroundColor: state.isFocused ? 'blue.50' : provided.backgroundColor,
-    color: state.isFocused ? 'gray.800' : provided.color,
-  }),
-  valueContainer: (provided) => ({
-    ...provided,
-    padding: '0.25rem 0.75rem',
-  }),
-  indicatorsContainer: (provided) => ({
-    ...provided,
-    paddingRight: '0.5rem',
-  }),
-})
 
 const CustomerInfoStep = ({
   formData,
@@ -308,7 +277,9 @@ const CustomerInfoStep = ({
   }
 
   const onSubmit = (values) => {
+    console.log('CustomerInfo onSubmit called with:', values)
     updateFormData(values)
+    console.log('About to call nextStep()')
     nextStep()
   }
 
@@ -318,10 +289,12 @@ const CustomerInfoStep = ({
     <Box w="full" my={4}>
       <StandardCard shadow="md" borderRadius="xl">
         <CardBody p={{ base: 4, md: 6 }}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit, (errors) => {
+            console.log('Form validation errors:', errors)
+          })}>
             <Stack spacing={6}>
               <Flex justify="space-between" align={{ base: 'stretch', md: 'center' }} flexDir={{ base: 'column', md: 'row' }} gap={4}>
-                <Heading size="md" color="gray.800">
+                <Heading size="md" color={useColorModeValue("gray.800","gray.200")}>
                   {t('proposals.create.customerInfo.title')}
                 </Heading>
                 {!hideBack && (
@@ -342,37 +315,15 @@ const CustomerInfoStep = ({
                   <FormLabel htmlFor="customerName">
                     {t('proposals.create.customerInfo.customerName')}
                   </FormLabel>
-                  <Controller
-                    name="customerName"
-                    control={control}
-                    rules={{ required: t('form.validation.required', 'This field is required') }}
-                    render={({ field }) => (
-                      <CreatableSelect
-                        inputId="customerName"
-                        styles={buildSelectStyles(!!errors.customerName)}
-                        isClearable
-                        isLoading={usersLoading || isCreatingCustomer}
-                        isDisabled={isCreatingCustomer}
-                        options={customerOptions}
-                        value={getCustomerOption(field.value)}
-                        onChange={(option) => {
-                          const name = option?.value || ''
-                          const email = option?.data?.email || getValues('customerEmail') || ''
-                          const customerId = option?.data?.id || ''
-                          field.onChange(name)
-                          setValue('customerEmail', email, { shouldValidate: true })
-                          setValue('customerId', customerId)
-                          updateFormData({
-                            customerName: name,
-                            customerEmail: email,
-                            customerId,
-                          })
-                        }}
-                        onCreateOption={handleCreateCustomer}
-                        onBlur={field.onBlur}
-                        placeholder={t('proposals.create.customerInfo.customerNamePlaceholder')}
-                      />
-                    )}
+                  <Input
+                    id="customerName"
+                    placeholder={t('proposals.create.customerInfo.customerNamePlaceholder')}
+                    {...register('customerName', {
+                      required: t('form.validation.required', 'This field is required'),
+                      onChange: (event) => {
+                        updateFormData({ customerName: event.target.value })
+                      },
+                    })}
                   />
                   <FormErrorMessage>{errors.customerName && errors.customerName.message}</FormErrorMessage>
                 </FormControl>
@@ -405,40 +356,22 @@ const CustomerInfoStep = ({
                     <FormLabel htmlFor="designer">
                       {t('proposals.create.customerInfo.designer')}
                     </FormLabel>
-                    <Controller
-                      name="designer"
-                      control={control}
-                      rules={{ required: t('form.validation.required', 'This field is required') }}
-                      render={({ field }) => (
-                        <CreatableSelect
-                          inputId="designer"
-                          styles={buildSelectStyles(!!errors.designer)}
-                          isClearable
-                          isDisabled={isCreatingDesigner}
-                          isLoading={isCreatingDesigner}
-                          options={designerOptions}
-                          value={getSimpleOption(field.value, designerOptions)}
-                          onChange={(option) => {
-                            const id = option?.value || ''
-                            field.onChange(id)
-                            updateFormData({ designer: id })
-                          }}
-                          onCreateOption={async (inputValue) => {
-                            const newDesigner = await createNewDesigner(inputValue)
-                            if (newDesigner) {
-                              setValue('designer', newDesigner.id, { shouldValidate: true })
-                              updateFormData({ designer: newDesigner.id })
-                            }
-                          }}
-                          onBlur={field.onBlur}
-                          placeholder={
-                            isCreatingDesigner
-                              ? t('proposals.create.customerInfo.creatingDesigner', 'Creating designer...')
-                              : t('proposals.create.customerInfo.designerPlaceholder', 'Select or create a designer')
-                          }
-                        />
-                      )}
-                    />
+                    <Select
+                      id="designer"
+                      placeholder={t('proposals.create.customerInfo.designerPlaceholder', 'Select a designer')}
+                      {...register('designer', {
+                        required: t('form.validation.required', 'This field is required'),
+                        onChange: (event) => {
+                          updateFormData({ designer: event.target.value })
+                        },
+                      })}
+                    >
+                      {designerOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </Select>
                     <FormErrorMessage>{errors.designer && errors.designer.message}</FormErrorMessage>
                   </FormControl>
                 )}
@@ -588,34 +521,28 @@ const CustomerInfoStep = ({
                 <Collapse in={showMoreOptions} animateOpacity={!prefersReducedMotion} id="customer-more-options">
                   <Stack spacing={6} mt={4}>
                     <Divider />
-                    <Text fontSize="lg" fontWeight="semibold" color="gray.700">
+                    <Text fontSize="lg" fontWeight="semibold" color={useColorModeValue("gray.700","gray.200")}>
                       {t('proposals.create.customerInfo.additionalInfo')}
                     </Text>
 
                     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-                      <FormControl isInvalid={!!errors.location} isRequired>
+                      <FormControl isInvalid={!!errors.location}>
                         <FormLabel htmlFor="location">{t('profile.location')}</FormLabel>
-                        <Controller
-                          name="location"
-                          control={control}
-                          rules={{ required: t('form.validation.required', 'This field is required') }}
-                          render={({ field }) => (
-                            <CreatableSelect
-                              inputId="location"
-                              styles={buildSelectStyles(!!errors.location)}
-                              isClearable
-                              options={locationOptions}
-                              value={getSimpleOption(field.value, locationOptions)}
-                              onChange={(option) => {
-                                const value = option?.value || ''
-                                field.onChange(value)
-                                updateFormData({ location: value })
-                              }}
-                              onBlur={field.onBlur}
-                              placeholder={t('proposals.create.customerInfo.locationPlaceholder', 'Select a location')}
-                            />
-                          )}
-                        />
+                        <Select
+                          id="location"
+                          placeholder={t('proposals.create.customerInfo.locationPlaceholder', 'Select a location')}
+                          {...register('location', {
+                            onChange: (event) => {
+                              updateFormData({ location: event.target.value })
+                            },
+                          })}
+                        >
+                          {locationOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Select>
                         <FormErrorMessage>{errors.location && errors.location.message}</FormErrorMessage>
                       </FormControl>
 
@@ -623,26 +550,21 @@ const CustomerInfoStep = ({
                         <FormLabel htmlFor="salesRep">
                           {t('proposals.create.customerInfo.salesRep')}
                         </FormLabel>
-                        <Controller
-                          name="salesRep"
-                          control={control}
-                          render={({ field }) => (
-                            <CreatableSelect
-                              inputId="salesRep"
-                              styles={buildSelectStyles(false)}
-                              isClearable
-                              options={designerOptions}
-                              value={getSimpleOption(field.value, designerOptions)}
-                              onChange={(option) => {
-                                const value = option?.value || ''
-                                field.onChange(value)
-                                updateFormData({ salesRep: value })
-                              }}
-                              onBlur={field.onBlur}
-                              placeholder={t('proposals.create.customerInfo.salesRepPlaceholder', 'Select a sales representative')}
-                            />
-                          )}
-                        />
+                        <Select
+                          id="salesRep"
+                          placeholder={t('proposals.create.customerInfo.salesRepPlaceholder', 'Select a sales representative')}
+                          {...register('salesRep', {
+                            onChange: (event) => {
+                              updateFormData({ salesRep: event.target.value })
+                            },
+                          })}
+                        >
+                          {designerOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Select>
                         <FormErrorMessage>{errors.salesRep && errors.salesRep.message}</FormErrorMessage>
                       </FormControl>
                     </SimpleGrid>
@@ -650,48 +572,40 @@ const CustomerInfoStep = ({
                     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                       <FormControl>
                         <FormLabel htmlFor="leadSource">{t('form.labels.leadSource')}</FormLabel>
-                        <Controller
-                          name="leadSource"
-                          control={control}
-                          render={({ field }) => (
-                            <CreatableSelect
-                              inputId="leadSource"
-                              styles={buildSelectStyles(false)}
-                              isClearable
-                              options={leadSourceOptions}
-                              value={getSimpleOption(field.value, leadSourceOptions)}
-                              onChange={(option) => {
-                                const value = option?.value || ''
-                                field.onChange(value)
-                                updateFormData({ leadSource: value })
-                              }}
-                              onBlur={field.onBlur}
-                            />
-                          )}
-                        />
+                        <Select
+                          id="leadSource"
+                          placeholder={t('form.labels.leadSourcePlaceholder', 'Select lead source')}
+                          {...register('leadSource', {
+                            onChange: (event) => {
+                              updateFormData({ leadSource: event.target.value })
+                            },
+                          })}
+                        >
+                          {leadSourceOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Select>
                       </FormControl>
 
                       <FormControl>
                         <FormLabel htmlFor="type">{t('proposals.create.customerInfo.type')}</FormLabel>
-                        <Controller
-                          name="type"
-                          control={control}
-                          render={({ field }) => (
-                            <CreatableSelect
-                              inputId="type"
-                              styles={buildSelectStyles(false)}
-                              isClearable
-                              options={typeOptions}
-                              value={getSimpleOption(field.value, typeOptions)}
-                              onChange={(option) => {
-                                const value = option?.value || ''
-                                field.onChange(value)
-                                updateFormData({ type: value })
-                              }}
-                              onBlur={field.onBlur}
-                            />
-                          )}
-                        />
+                        <Select
+                          id="type"
+                          placeholder={t('proposals.create.customerInfo.typePlaceholder', 'Select type')}
+                          {...register('type', {
+                            onChange: (event) => {
+                              updateFormData({ type: event.target.value })
+                            },
+                          })}
+                        >
+                          {typeOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Select>
                       </FormControl>
                     </SimpleGrid>
                   </Stack>

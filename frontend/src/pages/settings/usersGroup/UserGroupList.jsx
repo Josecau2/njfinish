@@ -22,6 +22,10 @@ const UserGroupList = () => {
   const userGroups = allGroups
   const [updatingModule, setUpdatingModule] = useState(null)
 
+  // Dark mode colors
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray600 = useColorModeValue('gray.600', 'gray.300')
+
   useEffect(() => {
     dispatch(fetchUsers())
   }, [dispatch])
@@ -125,7 +129,7 @@ const UserGroupList = () => {
       <PageContainer>
         <VStack spacing={4} justify="center" minH="200px">
           <Spinner size="lg" color="brand.500" />
-          <Text color="gray.500">{t('common.loadingUserGroups')}</Text>
+          <Text color={textGray500}>{t('common.loadingUserGroups')}</Text>
         </VStack>
       </PageContainer>
     )
@@ -190,7 +194,7 @@ const UserGroupList = () => {
               <Tbody>
                 {userGroups.length === 0 ? (
                   <Tr>
-                    <Td colSpan={7} textAlign="center" py={8} color="gray.500">
+                    <Td colSpan={7} textAlign="center" py={8} color={textGray500}>
                       {t('settings.userGroups.empty')}
                     </Td>
                   </Tr>
@@ -201,7 +205,7 @@ const UserGroupList = () => {
                         <VStack align="start" spacing={0}>
                           <Text fontWeight="semibold">{group.name || 'Unnamed Group'}</Text>
                           {!group.name && (
-                            <Text fontSize="sm" color="gray.500">ID: {group.id}</Text>
+                            <Text fontSize="sm" color={textGray500}>ID: {group.id}</Text>
                           )}
                         </VStack>
                       </Td>
@@ -243,7 +247,7 @@ const UserGroupList = () => {
           {/* Mobile card list */}
           <VStack display={{ base: 'flex', md: 'none' }} spacing={4} align="stretch">
             {userGroups.length === 0 ? (
-              <Text textAlign="center" color="gray.500" py={8}>
+              <Text textAlign="center" color={textGray500} py={8}>
                 {t('settings.userGroups.empty')}
               </Text>
             ) : (
@@ -254,7 +258,7 @@ const UserGroupList = () => {
                       <VStack align="start" spacing={0}>
                         <Text fontWeight="semibold">{group.name || 'Unnamed Group'}</Text>
                         {!group.name && (
-                          <Text fontSize="sm" color="gray.500">ID: {group.id}</Text>
+                          <Text fontSize="sm" color={textGray500}>ID: {group.id}</Text>
                         )}
                       </VStack>
                       <Badge
@@ -271,7 +275,7 @@ const UserGroupList = () => {
                     <Grid templateColumns="1fr 1fr" gap={4} mb={4}>
                       <GridItem>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">
+                          <Text fontSize="sm" color={textGray600}>
                             {t('contractorsAdmin.modules.dashboard')}
                           </Text>
                           {getModuleToggle(group, 'dashboard')}
@@ -279,7 +283,7 @@ const UserGroupList = () => {
                       </GridItem>
                       <GridItem>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">
+                          <Text fontSize="sm" color={textGray600}>
                             {t('contractorsAdmin.modules.proposals')}
                           </Text>
                           {getModuleToggle(group, 'proposals')}
@@ -287,7 +291,7 @@ const UserGroupList = () => {
                       </GridItem>
                       <GridItem>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">
+                          <Text fontSize="sm" color={textGray600}>
                             {t('contractorsAdmin.modules.customers')}
                           </Text>
                           {getModuleToggle(group, 'customers')}
@@ -295,7 +299,7 @@ const UserGroupList = () => {
                       </GridItem>
                       <GridItem>
                         <HStack justify="space-between">
-                          <Text fontSize="sm" color="gray.600">
+                          <Text fontSize="sm" color={textGray600}>
                             {t('contractorsAdmin.modules.resources')}
                           </Text>
                           {getModuleToggle(group, 'resources')}

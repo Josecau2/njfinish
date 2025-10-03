@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Text, Icon, VStack } from '@chakra-ui/react'
+import { Box, Text, Icon, VStack, useColorModeValue } from '@chakra-ui/react'
 import { Search } from 'lucide-react'
 
 const EmptyState = ({
@@ -17,7 +17,7 @@ const EmptyState = ({
       <Text fontWeight="semibold" aria-atomic="true">
         {title}
       </Text>
-      <Text color="gray.500" fontSize="sm">
+      <Text color={useColorModeValue("gray.500","gray.400")} fontSize="sm">
         {subtitle}
       </Text>
       {children}

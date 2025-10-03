@@ -1,6 +1,6 @@
 import StandardCard from '../../components/StandardCard'
 import React, { useState, useEffect, useCallback } from 'react'
-import { Alert, AlertDescription, AlertIcon, Badge, Box, Button, ButtonGroup, CardBody, CardHeader, Container, Flex, HStack, Heading, Icon, Select, Spinner, Stack, Text } from '@chakra-ui/react'
+import { Alert, AlertDescription, AlertIcon, Badge, Box, Button, ButtonGroup, CardBody, CardHeader, Container, Flex, HStack, Heading, Icon, Select, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import { Bell, Check, CheckCircle2, Info, RefreshCw, UserPlus, XCircle } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -29,6 +29,14 @@ const NotificationsPage = () => {
   const [refreshing, setRefreshing] = useState(false)
 
   const itemsPerPage = 20
+
+  // Dark mode colors
+  const filterTypeTextColor = useColorModeValue("gray.600", "gray.300")
+  const unreadBorderColor = useColorModeValue('gray.200', 'gray.600')
+  const unreadBgColor = useColorModeValue('gray.50', 'gray.700')
+  const readBgColor = useColorModeValue('white', 'gray.800')
+  const metaTextColor = useColorModeValue("gray.600", "gray.300")
+  const messageTextColor = useColorModeValue("gray.500", "gray.400")
 
   const fetchNotifications = useCallback(
     async (showSpinner = true) => {
@@ -289,7 +297,7 @@ const NotificationsPage = () => {
                 </Button>
               </HStack>
               <HStack spacing={3} align="center" flexWrap="wrap">
-                <Text fontSize="sm" color="gray.600">{t('notifications.filters.typeLabel', 'Type')}</Text>
+                <Text fontSize="sm" color={filterTypeTextColor}>{t('notifications.filters.typeLabel', 'Type')}</Text>
                 <Select
                   id="type-filter"
                   size="sm"
@@ -338,8 +346,8 @@ const NotificationsPage = () => {
                       key={notification.id}
                       borderWidth={1}
                       borderLeftWidth={!notification.is_read ? 4 : 2}
-                      borderLeftColor={!notification.is_read ? 'brand.500' : 'gray.200'}
-                      bg={!notification.is_read ? 'gray.50' : 'white'}
+                      borderLeftColor={!notification.is_read ? 'brand.500' : unreadBorderColor}
+                      bg={!notification.is_read ? unreadBgColor : readBgColor}
                       shadow="sm"
                       cursor={clickable ? 'pointer' : 'default'}
                       transition="all 0.2s ease"
@@ -375,11 +383,11 @@ const NotificationsPage = () => {
                                   </Badge>
                                 )}
                               </Flex>
-                              <Text color="gray.600" mb={2}>
+                              <Text color={metaTextColor} mb={2}>
                                 {notification.message}
                               </Text>
                               <Flex justify="space-between" align={{ base: 'flex-start', md: 'center' }} gap={3} flexWrap="wrap">
-                                <Text fontSize="sm" color="gray.500">
+                                <Text fontSize="sm" color={messageTextColor}>
                                   {formatDate(notification.createdAt)}
                                   {notification.createdByUser && ' by ' + notification.createdByUser.name}
                                 </Text>

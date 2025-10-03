@@ -3750,7 +3750,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
             {/* Show selected image name or current image */}
             {styleImage ? (
-              <Text mt={2} color="green.500">
+              <Text mt={2} color={useColorModeValue("green.500","green.300")}>
                 {t('settings.manufacturers.catalogMapping.style.imageSelected', {
                   name: styleImage.name,
                 })}
@@ -4380,7 +4380,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     checked={!mergeToStyle}
                     onChange={() => setMergeToStyle('')}
                   />
-                  <Text as="label" htmlFor="deleteItems" color="red.500" ml={2}>
+                  <Text as="label" htmlFor="deleteItems" color={useColorModeValue("red.500","red.300")} ml={2}>
                     <strong>Delete all items</strong> with this style permanently
                   </Text>
                 </Flex>
@@ -4495,7 +4495,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <br />
                   <strong>Price:</strong> ${itemToDelete.price || '0.00'}
                 </Box>
-                <Text color="red.500" mt={3} fontSize="sm">
+                <Text color={useColorModeValue("red.500","red.300")} mt={3} fontSize="sm">
                   ⚠️ This action cannot be undone.
                 </Text>
               </Box>
@@ -4558,7 +4558,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </Box>
               </Box>
 
-              <Text color="red.500" mt={3} fontSize="sm">
+              <Text color={useColorModeValue("red.500","red.300")} mt={3} fontSize="sm">
                 ⚠️ This action cannot be undone. All selected items will be permanently deleted.
               </Text>
             </Box>

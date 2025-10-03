@@ -54,6 +54,22 @@ const ManufacturersList = () => {
   const [sortBy, setSortBy] = useState('id')
   const [sortDirection, setSortDirection] = useState('desc')
 
+  // Dark mode colors
+  const searchIconColor = useColorModeValue("gray.400", "gray.500")
+  const spinnerColor = useColorModeValue("blue.500", "blue.300")
+  const errorTitleColor = useColorModeValue("red.500", "red.300")
+  const errorMessageColor = useColorModeValue("red.400", "red.300")
+  const emptyIconColor = useColorModeValue("gray.300", "gray.600")
+  const emptyTextColor = useColorModeValue("gray.600", "gray.400")
+  const cardBg = useColorModeValue("gray.50", "gray.800")
+  const cardBorderColor = useColorModeValue("gray.100", "gray.700")
+  const buildingIconColor = useColorModeValue("blue.500", "blue.300")
+  const locationTextColor = useColorModeValue("gray.500", "gray.400")
+  const mailIconColor = useColorModeValue("gray.400", "gray.500")
+  const emailTextColor = useColorModeValue("gray.600", "gray.400")
+  const fileIconColor = useColorModeValue("gray.400", "gray.500")
+  const catalogTextColor = useColorModeValue("gray.600", "gray.400")
+
   useEffect(() => {
     dispatch(fetchManufacturers())
   }, [dispatch])
@@ -163,7 +179,7 @@ const ManufacturersList = () => {
               <GridItem>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={Search} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                    <Icon as={Search} boxSize={ICON_BOX_MD} color={searchIconColor} />
                   </InputLeftElement>
                   <Input
                     placeholder={t('settings.manufacturers.searchPlaceholder', 'Search manufacturers')}
@@ -201,17 +217,17 @@ const ManufacturersList = () => {
 
         {loading && (
           <Flex align="center" justify="center" py={16}>
-            <Spinner size="lg" color={useColorModeValue("blue.500", "blue.300")} />
+            <Spinner size="lg" color={spinnerColor} />
           </Flex>
         )}
 
         {error && !loading && (
           <StandardCard borderColor="red.200" borderWidth="1px">
             <CardBody>
-              <Text color="red.500" fontWeight="semibold">
+              <Text color={errorTitleColor} fontWeight="semibold">
                 {t('common.error')}:
               </Text>
-              <Text color="red.400">{error}</Text>
+              <Text color={errorMessageColor}>{error}</Text>
             </CardBody>
           </StandardCard>
         )}
@@ -219,8 +235,8 @@ const ManufacturersList = () => {
         {!loading && filteredManufacturers.length === 0 && (
           <StandardCard>
             <CardBody textAlign="center" py={16}>
-              <Icon as={Filter} boxSize={10} color="gray.300" mb={4} />
-              <Text fontSize="lg" color={useColorModeValue("gray.600", "gray.400")}>
+              <Icon as={Filter} boxSize={10} color={emptyIconColor} mb={4} />
+              <Text fontSize="lg" color={emptyTextColor}>
                 {t('settings.manufacturers.emptyState', 'No manufacturers match the current filters.')}
               </Text>
             </CardBody>
@@ -241,10 +257,10 @@ const ManufacturersList = () => {
                   <Box
                     w={{ base: '100%', md: '140px' }}
                     h={{ base: '120px', md: '140px' }}
-                    bg={useColorModeValue("gray.50", "gray.800")}
+                    bg={cardBg}
                     borderRadius="md"
                     borderWidth="1px"
-                    borderColor="gray.100"
+                    borderColor={cardBorderColor}
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
@@ -268,12 +284,12 @@ const ManufacturersList = () => {
                     <Flex justify="space-between" align={{ base: 'flex-start', md: 'center' }} gap={4}>
                       <Box minW="0">
                         <HStack spacing={4} align="center">
-                          <Icon as={Building2} boxSize={ICON_BOX_MD} color={useColorModeValue("blue.500", "blue.300")} />
+                          <Icon as={Building2} boxSize={ICON_BOX_MD} color={buildingIconColor} />
                           <Text fontSize="lg" fontWeight="semibold" noOfLines={1}>
                             {manufacturer.name}
                           </Text>
                         </HStack>
-                        <Text fontSize="sm" color={useColorModeValue("gray.500", "gray.400")}>
+                        <Text fontSize="sm" color={locationTextColor}>
                           ID: {manufacturer.id}
                         </Text>
                       </Box>
@@ -293,14 +309,14 @@ const ManufacturersList = () => {
 
                     <HStack spacing={4} align="flex-start" flexWrap="wrap">
                       <HStack spacing={4} minW="0">
-                        <Icon as={Mail} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
-                        <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} noOfLines={1}>
+                        <Icon as={Mail} boxSize={ICON_BOX_MD} color={mailIconColor} />
+                        <Text fontSize="sm" color={emailTextColor} noOfLines={1}>
                           {manufacturer.email || t('settings.manufacturers.noEmail', 'No email provided')}
                         </Text>
                       </HStack>
 
                       <HStack spacing={4}>
-                        <Icon as={FileText} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.400", "gray.500")} />
+                        <Icon as={FileText} boxSize={ICON_BOX_MD} color={fileIconColor} />
                         <Tag size="sm" variant="subtle" colorScheme="gray">
                           <TagLabel>
                             {t('settings.manufacturers.labels.capacity', {
@@ -318,7 +334,7 @@ const ManufacturersList = () => {
                           isChecked={Boolean(manufacturer.status)}
                           onChange={() => toggleEnabled(manufacturer.id, manufacturer.status)}
                         />
-                        <Text fontSize="sm" color={useColorModeValue("gray.600", "gray.400")}>
+                        <Text fontSize="sm" color={catalogTextColor}>
                           {manufacturer.status
                             ? t('settings.manufacturers.labels.active')
                             : t('settings.manufacturers.labels.inactive')}

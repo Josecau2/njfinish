@@ -1,7 +1,7 @@
 /* Base styles - replacing Tailwind @layer base */
 /* Font configuration and basic typography */
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
 }
 
 html {
@@ -12,8 +12,8 @@ html {
 }
 
 body {
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: var(--chakra-colors-chakra-body-bg);
+  color: var(--chakra-colors-chakra-body-text);
   font-size: 16px;
   line-height: 1.5;
 }

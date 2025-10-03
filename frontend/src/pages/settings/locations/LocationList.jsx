@@ -484,7 +484,7 @@ const LocationPage = () => {
                   )}
                 </VStack>
 
-                <HStack spacing={3} justify="flex-end" pt={2} borderTopWidth="1px" borderColor="gray.100">
+                <HStack spacing={3} justify="flex-end" pt={2} borderTopWidth="1px" borderColor={useColorModeValue("gray.100","gray.700")}>
                   <Button
                     variant="outline"
                     size="sm"

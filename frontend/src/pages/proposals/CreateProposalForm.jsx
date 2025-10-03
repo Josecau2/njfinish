@@ -124,7 +124,12 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
   }
 
   const nextStep = () => {
-    setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS))
+    console.log('nextStep called, currentStep:', currentStep, 'TOTAL_STEPS:', TOTAL_STEPS)
+    setCurrentStep((prev) => {
+      const next = Math.min(prev + 1, TOTAL_STEPS)
+      console.log('Setting currentStep from', prev, 'to', next)
+      return next
+    })
   }
 
   const prevStep = () => {
@@ -301,6 +306,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
   const stickyBorder = useColorModeValue('gray.200', 'gray.700')
   const progressLineBg = useColorModeValue('gray.200', 'gray.700')
   const progressActiveBg = useColorModeValue('gray.900', 'gray.100')
+  const stepActiveTextColor = useColorModeValue('white', 'gray.900')
   const stepInactiveBg = useColorModeValue('white', 'gray.800')
   const stepInactiveColor = useColorModeValue('gray.600', 'gray.300')
   const stepBorderInactive = useColorModeValue('gray.300', 'gray.600')
@@ -368,7 +374,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
                       h={9}
                       borderRadius="full"
                       bg={isActive ? progressActiveBg : stepInactiveBg}
-                      color={isActive ? 'white' : stepInactiveColor}
+                      color={isActive ? stepActiveTextColor : stepInactiveColor}
                       fontSize="sm"
                       fontWeight={isActive ? 'extrabold' : 'semibold'}
                       borderWidth="2px"

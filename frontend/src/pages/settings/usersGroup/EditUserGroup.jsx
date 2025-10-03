@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from 'react'
-import { Box, Button, CardBody, Container, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stack, Switch, Text } from '@chakra-ui/react'
+import { Box, Button, CardBody, Container, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stack, Switch, Text, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import StandardCard from '../../../components/StandardCard'
 import { User, Settings, ArrowLeft, Save, Users } from '@/icons-lucide'
@@ -14,29 +14,33 @@ import PageHeader from '../../../components/PageHeader'
 import { getContrastColor } from '../../../utils/colorUtils'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
-const FormSection = ({ title, icon, customization, children }) => (
-  <StandardCard variant="outline" borderRadius="xl" shadow="sm">
-    <CardBody>
-      <HStack spacing={4} align="center" mb={4}>
-        <Flex
-          align="center"
-          justify="center"
-          w="32px"
-          h="32px"
-          borderRadius="full"
-          bg={`${(customization.headerBg || "purple.500")}20`}
-          color={customization.headerBg || "purple.500"}
-        >
-          <Icon as={icon} boxSize={ICON_BOX_MD} />
-        </Flex>
-        <Text fontWeight="semibold" color="gray.800">
-          {title}
-        </Text>
-      </HStack>
-      <Stack spacing={4}>{children}</Stack>
-    </CardBody>
-  </StandardCard>
-)
+const FormSection = ({ title, icon, customization, children }) => {
+  const titleColor = useColorModeValue('gray.800', 'gray.200')
+
+  return (
+    <StandardCard variant="outline" borderRadius="xl" shadow="sm">
+      <CardBody>
+        <HStack spacing={4} align="center" mb={4}>
+          <Flex
+            align="center"
+            justify="center"
+            w="32px"
+            h="32px"
+            borderRadius="full"
+            bg={`${(customization.headerBg || "purple.500")}20`}
+            color={customization.headerBg || "purple.500"}
+          >
+            <Icon as={icon} boxSize={ICON_BOX_MD} />
+          </Flex>
+          <Text fontWeight="semibold" color={titleColor}>
+            {title}
+          </Text>
+        </HStack>
+        <Stack spacing={4}>{children}</Stack>
+      </CardBody>
+    </StandardCard>
+  )
+}
 
 const CustomFormInput = ({
   label,
@@ -50,18 +54,23 @@ const CustomFormInput = ({
   isInvalid,
   feedback,
   ...props
-}) => (
-  <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
-    <FormLabel htmlFor={name} fontWeight="medium" color="gray.800" mb={2} fontSize="sm">
-      {label}
-      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
-    </FormLabel>
-    <InputGroup>
-      {icon && (
-        <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color="gray.500" />
-        </InputLeftElement>
-      )}
+}) => {
+  const labelColor = useColorModeValue('gray.800', 'gray.200')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
+  const iconGray = useColorModeValue('gray.500', 'gray.400')
+
+  return (
+    <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
+      <FormLabel htmlFor={name} fontWeight="medium" color={labelColor} mb={2} fontSize="sm">
+        {label}
+        {required && <Text as="span" color={textRed500} ml={1}>*</Text>}
+      </FormLabel>
+      <InputGroup>
+        {icon && (
+          <InputLeftElement pointerEvents="none">
+            <Icon as={icon} boxSize={ICON_BOX_MD} color={iconGray} />
+          </InputLeftElement>
+        )}
       <Input
         id={name}
         name={name}
@@ -77,7 +86,8 @@ const CustomFormInput = ({
     </InputGroup>
     {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
   </FormControl>
-)
+  )
+}
 
 const initialForm = {
   name: '',
@@ -108,6 +118,14 @@ const EditUserGroupForm = () => {
   const [loading, setLoading] = useState(false)
   const [loadingData, setLoadingData] = useState(true)
   const customization = useSelector((state) => state.customization)
+
+  // Dark mode colors
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray600 = useColorModeValue('gray.600', 'gray.300')
+  const labelColor = useColorModeValue('gray.800', 'gray.200')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
+  const bgBlue50 = useColorModeValue('blue.50', 'blue.900')
+  const borderBlue = useColorModeValue('blue.100', 'blue.700')
 
   useEffect(() => {
     const fetchUserGroup = async () => {
@@ -210,7 +228,7 @@ const EditUserGroupForm = () => {
       <PageContainer>
         <Flex direction="column" align="center" justify="center" minH="300px" gap={4}>
           <Spinner size="lg" color={customization.headerBg ? undefined : 'blue.500'} thickness="4px" speed="0.7s" />
-          <Text color="gray.500">{t('settings.userGroups.edit.loadingOne')}</Text>
+          <Text color={textGray500}>{t('settings.userGroups.edit.loadingOne')}</Text>
         </Flex>
       </PageContainer>
     )
@@ -253,9 +271,9 @@ const EditUserGroupForm = () => {
               />
 
               <FormControl isRequired mb={4}>
-                <FormLabel fontWeight="medium" color="gray.800" mb={2} fontSize="sm">
+                <FormLabel fontWeight="medium" color={labelColor} mb={2} fontSize="sm">
                   {t('settings.userGroups.form.labels.type')}
-                  <Text as="span" color="red.500" ml={1}>*</Text>
+                  <Text as="span" color={textRed500} ml={1}>*</Text>
                 </FormLabel>
                 <Select
                   name="group_type"
@@ -278,7 +296,7 @@ const EditUserGroupForm = () => {
               icon={Settings}
               customization={customization}
             >
-              <Box borderRadius="lg" bg="blue.50" borderWidth="1px" borderColor="blue.100" p={4}>
+              <Box borderRadius="lg" bg={bgBlue50} borderWidth="1px" borderColor={borderBlue} p={4}>
                 <HStack align="flex-start" spacing={4}>
                   <Flex
                     align="center"
@@ -292,10 +310,10 @@ const EditUserGroupForm = () => {
                     <Icon as={Settings} boxSize={ICON_BOX_MD} />
                   </Flex>
                   <Box>
-                    <Text fontWeight="semibold" fontSize="sm" color="gray.800">
+                    <Text fontWeight="semibold" fontSize="sm" color={labelColor}>
                       {t('settings.userGroups.moduleAccess.title')}
                     </Text>
-                    <Text fontSize="xs" color="gray.600">
+                    <Text fontSize="xs" color={textGray600}>
                       {t('settings.userGroups.moduleAccess.description')}
                     </Text>
                   </Box>
@@ -323,10 +341,10 @@ const EditUserGroupForm = () => {
                       size="lg"
                     />
                     <Box>
-                      <FormLabel htmlFor={`module-${module}`} fontWeight="medium" color="gray.800" mb={1} fontSize="sm">
+                      <FormLabel htmlFor={`module-${module}`} fontWeight="medium" color={labelColor} mb={1} fontSize="sm">
                         {module.charAt(0).toUpperCase() + module.slice(1)}
                       </FormLabel>
-                      <Text fontSize="xs" color="gray.600">
+                      <Text fontSize="xs" color={textGray600}>
                         {t(moduleDescriptionKeys[module])}
                       </Text>
                     </Box>

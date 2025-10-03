@@ -183,11 +183,11 @@ const UsersPage = () => {
             <Stat>
               <StatLabel fontSize="sm" color={useColorModeValue("gray.600", "gray.400")} mb={2}>
                 <Flex align="center" gap={2}>
-                  <Icon as={Gear} boxSize={ICON_BOX_MD} color="green.500" aria-hidden="true" />
+                  <Icon as={Gear} boxSize={ICON_BOX_MD} color={useColorModeValue("green.500","green.300")} aria-hidden="true" />
                   {t('settings.users.stats.administrators')}
                 </Flex>
               </StatLabel>
-              <StatNumber fontSize="2xl" fontWeight="bold" color="green.500">
+              <StatNumber fontSize="2xl" fontWeight="bold" color={useColorModeValue("green.500","green.300")}>
                 {adminCount}
               </StatNumber>
             </Stat>

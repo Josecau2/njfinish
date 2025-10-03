@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect } from 'react'
-import { Box, Button, CardBody, CardHeader, Container, Divider, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Icon, Input, Select, SimpleGrid, Switch, Text, VStack, useToast } from '@chakra-ui/react'
+import { Box, Button, CardBody, CardHeader, Container, Divider, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Icon, Input, Select, SimpleGrid, Switch, Text, VStack, useColorModeValue, useToast } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import { useForm, Controller } from 'react-hook-form'
 import { motion, useReducedMotion } from 'framer-motion'
@@ -50,6 +50,12 @@ const EditUserForm = () => {
   const { list: locations } = useSelector((state) => state.locations)
   const { list: userGroups = [] } = useSelector((state) => state.usersGroup || {})
   const customization = useSelector((state) => state.customization)
+
+  // Dark mode colors
+  const textGray600 = useColorModeValue('gray.600', 'gray.300')
+  const textGray800 = useColorModeValue('gray.800', 'gray.200')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const borderGray = useColorModeValue('gray.200', 'gray.600')
 
   // React Hook Form setup
   const {
@@ -142,7 +148,7 @@ const EditUserForm = () => {
           </Button>
           <Box>
             <Heading size="lg">{t('settings.users.edit.title', 'Edit User')}</Heading>
-            <Text color="gray.600">{t('settings.users.edit.subtitle', 'Update user information and settings')}</Text>
+            <Text color={textGray600}>{t('settings.users.edit.subtitle', 'Update user information and settings')}</Text>
           </Box>
         </HStack>
 
@@ -155,7 +161,7 @@ const EditUserForm = () => {
                     <Box p={2} borderRadius="md" bg="brand.50">
                       <Icon as={User} boxSize={ICON_BOX_MD} color="brand.600" />
                     </Box>
-                    <Text fontSize="lg" fontWeight="semibold" color="gray.800">
+                    <Text fontSize="lg" fontWeight="semibold" color={textGray800}>
                       {t('settings.users.form.basicInfo', 'Basic Information')}
                     </Text>
                   </HStack>
@@ -249,7 +255,7 @@ const EditUserForm = () => {
                         name="isSalesRep"
                         control={control}
                         render={({ field }) => (
-                          <Flex align="center" p={3} borderRadius="md" bg="gray.50" border="1px" borderColor="gray.200">
+                          <Flex align="center" p={3} borderRadius="md" bg={bgGray50} border="1px" borderColor={borderGray}>
                             <Text flex="1" fontSize="sm">
                               {t('settings.users.form.hints.salesRep', 'Enable if this user is a sales representative')}
                             </Text>
@@ -275,7 +281,7 @@ const EditUserForm = () => {
                     <Box p={2} borderRadius="md" bg="brand.50">
                       <Icon as={Home} boxSize={ICON_BOX_MD} color="brand.600" />
                     </Box>
-                    <Text fontSize="lg" fontWeight="semibold" color="gray.800">
+                    <Text fontSize="lg" fontWeight="semibold" color={textGray800}>
                       {t('settings.users.form.titles.personalAddress', 'Personal Address')}
                     </Text>
                   </HStack>
@@ -357,7 +363,7 @@ const EditUserForm = () => {
                     <Box p={2} borderRadius="md" bg="brand.50">
                       <Icon as={Building} boxSize={ICON_BOX_MD} color="brand.600" />
                     </Box>
-                    <Text fontSize="lg" fontWeight="semibold" color="gray.800">
+                    <Text fontSize="lg" fontWeight="semibold" color={textGray800}>
                       {t('settings.users.form.titles.companyInfo', 'Company Information')}
                     </Text>
                   </HStack>
@@ -453,7 +459,7 @@ const EditUserForm = () => {
                     <Box p={2} borderRadius="md" bg="brand.50">
                       <Icon as={Lock} boxSize={ICON_BOX_MD} color="brand.600" />
                     </Box>
-                    <Text fontSize="lg" fontWeight="semibold" color="gray.800">
+                    <Text fontSize="lg" fontWeight="semibold" color={textGray800}>
                       {t('settings.users.form.security', 'Security')}
                     </Text>
                   </HStack>

@@ -201,7 +201,7 @@ const EditLocation = () => {
                 <FormControl isRequired isInvalid={!!errors.locationName}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.locationName')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
@@ -215,7 +215,7 @@ const EditLocation = () => {
                 <FormControl isRequired isInvalid={!!errors.address}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.address')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
@@ -231,7 +231,7 @@ const EditLocation = () => {
                 <FormControl isRequired isInvalid={!!errors.website}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.website')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
@@ -245,7 +245,7 @@ const EditLocation = () => {
                 <FormControl isRequired isInvalid={!!errors.email}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.email')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
@@ -261,7 +261,7 @@ const EditLocation = () => {
                 <FormControl isRequired isInvalid={!!errors.phone}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.phone')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
@@ -275,7 +275,7 @@ const EditLocation = () => {
                 <FormControl isRequired isInvalid={!!errors.country}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.country')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <Select name="country" value={formData.country} onChange={handleChange}>
                     <option value="">{t('settings.locations.form.select.country')}</option>
@@ -293,7 +293,7 @@ const EditLocation = () => {
                 <FormControl isRequired isInvalid={!!errors.timezone}>
                   <FormLabel fontSize="sm" fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>
                     {t('settings.locations.form.labels.timezone')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>
                   </FormLabel>
                   <Select name="timezone" value={formData.timezone} onChange={handleChange}>
                     <option value="">{t('settings.locations.form.select.timezone')}</option>

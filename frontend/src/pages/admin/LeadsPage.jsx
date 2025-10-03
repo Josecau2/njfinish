@@ -600,7 +600,7 @@ const LeadsPage = () => {
                       {Array.isArray(selectedLead.metadata?.notes) && selectedLead.metadata.notes.length > 0 ? (
                         <Stack spacing={4}>
                           {selectedLead.metadata.notes.map((item, index) => (
-                            <Box key={index} borderBottomWidth={index === selectedLead.metadata.notes.length - 1 ? '0' : '1px'} borderColor="gray.100" pb={3}>
+                            <Box key={index} borderBottomWidth={index === selectedLead.metadata.notes.length - 1 ? '0' : '1px'} borderColor={useColorModeValue("gray.100","gray.700")} pb={3}>
                               <Flex justify="space-between" align="flex-start" mb={2}>
                                 <Text fontWeight="semibold">
                                   {item.byName || t('leadsPage.modal.notes.defaultAuthor')}

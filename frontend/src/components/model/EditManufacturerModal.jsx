@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Modal,
   ModalOverlay,
@@ -26,6 +27,7 @@ const DEFAULT_FORM = {
 const multiplierRegex = /^(?:\d{0,4})(?:\.\d{0,2})?$/
 
 const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
+  const { t } = useTranslation()
   const [formData, setFormData] = useState(DEFAULT_FORM)
   const [error, setError] = useState(null)
 
@@ -70,7 +72,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
     <Modal isOpen={show} onClose={onClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
       <ModalContent as='form' onSubmit={handleSubmit} className='edit-manufacturer-modal'>
-        <ModalHeader>Edit Manufacturer</ModalHeader>
+        <ModalHeader>{t('manufacturer.editTitle')}</ModalHeader>
         <ModalBody>
           <Stack spacing={4}>
             {error ? (
@@ -81,7 +83,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
             ) : null}
 
             <FormControl>
-              <FormLabel htmlFor='name'>Name</FormLabel>
+              <FormLabel htmlFor='name'>{t('manufacturer.name')}</FormLabel>
               <Input
                 id='name'
                 name='name'
@@ -93,7 +95,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
             </FormControl>
 
             <FormControl>
-              <FormLabel htmlFor='email'>Email</FormLabel>
+              <FormLabel htmlFor='email'>{t('manufacturer.email')}</FormLabel>
               <Input
                 id='email'
                 name='email'
@@ -106,7 +108,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
             </FormControl>
 
             <FormControl>
-              <FormLabel htmlFor='multiplier'>Multiplier</FormLabel>
+              <FormLabel htmlFor='multiplier'>{t('manufacturer.multiplier')}</FormLabel>
               <Input
                 id='multiplier'
                 name='multiplier'
@@ -134,10 +136,10 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
         </ModalBody>
         <ModalFooter gap={4}>
           <Button variant='outline' onClick={onClose} aria-label='Cancel editing manufacturer'>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button colorScheme='brand' type='submit' minH='44px' aria-label='Save manufacturer changes'>
-            Save Changes
+            {t('common.save')}
           </Button>
         </ModalFooter>
       </ModalContent>

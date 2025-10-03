@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { formatDate } from '../../../helpers/dateUtils'
-import { Flex, Box, CardBody, CardHeader, Badge, List, ListItem, Progress } from '@chakra-ui/react'
+import { Flex, Box, CardBody, CardHeader, Badge, List, ListItem, Progress, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import {
   User,
@@ -172,9 +172,9 @@ const OverviewTab = ({ contractor }) => {
                 >
                   <span>
                     {module.enabled ? (
-                      <Icon as={CheckCircle} boxSize={ICON_BOX_MD} color="green.500" mr={2} aria-hidden="true" />
+                      <Icon as={CheckCircle} boxSize={ICON_BOX_MD} color={useColorModeValue("green.500","green.300")} mr={2} aria-hidden="true" />
                     ) : (
-                      <Icon as={XCircle} boxSize={ICON_BOX_MD} color="red.500" mr={2} aria-hidden="true" />
+                      <Icon as={XCircle} boxSize={ICON_BOX_MD} color={useColorModeValue("red.500","red.300")} mr={2} aria-hidden="true" />
                     )}
                     {module.label}
                   </span>

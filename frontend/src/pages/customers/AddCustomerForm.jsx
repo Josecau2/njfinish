@@ -58,7 +58,7 @@ const CustomFormInput = ({
   <div>
     <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
       {label}
-      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
+      {required && <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>}
     </FormLabel>
     <InputGroup>
       {icon && (
@@ -125,7 +125,7 @@ const CustomFormSelect = ({
   <div>
     <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
       {label}
-      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
+      {required && <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>}
     </FormLabel>
     <InputGroup>
       {icon && (
@@ -458,56 +458,56 @@ const AddCustomerForm = () => {
                 inputRefs={inputRefs}
               >
                 <option value="">{t('customers.form.select.selectState')}</option>
-                <option value="AL">Alabama</option>
-                <option value="AK">Alaska</option>
-                <option value="AZ">Arizona</option>
-                <option value="AR">Arkansas</option>
-                <option value="CA">California</option>
-                <option value="CO">Colorado</option>
-                <option value="CT">Connecticut</option>
-                <option value="DE">Delaware</option>
-                <option value="FL">Florida</option>
-                <option value="GA">Georgia</option>
-                <option value="HI">Hawaii</option>
-                <option value="ID">Idaho</option>
-                <option value="IL">Illinois</option>
-                <option value="IN">Indiana</option>
-                <option value="IA">Iowa</option>
-                <option value="KS">Kansas</option>
-                <option value="KY">Kentucky</option>
-                <option value="LA">Louisiana</option>
-                <option value="ME">Maine</option>
-                <option value="MD">Maryland</option>
-                <option value="MA">Massachusetts</option>
-                <option value="MI">Michigan</option>
-                <option value="MN">Minnesota</option>
-                <option value="MS">Mississippi</option>
-                <option value="MO">Missouri</option>
-                <option value="MT">Montana</option>
-                <option value="NE">Nebraska</option>
-                <option value="NV">Nevada</option>
-                <option value="NH">New Hampshire</option>
-                <option value="NJ">New Jersey</option>
-                <option value="NM">New Mexico</option>
-                <option value="NY">New York</option>
-                <option value="NC">North Carolina</option>
-                <option value="ND">North Dakota</option>
-                <option value="OH">Ohio</option>
-                <option value="OK">Oklahoma</option>
-                <option value="OR">Oregon</option>
-                <option value="PA">Pennsylvania</option>
-                <option value="RI">Rhode Island</option>
-                <option value="SC">South Carolina</option>
-                <option value="SD">South Dakota</option>
-                <option value="TN">Tennessee</option>
-                <option value="TX">Texas</option>
-                <option value="UT">Utah</option>
-                <option value="VT">Vermont</option>
-                <option value="VA">Virginia</option>
-                <option value="WA">Washington</option>
-                <option value="WV">West Virginia</option>
-                <option value="WI">Wisconsin</option>
-                <option value="WY">Wyoming</option>
+                <option value="AL">{t('states.AL')}</option>
+                <option value="AK">{t('states.AK')}</option>
+                <option value="AZ">{t('states.AZ')}</option>
+                <option value="AR">{t('states.AR')}</option>
+                <option value="CA">{t('states.CA')}</option>
+                <option value="CO">{t('states.CO')}</option>
+                <option value="CT">{t('states.CT')}</option>
+                <option value="DE">{t('states.DE')}</option>
+                <option value="FL">{t('states.FL')}</option>
+                <option value="GA">{t('states.GA')}</option>
+                <option value="HI">{t('states.HI')}</option>
+                <option value="ID">{t('states.ID')}</option>
+                <option value="IL">{t('states.IL')}</option>
+                <option value="IN">{t('states.IN')}</option>
+                <option value="IA">{t('states.IA')}</option>
+                <option value="KS">{t('states.KS')}</option>
+                <option value="KY">{t('states.KY')}</option>
+                <option value="LA">{t('states.LA')}</option>
+                <option value="ME">{t('states.ME')}</option>
+                <option value="MD">{t('states.MD')}</option>
+                <option value="MA">{t('states.MA')}</option>
+                <option value="MI">{t('states.MI')}</option>
+                <option value="MN">{t('states.MN')}</option>
+                <option value="MS">{t('states.MS')}</option>
+                <option value="MO">{t('states.MO')}</option>
+                <option value="MT">{t('states.MT')}</option>
+                <option value="NE">{t('states.NE')}</option>
+                <option value="NV">{t('states.NV')}</option>
+                <option value="NH">{t('states.NH')}</option>
+                <option value="NJ">{t('states.NJ')}</option>
+                <option value="NM">{t('states.NM')}</option>
+                <option value="NY">{t('states.NY')}</option>
+                <option value="NC">{t('states.NC')}</option>
+                <option value="ND">{t('states.ND')}</option>
+                <option value="OH">{t('states.OH')}</option>
+                <option value="OK">{t('states.OK')}</option>
+                <option value="OR">{t('states.OR')}</option>
+                <option value="PA">{t('states.PA')}</option>
+                <option value="RI">{t('states.RI')}</option>
+                <option value="SC">{t('states.SC')}</option>
+                <option value="SD">{t('states.SD')}</option>
+                <option value="TN">{t('states.TN')}</option>
+                <option value="TX">{t('states.TX')}</option>
+                <option value="UT">{t('states.UT')}</option>
+                <option value="VT">{t('states.VT')}</option>
+                <option value="VA">{t('states.VA')}</option>
+                <option value="WA">{t('states.WA')}</option>
+                <option value="WV">{t('states.WV')}</option>
+                <option value="WI">{t('states.WI')}</option>
+                <option value="WY">{t('states.WY')}</option>
               </CustomFormSelect>
             </Box>
             <Box>

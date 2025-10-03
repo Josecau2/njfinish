@@ -7,6 +7,7 @@ import {
   Text,
   Button,
   VStack,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
@@ -62,7 +63,7 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
         aria-label={title}
       >
         {items.length === 0 && (
-          <Box px={3} py={2} color="gray.500" fontSize="sm">
+          <Box px={3} py={2} color={useColorModeValue("gray.500","gray.400")} fontSize="sm">
             No styles
           </Box>
         )}
@@ -96,7 +97,7 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
                   <Box
                     borderRadius="md"
                     overflow="hidden"
-                    bg="gray.100"
+                    bg={useColorModeValue("gray.100","gray.700")}
                     h="96px"
                     display="flex"
                     alignItems="center"

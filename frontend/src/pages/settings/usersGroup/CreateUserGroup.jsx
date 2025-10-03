@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { FormControl, Input, FormLabel, CardBody, Container, Flex, Box, Icon, Button, Switch, Text, HStack, Select } from '@chakra-ui/react'
+import { FormControl, Input, FormLabel, CardBody, Container, Flex, Box, Icon, Button, Switch, Text, HStack, Select, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import StandardCard from '../../../components/StandardCard'
 import PageHeader from '../../../components/PageHeader'
@@ -44,29 +44,34 @@ const CustomFormInput = ({
   isInvalid,
   feedback,
   ...props
-}) => (
-  <Box mb={3}>
-    <FormLabel htmlFor={name} fontWeight="medium" color="gray.800" mb={2} fontSize="sm">
-      {label}
-      {required && <Text as="span" color="red.500" ml={1}>*</Text>}
-    </FormLabel>
-    <Input
-      id={name}
-      name={name}
-      type={type}
-      value={value}
-      onChange={onChange}
-      isInvalid={isInvalid}
-      placeholder={placeholder}
-      {...props}
-    />
-    {feedback && (
-      <Text color="red.500" fontSize="sm" mt={1}>
-        {feedback}
-      </Text>
-    )}
-  </Box>
-)
+}) => {
+  const labelColor = useColorModeValue('gray.800', 'gray.200')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
+
+  return (
+    <Box mb={3}>
+      <FormLabel htmlFor={name} fontWeight="medium" color={labelColor} mb={2} fontSize="sm">
+        {label}
+        {required && <Text as="span" color={textRed500} ml={1}>*</Text>}
+      </FormLabel>
+      <Input
+        id={name}
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        isInvalid={isInvalid}
+        placeholder={placeholder}
+        {...props}
+      />
+      {feedback && (
+        <Text color={textRed500} fontSize="sm" mt={1}>
+          {feedback}
+        </Text>
+      )}
+    </Box>
+  )
+}
 
 const initialForm = {
   name: '',
@@ -88,6 +93,18 @@ const AddUserGroupForm = () => {
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
   const customization = useSelector((state) => state.customization)
+
+  // Dark mode colors
+  const borderGray = useColorModeValue('gray.200', 'gray.600')
+  const bgGreen50 = useColorModeValue('green.50', 'green.900')
+  const textGreen500 = useColorModeValue('green.500', 'green.300')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray600 = useColorModeValue('gray.600', 'gray.300')
+  const bgBlue50 = useColorModeValue('blue.50', 'blue.900')
+  const borderBlue = useColorModeValue('blue.200', 'blue.700')
+  const labelColor = useColorModeValue('gray.800', 'gray.200')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
 
   const validate = () => {
     const newErrors = {}
@@ -191,15 +208,15 @@ const AddUserGroupForm = () => {
               </Box>
               <Box flex="1 1 200px">
                 <Box mb={3}>
-                  <FormLabel fontWeight="medium" color="gray.800" mb={2} fontSize="sm">
+                  <FormLabel fontWeight="medium" color={labelColor} mb={2} fontSize="sm">
                     {t('settings.userGroups.form.labels.type')}
-                    <Text as="span" color="red.500" ml={1}>*</Text>
+                    <Text as="span" color={textRed500} ml={1}>*</Text>
                   </FormLabel>
                   <Select
                     name="group_type"
                     value={formData.group_type}
                     onChange={handleChange}
-                    borderColor="gray.200"
+                    borderColor={borderGray}
                     borderRadius="8px"
                     fontSize="sm"
                     minH="44px"
@@ -213,7 +230,7 @@ const AddUserGroupForm = () => {
 
             <Box mt={4}>
               <HStack mb={2} align="center" spacing={4}>
-                <Box w="24px" h="24px" bg="green.50" color="green.500" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
+                <Box w="24px" h="24px" bg={bgGreen50} color={textGreen500} borderRadius="full" display="flex" alignItems="center" justifyContent="center">
                   ✓
                 </Box>
                 <Text fontWeight="semibold" fontSize="sm">
@@ -221,17 +238,17 @@ const AddUserGroupForm = () => {
                 </Text>
               </HStack>
               <Flex gap={4} wrap="wrap">
-                <Flex align="center" p={2} borderRadius="md" bg="gray.50">
-                  <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.assignUsers')}</Text>
+                <Flex align="center" p={2} borderRadius="md" bg={bgGray50}>
+                  <Text fontSize="sm" color={textGray600}>{t('settings.userGroups.create.afterCreate.assignUsers')}</Text>
                 </Flex>
-                <Flex align="center" p={2} borderRadius="md" bg="gray.50">
-                  <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.setPermissions')}</Text>
+                <Flex align="center" p={2} borderRadius="md" bg={bgGray50}>
+                  <Text fontSize="sm" color={textGray600}>{t('settings.userGroups.create.afterCreate.setPermissions')}</Text>
                 </Flex>
-                <Flex align="center" p={2} borderRadius="md" bg="gray.50">
-                  <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.manageAccess')}</Text>
+                <Flex align="center" p={2} borderRadius="md" bg={bgGray50}>
+                  <Text fontSize="sm" color={textGray600}>{t('settings.userGroups.create.afterCreate.manageAccess')}</Text>
                 </Flex>
-                <Flex align="center" p={2} borderRadius="md" bg="gray.50">
-                  <Text fontSize="sm" color="gray.600">{t('settings.userGroups.create.afterCreate.bulkManagement')}</Text>
+                <Flex align="center" p={2} borderRadius="md" bg={bgGray50}>
+                  <Text fontSize="sm" color={textGray600}>{t('settings.userGroups.create.afterCreate.bulkManagement')}</Text>
                 </Flex>
               </Flex>
             </Box>
@@ -239,14 +256,14 @@ const AddUserGroupForm = () => {
 
           {formData.group_type === 'contractor' && (
             <FormSection title={t('settings.userGroups.form.titles.modulePermissions')} customization={customization}>
-              <Box mb={4} p={3} borderRadius="md" bg="blue.50" border="1px solid" borderColor="blue.200">
+              <Box mb={4} p={3} borderRadius="md" bg={bgBlue50} border="1px solid" borderColor={borderBlue}>
                 <HStack spacing={4} align="start">
                   <Box w="32px" h="32px" bg={customization.headerBg || "purple.500"} color="white" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
                     <Icon as={Settings} size={14} />
                   </Box>
                   <Box>
                     <Text fontWeight="semibold" fontSize="sm">{t('settings.userGroups.moduleAccess.title')}</Text>
-                    <Text color="gray.600" fontSize="sm">{t('settings.userGroups.moduleAccess.description')}</Text>
+                    <Text color={textGray600} fontSize="sm">{t('settings.userGroups.moduleAccess.description')}</Text>
                   </Box>
                 </HStack>
               </Box>
@@ -268,7 +285,7 @@ const AddUserGroupForm = () => {
                         size="lg"
                       />
                     </HStack>
-                    <Text color="gray.500" fontSize="sm" mt={1}>
+                    <Text color={textGray500} fontSize="sm" mt={1}>
                       {module === 'dashboard' && t('settings.userGroups.moduleDescriptions.dashboard')}
                       {module === 'proposals' && t('settings.userGroups.moduleDescriptions.proposals')}
                       {module === 'customers' && t('settings.userGroups.moduleDescriptions.customers')}

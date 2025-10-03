@@ -1,0 +1,128 @@
+
+File                                                                                            Line Text                        HasTranslation
+----                                                                                            ---- ----                        --------------
+C:\njtake2\njcabinets-main\frontend\src\components\model\EditManufacturerModal.jsx                73 Edit Manufacturer                    False
+C:\njtake2\njcabinets-main\frontend\src\components\model\EditManufacturerModal.jsx                84 Name                                 False
+C:\njtake2\njcabinets-main\frontend\src\components\model\EditManufacturerModal.jsx                96 Email                                False
+C:\njtake2\njcabinets-main\frontend\src\components\model\EditManufacturerModal.jsx               109 Multiplier                           False
+C:\njtake2\njcabinets-main\frontend\src\components\pdf\DesktopPdfViewer.jsx                       47 PDF Preview                          False
+C:\njtake2\njcabinets-main\frontend\src\components\ErrorBoundary.jsx                              22 Something went wrong                 False
+C:\njtake2\njcabinets-main\frontend\src\components\LanguageSwitcher.jsx                           31 English                               True
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              152 Email                                False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              156 Password                             False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              178 Keep me logged in                    False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              203 Reset your password                  False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              208 Email                                False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              211 Send reset email                     False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              215 Sign in                              False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              242 Benefits                             False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              253 First name                           False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              257 Last name                            False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              263 Email                                False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              271 Phone                                False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              281 City                                 False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              285 State                                False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              294 Company                              False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              302 Tell us about your projects          False
+C:\njtake2\njcabinets-main\frontend\src\components\LoginPreview.jsx                              310 Submit request                       False
+C:\njtake2\njcabinets-main\frontend\src\components\PageErrorBoundary.jsx                          54 Error Details                        False
+C:\njtake2\njcabinets-main\frontend\src\components\StandardCard.jsx                               10 Title                                False
+C:\njtake2\njcabinets-main\frontend\src\components\StandardCard.jsx                               11 Content with padding                 False
+C:\njtake2\njcabinets-main\frontend\src\components\StandardCard.jsx                               73 Direct content here                  False
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      461 Alabama                               True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      462 Alaska                                True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      463 Arizona                               True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      464 Arkansas                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      465 California                            True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      466 Colorado                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      467 Connecticut                           True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      468 Delaware                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      469 Florida                               True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      470 Georgia                               True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      471 Hawaii                                True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      472 Idaho                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      473 Illinois                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      474 Indiana                               True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      475 Iowa                                  True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      476 Kansas                                True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      477 Kentucky                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      478 Louisiana                             True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      479 Maine                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      480 Maryland                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      481 Massachusetts                         True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      482 Michigan                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      483 Minnesota                             True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      484 Mississippi                           True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      485 Missouri                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      486 Montana                               True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      487 Nebraska                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      488 Nevada                                True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      489 New Hampshire                         True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      490 New Jersey                            True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      491 New Mexico                            True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      492 New York                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      493 North Carolina                        True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      494 North Dakota                          True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      495 Ohio                                  True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      496 Oklahoma                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      497 Oregon                                True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      498 Pennsylvania                          True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      499 Rhode Island                          True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      500 South Carolina                        True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      501 South Dakota                          True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      502 Tennessee                             True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      503 Texas                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      504 Utah                                  True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      505 Vermont                               True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      506 Virginia                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      507 Washington                            True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      508 West Virginia                         True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      509 Wisconsin                             True
+C:\njtake2\njcabinets-main\frontend\src\pages\customers\AddCustomerForm.jsx                      510 Wyoming                               True
+C:\njtake2\njcabinets-main\frontend\src\pages\payments\PaymentConfiguration.jsx                  246 Stripe                                True
+C:\njtake2\njcabinets-main\frontend\src\pages\payments\PaymentConfiguration.jsx                  247 Custom                                True
+C:\njtake2\njcabinets-main\frontend\src\pages\proposals\EditProposal.jsx                         571 Date                                  True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\customization\PdfLayoutCustomization.jsx  393 SPEC BOOK                             True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\globalMods\GlobalModsPage.jsx             818 Custom fractions                      True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\globalMods\GlobalModsPage.jsx             890 Custom fractions                      True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\globalMods\GlobalModsPage.jsx             962 Custom fractions                      True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\globalMods\GlobalModsPage.jsx            1484 Required Fields                       True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\globalMods\GlobalModsPage.jsx            1601 Custom fractions                      True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\globalMods\GlobalModsPage.jsx            1673 Custom fractions                      True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\globalMods\GlobalModsPage.jsx            1745 Custom fractions                      True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 2642 per page                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 2693 All Types                             True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 2715 All Styles                            True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3093 Price                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3097 Type                                  True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3253 Template                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3273 Scope                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3281 Style                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3282 Type                                  True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3283 Selected items                        True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3287 Override price                        True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3302 Target style                          True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3320 Target type                           True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3343 Existing assignments                  True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3351 Template                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3352 Scope                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3353 Target                                True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3354 Price                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3432 Template                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3433 Category                              True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3434 Scope                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3435 Price                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3436 Active                                True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3496 Add template to this item             True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 3516 Override price                        True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 4400 Merge items                           True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 4703 Style                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 4715 Type                                  True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 4727 Description                           True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 4739 Price                                 True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 4799 Current Style Name                    True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 4809 New Style Name                        True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\CatalogMappingTab.jsx 5237 Required Fields                       True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\TypesTab.jsx          1616 Rename Type Globally                  True
+C:\njtake2\njcabinets-main\frontend\src\pages\settings\manufacturers\tabs\TypesTab.jsx          1683 Change Type Category                  True
+

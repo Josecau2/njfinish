@@ -1,4 +1,4 @@
-import { Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import { Table, Tbody, Td, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react';
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { CardBody, Flex, Box, FormControl, Textarea, Badge, Button, HStack, Text } from '@chakra-ui/react'
@@ -119,7 +119,7 @@ const TermsPage = () => {
                   </Button>
                 </HStack>
                 {version && (
-                  <Text color="gray.500" mt={2} fontSize="sm">
+                  <Text color={useColorModeValue("gray.500","gray.400")} mt={2} fontSize="sm">
                     {t('settings.terms.currentVersion', 'Current version')}: {version}
                   </Text>
                 )}
@@ -131,7 +131,7 @@ const TermsPage = () => {
           <StandardCard>
             <CardBody>
               <h6>{t('settings.terms.acceptance', 'Acceptance')}</h6>
-              <Text color="gray.500" fontSize="sm" mb={2}>
+              <Text color={useColorModeValue("gray.500","gray.400")} fontSize="sm" mb={2}>
                 {t('settings.terms.version', 'Version')}: {acceptance?.version ?? '-'}
               </Text>
               <Table variant="simple">

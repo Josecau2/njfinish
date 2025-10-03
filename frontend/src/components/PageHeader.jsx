@@ -49,7 +49,7 @@ const PageHeader = ({
             spacing="8px"
             separator={<ChevronRight size={14} />}
             fontSize="sm"
-            color="gray.500"
+            color={useColorModeValue("gray.500","gray.400")}
             mb={4}
           >
             {breadcrumbs.map((crumb, index) => (

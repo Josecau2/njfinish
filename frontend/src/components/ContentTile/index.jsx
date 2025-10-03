@@ -1,5 +1,5 @@
 import React from 'react'
-import { Badge, Box, Button, CardBody, HStack, Text, VStack } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, HStack, Text, VStack, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../StandardCard'
 import { motion } from 'framer-motion'
 import { Download, Edit2, Trash2, File, Image } from 'lucide-react'
@@ -112,7 +112,7 @@ export default function ContentTile({
           </Box>
 
           <HStack spacing={4} align="flex-start">
-            <Box color="gray.500" flexShrink={0} mt={0.5}>
+            <Box color={useColorModeValue("gray.500","gray.400")} flexShrink={0} mt={0.5}>
               {isImage ? <Image size={ICON_SIZE_MD} /> : <File size={ICON_SIZE_MD} />}
             </Box>
             <VStack align="flex-start" spacing={4} flex={1} minW={0}>
@@ -126,7 +126,7 @@ export default function ContentTile({
               </Text>
               {description && (
                 <Text
-                  color="gray.500"
+                  color={useColorModeValue("gray.500","gray.400")}
                   fontSize="xs"
                   noOfLines={2}
                   title={description}

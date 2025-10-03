@@ -468,7 +468,7 @@ const LoginCustomizerPage = () => {
                         bg={useColorModeValue("green.50", "green.900")}
                         borderRadius="8px"
                       >
-                        <Palette size={ICON_SIZE_MD} color="green.600" />
+                        <Palette size={ICON_SIZE_MD} color={useColorModeValue("green.600","green.300")} />
                       </Flex>
                       <Text fontSize="lg" fontWeight="bold" color={useColorModeValue("gray.800", "gray.200")}>
                         {t('settings.customization.login.rightPanel.title')}
@@ -812,7 +812,7 @@ const LoginCustomizerPage = () => {
                           bg={useColorModeValue("blue.50", "blue.900")}
                           borderRadius="8px"
                         >
-                          <Mail size={ICON_SIZE_MD} color="blue.700" />
+                          <Mail size={ICON_SIZE_MD} color={useColorModeValue("blue.700","blue.300")} />
                         </Flex>
                         <Text fontSize="lg" fontWeight="bold" color={useColorModeValue("gray.800", "gray.200")}>
                           {t('settings.customization.login.requestAccess.requestEmails')}

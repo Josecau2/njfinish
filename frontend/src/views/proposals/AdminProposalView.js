@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../helpers/axiosInstance'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
-import { Alert, AlertIcon, Badge, Box, Button, CardBody, CardHeader, Center, Container, Divider, HStack, Icon, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack } from '@chakra-ui/react'
+import { Alert, AlertIcon, Badge, Box, Button, CardBody, CardHeader, Center, Container, Divider, HStack, Icon, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue, VStack } from '@chakra-ui/react'
 import {
   ArrowLeft,
   User,
@@ -44,6 +44,18 @@ const AdminProposalView = () => {
   const [proposal, setProposal] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+
+  // Dark mode colors
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray600 = useColorModeValue('gray.600', 'gray.300')
+  const textGray700 = useColorModeValue('gray.700', 'gray.200')
+  const textGray800 = useColorModeValue('gray.800', 'gray.200')
+  const textBlue500 = useColorModeValue('blue.500', 'blue.300')
+  const textGreen500 = useColorModeValue('green.500', 'green.300')
+  const textGreen600 = useColorModeValue('green.600', 'green.300')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
+  const borderGray200 = useColorModeValue('gray.200', 'gray.600')
 
   const getStatusLabel = useCallback(
     (status) => {
@@ -224,7 +236,7 @@ const AdminProposalView = () => {
     return (
       <Center py={24} flexDirection="column" gap={3}>
         <Spinner size="lg" color="brand.500" />
-        <Text color="gray.500">{t('common.loading', 'Loading...')}</Text>
+        <Text color={textGray500}>{t('common.loading', 'Loading...')}</Text>
       </Center>
     )
   }
@@ -328,31 +340,31 @@ const AdminProposalView = () => {
         <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6} alignItems="start">
           <Stack spacing={6} gridColumn={{ lg: 'span 2' }}>
             <StandardCard variant="outline">
-              <CardHeader bg="gray.50" borderBottomWidth="1px">
-                <Text fontWeight="semibold" color="gray.800">
+              <CardHeader bg={bgGray50} borderBottomWidth="1px">
+                <Text fontWeight="semibold" color={textGray800}>
                   {t('adminQuote.ui.overview', 'Quote Overview')}
                 </Text>
               </CardHeader>
               <CardBody>
                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                   <Stack spacing={3}>
-                    <Text fontSize="2xl" fontWeight="bold" color="green.600">
+                    <Text fontSize="2xl" fontWeight="bold" color={textGreen600}>
                       {formatCurrency(parsedData.totalAmount)}
                     </Text>
                     <Divider />
-                    <Stack spacing={2} fontSize="sm" color="gray.700">
+                    <Stack spacing={2} fontSize="sm" color={textGray700}>
                       <HStack justify="space-between">
-                        <Text color="gray.500">
+                        <Text color={textGray500}>
                           {t('adminQuote.ui.proposalId', 'Quote ID')}
                         </Text>
                         <Text fontWeight="semibold">#{proposal.id}</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text color="gray.500">{t('adminQuote.ui.customer', 'Customer')}</Text>
+                        <Text color={textGray500}>{t('adminQuote.ui.customer', 'Customer')}</Text>
                         <Text>{proposal.customer?.name || t('common.na', 'N/A')}</Text>
                       </HStack>
                       <HStack justify="space-between">
-                        <Text color="gray.500">
+                        <Text color={textGray500}>
                           {t('adminQuote.ui.contractorGroup', 'Contractor Group')}
                         </Text>
                         <Text>{proposal.UserGroup?.name || t('common.na', 'N/A')}</Text>
@@ -360,33 +372,33 @@ const AdminProposalView = () => {
                     </Stack>
                   </Stack>
 
-                  <Stack spacing={2} fontSize="sm" color="gray.700">
+                  <Stack spacing={2} fontSize="sm" color={textGray700}>
                     <HStack justify="space-between">
-                      <Text color="gray.500">
+                      <Text color={textGray500}>
                         {t('adminQuote.ui.createdDate', 'Created Date')}
                       </Text>
                       <Text>{formatDate(proposal.created_at)}</Text>
                     </HStack>
                     <HStack justify="space-between">
-                      <Text color="gray.500">
+                      <Text color={textGray500}>
                         {t('adminQuote.ui.updatedDate', 'Last Updated')}
                       </Text>
                       <Text>{formatDate(proposal.updated_at)}</Text>
                     </HStack>
                     {proposal.sent_at && (
                       <HStack justify="space-between">
-                        <Text color="gray.500">
+                        <Text color={textGray500}>
                           {t('adminQuote.ui.sentDate', 'Sent Date')}
                         </Text>
-                        <Text color="blue.500">{formatDate(proposal.sent_at)}</Text>
+                        <Text color={textBlue500}>{formatDate(proposal.sent_at)}</Text>
                       </HStack>
                     )}
                     {proposal.accepted_at && (
                       <HStack justify="space-between">
-                        <Text color="gray.500">
+                        <Text color={textGray500}>
                           {t('adminQuote.ui.acceptedDate', 'Accepted Date')}
                         </Text>
-                        <Text color="green.500">{formatDate(proposal.accepted_at)}</Text>
+                        <Text color={textGreen500}>{formatDate(proposal.accepted_at)}</Text>
                       </HStack>
                     )}
                   </Stack>
@@ -394,11 +406,11 @@ const AdminProposalView = () => {
 
                 {proposal.description && (
                   <Stack spacing={2} mt={6}>
-                    <Text fontWeight="semibold" color="gray.700">
+                    <Text fontWeight="semibold" color={textGray700}>
                       {t('common.description', 'Description')}
                     </Text>
-                    <Box bg="gray.50" borderRadius="md" borderWidth="1px" borderColor="gray.200" p={4}>
-                      <Text color="gray.700">{proposal.description}</Text>
+                    <Box bg={bgGray50} borderRadius="md" borderWidth="1px" borderColor={borderGray200} p={4}>
+                      <Text color={textGray700}>{proposal.description}</Text>
                     </Box>
                   </Stack>
                 )}
@@ -407,10 +419,10 @@ const AdminProposalView = () => {
 
             {parsedData.items && parsedData.items.length > 0 && (
               <StandardCard variant="outline">
-                <CardHeader bg="gray.50" borderBottomWidth="1px">
+                <CardHeader bg={bgGray50} borderBottomWidth="1px">
                   <HStack spacing={2}>
                     <Icon as={ClipboardList} />
-                    <Text fontWeight="semibold" color="gray.800">
+                    <Text fontWeight="semibold" color={textGray800}>
                       {t('adminQuote.ui.itemsHeader', 'Quote Items ({{count}})', {
                         count: parsedData.items.length,
                       })}
@@ -447,7 +459,7 @@ const AdminProposalView = () => {
                     </Table>
                   </TableContainer>
 
-                  <Stack spacing={2} mt={6} borderTopWidth="1px" borderColor="gray.200" pt={4}>
+                  <Stack spacing={2} mt={6} borderTopWidth="1px" borderColor={borderGray200} pt={4}>
                     <HStack justify="space-between">
                       <Text>{t('proposalDoc.priceSummary.cabinets', 'Cabinets & Parts:')}</Text>
                       <Text>{formatCurrency(parsedData.summary.cabinets || 0)}</Text>
@@ -465,7 +477,7 @@ const AdminProposalView = () => {
                       </HStack>
                     )}
                     {parsedData.summary.discountAmount > 0 && (
-                      <HStack justify="space-between" color="red.500">
+                      <HStack justify="space-between" color={textRed500}>
                         <Text>{t('orders.details.discount', 'Discount')}</Text>
                         <Text>-{formatCurrency(parsedData.summary.discountAmount)}</Text>
                       </HStack>
@@ -481,7 +493,7 @@ const AdminProposalView = () => {
                       <Text fontWeight="semibold">
                         {t('proposalDoc.priceSummary.total', 'Total:')}
                       </Text>
-                      <Text fontWeight="bold" fontSize="lg" color="green.600">
+                      <Text fontWeight="bold" fontSize="lg" color={textGreen600}>
                         {formatCurrency(parsedData.summary.grandTotal || parsedData.totalAmount)}
                       </Text>
                     </HStack>
@@ -493,17 +505,17 @@ const AdminProposalView = () => {
 
           <Stack spacing={6}>
             <StandardCard variant="outline">
-              <CardHeader bg="gray.50" borderBottomWidth="1px">
+              <CardHeader bg={bgGray50} borderBottomWidth="1px">
                 <HStack spacing={2}>
                   <Icon as={History} />
-                  <Text fontWeight="semibold" color="gray.800">
+                  <Text fontWeight="semibold" color={textGray800}>
                     {t('adminQuote.ui.statusTimeline', 'Status Timeline')}
                   </Text>
                 </HStack>
               </CardHeader>
               <CardBody>
                 {statusTimeline.length === 0 ? (
-                  <Text color="gray.500">{t('adminQuote.timeline.empty', 'No status updates recorded yet.')}</Text>
+                  <Text color={textGray500}>{t('adminQuote.timeline.empty', 'No status updates recorded yet.')}</Text>
                 ) : (
                   <Stack spacing={5}>
                     {statusTimeline.map((item, index) => (
@@ -521,11 +533,11 @@ const AdminProposalView = () => {
                         <Stack spacing={1} flex="1">
                           <HStack justify="space-between" align="flex-start">
                             <Text fontWeight="semibold">{item.label}</Text>
-                            <Text fontSize="sm" color="gray.500">
+                            <Text fontSize="sm" color={textGray500}>
                               {formatDate(item.date)}
                             </Text>
                           </HStack>
-                          <Text fontSize="sm" color="gray.600">
+                          <Text fontSize="sm" color={textGray600}>
                             {item.description}
                           </Text>
                         </Stack>

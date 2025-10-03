@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Button, Flex, Image, Link, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, Image, Link, Text, useColorModeValue } from '@chakra-ui/react'
 
 import IconsImg from 'src/assets/images/icons.webp'
 
@@ -21,7 +21,7 @@ const DocsIcons = () => (
           objectFit="contain"
         />
       </Box>
-      <Text flex="1" color="gray.700" textAlign={{ base: 'center', xl: 'left' }}>
+      <Text flex="1" color={useColorModeValue("gray.700","gray.200")} textAlign={{ base: 'center', xl: 'left' }}>
         CoreUI Icons package ships with more than 1500 icons in multiple formats - SVG, PNG, and webfonts.
         They are carefully designed for common actions and items so you can reuse them across your web or
         mobile products. Visit the documentation to explore the full set.

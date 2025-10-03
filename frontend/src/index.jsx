@@ -15,7 +15,7 @@ import './responsive.css'           // 7. Responsive - overrides (must be last)
 import './i18n'
 
 import App from './App.jsx'
-import { ErrorBoundary } from './components/ErrorBoundary.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { getBrand } from './brand/useBrand'
 // Prefer pre-injected globals (set in index.html) to prevent flicker
 import { detoxAuthStorage, getFreshestToken, debugAuthSnapshot } from './utils/authToken'

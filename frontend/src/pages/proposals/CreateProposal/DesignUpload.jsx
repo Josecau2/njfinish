@@ -155,7 +155,7 @@ const DesignImportStep = ({
                 alignItems="center"
                 justifyContent="center"
                 transition="all 0.2s"
-                _hover={{ borderColor: 'brand.400', bg: 'gray.100' }}
+                _hover={{ borderColor: 'brand.400', bg: useColorModeValue('gray.100', 'gray.700') }}
               >
                 <Icon as={CloudUpload} boxSize={12} color={iconColor} mb={3} />
                 <Text color={textColor} mb={4}>

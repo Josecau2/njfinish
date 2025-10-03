@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import workerSrc from 'react-pdf/dist/pdf.worker.entry.js?url'
-import { Box, Center, Spinner, Text, VStack } from '@chakra-ui/react'
+import { Box, Center, Spinner, Text, VStack, useColorModeValue } from '@chakra-ui/react'
 import { getFreshestToken } from '../../utils/authToken'
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
@@ -36,7 +36,7 @@ const MobilePdfViewer = ({ fileUrl }) => {
         )}
         {error && (
           <Center py={12}>
-            <Text fontSize="sm" color="red.500">
+            <Text fontSize="sm" color={useColorModeValue("red.500","red.300")}>
               {error}
             </Text>
           </Center>

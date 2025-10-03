@@ -1,11 +1,11 @@
 import React from 'react'
-import { Box, Container, Input, Flex, Heading, Text, InputGroup, InputLeftElement, VStack, HStack, Icon } from '@chakra-ui/react'
+import { Box, Container, Input, Flex, Heading, Text, InputGroup, InputLeftElement, VStack, HStack, Icon, useColorModeValue } from '@chakra-ui/react'
 import { AppButton } from '../../../components/common/AppButton'
 import { Search } from 'lucide-react'
 
 const Page404 = () => {
   return (
-    <Box minH="100vh" display="flex" alignItems="center" bg="gray.50" role="main">
+    <Box minH="100vh" display="flex" alignItems="center" bg={useColorModeValue("gray.50","gray.800")} role="main">
       <Container maxW="container.md">
         <Flex justify="center">
           <Box maxW="md" w="full">
@@ -14,7 +14,7 @@ const Page404 = () => {
                 <Heading
                   size="4xl"
                   fontWeight="bold"
-                  color="gray.400"
+                  color={useColorModeValue("gray.400","gray.500")}
                   aria-hidden="true"
                 >
                   404
@@ -23,7 +23,7 @@ const Page404 = () => {
                   <Heading size="lg" pt={3}>
                     Oops! You're lost.
                   </Heading>
-                  <Text color="gray.600">
+                  <Text color={useColorModeValue("gray.600","gray.300")}>
                     The page you are looking for was not found.
                   </Text>
                 </VStack>
@@ -31,7 +31,7 @@ const Page404 = () => {
             </Box>
             <InputGroup role="search" size="lg">
               <InputLeftElement pointerEvents="none">
-                <Icon as={Search} color="gray.400" />
+                <Icon as={Search} color={useColorModeValue("gray.400","gray.500")} />
               </InputLeftElement>
               <Input
                 type="text"

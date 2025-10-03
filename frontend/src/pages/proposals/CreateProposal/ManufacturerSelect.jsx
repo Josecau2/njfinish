@@ -1,7 +1,6 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import CreatableSelect from 'react-select/creatable'
 import { useDispatch, useSelector } from 'react-redux'
 import { Box, Button, CardBody, Flex, FormControl, FormErrorMessage, FormLabel, Heading, Icon, Input, SimpleGrid, Spinner, Stack, Text, useBreakpointValue, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
@@ -16,36 +15,6 @@ const FALLBACK_MANUFACTURER_IMAGE = `${import.meta.env?.BASE_URL || '/'}images/n
 
 const MotionBox = motion.create(Box)
 const MotionButton = motion.create(Button)
-
-const buildSelectStyles = (hasError) => ({
-  control: (provided, state) => ({
-    ...provided,
-    minHeight: '44px',
-    borderColor: hasError ? 'red.500' : state.isFocused ? 'blue.500' : provided.borderColor,
-    boxShadow: 'none',
-    '&:hover': {
-      bordercolor: "blue.500",
-    },
-  }),
-  menu: (provided) => ({
-    ...provided,
-    zIndex: 30,
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    fontSize: "md",
-    backgroundColor: state.isFocused ? 'blue.50' : provided.backgroundColor,
-    color: state.isFocused ? 'gray.800' : provided.color,
-  }),
-  valueContainer: (provided) => ({
-    ...provided,
-    padding: '0.25rem 0.75rem',
-  }),
-  indicatorsContainer: (provided) => ({
-    ...provided,
-    paddingRight: '0.5rem',
-  }),
-})
 
 const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBack }) => {
   const { t } = useTranslation()
@@ -214,7 +183,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={6}>
               <Flex justify="space-between" align={{ base: 'stretch', md: 'center' }} flexDir={{ base: 'column', md: 'row' }} gap={4}>
-                <Heading size="md" color="gray.800">
+                <Heading size="md" color={useColorModeValue("gray.800","gray.200")}>
                   {t('proposals.create.manufacturer.title')}
                 </Heading>
                 <Stack direction="row" spacing={4} align="center">
@@ -251,7 +220,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                       {loading ? (
                         <Spinner alignSelf="center" size="lg" color="brand.500" />
                       ) : enabledManufacturers.length === 0 ? (
-                        <Text color="gray.500" fontStyle="italic" textAlign="center">
+                        <Text color={useColorModeValue("gray.500","gray.400")} fontStyle="italic" textAlign="center">
                           {t('proposals.create.manufacturer.empty', 'No manufacturers available.')}
                         </Text>
                       ) : (
@@ -297,7 +266,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                 whileTap={{ scale: 0.98 }}
                                 transition="all 0.2s ease"
                               >
-                                <Box position="relative" bg="gray.50" overflow="hidden" height="180px">
+                                <Box position="relative" bg={useColorModeValue("gray.50","gray.800")} overflow="hidden" height="180px">
                                   {!imageStatus && (
                                     <Box
                                       position="absolute"
@@ -305,7 +274,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                       display="flex"
                                       alignItems="center"
                                       justifyContent="center"
-                                      bg="gray.100"
+                                      bg={useColorModeValue("gray.100","gray.700")}
                                     >
                                       <Spinner size="md" color="brand.500" />
                                     </Box>
@@ -344,10 +313,10 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                   )}
                                 </Box>
                                 <Stack spacing={4} p={4} align="center">
-                                  <Heading as="h3" size="sm" textAlign="center" color="gray.800">
+                                  <Heading as="h3" size="sm" textAlign="center" color={useColorModeValue("gray.800","gray.200")}>
                                     {manufacturer.name}
                                   </Heading>
-                                  <Text fontSize="sm" color="gray.500" textAlign="center">
+                                  <Text fontSize="sm" color={useColorModeValue("gray.500","gray.400")} textAlign="center">
                                     {manufacturer.city || manufacturer.country || t('common.na')}
                                   </Text>
                                 </Stack>

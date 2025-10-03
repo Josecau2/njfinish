@@ -89,9 +89,11 @@
     "leaveEmptyKeepExisting": "Leave empty to keep existing",
     "egSevenToFourteenDays": "e.g., 7-14 days",
     "egThreeToSevenDays": "e.g., 3-7 days",
-    "continue": "Continue"
+    "continue": "Continue",
+    "toggleTheme": "Toggle color mode"
   },
   "globalMods": {
+    "title": "Global Modifications",
     "modal": {
       "add": {
         "title": "Add Modification",
@@ -181,6 +183,127 @@
           "deleteFailed": "Failed to delete category"
         }
       }
+    },
+    "ui": {
+      "buttons": {
+        "addModification": "Add Modification",
+        "gallery": "Gallery",
+        "assignModification": "Assign Modification"
+      },
+      "galleryHeader": "Modification Gallery"
+    },
+    "category": {
+      "createTitle": "Create Category",
+      "nameLabel": "Category Name",
+      "namePlaceholder": "Enter category name",
+      "orderLabel": "Order",
+      "actionLabel": "Actions",
+      "addButton": "Add Category",
+      "editTooltip": "Edit category",
+      "deleteTooltip": "Delete category (with options for templates)",
+      "imageLabel": "Category Image",
+      "imageHint": "Upload an image for this category",
+      "imageReady": "Image uploaded"
+    },
+    "template": {
+      "blueprint": "Blueprint",
+      "editTooltip": "Edit template and upload sample image",
+      "createHeader": "Create Template",
+      "requiredFields": "Required Fields",
+      "nameLabel": "Modification Name",
+      "namePlaceholder": "Enter modification name",
+      "nameRequired": "Modification name is required",
+      "defaultPriceLabel": "Default Price",
+      "defaultPricePlaceholder": "Enter default price",
+      "defaultPriceRequired": "Default price is required",
+      "categoryOptionalLabel": "Category (Optional)",
+      "noSubmenu": "No submenu",
+      "statusLabel": "Status",
+      "status": {
+        "draft": "Draft",
+        "ready": "Ready"
+      },
+      "saveButton": "Save Template"
+    },
+    "builder": {
+      "title": "Guided fields",
+      "heightSlider": "Height slider",
+      "widthSlider": "Width slider",
+      "depthSlider": "Depth slider",
+      "min": "min",
+      "max": "max",
+      "step": "step",
+      "sideSelector": {
+        "label": "Side selector",
+        "placeholder": "Options comma separated e.g. L,R"
+      },
+      "quantityLimits": {
+        "label": "Quantity limits",
+        "minQty": "min qty",
+        "maxQty": "max qty"
+      },
+      "customerNotes": {
+        "label": "Customer notes",
+        "placeholder": "Notes placeholder",
+        "showInRed": "Show in red for customer"
+      },
+      "customerUpload": {
+        "label": "Customer file upload",
+        "titlePlaceholder": "Upload title/reason",
+        "required": "Required"
+      },
+      "modSampleImage": {
+        "label": "Modification sample image"
+      },
+      "descriptions": {
+        "internal": "Internal description",
+        "customer": "Customer description",
+        "installer": "Installer description"
+      },
+      "sampleUpload": {
+        "title": "Sample Image Upload",
+        "uploadLabel": "Upload Sample Image",
+        "hint": "Upload an image to show customers what this modification looks like",
+        "previewAlt": "Sample preview",
+        "uploaded": "✓ Image uploaded: {{name}}",
+        "none": "No sample image uploaded"
+      },
+      "fieldsConfig": {
+        "placeholder": "Optional fields config (JSON): {\"sliders\": {\"width\": {\"min\": 1, \"max\": 60, \"step\": 1}}}"
+      },
+      "errors": {
+        "invalidRangeStep": "Invalid range or step",
+        "invalidQtyRange": "Invalid quantity range",
+        "invalidJson": "fieldsConfig must be valid JSON"
+      }
+    },
+    "assign": {
+      "header": "Assign Template",
+      "selectTemplate": "Select template",
+      "selectManufacturer": "Select manufacturer",
+      "scope": {
+        "all": "All items",
+        "style": "Style",
+        "type": "Type",
+        "item": "Single item"
+      },
+      "target": {
+        "styleName": "Target style (name)",
+        "typeName": "Target type (name)",
+        "catalogItemId": "Catalog Item ID",
+        "itemWithId": "Item with ID",
+        "all": "All"
+      },
+      "override": "Override price",
+      "assignButton": "Assign",
+      "none": "None",
+      "table": {
+        "template": "Template",
+        "scope": "Scope",
+        "target": "Target",
+        "price": "Price",
+        "remove": "Remove"
+      }
     }
   },
   "paymentReceipt": {
@@ -225,7 +348,9 @@
       "other": "Other"
     },
     "errors": {
-      "generateFailed": "Failed to generate payment receipt. Please try again."
+      "generateFailed": "Failed to generate payment receipt. Please try again.",
+      "somethingWentWrong": "Something went wrong",
+      "errorDetails": "Error Details"
     },
     "statusValues": {
       "completed": "Completed",
@@ -428,6 +553,16 @@
     "emailRequired": "Email is required",
     "noAccountPrompt": "Don't have an account?",
     "backToLogin": "Back to sign in",
+    "benefits": "Benefits",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "phone": "Phone",
+    "city": "City",
+    "state": "State",
+    "zip": "ZIP",
+    "company": "Company",
+    "projectDescription": "Tell us about your projects",
+    "submitRequest": "Submit request",
     "resetPassword": {
       "title": "Reset Password",
       "subtitle": "Securely update your password.",
@@ -478,7 +613,13 @@
     "uiCustomization": "UI Customization",
     "contactUs": "Contact Us",
     "terms": "Terms & Conditions",
-    "paymentConfig": "Payment Configuration"
+    "paymentConfig": "Payment Configuration",
+    "sidebar": {
+      "pin": "Pin",
+      "unpin": "Unpin"
+    },
+    "closeSidebar": "Close sidebar",
+    "openSidebar": "Open sidebar"
   },
   "termsModal": {
     "title": "Terms & Conditions",
@@ -1498,6 +1639,10 @@
       },
       "manufacturer": {
         "title": "Manufacturer Details",
+        "editTitle": "Edit Manufacturer",
+        "name": "Name",
+        "email": "Email",
+        "multiplier": "Multiplier",
         "labels": {
           "manufacturer": "Manufacturer",
           "versionName": "Version Name"
@@ -3561,5 +3706,72 @@
         "submit": "Save note"
       }
     }
+  },
+  "states": {
+    "AL": "Alabama",
+    "AK": "Alaska",
+    "AZ": "Arizona",
+    "AR": "Arkansas",
+    "CA": "California",
+    "CO": "Colorado",
+    "CT": "Connecticut",
+    "DE": "Delaware",
+    "FL": "Florida",
+    "GA": "Georgia",
+    "HI": "Hawaii",
+    "ID": "Idaho",
+    "IL": "Illinois",
+    "IN": "Indiana",
+    "IA": "Iowa",
+    "KS": "Kansas",
+    "KY": "Kentucky",
+    "LA": "Louisiana",
+    "ME": "Maine",
+    "MD": "Maryland",
+    "MA": "Massachusetts",
+    "MI": "Michigan",
+    "MN": "Minnesota",
+    "MS": "Mississippi",
+    "MO": "Missouri",
+    "MT": "Montana",
+    "NE": "Nebraska",
+    "NV": "Nevada",
+    "NH": "New Hampshire",
+    "NJ": "New Jersey",
+    "NM": "New Mexico",
+    "NY": "New York",
+    "NC": "North Carolina",
+    "ND": "North Dakota",
+    "OH": "Ohio",
+    "OK": "Oklahoma",
+    "OR": "Oregon",
+    "PA": "Pennsylvania",
+    "RI": "Rhode Island",
+    "SC": "South Carolina",
+    "SD": "South Dakota",
+    "TN": "Tennessee",
+    "TX": "Texas",
+    "UT": "Utah",
+    "VT": "Vermont",
+    "VA": "Virginia",
+    "WA": "Washington",
+    "WV": "West Virginia",
+    "WI": "Wisconsin",
+    "WY": "Wyoming"
+  },
+  "languages": {
+    "english": "English",
+    "spanish": "Español"
+  },
+  "pdf": {
+    "preview": "PDF Preview",
+    "close": "Close",
+    "zoomOut": "Zoom out",
+    "zoomIn": "Zoom in",
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  },
+  "breadcrumb": {
+    "home": "Home"
   }
 }

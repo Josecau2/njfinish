@@ -16,6 +16,7 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
+  Select,
   Icon,
   IconButton,
   Input,
@@ -39,12 +40,12 @@ import {
   ModalBody,
   ModalFooter,
   useToast,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice'
 import { sendFormDataToBackend } from '../../../queries/proposalQueries'
 import axiosInstance from '../../../helpers/axiosInstance'
-import CreatableSelect from 'react-select/creatable'
 import { useForm, Controller } from 'react-hook-form'
 import { Copy, Edit, File, List, MoreHorizontal, Trash, Trash2, Calendar } from 'lucide-react'
 import ItemSelectionContent from '../../../components/ItemSelectionContent'
@@ -384,21 +385,24 @@ const ItemSelectionStep = ({
                   control={control}
                   rules={{ required: t('proposals.create.customerInfo.validation.designer') }}
                   render={({ field }) => (
-                    <CreatableSelect
+                    <Select
                       {...field}
-                      isClearable
                       id="designer"
-                      options={designerOptions}
-                      value={designerOptions.find((opt) => opt.value === field.value) || null}
-                      onChange={(selectedOption) => {
-                        const value = selectedOption?.value || ''
-                        field.onChange(value)
+                      placeholder={t('proposals.create.customerInfo.designerPlaceholder', 'Select a designer')}
+                      onChange={(e) => {
+                        field.onChange(e.target.value)
                         updateFormData({
                           ...formData,
-                          designer: value,
+                          designer: e.target.value,
                         })
                       }}
-                    />
+                    >
+                      {designerOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </Select>
                   )}
                 />
                 <FormErrorMessage>{errors.designer?.message}</FormErrorMessage>
@@ -429,21 +433,24 @@ const ItemSelectionStep = ({
                   name="status"
                   control={control}
                   render={({ field }) => (
-                    <CreatableSelect
+                    <Select
                       {...field}
-                      isClearable
-                      options={statusOptions}
-                      value={statusOptions.find((opt) => opt.value === (field.value || 'Draft'))}
-                      onChange={(selectedOption) => {
-                        const value = selectedOption?.value || 'Draft'
-                        field.onChange(value)
+                      id="status"
+                      placeholder={t('proposals.status.selectStatus', 'Select status')}
+                      onChange={(e) => {
+                        field.onChange(e.target.value)
                         updateFormData({
                           ...formData,
-                          status: value,
+                          status: e.target.value,
                         })
                       }}
-                      inputId="status"
-                    />
+                    >
+                      {statusOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </Select>
                   )}
                 />
               </FormControl>
@@ -535,7 +542,7 @@ const ItemSelectionStep = ({
                           />
                           <MenuList
                             minW="120px"
-                            borderColor="gray.200"
+                            borderColor={useColorModeValue("gray.200","gray.600")}
                             boxShadow="md"
                             borderRadius="md"
                             py={1}
@@ -554,7 +561,7 @@ const ItemSelectionStep = ({
                               py={2}
                               px={3}
                               fontSize="sm"
-                              color="red.600"
+                              color={useColorModeValue("red.600","red.300")}
                               icon={<Icon as={Trash} />}
                             >
                               {t('common.delete')}

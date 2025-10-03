@@ -164,7 +164,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
               )}
             </FormHelperText>
             {validationError && (
-              <Text fontSize="xs" color="red.500" mt={1}>
+              <Text fontSize="xs" color={useColorModeValue("red.500","red.300")} mt={1}>
                 {validationError}
               </Text>
             )}

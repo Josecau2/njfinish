@@ -3,7 +3,7 @@ import { Select } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
 const LanguageSwitcher = ({ compact = false }) => {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const current = i18n.resolvedLanguage || i18n.language || 'en'
 
   const handleChange = (event) => {
@@ -28,8 +28,8 @@ const LanguageSwitcher = ({ compact = false }) => {
       minH='44px'
       minW={minWidth}
     >
-      <option value='en'>English</option>
-      <option value='es'>Español</option>
+      <option value='en'>{t('languages.english')}</option>
+      <option value='es'>{t('languages.spanish')}</option>
     </Select>
   )
 }

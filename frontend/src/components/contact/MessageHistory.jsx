@@ -1,6 +1,6 @@
 import StandardCard from '../StandardCard'
 import React, { useEffect, useMemo } from 'react'
-import { Badge, Box, Button, CardBody, Flex, HStack, Icon, Spinner, Stack, Text } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, Flex, HStack, Icon, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight, Mail } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../PageHeader'
@@ -56,7 +56,7 @@ const MessageHistory = ({
 
   const renderEmptyState = () => (
     <Box py={3} textAlign="center">
-      <Text fontSize="sm" color="gray.500">
+      <Text fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>
         {t('contact.history.empty')}
       </Text>
     </Box>
@@ -81,7 +81,7 @@ const MessageHistory = ({
                 {group.name}
               </Text>
               {group.lastAt > 0 && (
-                <Text fontSize="xs" color="gray.500" noOfLines={1}>
+                <Text fontSize="xs" color={useColorModeValue("gray.500","gray.400")} noOfLines={1}>
                   {new Date(group.lastAt).toLocaleString()} � {group.lastSubject}
                 </Text>
               )}
@@ -121,7 +121,7 @@ const MessageHistory = ({
                     {thread.owner?.name || t('contact.history.unknownUser')}
                   </Badge>
                 )}
-                <Text fontSize="xs" color="gray.500">
+                <Text fontSize="xs" color={useColorModeValue("gray.500","gray.400")}>
                   {new Date(thread.last_message_at || thread.updatedAt).toLocaleString()}
                 </Text>
                 {Number(thread.unreadCount) > 0 && (
@@ -197,7 +197,7 @@ const MessageHistory = ({
 
         {loading ? (
           <Flex align="center" justify="center" py={6}>
-            <Spinner size="md" color="blue.500" />
+            <Spinner size="md" color={useColorModeValue("blue.500","blue.300")} />
           </Flex>
         ) : (
           <Stack spacing={4}>

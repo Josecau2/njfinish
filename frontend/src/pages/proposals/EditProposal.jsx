@@ -692,7 +692,7 @@ const EditProposal = ({
                         <MenuItem onClick={() => openEditModal(index)}>
                           <Icon as={Edit} mr={2} /> {t('common.edit', 'Edit')}
                         </MenuItem>
-                        <MenuItem onClick={() => openDeleteModal(index)} color="red.500">
+                        <MenuItem onClick={() => openDeleteModal(index)} color={useColorModeValue("red.500","red.300")}>
                           <Icon as={Trash} mr={2} /> {t('common.delete', 'Delete')}
                         </MenuItem>
                         <MenuItem onClick={() => duplicateVersion(index)}>

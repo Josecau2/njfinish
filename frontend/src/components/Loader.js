@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, Spinner, Text, Center, VStack } from '@chakra-ui/react'
+import { Box, Spinner, Text, Center, VStack, useColorModeValue } from '@chakra-ui/react'
 
 const Loader = () => {
   return (
@@ -12,7 +12,7 @@ const Loader = () => {
           color="brand.500"
           aria-hidden="true"
         />
-        <Text fontSize="sm" color="gray.500">
+        <Text fontSize="sm" color={useColorModeValue("gray.500","gray.400")}>
           Loading…
         </Text>
       </VStack>
