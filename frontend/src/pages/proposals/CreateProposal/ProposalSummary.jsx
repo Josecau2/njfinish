@@ -374,290 +374,127 @@ const ItemSelectionStep = ({
             </Button>
           )}
         </div>
-        <Formik
-          initialValues={formData}
-          enableReinitialize
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
-            <React.Fragment>
-              <FormControl onSubmit={handleSubmit} className="proposal-summary-form">
-                <div className="form-section">
-                  <SimpleGrid columns={{ base: 1, md: 6 }} spacing={4}>
-                    <Box>
-                      <FormLabel htmlFor="designer">Designer *</FormLabel>
-                      <CreatableSelect
-                        isClearable
-                        id="designer"
-                        name="designer"
-                        options={designerOptions}
-                        value={designerOptions.find((opt) => opt.value === values.designer) || null}
-                        onChange={(selectedOption) => {
-                          updateFormData({
-                            ...formData,
-                            designer: selectedOption?.value || '',
-                          })
-                        }}
-                        onBlur={handleBlur}
-                      />
-                      {errors.designer && touched.designer && (
-                        <div>{errors.designer}</div>
-                      )}
-                    </Box>
-
-                    <Box>
-                      <FormLabel htmlFor="description">
-                        {t('proposals.create.customerInfo.description')} *
-                      </FormLabel>
-                      <Input
-                        type="text"
-                        id="description"
-                        name="description"
-                        value={values.description}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        placeholder={t('proposals.create.customerInfo.descriptionPlaceholder')}
-                      />
-                      {errors.description && touched.description && (
-                        <div>{errors.description}</div>
-                      )}
-                    </Box>
-
-                    <Box>
-                      <FormLabel htmlFor="status">{t('proposals.headers.status')}</FormLabel>
-                      <CreatableSelect
-                        isClearable
-                        options={statusOptions}
-                        value={statusOptions.find(
-                          (opt) => opt.value === (values.status || 'Draft'),
-                        )}
-                        onChange={(selectedOption) => {
-                          updateFormData({
-                            ...formData,
-                            status: selectedOption?.value || 'Draft',
-                          })
-                        }}
-                        onBlur={handleBlur}
-                        inputId="status"
-                      />
-                    </Box>
-
-                    <Box>
-                      <div style={{ position: 'relative' }}>
-                        <FormLabel htmlFor="date">{t('proposals.headers.date')}</FormLabel>
-                        <DatePicker
-                          id="date"
-                          selected={values.date ? new Date(values.date) : null}
-                          onChange={(date) => {
-                            const current = values.date ? new Date(values.date) : null
-                            const changed =
-                              (!current && !!date) ||
-                              (!!current && !date) ||
-                              (!!current && !!date && current.getTime() !== date.getTime())
-                            if (changed) {
-                              handleChange({ target: { name: 'date', value: date } })
-                              updateFormData({ ...formData, date })
-                            }
-                          }}
-                         
-                          dateFormat="MM/dd/yyyy"
-                          wrapperClassName="w-100"
-                          placeholderText={t('proposals.headers.date')}
-                        />
-                        <Icon as={Calendar}
-                          style={{
-                            position: 'absolute',
-                            top: '70%',
-                            right: '12px',
-                            transform: 'translateY(-50%)',
-                            color: "gray.500",
-                            pointerEvents: 'none',
-                          }}
-                        />
-                      </div>
-                    </Box>
-
-                    <Box>
-                      <div style={{ position: 'relative' }}>
-                        <FormLabel htmlFor="designDate">
-                          {t('proposals.create.customerInfo.designDoneDate')}
-                        </FormLabel>
-                        <DatePicker
-                          id="designDate"
-                          selected={values.designDate ? new Date(values.designDate) : null}
-                          onChange={(date) => {
-                            const current = values.designDate ? new Date(values.designDate) : null
-                            const changed =
-                              (!current && !!date) ||
-                              (!!current && !date) ||
-                              (!!current && !!date && current.getTime() !== date.getTime())
-                            if (changed) {
-                              handleChange({ target: { name: 'designDate', value: date } })
-                              updateFormData({ ...formData, designDate: date })
-                            }
-                          }}
-                         
-                          dateFormat="MM/dd/yyyy"
-                          wrapperClassName="w-100"
-                          placeholderText={t('proposals.create.customerInfo.designDoneDate')}
-                        />
-                        <Icon as={Calendar}
-                          style={{
-                            position: 'absolute',
-                            top: '70%',
-                            right: '12px',
-                            transform: 'translateY(-50%)',
-                            color: "gray.500",
-                            pointerEvents: 'none',
-                          }}
-                        />
-                      </div>
-                    </Box>
-
-                    <Box>
-                      <div style={{ position: 'relative' }}>
-                        <FormLabel htmlFor="measurementDate">
-                          {t('proposals.create.customerInfo.measurementDoneDate')}
-                        </FormLabel>
-                        <DatePicker
-                          id="measurementDate"
-                          selected={
-                            values.measurementDate ? new Date(values.measurementDate) : null
-                          }
-                          onChange={(date) => {
-                            const current = values.measurementDate
-                              ? new Date(values.measurementDate)
-                              : null
-                            const changed =
-                              (!current && !!date) ||
-                              (!!current && !date) ||
-                              (!!current && !!date && current.getTime() !== date.getTime())
-                            if (changed) {
-                              handleChange({ target: { name: 'measurementDate', value: date } })
-                              updateFormData({ ...formData, measurementDate: date })
-                            }
-                          }}
-                         
-                          dateFormat="MM/dd/yyyy"
-                          wrapperClassName="w-100"
-                          placeholderText={t('proposals.create.customerInfo.measurementDoneDate')}
-                        />
-                        <Icon as={Calendar}
-                          style={{
-                            position: 'absolute',
-                            top: '70%',
-                            right: '12px',
-                            transform: 'translateY(-50%)',
-                            color: "gray.500",
-                            pointerEvents: 'none',
-                          }}
-                        />
-                      </div>
-                    </Box>
-
-                    {/* Follow up dates commented out
-                  <Box>
-                    <div style={{ position: 'relative' }}>
-                      <FormLabel htmlFor="followUp1Date">{t('proposals.status.followUp1')} {t('proposals.headers.date')}</FormLabel>
-                      <DatePicker
-                        id="followUp1Date"
-                        selected={values.followUp1Date ? new Date(values.followUp1Date) : null}
-                        onChange={(date) => {
-                          const current = values.followUp1Date ? new Date(values.followUp1Date) : null;
-                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
-                          if (changed) {
-                            handleChange({ target: { name: 'followUp1Date', value: date } });
-                            updateFormData({ ...formData, followUp1Date: date });
-                          }
-                        }}
-                       
-                        dateFormat="MM/dd/yyyy"
-                        placeholderText={`${t('proposals.status.followUp1')} ${t('proposals.headers.date')}`}
-                        wrapperClassName="w-100"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: "gray.500",
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </Box>
-
-                  <Box xs={12} md={2}>
-                    <div style={{ position: 'relative' }}>
-                      <FormLabel htmlFor="followUp2Date">{t('proposals.status.followUp2')} {t('proposals.headers.date')}</FormLabel>
-                      <DatePicker
-                        id="followUp2Date"
-                        selected={values.followUp2Date ? new Date(values.followUp2Date) : null}
-                        onChange={(date) => {
-                          const current = values.followUp2Date ? new Date(values.followUp2Date) : null;
-                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
-                          if (changed) {
-                            handleChange({ target: { name: 'followUp2Date', value: date } });
-                            updateFormData({ ...formData, followUp2Date: date });
-                          }
-                        }}
-                       
-                        dateFormat="MM/dd/yyyy"
-                        placeholderText={`${t('proposals.status.followUp2')} ${t('proposals.headers.date')}`}
-                        wrapperClassName="w-100"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: "gray.500",
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </Box>
-
-                  <Box xs={12} md={2}>
-                    <div style={{ position: 'relative' }}>
-                      <FormLabel htmlFor="followUp3Date">{t('proposals.status.followUp3')} {t('proposals.headers.date')}</FormLabel>
-                      <DatePicker
-                        id="followUp3Date"
-                        selected={values.followUp3Date ? new Date(values.followUp3Date) : null}
-                        onChange={(date) => {
-                          const current = values.followUp3Date ? new Date(values.followUp3Date) : null;
-                          const changed = (!current && !!date) || (!!current && !date) || (!!current && !!date && current.getTime() !== date.getTime());
-                          if (changed) {
-                            handleChange({ target: { name: 'followUp3Date', value: date } });
-                            updateFormData({ ...formData, followUp3Date: date });
-                          }
-                        }}
-                       
-                        dateFormat="MM/dd/yyyy"
-                        placeholderText={`${t('proposals.status.followUp3')} ${t('proposals.headers.date')}`}
-                        wrapperClassName="w-100"
-                      />
-                      <FaCalendarAlt
-                        style={{
-                          position: 'absolute',
-                          top: '70%',
-                          right: '12px',
-                          transform: 'translateY(-50%)',
-                          color: "gray.500",
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    </div>
-                  </Box>
-                  */}
-                  </SimpleGrid>
-                </div>
+        <Box className="proposal-summary-form">
+          <Box className="form-section">
+            <SimpleGrid columns={{ base: 1, md: 6 }} spacing={4}>
+              <FormControl isInvalid={!!errors.designer}>
+                <FormLabel htmlFor="designer">Designer *</FormLabel>
+                <Controller
+                  name="designer"
+                  control={control}
+                  rules={{ required: t('proposals.create.customerInfo.validation.designer') }}
+                  render={({ field }) => (
+                    <CreatableSelect
+                      {...field}
+                      isClearable
+                      id="designer"
+                      options={designerOptions}
+                      value={designerOptions.find((opt) => opt.value === field.value) || null}
+                      onChange={(selectedOption) => {
+                        const value = selectedOption?.value || ''
+                        field.onChange(value)
+                        updateFormData({
+                          ...formData,
+                          designer: value,
+                        })
+                      }}
+                    />
+                  )}
+                />
+                <FormErrorMessage>{errors.designer?.message}</FormErrorMessage>
               </FormControl>
 
-              <div className="proposal-version-badges">
+              <FormControl isInvalid={!!errors.description}>
+                <FormLabel htmlFor="description">
+                  {t('proposals.create.customerInfo.description')} *
+                </FormLabel>
+                <Input
+                  {...register('description', {
+                    required: t('proposals.create.customerInfo.validation.description'),
+                  })}
+                  type="text"
+                  id="description"
+                  placeholder={t('proposals.create.customerInfo.descriptionPlaceholder')}
+                  onChange={(e) => {
+                    setValue('description', e.target.value)
+                    updateFormData({ ...formData, description: e.target.value })
+                  }}
+                />
+                <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel htmlFor="status">{t('proposals.headers.status')}</FormLabel>
+                <Controller
+                  name="status"
+                  control={control}
+                  render={({ field }) => (
+                    <CreatableSelect
+                      {...field}
+                      isClearable
+                      options={statusOptions}
+                      value={statusOptions.find((opt) => opt.value === (field.value || 'Draft'))}
+                      onChange={(selectedOption) => {
+                        const value = selectedOption?.value || 'Draft'
+                        field.onChange(value)
+                        updateFormData({
+                          ...formData,
+                          status: value,
+                        })
+                      }}
+                      inputId="status"
+                    />
+                  )}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel htmlFor="date">{t('proposals.headers.date')}</FormLabel>
+                <Input
+                  {...register('date')}
+                  type="date"
+                  id="date"
+                  onChange={(e) => {
+                    setValue('date', e.target.value)
+                    updateFormData({ ...formData, date: e.target.value })
+                  }}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel htmlFor="designDate">
+                  {t('proposals.create.customerInfo.designDoneDate')}
+                </FormLabel>
+                <Input
+                  {...register('designDate')}
+                  type="date"
+                  id="designDate"
+                  onChange={(e) => {
+                    setValue('designDate', e.target.value)
+                    updateFormData({ ...formData, designDate: e.target.value })
+                  }}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel htmlFor="measurementDate">
+                  {t('proposals.create.customerInfo.measurementDoneDate')}
+                </FormLabel>
+                <Input
+                  {...register('measurementDate')}
+                  type="date"
+                  id="measurementDate"
+                  onChange={(e) => {
+                    setValue('measurementDate', e.target.value)
+                    updateFormData({ ...formData, measurementDate: e.target.value })
+                  }}
+                />
+              </FormControl>
+
+            </SimpleGrid>
+          </Box>
+
+          <Box className="proposal-version-badges" mt={6}>
                 {versionDetails.map((version, index) => {
                   const isSelected = index === selectedVersionIndex
                   return (
@@ -737,7 +574,7 @@ const ItemSelectionStep = ({
                     </Badge>
                   )
                 })}
-              </div>
+              </Box>
               <Divider my={6} />
 
               <Tabs
@@ -805,10 +642,8 @@ const ItemSelectionStep = ({
                 <Button variant='outline' colorScheme='red' onClick={handleRejectOrder}>
                   {t('proposals.create.summary.rejectAndArchive')}
                 </Button>
-              </Stack>
-              </React.Fragment>
-          )}
-        </Formik>
+            </Stack>
+        </Box>
       </div>
 
       <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
@@ -848,6 +683,41 @@ const ItemSelectionStep = ({
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <AlertDialog
+        isOpen={isAcceptDialogOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={() => setIsAcceptDialogOpen(false)}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('proposals.confirm.submitTitle', 'Confirm Quote Submission')}
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              <VStack align="start" spacing={3}>
+                <Text>
+                  {t('proposals.confirm.submitText', 'Once you submit this quote, it will be sent to production and cannot be changed.')}
+                </Text>
+                <Text>
+                  {t('proposals.confirm.submitWarning', 'By continuing, you confirm that all details are correct and you accept the Terms & Conditions.')}
+                </Text>
+              </VStack>
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={() => setIsAcceptDialogOpen(false)} variant="outline" colorScheme="gray">
+                {t('proposals.confirm.goBack', 'Go Back')}
+              </Button>
+              <Button colorScheme="green" onClick={confirmAcceptOrder} ml={3}>
+                {t('proposals.confirm.submitConfirm', 'Accept and Submit')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </>
   )
 }

@@ -81,9 +81,15 @@ const AppSidebar = () => {
     .filter(Boolean)
     .join(' ')
 
-  const sidebarBg = customization.sidebarBg || 'slate.900'
-  const sidebarColor = customization.sidebarFontColor || 'slate.50'
+  const defaultSidebarBg = useColorModeValue('white', 'slate.900')
+  const defaultSidebarColor = useColorModeValue('gray.800', 'slate.50')
+  const sidebarBg = customization.sidebarBg || defaultSidebarBg
+  const sidebarColor = customization.sidebarFontColor || defaultSidebarColor
   const overlayColor = useColorModeValue('blackAlpha.400', 'blackAlpha.600')
+  const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100')
+  const pinButtonColor = useColorModeValue('gray.600', 'whiteAlpha.800')
+  const pinButtonHoverBg = useColorModeValue('gray.100', 'whiteAlpha.100')
+  const pinButtonBorderColor = useColorModeValue('gray.300', 'whiteAlpha.300')
 
   const resolvedLogo = resolveBrandAssetUrl(customization.logoImage)
 
@@ -137,7 +143,7 @@ const AppSidebar = () => {
       bg={sidebarBg}
       color={sidebarColor}
       borderRight="1px solid"
-      borderRightColor="whiteAlpha.100"
+      borderRightColor={borderColor}
       role="navigation"
       transition="width 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
       overflow="hidden"
@@ -150,7 +156,7 @@ const AppSidebar = () => {
         py={3}
         h="60px"
         borderBottom="1px solid"
-        borderBottomColor="whiteAlpha.100"
+        borderBottomColor={borderColor}
         flexShrink={0}
       >
         <Flex minW={0} flex="1" justify={collapsed ? "center" : "flex-start"}>
@@ -191,7 +197,7 @@ const AppSidebar = () => {
                 fontSize="lg"
                 lineHeight="1"
                 noOfLines={1}
-                color="white"
+                color={sidebarColor}
                 className="sidebar-brand-full"
               >
                 {customization.logoText || 'NJ Cabinets'}
@@ -214,8 +220,8 @@ const AppSidebar = () => {
           <IconButton size="lg" aria-label="Close sidebar"
             icon={<Icon as={X} boxSize={ICON_BOX_MD} />}
             variant="ghost"
-            color="whiteAlpha.800"
-            _hover={{ bg: "whiteAlpha.100", color: "white" }}
+            color={pinButtonColor}
+            _hover={{ bg: pinButtonHoverBg }}
             minW="44px"
             h="44px"
             onClick={handleClose}
@@ -253,7 +259,7 @@ const AppSidebar = () => {
       <Flex
         direction="column"
         borderTop="1px solid"
-        borderTopColor="whiteAlpha.100"
+        borderTopColor={borderColor}
         flexShrink={0}
         className={styles.modernSidebarFooter}
         p={2}
@@ -274,12 +280,11 @@ const AppSidebar = () => {
               aria-label={sidebarPinned ? 'Unpin sidebar (enable hover collapse)' : 'Pin sidebar (keep expanded)'}
               icon={<Icon as={sidebarPinned ? PinOff : Pin} boxSize={ICON_BOX_MD} />}
               variant="outline"
-              color="whiteAlpha.800"
-              borderColor="whiteAlpha.300"
+              color={pinButtonColor}
+              borderColor={pinButtonBorderColor}
               _hover={{
-                bg: "whiteAlpha.100",
-                borderColor: "whiteAlpha.500",
-                color: "white"
+                bg: pinButtonHoverBg,
+                borderColor: pinButtonBorderColor
               }}
               onClick={handlePinToggle}
               className="sidebar-footer-pin-btn"
@@ -289,13 +294,12 @@ const AppSidebar = () => {
               size="sm"
               variant="outline"
               leftIcon={<Icon as={sidebarPinned ? PinOff : Pin} boxSize={ICON_BOX_MD} />}
-              color="whiteAlpha.800"
-              borderColor="whiteAlpha.300"
+              color={pinButtonColor}
+              borderColor={pinButtonBorderColor}
               flex="1"
               _hover={{
-                bg: "whiteAlpha.100",
-                borderColor: "whiteAlpha.500",
-                color: "white"
+                bg: pinButtonHoverBg,
+                borderColor: pinButtonBorderColor
               }}
               onClick={handlePinToggle}
               className="sidebar-footer-pin-btn"
