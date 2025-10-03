@@ -1,0 +1,57 @@
+
+      }
+  );
+  
+> export const deleteFormData = createAsyncThunk(
+>     'proposal/deleteFormData',
+      async (id, { rejectWithValue }) => {
+          try {
+>             const response = await axiosInstance.delete(`/api/delete-proposals/${id}`);
+              return response.data;
+          } catch (error) {
+              return rejectWithValue(error.response?.data || error.message);
+  );
+  
+  // Admin-only: bypass locks/scoping to delete any proposal (soft delete)
+> export const adminDeleteProposal = createAsyncThunk(
+>     'proposal/adminDeleteProposal',
+      async (id, { rejectWithValue }) => {
+          try {
+              const response = await axiosInstance.delete(`/api/admin/proposals/${id}`);
+  
+          // DELETE
+          builder
+>             .addCase(deleteFormData.pending, (state) => {
+                  state.submitting = true;
+                  state.error = null;
+              })
+>             .addCase(deleteFormData.fulfilled, (state, action) => {
+                  state.submitting = false;
+                  state.success = true;
+                  state.response = action.payload;
+>                 const deletedId = action.meta.arg; // id passed to deleteFormData thunk
+                  state.data = state.data.filter((item) => item._id !== deletedId);
+              })
+>             .addCase(deleteFormData.rejected, (state, action) => {
+                  state.submitting = false;
+                  state.success = false;
+                  state.error = action.payload;
+  
+          // ADMIN DELETE (bypass)
+          builder
+>             .addCase(adminDeleteProposal.pending, (state) => {
+                  state.submitting = true;
+                  state.error = null;
+              })
+>             .addCase(adminDeleteProposal.fulfilled, (state, action) => {
+                  state.submitting = false;
+                  state.success = true;
+                  state.response = action.payload;
+                  const deletedId = action.meta.arg; // id passed to thunk
+                  state.data = state.data.filter((item) => item._id !== deletedId);
+              })
+>             .addCase(adminDeleteProposal.rejected, (state, action) => {
+                  state.submitting = false;
+                  state.success = false;
+                  state.error = action.payload;
+

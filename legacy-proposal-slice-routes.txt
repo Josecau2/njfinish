@@ -1,0 +1,65 @@
+
+      }
+  );
+  
+> export const getProposal = createAsyncThunk(
+>     'proposal/getProposal',
+      async (groupId = null, { rejectWithValue }) => {
+          try {
+              let url = '/api/get-proposals';
+      }
+  )
+  
+> export const getProposalById = createAsyncThunk(
+>     'proposal/getProposalById',
+      async (id, { rejectWithValue }) => {
+          try {
+>             const response = await axiosInstance.get(`/api/quotes/proposalByID/${id}`);
+              return response.data;
+          } catch (error) {
+              return rejectWithValue(error.response?.data || error.message);
+      'proposal/updateProposalStatus',
+      async ({ id, action, status }, { rejectWithValue }) => {
+          try {
+>             const response = await axiosInstance.put(`/api/quotes/${id}/status`, { action, status });
+              return response.data;
+          } catch (error) {
+              return rejectWithValue(error.response?.data || error.message);
+  
+  
+  
+>             const response = await axiosInstance.post(`/api/quotes/${id}/accept`, requestBody);
+  
+              return response.data;
+          } catch (error) {
+              });
+  
+          builder
+>             .addCase(getProposal.pending, (state) => {
+                  state.loading = true;
+                  state.error = null;
+              })
+>             .addCase(getProposal.fulfilled, (state, action) => {
+                  state.loading = false;
+                  state.data = action.payload.data;
+              })
+>             .addCase(getProposal.rejected, (state, action) => {
+                  state.loading = false;
+                  state.error = action.payload;
+              });
+  
+          // GET PROPOSAL BY ID
+          builder
+>             .addCase(getProposalById.pending, (state) => {
+                  state.loading = true;
+                  state.error = null;
+              })
+>             .addCase(getProposalById.fulfilled, (state, action) => {
+                  state.loading = false;
+                  state.currentProposal = action.payload;
+              })
+>             .addCase(getProposalById.rejected, (state, action) => {
+                  state.loading = false;
+                  state.error = action.payload;
+              });
+

@@ -1068,6 +1068,11 @@ body {
   margin: var(--cui-spacer-2);
 }
 
+[data-theme='dark'] .settings-container,
+.chakra-ui-dark .settings-container {
+  background-color: var(--chakra-colors-gray-900);
+}
+
 .settings-header-card {
   border: none;
   box-shadow: var(--app-box-shadow-sm);
@@ -1129,14 +1134,32 @@ body {
   color: var(--app-primary);
 }
 
+[data-theme='dark'] .settings-stat-icon.primary,
+.chakra-ui-dark .settings-stat-icon.primary {
+  background-color: var(--chakra-colors-blue-900);
+  color: var(--chakra-colors-blue-300);
+}
+
 .settings-stat-icon.success {
   background-color: #e6ffed;
   color: var(--app-success);
 }
 
+[data-theme='dark'] .settings-stat-icon.success,
+.chakra-ui-dark .settings-stat-icon.success {
+  background-color: var(--chakra-colors-green-900);
+  color: var(--chakra-colors-green-300);
+}
+
 .settings-stat-icon.warning {
   background-color: #fff3cd;
   color: #856404;
+}
+
+[data-theme='dark'] .settings-stat-icon.warning,
+.chakra-ui-dark .settings-stat-icon.warning {
+  background-color: var(--chakra-colors-yellow-900);
+  color: var(--chakra-colors-yellow-300);
 }
 
 .settings-search-card {
@@ -1150,6 +1173,11 @@ body {
   border-radius: var(--app-border-radius-lg);
   font-size: 14px;
   padding: 12px 16px;
+}
+
+[data-theme='dark'] .settings-search-input,
+.chakra-ui-dark .settings-search-input {
+  border-color: var(--chakra-colors-gray-600);
 }
 
 .settings-search-input:focus {
@@ -1166,11 +1194,21 @@ body {
   background-color: var(--app-gray-100);
 }
 
+[data-theme='dark'] .settings-table-header,
+.chakra-ui-dark .settings-table-header {
+  background-color: var(--chakra-colors-gray-800);
+}
+
 .settings-table-header th {
   border: none;
   font-weight: 600;
   color: var(--app-gray-600);
   padding: var(--cui-spacer-3);
+}
+
+[data-theme='dark'] .settings-table-header th,
+.chakra-ui-dark .settings-table-header th {
+  color: var(--chakra-colors-gray-400);
 }
 
 .settings-table-row {
@@ -1181,6 +1219,11 @@ body {
   padding: var(--cui-spacer-3);
   border: none;
   border-bottom: 1px solid var(--app-gray-200);
+}
+
+[data-theme='dark'] .settings-table-row td,
+.chakra-ui-dark .settings-table-row td {
+  border-bottom-color: var(--chakra-colors-gray-700);
 }
 
 .settings-badge {
@@ -1197,14 +1240,29 @@ body {
   padding: var(--cui-spacer-2);
 }
 
+[data-theme='dark'] .settings-action-btn,
+.chakra-ui-dark .settings-action-btn {
+  border-color: var(--chakra-colors-gray-600);
+}
+
 .settings-action-btn:hover.edit {
   background-color: #e7f3ff;
   border-color: var(--app-primary);
 }
 
+[data-theme='dark'] .settings-action-btn:hover.edit,
+.chakra-ui-dark .settings-action-btn:hover.edit {
+  background-color: var(--chakra-colors-blue-900);
+}
+
 .settings-action-btn:hover.delete {
   background-color: #ffe6e6;
   border-color: var(--app-danger);
+}
+
+[data-theme='dark'] .settings-action-btn:hover.delete,
+.chakra-ui-dark .settings-action-btn:hover.delete {
+  background-color: var(--chakra-colors-red-900);
 }
 
 .settings-empty-state {
@@ -1220,6 +1278,11 @@ body {
 .settings-pagination {
   padding: var(--cui-spacer-3);
   border-top: 1px solid var(--app-gray-200);
+}
+
+[data-theme='dark'] .settings-pagination,
+.chakra-ui-dark .settings-pagination {
+  border-top-color: var(--chakra-colors-gray-700);
 }
 
 /* Settings Table and User Management Improvements */
@@ -1273,11 +1336,22 @@ body {
     background: white;
   }
 
+  [data-theme='dark'] .settings-mobile-card,
+  .chakra-ui-dark .settings-mobile-card {
+    background: var(--chakra-colors-gray-800);
+  }
+
   .settings-mobile-card-header {
     padding: var(--cui-spacer-3);
     border-bottom: 1px solid var(--app-gray-200);
     font-weight: 600;
     color: var(--app-gray-800);
+  }
+
+  [data-theme='dark'] .settings-mobile-card-header,
+  .chakra-ui-dark .settings-mobile-card-header {
+    border-bottom-color: var(--chakra-colors-gray-700);
+    color: var(--chakra-colors-gray-200);
   }
 
   .settings-mobile-card-body {
@@ -1301,6 +1375,7 @@ body {
     color: var(--app-gray-600);
     font-size: 0.875rem;
   }
+[data-theme='dark'] .settings-mobile-label,  .chakra-ui-dark .settings-mobile-label {    color: var(--chakra-colors-gray-400);  }
 
   .settings-mobile-value {
     color: var(--app-gray-800);
