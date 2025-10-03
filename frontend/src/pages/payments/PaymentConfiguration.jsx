@@ -161,6 +161,7 @@ const PaymentConfiguration = () => {
   const settingsTextareaValue =
     typeof formData.settings === 'object' ? JSON.stringify(formData.settings, null, 2) : formData.settings
   const previewBg = useColorModeValue('gray.50', 'gray.700')
+  const labelColor = useColorModeValue('gray.700', 'gray.300')
 
   const previewDetails = useMemo(
     () => [
@@ -234,7 +235,7 @@ const PaymentConfiguration = () => {
           <CardBody>
             <Stack spacing={6}>
               <FormControl>
-                <FormLabel fontWeight="medium" color="gray.700">
+                <FormLabel fontWeight="medium" color={labelColor}>
                   {t('paymentConfig.gateway.provider', 'Provider')}
                 </FormLabel>
                 <Select
@@ -248,7 +249,7 @@ const PaymentConfiguration = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel fontWeight="medium" color="gray.700">
+                <FormLabel fontWeight="medium" color={labelColor}>
                   {t('paymentConfig.currencies.label', 'Supported Currencies')}
                 </FormLabel>
                 <Input
@@ -265,7 +266,7 @@ const PaymentConfiguration = () => {
               {formData.gatewayProvider === 'stripe' && (
                 <Stack spacing={4} borderWidth="1px" borderColor="gray.100" borderRadius="lg" p={4}>
                   <FormControl>
-                    <FormLabel fontWeight="medium" color="gray.700">
+                    <FormLabel fontWeight="medium" color={labelColor}>
                       {t('paymentConfig.stripe.publishableKey', 'Publishable key')}
                     </FormLabel>
                     <Input
@@ -277,7 +278,7 @@ const PaymentConfiguration = () => {
                   </FormControl>
 
                   <FormControl display="flex" alignItems="center" justifyContent="space-between">
-                    <FormLabel fontWeight="medium" color="gray.700" mb={0}>
+                    <FormLabel fontWeight="medium" color={labelColor} mb={0}>
                       {t('paymentConfig.stripe.cardStatus', 'Enable card payments')}
                     </FormLabel>
                     <Switch
@@ -288,7 +289,7 @@ const PaymentConfiguration = () => {
                   </FormControl>
 
                   <FormControl>
-                    <FormLabel fontWeight="medium" color="gray.700">
+                    <FormLabel fontWeight="medium" color={labelColor}>
                       {t('paymentConfig.stripe.secretAction', 'Secret key management')}
                     </FormLabel>
                     <RadioGroup
@@ -316,7 +317,7 @@ const PaymentConfiguration = () => {
                   </FormControl>
 
                   <FormControl>
-                    <FormLabel fontWeight="medium" color="gray.700">
+                    <FormLabel fontWeight="medium" color={labelColor}>
                       {t('paymentConfig.stripe.webhookAction', 'Webhook secret management')}
                     </FormLabel>
                     <RadioGroup
@@ -348,7 +349,7 @@ const PaymentConfiguration = () => {
               {showLegacyFields && (
                 <Stack spacing={4} borderWidth="1px" borderColor="gray.100" borderRadius="lg" p={4}>
                   <FormControl>
-                    <FormLabel fontWeight="medium" color="gray.700">
+                    <FormLabel fontWeight="medium" color={labelColor}>
                       {t('paymentConfig.gateway.url', 'Gateway URL')}
                     </FormLabel>
                     <Input
@@ -360,7 +361,7 @@ const PaymentConfiguration = () => {
                     />
                   </FormControl>
                   <FormControl>
-                    <FormLabel fontWeight="medium" color="gray.700">
+                    <FormLabel fontWeight="medium" color={labelColor}>
                       {t('paymentConfig.embed.title', 'Embedded Payment Form Code')}
                     </FormLabel>
                     <Textarea
@@ -377,7 +378,7 @@ const PaymentConfiguration = () => {
               )}
 
               <FormControl>
-                <FormLabel fontWeight="medium" color="gray.700">
+                <FormLabel fontWeight="medium" color={labelColor}>
                   {t('paymentConfig.advanced.title', 'Advanced Settings (JSON)')}
                 </FormLabel>
                 <Textarea

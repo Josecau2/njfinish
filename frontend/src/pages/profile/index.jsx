@@ -1,7 +1,7 @@
 import StandardCard from '../../components/StandardCard'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Box, Button, CardBody, CardHeader, Flex, FormControl, FormErrorMessage, FormLabel, Input, Select, SimpleGrid, Spinner } from '@chakra-ui/react'
+import { Box, Button, CardBody, CardHeader, Flex, FormControl, FormErrorMessage, FormLabel, Input, Select, SimpleGrid, Spinner, useColorModeValue } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUserById, updateUser } from '../../store/slices/userSlice'
 import Swal from 'sweetalert2'
@@ -28,6 +28,9 @@ const ProfilePage = () => {
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const initialFormRef = useRef(formData)
+
+  // Dark mode colors
+  const labelColor = useColorModeValue('gray.700', 'gray.300')
 
   // Combined loading state for initial data fetch
   const isLoading = userLoading || locationsLoading
@@ -159,7 +162,7 @@ const ProfilePage = () => {
           <Box as="form" onSubmit={handleSubmit} className="profile-form">
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
               <FormControl isRequired isInvalid={!!errors.name}>
-                <FormLabel htmlFor="name" fontSize="sm" fontWeight="medium" color="gray.700">
+                <FormLabel htmlFor="name" fontSize="sm" fontWeight="medium" color={labelColor}>
                   {t('profile.fullName')}
                   <Text as="span" color="red.500" ml={1}>*</Text>
                 </FormLabel>
@@ -216,7 +219,7 @@ const ProfilePage = () => {
 
               {!isContractor && (
                 <FormControl isRequired isInvalid={!!errors.location}>
-                  <FormLabel htmlFor="location" fontSize="sm" fontWeight="medium" color="gray.700">
+                  <FormLabel htmlFor="location" fontSize="sm" fontWeight="medium" color={labelColor}>
                     {t('profile.location')}
                     <Text as="span" color="red.500" ml={1}>*</Text>
                   </FormLabel>
