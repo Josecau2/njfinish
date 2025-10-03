@@ -194,7 +194,8 @@
       "Bash(frontend/src/pages/settings/terms/TermsPage.jsx )",
       "Bash(frontend/src/views/notifications/NotificationsPage.js )",
       "Bash(frontend/src/views/pages/page404/Page404.jsx)",
-      "Bash(do echo \"=== $file ===\" grep -n \"InputGroup\\|InputLeftElement\\|Input\" \"$file\")"
+      "Bash(do echo \"=== $file ===\" grep -n \"InputGroup\\|InputLeftElement\\|Input\" \"$file\")",
+      "Bash(/tmp/check_hooks_order.sh:*)"
     ],
     "deny": [],
     "ask": []
