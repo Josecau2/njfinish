@@ -763,10 +763,15 @@
       "title": "Secure Payment",
       "description": "You will be redirected to our secure payment gateway to complete your transaction.",
       "button": "Pay Now",
-      "security": "Your payment is processed securely through our certified payment partner."
+      "security": "Your payment is processed securely through our certified payment partner.",
+      "redirecting": "Redirecting to payment processor...",
+      "newWindow": "A new window will open",
+      "instructions": "You will be redirected to our secure payment processor to complete the transaction."
     },
     "embed": {
-      "notConfigured": "Embedded payment form is not configured. Please contact support."
+      "notConfigured": "Embedded payment form is not configured. Please contact support.",
+      "loading": "Loading payment form...",
+      "error": "Error loading payment form"
     },
     "gateway": {
       "notConfigured": "Payment gateway is not configured. Please contact support."
@@ -781,18 +786,25 @@
       "title": "Payment Unavailable",
       "subtitle": "Card payments are currently disabled",
       "configuration": "Please contact an administrator to enable Stripe payments.",
-      "status": "This payment is not available for processing right now. Current status:"
+      "status": "This payment is not available for processing right now. Current status:",
+      "message": "This payment is not available for processing right now. Current status:"
     },
     "success": {
       "title": "Payment Successful!",
       "message": "Your payment has been processed successfully.",
       "viewPayments": "View payments",
-      "stay": "Stay here"
+      "stay": "Stay here",
+      "backToOrders": "Back to orders",
+      "continue": "Continue",
+      "transactionId": "Transaction ID: {{id}}"
     },
     "error": {
       "title": "Payment Failed",
       "generic": "There was an error processing your payment. Please try again.",
-      "statusUpdate": "Payment was successful but there was an error updating the status. Please contact support."
+      "statusUpdate": "Payment was successful but there was an error updating the status. Please contact support.",
+      "message": "There was a problem processing your payment.",
+      "retry": "Retry",
+      "contact": "Contact support"
     },
     "processing": "Processing payment...",
     "transactionId": "Transaction ID",
@@ -820,7 +832,16 @@
     "receipt": {
       "available": "Receipt available",
       "view": "View Receipt"
-    }
+    },
+    "orderDetails": "Order details",
+    "orderId": "Order ID",
+    "amount": "Amount to pay",
+    "description": "Description",
+    "paymentMethods": "Payment methods",
+    "creditCard": "Credit card",
+    "bankTransfer": "Bank transfer",
+    "paypal": "PayPal",
+    "other": "Other"
   },
   "paymentConfig": {
     "title": "Payment Configuration",

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Box, Flex, Text, CardBody, CardHeader, Alert, AlertIcon, Spinner, Button } from '@chakra-ui/react'
+import { Badge, Box, Container, Flex, Text, CardBody, CardHeader, Alert, AlertIcon, Spinner, Button } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import { notifyError, notifySuccess } from '../../helpers/notify'
 import { useTranslation } from 'react-i18next'
@@ -78,41 +78,40 @@ export default function PublicProposalPage() {
 
   if (error) {
     return (
-      <div className="container py-5">
+      <Container py={5}>
         <Alert status="error">
           <AlertIcon />
           {error}
         </Alert>
-      </div>
-  
+      </Container>
+
   )
   }
 
   if (!proposal) {
     return (
-      <div className="container py-5">
+      <Container py={5}>
         <Alert status="warning">{t('publicQuote.notFound')}</Alert>
-      </div>
-  
+      </Container>
+
   )
   }
 
   return (
-    <div className="container py-4">
-      <style>{`.container .btn{ min-height:44px; }`}</style>
+    <Container py={4}>
       <StandardCard>
         <CardHeader>
-          <div>
-            <div>
+          <Flex justify="space-between" align="center">
+            <Box>
               <h5>{t('publicQuote.titleNumber', { id: proposal.id })}</h5>
               {proposal?.customer?.name && (
-                <small>
+                <Text fontSize="sm">
                   {t('publicQuote.forCustomer', { name: proposal.customer.name })}
-                </small>
+                </Text>
               )}
-            </div>
-            {isLocked && <span className="badge bg-success">{t('publicQuote.acceptedBadge')}</span>}
-          </div>
+            </Box>
+            {isLocked && <Badge colorScheme="green">{t('publicQuote.acceptedBadge')}</Badge>}
+          </Flex>
         </CardHeader>
         <CardBody>
           {proposal.description && (
@@ -168,7 +167,7 @@ export default function PublicProposalPage() {
           </Flex>
         </CardBody>
       </StandardCard>
-    </div>
-  
+    </Container>
+
   )
 }

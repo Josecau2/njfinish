@@ -266,8 +266,12 @@ export const useContracts = (groupId = null) => {
 }
 
 // Legacy exports for backwards compatibility during migration
-export const sendFormDataToBackend = (formData) => {
-  return axiosInstance.post('/api/send-form-data-to-backend', formData)
+export const sendFormDataToBackend = (payload) => {
+  // Route to correct endpoint based on whether we're creating or updating
+  const isUpdate = payload.action === '1' || payload.formData?.id
+  const endpoint = isUpdate ? '/api/update-proposals' : '/api/create-proposals'
+
+  return axiosInstance.post(endpoint, payload.formData || payload)
 }
 
 export const getContracts = (groupId = null) => {

@@ -1,10 +1,11 @@
 import React from 'react'
+import { Box, Container } from '@chakra-ui/react'
 
 const QuoteEditor = () => {
   return (
-    <div className="container py-4" role="status" aria-live="polite">
-      <div>Quote editor placeholder. Use Proposals workflow.</div>
-    </div>
+    <Container py={4} role="status" aria-live="polite">
+      <Box>Quote editor placeholder. Use Proposals workflow.</Box>
+    </Container>
   )
 }
 

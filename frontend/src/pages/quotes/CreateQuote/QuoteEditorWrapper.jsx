@@ -1,16 +1,12 @@
 import React from 'react'
+import { Box, Container } from '@chakra-ui/react'
 
 const QuoteEditorWrapper = () => {
   return (
-    <div className="container py-4" role="status" aria-live="polite">
-      <div>Quote Editor Wrapper placeholder. Please navigate to Quotes.</div>
-  )
-    </div>
-  
-  )
-}
+    <Container py={4} role="status" aria-live="polite">
+      <Box>Quote Editor Wrapper placeholder. Please navigate to Quotes.</Box>
+    </Container>
   )
 }
 
-</div>
 export default QuoteEditorWrapper

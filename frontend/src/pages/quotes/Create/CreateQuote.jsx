@@ -1,10 +1,11 @@
 import React from 'react'
+import { Box, Container } from '@chakra-ui/react'
 
 const CreateQuote = () => {
   return (
-    <div className="container py-4" role="status" aria-live="polite">
-      <div>Create Quote is handled by the Proposals Create flow.</div>
-    </div>
+    <Container py={4} role="status" aria-live="polite">
+      <Box>Create Quote is handled by the Proposals Create flow.</Box>
+    </Container>
   )
 }
 

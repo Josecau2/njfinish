@@ -7,6 +7,7 @@ import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { CreditCard, Settings, Save } from 'lucide-react'
 
+import Swal from 'sweetalert2'
 import PageHeader from '../../components/PageHeader'
 import {
   fetchPaymentConfig,

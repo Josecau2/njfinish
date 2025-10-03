@@ -2537,9 +2537,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {t('settings.manufacturers.catalogMapping.subTypes.empty')}
             </p>
           ) : (
-            <div className="row g-3">
+            <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap={3}>
               {subTypes.map((subType) => (
-                <div key={subType.id} className="col-md-6 col-lg-4">
+                <Box key={subType.id}>
                   <StandardCard>
                     <CardBody>
                       <h6>{subType.name}</h6>
@@ -2600,9 +2600,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </div>
                     </CardBody>
                   </StandardCard>
-                </div>
+                </Box>
               ))}
-            </div>
+            </Box>
           )}
         </CardBody>
       </StandardCard>
@@ -2828,7 +2828,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       ) : (
         <>
           {/* Desktop Table View - Hidden on mobile */}
-          <div className="table-responsive table-container d-none d-md-block">
+          <Box overflowX="auto" display={{ base: "none", md: "block" }}>
             <Table>
               <Thead>
                 <Tr>
@@ -2945,7 +2945,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <Td>{item.price}</Td>
                     <Td>{item.type ? item.type : 'N/A'}</Td>
                     <Td>
-                      <div className="d-flex flex-wrap gap-1">
+                      <Flex flexWrap="wrap" gap={1}>
                         <Button
                           size="sm"
                           colorScheme="gray"
@@ -3036,13 +3036,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         >
                           🗑️
                         </Button>
-                      </div>
+                      </Flex>
                     </Td>
                   </Tr>
                 ))}
               </Tbody>
             </Table>
-          </div>
+          </Box>
 
           {/* Mobile Card View - Visible only on mobile */}
           <Box display={{ base: "block", md: "none" }}>
@@ -3425,7 +3425,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <ModalContent>
           <PageHeader title={`Global Mods — ${selectedCatalogItem?.code || ''}`} />
           <ModalBody>
-            <div>
+            <Box>
               <table className="table table-sm align-middle">
                 <thead>
                   <tr>
@@ -3489,9 +3489,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   )}
                 </tbody>
               </table>
-            </div>
+            </Box>
             <hr />
-            <div className="row g-3">
+            <Box className="row g-3">
               <div>
                 <FormLabel>Add template to this item</FormLabel>
                 <Select
@@ -3525,7 +3525,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   id="item-assign-override-price"
                 />
               </div>
-              <div className="col-md-3 d-flex align-items-end">
+              <Flex align="flex-end">
                 <Button
                   colorScheme="blue"
                   disabled={!assignFormGM.templateId}
@@ -3551,8 +3551,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 >
                   Add
                 </Button>
-              </div>
-            </div>
+              </Flex>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="gray" onClick={() => setShowItemGlobalModsModal(false)}>
@@ -3750,11 +3750,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
             {/* Show selected image name or current image */}
             {styleImage ? (
-              <div className="mt-2 text-success">
+              <Text mt={2} color="green.500">
                 {t('settings.manufacturers.catalogMapping.style.imageSelected', {
                   name: styleImage.name,
                 })}
-              </div>
+              </Text>
             ) : styleForm.image ? (
               <div>
                 <p>
@@ -3896,12 +3896,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   borderRadius: '8px',
                 }}
               >
-                <div>
-                  <div className="spinner-border text-primary mb-2" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                  <div>Applying assembly cost...</div>
-                </div>
+                <Box>
+                  <Spinner color="blue.500" mb={2} />
+                  <Text>Applying assembly cost...</Text>
+                </Box>
               </div>
             )}
             <FormLabel>{t('settings.manufacturers.catalogMapping.assembly.type')}</FormLabel>
@@ -3969,58 +3967,62 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               selectedCatalogItem &&
               selectedCatalogItem.type &&
               assemblyCostsByType[selectedCatalogItem.type]?.assemblyCosts?.length > 0 && (
-                <div className="mt-3 p-3 bg-light rounded">
-                  <small className="fw-bold text-muted">
+                <Box mt={3} p={3} bg="gray.50" borderRadius="md">
+                  <Text fontSize="sm" fontWeight="bold" color="gray.600">
                     Existing Assembly Costs for "{selectedCatalogItem.code}" (
                     {selectedCatalogItem.type}):
-                  </small>
-                  <div>
+                  </Text>
+                  <Flex gap={1} flexWrap="wrap">
                     {assemblyCostsByType[selectedCatalogItem.type].assemblyCosts.map(
                       (cost, idx) => (
-                        <span
+                        <Badge
                           key={idx}
-                          className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} me-1`}
+                          colorScheme={cost.price === 0 ? 'gray' : 'blue'}
+                          mr={1}
                           title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}
                         >
                           {cost.assemblyType}: ${cost.price.toFixed(2)}
-                        </span>
+                        </Badge>
                       ),
                     )}
-                  </div>
-                </div>
+                  </Flex>
+                </Box>
               )}
 
             {assemblyData.applyTo === 'all' && Object.keys(assemblyCostsByType).length > 0 && (
-              <div className="mt-3 p-3 bg-light rounded">
-                <small className="fw-bold text-muted">Existing Assembly Costs by Type:</small>
-                <div>
+              <Box mt={3} p={3} bg="gray.50" borderRadius="md">
+                <Text fontSize="sm" fontWeight="bold" color="gray.600">Existing Assembly Costs by Type:</Text>
+                <Box>
                   {availableTypes.map((typeItem) => {
                     const typeAssemblyCosts =
                       assemblyCostsByType[typeItem.type]?.assemblyCosts || []
                     if (typeAssemblyCosts.length === 0) return null
 
                     return (
-                      <div
+                      <Flex
                         key={typeItem.type}
-                        className="d-flex justify-content-between align-items-center mb-1"
+                        justify="space-between"
+                        align="center"
+                        mb={1}
                       >
-                        <small>{typeItem.type}:</small>
-                        <div>
+                        <Text fontSize="sm">{typeItem.type}:</Text>
+                        <Flex gap={1}>
                           {typeAssemblyCosts.map((cost, idx) => (
-                            <span
+                            <Badge
                               key={idx}
-                              className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`}
+                              colorScheme={cost.price === 0 ? 'gray' : 'blue'}
+                              ml={1}
                               title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}
                             >
                               ${cost.price.toFixed(2)}
-                            </span>
+                            </Badge>
                           ))}
-                        </div>
-                      </div>
+                        </Flex>
+                      </Flex>
                     )
                   })}
-                </div>
-              </div>
+                </Box>
+              </Box>
             )}
 
             {assemblyData.applyTo === 'type' && (
@@ -4028,9 +4030,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <FormLabel>
                   {t('settings.manufacturers.catalogMapping.assembly.selectItemType')}
                 </FormLabel>
-                <div
-                  className="border rounded p-3"
-                  style={{ maxHeight: '300px', overflowY: 'auto' }}
+                <Box
+                  border="1px solid"
+                  borderColor="gray.300"
+                  borderRadius="md"
+                  p={3}
+                  maxH="300px"
+                  overflowY="auto"
                 >
                   {availableTypes.map((typeItem) => {
                     const isSelected = assemblyData.selectedItemType === typeItem.type
@@ -4038,7 +4044,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       assemblyCostsByType[typeItem.type]?.assemblyCosts || []
 
                     return (
-                      <div key={typeItem.type} className="form-check mb-2">
+                      <Flex key={typeItem.type} align="start" mb={2}>
                         <input
 
                           type="radio"
@@ -4053,26 +4059,27 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                           htmlFor={`single-type-${typeItem.type}`}
                         >
-                          <div>
-                            <div>{typeItem.type}</div>
-                            <small>{typeItem.count} items</small>
-                          </div>
-                          <div>
+                          <Box>
+                            <Box>{typeItem.type}</Box>
+                            <Text fontSize="sm">{typeItem.count} items</Text>
+                          </Box>
+                          <Box>
                             {typeAssemblyCosts.map((cost, idx) => (
-                              <span
+                              <Badge
                                 key={idx}
-                                className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`}
+                                colorScheme={cost.price === 0 ? 'gray' : 'blue'}
+                                ml={1}
                                 title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}
                               >
                                 ${cost.price.toFixed(2)}
-                              </span>
+                              </Badge>
                             ))}
-                          </div>
+                          </Box>
                         </label>
-                      </div>
+                      </Flex>
                     )
                   })}
-                </div>
+                </Box>
               </>
             )}
 
@@ -4084,9 +4091,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     'Select Item Types',
                   )}
                 </FormLabel>
-                <div
-                  className="border rounded p-3"
-                  style={{ maxHeight: '300px', overflowY: 'auto' }}
+                <Box
+                  border="1px solid"
+                  borderColor="gray.300"
+                  borderRadius="md"
+                  p={3}
+                  maxH="300px"
+                  overflowY="auto"
                 >
                   {availableTypes.map((typeItem) => {
                     const isSelected = assemblyData.selectedTypes.includes(typeItem.type)
@@ -4094,7 +4105,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       assemblyCostsByType[typeItem.type]?.assemblyCosts || []
 
                     return (
-                      <div key={typeItem.type} className="form-check mb-2">
+                      <Flex key={typeItem.type} align="start" mb={2}>
                         <input
 
                           type="checkbox"
@@ -4120,30 +4131,33 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                           htmlFor={`type-${typeItem.type}`}
                         >
-                          <div>
-                            <div>{typeItem.type}</div>
-                            <small>{typeItem.count} items</small>
-                          </div>
-                          <div>
+                          <Box>
+                            <Box>{typeItem.type}</Box>
+                            <Text fontSize="sm">{typeItem.count} items</Text>
+                          </Box>
+                          <Box>
                             {typeAssemblyCosts.map((cost, idx) => (
-                              <span
+                              <Badge
                                 key={idx}
-                                className={`badge ${cost.price === 0 ? 'bg-secondary' : 'bg-info'} ms-1`}
+                                colorScheme={cost.price === 0 ? 'gray' : 'blue'}
+                                ml={1}
                                 title={`${cost.assemblyType}: $${cost.price.toFixed(2)} (${cost.itemsWithCost} items)`}
                               >
                                 ${cost.price.toFixed(2)}
-                              </span>
+                              </Badge>
                             ))}
-                          </div>
+                          </Box>
                         </label>
-                      </div>
+                      </Flex>
                     )
                   })}
-                </div>
+                </Box>
 
-                <div className="mt-3 d-flex gap-2">
-                  <button
-                    className="btn btn-outline-secondary btn-sm"
+                <Flex mt={3} gap={2}>
+                  <Button
+                    variant="outline"
+                    colorScheme="gray"
+                    size="sm"
                     type="button"
                     onClick={() => {
                       const allTypes = availableTypes.map((t) => t.type)
@@ -4151,26 +4165,28 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     }}
                   >
                     {t('common.selectAll', 'Select All')}
-                  </button>
-                  <button
-                    className="btn btn-outline-secondary btn-sm"
+                  </Button>
+                  <Button
+                    variant="outline"
+                    colorScheme="gray"
+                    size="sm"
                     type="button"
                     onClick={() => setAssemblyData((prev) => ({ ...prev, selectedTypes: [] }))}
                   >
                     {t('common.selectNone', 'Select None')}
-                  </button>
-                </div>
+                  </Button>
+                </Flex>
 
                 {assemblyData.selectedTypes.length > 0 && (
-                  <div className="alert alert-info mt-3">
-                    <small>
+                  <Box mt={3} p={3} bg="blue.50" borderRadius="md">
+                    <Text fontSize="sm">
                       {t(
                         'settings.manufacturers.catalogMapping.assembly.multipleTypesWarning',
                         'This will apply the assembly cost to all items in {{count}} selected types.',
                         { count: assemblyData.selectedTypes.length },
                       )}
-                    </small>
-                  </div>
+                    </Text>
+                  </Box>
                 )}
               </>
             )}
@@ -4354,8 +4370,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
               <p>What would you like to do with the items that currently have this style?</p>
 
-              <div>
-                <div className="form-check mb-2">
+              <VStack align="start" spacing={2}>
+                <Flex align="start" mb={2}>
                   <input
 
                     type="radio"
@@ -4364,12 +4380,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     checked={!mergeToStyle}
                     onChange={() => setMergeToStyle('')}
                   />
-                  <label className="form-check-label text-danger" htmlFor="deleteItems">
+                  <Text as="label" htmlFor="deleteItems" color="red.500" ml={2}>
                     <strong>Delete all items</strong> with this style permanently
-                  </label>
-                </div>
+                  </Text>
+                </Flex>
 
-                <div>
+                <Flex align="start">
                   <input
 
                     type="radio"
@@ -4380,14 +4396,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       setMergeToStyle(sortedUniqueStyles.find((s) => s !== styleToDelete) || '')
                     }
                   />
-                  <label className="form-check-label text-primary" htmlFor="mergeItems">
+                  <Text as="label" htmlFor="mergeItems" color="blue.500" ml={2}>
                     <strong>Merge items</strong> to another style
-                  </label>
-                </div>
-              </div>
+                  </Text>
+                </Flex>
+              </VStack>
 
               {mergeToStyle !== '' && (
-                <div>
+                <Box>
                   <FormLabel>Select target style:</FormLabel>
                   <Select
                     value={mergeToStyle}
@@ -4402,20 +4418,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         </option>
                       ))}
                   </Select>
-                </div>
+                </Box>
               )}
 
-              <div className="mt-3 p-3 bg-light rounded">
-                <small>
+              <Box mt={3} p={3} bg="gray.50" borderRadius="md">
+                <Text fontSize="sm">
                   {mergeToStyle ? (
                     <>
                       <strong>Smart Merge Action:</strong> All{' '}
                       {catalogData.filter((item) => item.style === styleToDelete).length} items with
                       style "{styleToDelete}" will be processed:
-                      <ul className="mt-1 mb-0">
+                      <Box as="ul" mt={1} mb={0}>
                         <li>Items with unique codes will be merged to style "{mergeToStyle}"</li>
                         <li>Duplicate items (same code + style) will be automatically removed</li>
-                      </ul>
+                      </Box>
                     </>
                   ) : (
                     <>
@@ -4425,8 +4441,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       undone.
                     </>
                   )}
-                </small>
-              </div>
+                </Text>
+              </Box>
             </div>
           </ModalBody>
           <ModalFooter>
@@ -4468,9 +4484,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <PageHeader title={t('settings.manufacturers.catalogMapping.deleteItem.modalTitle')} />
           <ModalBody>
             {itemToDelete && (
-              <div>
-                <p>Are you sure you want to delete this catalog item?</p>
-                <div className="p-3 bg-light rounded">
+              <Box>
+                <Text>Are you sure you want to delete this catalog item?</Text>
+                <Box p={3} bg="gray.50" borderRadius="md">
                   <strong>Code:</strong> {itemToDelete.code}
                   <br />
                   <strong>Description:</strong> {itemToDelete.description || 'N/A'}
@@ -4478,11 +4494,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <strong>Style:</strong> {itemToDelete.style || 'N/A'}
                   <br />
                   <strong>Price:</strong> ${itemToDelete.price || '0.00'}
-                </div>
-                <p className="text-danger mt-3">
-                  <small>⚠️ This action cannot be undone.</small>
-                </p>
-              </div>
+                </Box>
+                <Text color="red.500" mt={3} fontSize="sm">
+                  ⚠️ This action cannot be undone.
+                </Text>
+              </Box>
             )}
           </ModalBody>
           <ModalFooter>
@@ -4517,15 +4533,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.bulk.deleteModalTitle')} />
           <ModalBody>
-            <div>
-              <p>
+            <Box>
+              <Text>
                 Are you sure you want to delete <strong>{selectedItems.length}</strong> selected
                 catalog items?
-              </p>
+              </Text>
 
-              <div className="p-3 bg-light rounded">
+              <Box p={3} bg="gray.50" borderRadius="md">
                 <strong>Items to be deleted:</strong>
-                <ul className="mt-2 mb-0">
+                <Box as="ul" mt={2} mb={0}>
                   {currentItems
                     .filter((item) => selectedItems.includes(item.id))
                     .slice(0, 10) // Show first 10 items
@@ -4539,15 +4555,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       <em>... and {selectedItems.length - 10} more items</em>
                     </li>
                   )}
-                </ul>
-              </div>
+                </Box>
+              </Box>
 
-              <p className="text-danger mt-3">
-                <small>
-                  ⚠️ This action cannot be undone. All selected items will be permanently deleted.
-                </small>
-              </p>
-            </div>
+              <Text color="red.500" mt={3} fontSize="sm">
+                ⚠️ This action cannot be undone. All selected items will be permanently deleted.
+              </Text>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -4581,22 +4595,22 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.rollback.modalTitle')} />
           <ModalBody>
-            <div>
-              <p>{t('settings.manufacturers.catalogMapping.rollback.selectBackup')}</p>
+            <Box>
+              <Text>{t('settings.manufacturers.catalogMapping.rollback.selectBackup')}</Text>
 
               {isLoadingBackups ? (
-                <div className="text-center py-3">
-                  <span role="status"></span>
-                  Loading backups...
-                </div>
+                <Flex justify="center" py={3}>
+                  <Spinner role="status" mr={2} />
+                  <Text>Loading backups...</Text>
+                </Flex>
               ) : availableBackups.length === 0 ? (
-                <div className="alert alert-info">
+                <Box p={3} bg="blue.50" borderRadius="md">
                   {t('settings.manufacturers.catalogMapping.rollback.noBackups')}
-                </div>
+                </Box>
               ) : (
-                <div>
+                <VStack align="start" spacing={2}>
                   {availableBackups.map((backup) => (
-                    <div key={backup.uploadSessionId} className="form-check mb-2">
+                    <Flex key={backup.uploadSessionId} align="start" mb={2}>
                       <input
 
                         type="radio"
@@ -4606,32 +4620,33 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         checked={selectedBackup === backup.uploadSessionId}
                         onChange={(event) => setSelectedBackup(event.currentTarget.value)}
                       />
-                      <label
-
+                      <Text
+                        as="label"
                         htmlFor={`backup-${backup.uploadSessionId}`}
                         aria-label={`Select backup ${backup.originalName}`}
+                        ml={2}
                       >
-                        <div>
+                        <Box>
                           <strong>{backup.originalName}</strong>
                           <br />
-                          <small>
+                          <Text fontSize="sm">
                             {new Date(backup.uploadedAt).toLocaleString()} - {backup.itemsCount}{' '}
                             items
-                          </small>
-                        </div>
-                      </label>
-                    </div>
+                          </Text>
+                        </Box>
+                      </Text>
+                    </Flex>
                   ))}
-                </div>
+                </VStack>
               )}
-            </div>
+            </Box>
 
             {selectedBackup && (
-              <div className="alert alert-warning">
+              <Box mt={3} p={3} bg="orange.50" borderRadius="md">
                 <strong>{t('settings.manufacturers.catalogMapping.rollback.warning')}</strong>
                 <br />
                 {t('settings.manufacturers.catalogMapping.rollback.confirmText')}
-              </div>
+              </Box>
             )}
           </ModalBody>
           <ModalFooter>
@@ -4677,13 +4692,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             })}
           />
           <ModalBody>
-            <div>
-              <p>
+            <Box>
+              <Text>
                 Edit the following fields for the selected {selectedItems.length} catalog items.
                 Leave fields empty to keep existing values.
-              </p>
+              </Text>
 
-              <div className="row g-3">
+              <Box className="row g-3">
                 <div>
                   <FormLabel>Style</FormLabel>
                   <Input
@@ -4732,15 +4747,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     placeholder="Leave empty to keep existing"
                   />
                 </div>
-              </div>
+              </Box>
 
-              <div className="mt-3 p-3 bg-light rounded">
-                <small>
+              <Box mt={3} p={3} bg="gray.50" borderRadius="md">
+                <Text fontSize="sm">
                   <strong>Note:</strong> Only the fields you fill will be updated. Empty fields will
                   preserve the existing values for each item.
-                </small>
-              </div>
-            </div>
+                </Text>
+              </Box>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -4774,23 +4789,23 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <ModalContent>
           <PageHeader title="Edit Style Name" />
           <ModalBody>
-            <div>
-              <p>
+            <Box>
+              <Text>
                 Rename the style for all items of this manufacturer. This will affect all catalog
                 items currently using this style.
-              </p>
+              </Text>
 
-              <div>
+              <Box>
                 <FormLabel>Current Style Name</FormLabel>
                 <Input
                   type="text"
                   value={styleNameEditForm.oldStyleName}
                   disabled
-                  className="bg-light"
+                  bg="gray.50"
                 />
-              </div>
+              </Box>
 
-              <div>
+              <Box>
                 <FormLabel>New Style Name</FormLabel>
                 <Input
                   type="text"
@@ -4803,10 +4818,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   }
                   placeholder="Enter new style name"
                 />
-              </div>
+              </Box>
 
-              <div className="p-3 bg-warning bg-opacity-10 rounded">
-                <small>
+              <Box p={3} bg="orange.50" borderRadius="md">
+                <Text fontSize="sm">
                   <strong>Warning:</strong> This will rename the style for all items currently using
                   "{styleNameEditForm.oldStyleName}". The change applies to all{' '}
                   {
@@ -4814,9 +4829,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       .length
                   }{' '}
                   items with this style.
-                </small>
-              </div>
-            </div>
+                </Text>
+              </Box>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -5166,7 +5181,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     </div>
 
                     {selectedModificationCategory === 'new' && (
-                      <div className="border rounded p-3 mb-3">
+                      <Box border="1px solid" borderColor="gray.300" borderRadius="md" p={3} mb={3}>
                         <h6>{t('globalMods.modal.add.createNew')}</h6>
                         <div>
                           <div>
@@ -5192,7 +5207,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             />
                           </div>
                         </div>
-                      </div>
+                      </Box>
                     )}
 
                     <div>
@@ -5218,7 +5233,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <h5>Step 2: Build Modification Template</h5>
 
                     {/* Default Required Fields */}
-                    <div className="border rounded p-3 mb-3">
+                    <Box border="1px solid" borderColor="gray.300" borderRadius="md" p={3} mb={3}>
                       <h6>Required Fields</h6>
                       <div>
                         <div>
@@ -5249,14 +5264,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           />
                         </div>
                       </div>
-                    </div>
+                    </Box>
 
                     {/* Optional Field Builder */}
-                    <div className="border rounded p-3 mb-3">
+                    <Box border="1px solid" borderColor="gray.300" borderRadius="md" p={3} mb={3}>
                       <h6>Optional Field Builder (Building Blocks)</h6>
 
                       {/* Slider Controls */}
-                      <div className="row mb-3">
+                      <Box mb={3}>
                         <div>
                           <div>
                             <div>
@@ -5544,10 +5559,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             )}
                           </div>
                         </div>
-                      </div>
+                      </Box>
 
                       {/* Additional Controls */}
-                      <div className="row mb-3">
+                      <Box mb={3}>
                         <div>
                           <div>
                             <div>
@@ -5742,10 +5757,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             )}
                           </div>
                         </div>
-                      </div>
+                      </Box>
 
                       {/* Description and Sample Image */}
-                      <div className="row mb-3">
+                      <Box mb={3}>
                         <div>
                           <div>
                             <div>
@@ -5870,14 +5885,16 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   />
                                 </div>
                                 {newTemplate.sampleImage && (
-                                  <div
-                                    className="p-2 bg-light border rounded"
-                                    style={{
-                                      height: 200,
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      justifyContent: 'center',
-                                    }}
+                                  <Box
+                                    p={2}
+                                    bg="gray.50"
+                                    border="1px solid"
+                                    borderColor="gray.300"
+                                    borderRadius="md"
+                                    h="200px"
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="center"
                                   >
                                     <Image
                                       src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${newTemplate.sampleImage}`}
@@ -5893,16 +5910,16 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                         event.currentTarget.src = '/images/nologo.png'
                                       }}
                                     />
-                                  </div>
+                                  </Box>
                                 )}
                               </div>
                             )}
                           </div>
                         </div>
-                      </div>
+                      </Box>
 
                       {/* Ready Checkbox */}
-                      <div className="border-top pt-3">
+                      <Box borderTop="1px solid" borderColor="gray.300" pt={3}>
                         <Checkbox
                           isChecked={newTemplate.isReady}
                           onChange={(event) =>
@@ -5924,11 +5941,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         >
                           {t('settings.manufacturers.catalogMapping.builder.ready.saveAsBlueprint')}
                         </Checkbox>
-                        <small className="text-muted d-block mt-1">
+                        <Text fontSize="sm" color="gray.500" display="block" mt={1}>
                           {t('settings.manufacturers.catalogMapping.builder.ready.blueprintHint')}
-                        </small>
-                      </div>
-                    </div>
+                        </Text>
+                      </Box>
+                    </Box>
 
                     <div>
                       <Button colorScheme="gray" onClick={() => setModificationStep(1)}>
@@ -6069,9 +6086,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   </Button>
                 </Flex>
 
-                <div>
+                <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
                   {globalGallery.map((category) => (
-                    <div key={category.id} className="col-md-6 mb-4">
+                    <Box key={category.id}>
                       <div>
                         <div>
                           <h6>{category.name}</h6>
@@ -6272,9 +6289,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           )}
                         </div>
                       </div>
-                    </div>
+                    </Box>
                   ))}
-                </div>
+                </Box>
               </div>
             )}
           </ModalBody>
@@ -6332,14 +6349,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   }}
                 />
                 {editCategory.image && (
-                  <div
-                    className="mt-2 p-2 bg-light border rounded"
-                    style={{
-                      height: 220,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
+                  <Box
+                    mt={2}
+                    p={2}
+                    bg="gray.50"
+                    border="1px solid"
+                    borderColor="gray.300"
+                    borderRadius="md"
+                    h="220px"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
                   >
                     <Image
                       src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editCategory.image}`}
@@ -6349,7 +6369,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         event.currentTarget.src = '/images/nologo.png'
                       }}
                     />
-                  </div>
+                  </Box>
                 )}
               </div>
             </div>
@@ -6396,7 +6416,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   })}
                 </p>
                 {categoryToDelete.templates?.length > 0 && (
-                  <div className="alert alert-warning">
+                  <Box p={3} bg="orange.50" borderRadius="md">
                     <strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong>{' '}
                     {t('globalMods.modal.deleteCategory.contains', {
                       count: categoryToDelete.templates.length,
@@ -6428,7 +6448,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         </label>
                       </div>
                     </div>
-                  </div>
+                  </Box>
                 )}
               </>
             )}
@@ -6510,15 +6530,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     </optgroup>
                   </select>
                 </div>
-                <div className="alert alert-info">
-                  <small>
+                <Box p={3} bg="blue.50" borderRadius="md">
+                  <Text fontSize="sm">
                     <strong>{t('common.note', 'Note')}:</strong>{' '}
                     {t(
                       'settings.manufacturers.catalogMapping.gallery.tooltips.move',
                       'Move to different category',
                     )}
-                  </small>
-                </div>
+                  </Text>
+                </Box>
               </>
             )}
             <Flex gap={2} justify="flex-end" mt={3}>
@@ -6554,9 +6574,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <PageHeader title={t('globalMods.modal.editTemplate.title', 'Edit Modification')} />
           <ModalBody>
             {/* Basic Information */}
-            <div className="border rounded p-3 mb-3">
+            <Box border="1px solid" borderColor="gray.300" borderRadius="md" p={3} mb={3}>
               <h6>{t('common.basicInformation', 'Basic Information')}</h6>
-              <div className="row g-3">
+              <Box className="row g-3">
                 <div>
                   <FormLabel>{t('globalMods.modal.editTemplate.nameLabel', 'Name')}</FormLabel>
                   <Input
@@ -6603,7 +6623,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   </Select>
                 </div>
                 <div>
-                  <div className="form-check form-switch mt-4">
+                  <Flex align="center" mt={4}>
                     <input
 
                       type="checkbox"
@@ -6613,12 +6633,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         setEditTemplate((t) => ({ ...t, showToBoth: event.currentTarget.checked }))
                       }
                     />
-                    <label htmlFor="showToBoth">
+                    <Text as="label" htmlFor="showToBoth" ml={2}>
                       {t('globalMods.builder.descriptions.customer', 'Customer description')} &{' '}
                       {t('globalMods.builder.descriptions.installer', 'Installer description')}{' '}
                       {t('common.showToBoth', 'shown to both')}
-                    </label>
-                  </div>
+                    </Text>
+                  </Flex>
                 </div>
                 <div>
                   <FormLabel>
@@ -6634,14 +6654,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     }}
                   />
                   {editTemplate.sampleImage && (
-                    <div
-                      className="mt-2 p-2 bg-light border rounded"
-                      style={{
-                        height: 240,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
+                    <Box
+                      mt={2}
+                      p={2}
+                      bg="gray.50"
+                      border="1px solid"
+                      borderColor="gray.300"
+                      borderRadius="md"
+                      h="240px"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
                     >
                       <Image
                         src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editTemplate.sampleImage}`}
@@ -6651,18 +6674,18 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           event.currentTarget.src = '/images/nologo.png'
                         }}
                       />
-                    </div>
+                    </Box>
                   )}
                 </div>
-              </div>
-            </div>
+              </Box>
+            </Box>
 
             {/* Advanced Field Configuration */}
-            <div className="border rounded p-3 mb-3">
+            <Box border="1px solid" borderColor="gray.300" borderRadius="md" p={3} mb={3}>
               <h6>{t('common.advancedFieldConfiguration', 'Advanced Field Configuration')}</h6>
 
               {/* Slider Controls */}
-              <div className="row mb-3">
+              <Box mb={3}>
                 <div>
                   <div>
                     <div>
@@ -6855,10 +6878,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     )}
                   </div>
                 </div>
-              </div>
+              </Box>
 
               {/* Additional Controls */}
-              <div className="row mb-3">
+              <Box mb={3}>
                 <div>
                   <div>
                     <div>
@@ -6961,10 +6984,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     )}
                   </div>
                 </div>
-              </div>
+              </Box>
 
               {/* Notes and Upload Controls */}
-              <div className="row mb-3">
+              <Box mb={3}>
                 <div>
                   <div>
                     <div>
@@ -7066,7 +7089,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     )}
                   </div>
                 </div>
-              </div>
+              </Box>
 
               {/* Descriptions */}
               <div>
@@ -7132,7 +7155,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   </div>
                 </div>
               </div>
-            </div>
+            </Box>
 
             <Flex gap={2} justify="flex-end" mt={3}>
               <Button colorScheme="gray" onClick={() => setShowQuickEditTemplateModal(false)}>
@@ -7309,12 +7332,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 'Select catalog items to assign to this sub-type:',
               )}
             </FormLabel>
-            <small className="d-block text-muted mb-3">
+            <Text fontSize="sm" display="block" color="gray.500" mb={3}>
               {t('settings.manufacturers.catalogMapping.subTypes.assignModal.selectedSummary', {
                 codes: selectedCatalogCodes.length,
                 items: selectedCatalogItem.length,
               })}
-            </small>
+            </Text>
           </div>
 
           <div style={{ maxHeight: '400px' }}>

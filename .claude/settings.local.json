@@ -150,7 +150,10 @@
       "Bash(do echo \"Fixing $file\")",
       "Bash(./eliminate-bootstrap-catalogtable.sh:*)",
       "Bash(./eliminate-bootstrap-catalogtable-v2.sh:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(if [ -d \"node_modules/.vite\" ])",
+      "Bash(then rm -rf node_modules/.vite)",
+      "Bash(else echo \"No Vite cache found\")"
     ],
     "deny": [],
     "ask": []

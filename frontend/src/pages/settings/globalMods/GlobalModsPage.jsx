@@ -604,10 +604,10 @@ const GlobalModsPage = () => {
                       </Button>
                     </div>
                   </h6>
-                  <div className="row g-3">
+                  <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={3}>
                     {(cat.templates || []).map((tpl) => (
-                      <div key={tpl.id} className="col-12 col-md-6">
-                        <div
+                      <Box key={tpl.id}>
+                        <Box
                          
                           style={{ gap: 10 }}
                         >
@@ -652,10 +652,10 @@ const GlobalModsPage = () => {
                           </Button>
                         </div>
                         {/* close border container and column */}
-                        </div>
-                      </div>
+                        </Box>
+                      </Box>
                     ))}
-                  </div>
+                  </Box>
                 </div>
               ))}
             </CardBody>
