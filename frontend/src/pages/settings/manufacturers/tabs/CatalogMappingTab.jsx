@@ -3045,20 +3045,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           </div>
 
           {/* Mobile Card View - Visible only on mobile */}
-          <div className="d-block d-md-none">
+          <Box display={{ base: "block", md: "none" }}>
             {/* Mobile Select All */}
-            <div className="d-flex align-items-center mb-3 p-3 bg-light rounded">
-              <input
-                type="checkbox"
-                checked={isSelectAll}
+            <Flex align="center" mb={3} p={3} bg="gray.50" borderRadius="md">
+              <Checkbox
+                isChecked={isSelectAll}
                 onChange={(event) => handleSelectAll(event.currentTarget.checked)}
-                className="form-check-input me-2"
+                mr={2}
                 id="mobile-select-all"
               />
-              <label htmlFor="mobile-select-all" className="form-check-label mb-0">
+              <Text as="label" htmlFor="mobile-select-all" mb={0}>
                 Select All ({currentItems.length} items)
-              </label>
-            </div>
+              </Text>
+            </Flex>
 
             {/* Mobile Cards */}
             <VStack spacing={3} align="stretch">
@@ -3150,20 +3149,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </StandardCard>
               ))}
             </VStack>
-          </div>
+          </Box>
         </>
       )}
       {catalogData.length > 0 ? (
-        <div className="d-flex justify-content-between align-items-center mt-3">
-          <div>
+        <Flex justify="space-between" align="center" mt={3}>
+          <Text>
             {loading
               ? 'Loading…'
               : t('pagination.pageInfo', {
                   current: pagination.page || 1,
                   total: pagination.totalPages || 1,
                 })}
-          </div>
-          <div>
+          </Text>
+          <Box>
             <Button
               size="sm"
               colorScheme="gray"
@@ -3199,8 +3198,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             >
               {t('pagination.nextPageTitle')}
             </Button>
-          </div>
-        </div>
+          </Box>
+        </Flex>
       ) : (
         ''
       )}
@@ -3241,14 +3240,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             )}
           />
           <ModalBody>
-            <div className="mb-3 d-flex align-items-center gap-2">
+            <Flex mb={3} align="center" gap={2}>
               <Checkbox
                 isChecked={includeDraftTemplates}
                 onChange={(event) => setIncludeDraftTemplates(event.currentTarget.checked)}
               >
                 Include drafts
               </Checkbox>
-            </div>
+            </Flex>
             <div className="row g-3">
               <div>
                 <FormLabel>Template</FormLabel>
@@ -3335,9 +3334,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
             )}
             {assignFormGM.scope === 'item' && (
-              <div className="mt-2 text-muted small">
+              <Text mt={2} color="gray.600" fontSize="sm">
                 {selectedItems.length} selected item(s) will receive this assignment.
-              </div>
+              </Text>
             )}
             <hr />
             <div>
