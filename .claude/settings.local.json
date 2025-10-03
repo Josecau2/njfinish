@@ -149,7 +149,8 @@
       "Bash(then)",
       "Bash(do echo \"Fixing $file\")",
       "Bash(./eliminate-bootstrap-catalogtable.sh:*)",
-      "Bash(./eliminate-bootstrap-catalogtable-v2.sh:*)"
+      "Bash(./eliminate-bootstrap-catalogtable-v2.sh:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []

@@ -6063,12 +6063,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
             {modificationView === 'gallery' && (
               <div>
-                <div className="d-flex justify-content-between align-items-center mb-3">
+                <Flex justify="space-between" align="center" mb={3}>
                   <h5>{t('settings.manufacturers.catalogMapping.gallery.title')}</h5>
                   <Button colorScheme="gray" onClick={() => setModificationView('cards')}>
                     {t('settings.manufacturers.catalogMapping.gallery.back')}
                   </Button>
-                </div>
+                </Flex>
 
                 <div>
                   {globalGallery.map((category) => (
@@ -6354,7 +6354,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 )}
               </div>
             </div>
-            <div className="d-flex gap-2 justify-content-end mt-3">
+            <Flex gap={2} justify="flex-end" mt={3}>
               <Button colorScheme="gray" onClick={() => setShowEditCategoryModal(false)}>
                 {t('globalMods.modal.editCategory.cancel', 'Cancel')}
               </Button>
@@ -6373,7 +6373,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {t('globalMods.modal.editCategory.save', 'Save')}
               </Button>
-            </div>
+            </Flex>
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -6433,7 +6433,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 )}
               </>
             )}
-            <div className="d-flex gap-2 justify-content-end mt-3">
+            <Flex gap={2} justify="flex-end" mt={3}>
               <Button colorScheme="gray" onClick={() => setShowDeleteCategoryModal(false)}>
                 {t('globalMods.modal.deleteCategory.cancel', 'Cancel')}
               </Button>
@@ -6463,7 +6463,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {t('globalMods.modal.deleteCategory.deleteOnly', 'Delete Category')}
               </Button>
-            </div>
+            </Flex>
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -6522,7 +6522,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </div>
               </>
             )}
-            <div className="d-flex gap-2 justify-content-end mt-3">
+            <Flex gap={2} justify="flex-end" mt={3}>
               <Button colorScheme="gray" onClick={() => setShowMoveModificationModal(false)}>
                 {t('common.cancel')}
               </Button>
@@ -6539,7 +6539,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {t('common.move', 'Move')}
               </Button>
-            </div>
+            </Flex>
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -7135,7 +7135,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
             </div>
 
-            <div className="d-flex gap-2 justify-content-end mt-3">
+            <Flex gap={2} justify="flex-end" mt={3}>
               <Button colorScheme="gray" onClick={() => setShowQuickEditTemplateModal(false)}>
                 {t('globalMods.modal.add.cancel', 'Cancel')}
               </Button>
@@ -7162,7 +7162,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {t('globalMods.modal.editTemplate.saveChanges', 'Save Changes')}
               </Button>
-            </div>
+            </Flex>
           </ModalBody>
         </ModalContent>
       </Modal>
