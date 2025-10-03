@@ -259,7 +259,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
             <StandardCard variant="outline">
               <CardBody textAlign="center" py={10}>
                 <Spinner size="lg" color="brand.500" />
-                <Text mt={4} color={useColorModeValue("gray.500", "gray.400")}>
+                <Text mt={4} color={loadingTextColor}>
                   {t('proposals.create.loadingManufacturer')}
                 </Text>
               </CardBody>
@@ -304,6 +304,7 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
   const stepInactiveBg = useColorModeValue('white', 'gray.800')
   const stepInactiveColor = useColorModeValue('gray.600', 'gray.300')
   const stepBorderInactive = useColorModeValue('gray.300', 'gray.600')
+  const loadingTextColor = useColorModeValue("gray.500", "gray.400")
 
   const headerActions = [
     <Badge key="mode" variant="subtle" colorScheme={isQuick ? 'purple' : 'gray'} px={3} py={1} borderRadius="md">
