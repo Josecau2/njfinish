@@ -1,25 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
-import {
-  Box,
-  Flex,
-  Container,
-  Heading,
-  Text,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  Button,
-  Link,
-  Alert,
-  AlertIcon,
-  VStack,
-  SimpleGrid,
-  List,
-  ListItem,
-  ListIcon
-} from '@chakra-ui/react'
+import { Box, Flex, Container, Heading, Text, FormControl, FormLabel, Input, Textarea, Button, Link, Alert, AlertIcon, VStack, SimpleGrid, List, ListItem, ListIcon, useColorModeValue } from '@chakra-ui/react'
 import { Circle } from 'lucide-react'
 import axios from 'axios'
 import { useTranslation } from 'react-i18next'
@@ -176,7 +157,7 @@ const RequestAccessPage = () => {
         flex="1"
         alignItems="center"
         justifyContent="center"
-        bg="white"
+        bg={useColorModeValue("white", "gray.800")}
         overflowY="auto"
         className="login-right-panel"
       >
@@ -188,11 +169,11 @@ const RequestAccessPage = () => {
             <Heading as="h2" size="lg" textAlign="center">
               {pageTitle}
             </Heading>
-            <Text textAlign="center" color="gray.700">
+            <Text textAlign="center" color={useColorModeValue("gray.700", "gray.300")}>
               {pageSubtitle}
             </Text>
             {pageDescription && (
-              <Text textAlign="center" color="gray.700" fontSize="sm">
+              <Text textAlign="center" color={useColorModeValue("gray.700", "gray.300")} fontSize="sm">
                 {pageDescription}
               </Text>
             )}
@@ -385,7 +366,7 @@ const RequestAccessPage = () => {
                     maxLength={2000}
                     minH="44px"
                   />
-                  <Text fontSize="xs" textAlign="right" color="gray.700" mt={1}>
+                  <Text fontSize="xs" textAlign="right" color={useColorModeValue("gray.700", "gray.300")} mt={1}>
                     {form.message.length}/2000
                   </Text>
                 </FormControl>
@@ -406,7 +387,7 @@ const RequestAccessPage = () => {
 
             <Text textAlign="center" fontSize="sm">
               {copy.alreadyHaveAccess}{' '}
-              <Link as={RouterLink} to="/login" color="blue.600" fontWeight="600" minH="44px" py={2}>
+              <Link as={RouterLink} to="/login" color={useColorModeValue("blue.600", "blue.300")} fontWeight="600" minH="44px" py={2}>
                 {copy.signIn}
               </Link>
             </Text>

@@ -1,20 +1,6 @@
 import React, { useState } from 'react'
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
-import {
-  Box,
-  Flex,
-  Container,
-  Heading,
-  Text,
-  FormControl,
-  FormLabel,
-  Input,
-  Button,
-  Link,
-  Alert,
-  AlertIcon,
-  VStack
-} from '@chakra-ui/react'
+import { Box, Flex, Container, Heading, Text, FormControl, FormLabel, Input, Button, Link, Alert, AlertIcon, VStack, useColorModeValue } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import BrandLogo from '../../components/BrandLogo'
 import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand'
@@ -95,7 +81,7 @@ const ResetPasswordPage = () => {
         flex="1"
         alignItems="center"
         justifyContent="center"
-        bg="white"
+        bg={useColorModeValue("white", "gray.800")}
         className="login-right-panel"
       >
         <Container maxW="md" py={8}>
@@ -106,7 +92,7 @@ const ResetPasswordPage = () => {
             <Heading as="h2" size="lg" textAlign="center">
               {loginBrand.resetTitle || t('auth.resetPassword.formTitle')}
             </Heading>
-            <Text textAlign="center" color="gray.700">
+            <Text textAlign="center" color={useColorModeValue("gray.700", "gray.300")}>
               {loginBrand.resetSubtitle || t('auth.resetPassword.formDescription')}
             </Text>
 
@@ -157,7 +143,7 @@ const ResetPasswordPage = () => {
             </Box>
 
             <Text textAlign="center">
-              <Link as={RouterLink} to="/login" color="blue.600" minH="44px" py={2}>
+              <Link as={RouterLink} to="/login" color={useColorModeValue("blue.600", "blue.300")} minH="44px" py={2}>
                 {t('auth.backToLogin')}
               </Link>
             </Text>

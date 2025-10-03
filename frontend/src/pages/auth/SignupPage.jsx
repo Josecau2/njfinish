@@ -1,23 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate, Link as RouterLink } from 'react-router-dom'
-import {
-  Box,
-  Flex,
-  Container,
-  Heading,
-  Text,
-  FormControl,
-  FormLabel,
-  Input,
-  InputGroup,
-  InputRightElement,
-  IconButton,
-  Button,
-  Link,
-  Alert,
-  AlertIcon,
-  VStack
-} from '@chakra-ui/react'
+import { Box, Flex, Container, Heading, Text, FormControl, FormLabel, Input, InputGroup, InputRightElement, IconButton, Button, Link, Alert, AlertIcon, VStack, useColorModeValue } from '@chakra-ui/react'
 import { Eye, EyeOff } from 'lucide-react'
 import axios from 'axios'
 import { getOptimalColors } from '../../utils/colorUtils'
@@ -75,14 +58,14 @@ const SignupPage = () => {
         flex="1"
         alignItems="center"
         justifyContent="center"
-        bg="white"
+        bg={useColorModeValue("white", "gray.800")}
       >
         <Container maxW="md" py={8}>
           <VStack spacing={6} align="stretch">
             <Heading as="h2" size="lg" fontWeight="bold">
               Sign Up
             </Heading>
-            <Text color="gray.600">
+            <Text color={useColorModeValue("gray.600", "gray.400")}>
               Create your account to get started.
             </Text>
 
@@ -170,7 +153,7 @@ const SignupPage = () => {
 
             <Text textAlign="center">
               Already have an account?{' '}
-              <Link as={RouterLink} to="/login" color="blue.600" minH="44px" py={2}>
+              <Link as={RouterLink} to="/login" color={useColorModeValue("blue.600", "blue.300")} minH="44px" py={2}>
                 Sign In
               </Link>
             </Text>

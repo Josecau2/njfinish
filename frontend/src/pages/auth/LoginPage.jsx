@@ -2,26 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUser, setError } from '../../store/slices/authSlice';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
-import {
-  Box,
-  Flex,
-  Container,
-  Heading,
-  Text,
-  FormControl,
-  FormLabel,
-  Input,
-  InputGroup,
-  InputRightElement,
-  IconButton,
-  Button,
-  Checkbox,
-  Link,
-  Alert,
-  AlertIcon,
-  VStack,
-  HStack
-} from '@chakra-ui/react';
+import { Box, Flex, Container, Heading, Text, FormControl, FormLabel, Input, InputGroup, InputRightElement, IconButton, Button, Checkbox, Link, Alert, AlertIcon, VStack, HStack, useColorModeValue } from '@chakra-ui/react';
 import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
@@ -164,7 +145,7 @@ const LoginPage = () => {
         flex="1"
         alignItems="center"
         justifyContent="center"
-        bg="white"
+        bg={useColorModeValue("white", "gray.800")}
         className="login-right-panel"
       >
         <Container maxW="md" py={8}>
@@ -175,7 +156,7 @@ const LoginPage = () => {
             <Heading as="h2" size="lg" textAlign="center">
               {loginBrand.title}
             </Heading>
-            <Text textAlign="center" color="gray.700">
+            <Text textAlign="center" color={useColorModeValue("gray.700", "gray.300")}>
               {loginBrand.subtitle}
             </Text>
 
@@ -252,7 +233,7 @@ const LoginPage = () => {
                     </Checkbox>
                   )}
                   {loginBrand.showForgotPassword && (
-                    <Link as={RouterLink} to="/forgot-password" color="blue.600" minH="44px" display="flex" alignItems="center">
+                    <Link as={RouterLink} to="/forgot-password" color={useColorModeValue("blue.600", "blue.300")} minH="44px" display="flex" alignItems="center">
                       {t('auth.forgotPasswordLink')}
                     </Link>
                   )}
@@ -272,7 +253,7 @@ const LoginPage = () => {
 
             <Text textAlign="center">
               {t('auth.noAccountPrompt')}{' '}
-              <Link as={RouterLink} to="/request-access" color="blue.600" minH="44px" py={2}>
+              <Link as={RouterLink} to="/request-access" color={useColorModeValue("blue.600", "blue.300")} minH="44px" py={2}>
                 {t('auth.requestAccess.submit')}
               </Link>
             </Text>

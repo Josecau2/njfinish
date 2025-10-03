@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Badge,
   Box,
   Button,
   Divider,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Icon,
   IconButton,
@@ -31,23 +38,20 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  useToast,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice'
 import { sendFormDataToBackend } from '../../../queries/proposalQueries'
 import axiosInstance from '../../../helpers/axiosInstance'
 import CreatableSelect from 'react-select/creatable'
-import { Formik } from 'formik'
-import * as Yup from 'yup'
-import DatePicker from 'react-datepicker'
+import { useForm, Controller } from 'react-hook-form'
 import { Copy, Edit, File, List, MoreHorizontal, Trash, Trash2, Calendar } from 'lucide-react'
-import Swal from 'sweetalert2'
 import ItemSelectionContent from '../../../components/ItemSelectionContent'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 import FileUploadSection from './FileUploadSection'
 import { setSelectVersionNew } from '../../../store/slices/selectVersionNewSlice'
-import { validateProposalSubTypeRequirements, showSubTypeValidationError } from '../../../helpers/subTypeValidation'
-import 'react-datepicker/dist/react-datepicker.css'
+import { validateProposalSubTypeRequirements } from '../../../helpers/subTypeValidation'
 
 const ItemSelectionStep = ({
   setFormData,
@@ -62,12 +66,8 @@ const ItemSelectionStep = ({
   const { t } = useTranslation()
   const navigate = useNavigate()
   const dispatch = useDispatch()
-
-  const validationSchema = Yup.object().shape({
-    customerName: Yup.string().required(t('proposals.create.customerInfo.validation.customerName')),
-    description: Yup.string().required(t('proposals.create.customerInfo.validation.description')),
-    designer: Yup.string().required(t('proposals.create.customerInfo.validation.designer')),
-  })
+  const toast = useToast()
+  const cancelRef = useRef()
 
   const statusOptions = [
     { label: t('proposals.status.draft'), value: 'Draft' },
@@ -98,6 +98,42 @@ const ItemSelectionStep = ({
   const [selectedVersionIndex, setSelectedVersionIndex] = useState(null)
   const [selectedVersion, setSelectedVersion] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false)
+  const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = useState(false)
+
+  // React Hook Form initialization
+  const defaultValues = useMemo(
+    () => ({
+      designer: formData.designer || '',
+      description: formData.description || '',
+      status: formData.status || 'Draft',
+      date: formData.date || '',
+      designDate: formData.designDate || '',
+      measurementDate: formData.measurementDate || '',
+    }),
+    [formData],
+  )
+
+  const {
+    control,
+    register,
+    handleSubmit: handleFormSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
+    mode: 'onBlur',
+    defaultValues,
+    shouldUnregister: false,
+  })
+
+  const watchedValues = watch()
+
+  // Sync form values with formData
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
 
   const handleBadgeClick = (index, version) => {
     setSelectedVersionIndex(index)
@@ -155,92 +191,103 @@ const ItemSelectionStep = ({
               'Sub-type validation failed in ProposalSummary:',
               validation.missingRequirements,
             )
-          await showSubTypeValidationError(validation.missingRequirements, Swal)
+
+          const itemsText = validation.missingRequirements
+            .map((req) => `${req.item}: ${req.requirements.join(', ')}`)
+            .join('\n')
+
+          toast({
+            title: t('proposals.errors.cannotAccept', 'Cannot accept quote'),
+            description: t('proposals.errors.missingRequirements', 'Missing required selections') + ': ' + itemsText,
+            status: 'warning',
+            duration: 8000,
+            isClosable: true,
+            position: 'top',
+          })
           return
         }
       }
 
-      const result = await Swal.fire({
-        title: t('proposals.confirm.submitTitle', 'Confirm Quote Submission'),
-        html: `
-          <div style="text-align:left">
-            <p>${t('proposals.confirm.submitText', 'Once you submit this quote, it will be sent to production and cannot be changed.')}</p>
-            <p>${t('proposals.confirm.submitWarning', 'By continuing, you confirm that all details are correct and you accept the Terms & Conditions.')}</p>
-          </div>
-        `,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: t('proposals.confirm.submitConfirm', 'Accept and Submit'),
-        cancelButtonText: t('proposals.confirm.goBack', 'Go Back'),
-        reverseButtons: true,
-        focusCancel: true,
-      })
-
-      if (result.isConfirmed) {
-        setIsSubmitting(true)
-
-        try {
-          // Step 1: First create the proposal (save as draft)
-          const createPayload = {
-            action: '0', // Save as draft first
-            formData: { ...formData, type: '0' },
-          }
-
-          const createResponse = await dispatch(sendFormDataToBackend(createPayload))
-
-          if (!createResponse.payload.success) {
-            throw new Error(createResponse.payload.message || 'Failed to create quote')
-          }
-
-          const newProposalId = createResponse.payload.data?.id
-
-          if (!newProposalId) {
-            throw new Error('Quote created but no ID returned')
-          }
-
-          // Step 2: Now accept the newly created proposal using the acceptance API
-          const acceptResponse = await axiosInstance.post(
-            `/api/proposals/${newProposalId}/accept`,
-            {
-              // No additional data needed for internal acceptance
-            },
-          )
-
-          if (acceptResponse.data.success) {
-            Swal.fire(
-              t('common.success', 'Success'),
-              t('proposals.success.acceptConverted', 'Quote accepted and converted to order!'),
-              'success',
-            )
-            // Navigate away to prevent duplicate submissions
-            navigate('/orders') // Navigate to orders since it's now an accepted quote
-          } else {
-            throw new Error(acceptResponse.data.message || 'Failed to accept quote')
-          }
-        } catch (error) {
-          if (import.meta?.env?.DEV)
-            console.error('Error in handleAcceptOrder:', {
-              error: error.message,
-              response: error.response?.data,
-              stack: error.stack,
-              timestamp: new Date().toISOString(),
-            })
-
-          // Check if this is a sub-type validation error from backend
-          if (error.response?.status === 400 && error.response?.data?.missingRequirements) {
-            await showSubTypeValidationError(error.response.data.missingRequirements, Swal)
-          } else {
-            Swal.fire(
-              t('common.error', 'Error'),
-              error.message ||
-                t('proposals.errors.acceptFailed', 'Failed to accept quote. Please try again.'),
-              'error',
-            )
-          }
-          setIsSubmitting(false)
-        }
-      }
+      // Open confirmation dialog
+      setIsAcceptDialogOpen(true)
     } catch (_) {
+      setIsSubmitting(false)
+    }
+  }
+
+  const confirmAcceptOrder = async () => {
+    setIsAcceptDialogOpen(false)
+    setIsSubmitting(true)
+
+    try {
+      // Step 1: First create the proposal (save as draft)
+      const createPayload = {
+        action: '0', // Save as draft first
+        formData: { ...formData, type: '0' },
+      }
+
+      const createResponse = await dispatch(sendFormDataToBackend(createPayload))
+
+      if (!createResponse.payload.success) {
+        throw new Error(createResponse.payload.message || 'Failed to create quote')
+      }
+
+      const newProposalId = createResponse.payload.data?.id
+
+      if (!newProposalId) {
+        throw new Error('Quote created but no ID returned')
+      }
+
+      // Step 2: Now accept the newly created proposal using the acceptance API
+      const acceptResponse = await axiosInstance.post(`/api/proposals/${newProposalId}/accept`, {})
+
+      if (acceptResponse.data.success) {
+        toast({
+          title: t('common.success', 'Success'),
+          description: t('proposals.success.acceptConverted', 'Quote accepted and converted to order!'),
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+          position: 'top',
+        })
+        // Navigate away to prevent duplicate submissions
+        navigate('/orders') // Navigate to orders since it's now an accepted quote
+      } else {
+        throw new Error(acceptResponse.data.message || 'Failed to accept quote')
+      }
+    } catch (error) {
+      if (import.meta?.env?.DEV)
+        console.error('Error in handleAcceptOrder:', {
+          error: error.message,
+          response: error.response?.data,
+          stack: error.stack,
+          timestamp: new Date().toISOString(),
+        })
+
+      // Check if this is a sub-type validation error from backend
+      if (error.response?.status === 400 && error.response?.data?.missingRequirements) {
+        const itemsText = error.response.data.missingRequirements
+          .map((req) => `${req.item}: ${req.requirements.join(', ')}`)
+          .join('\n')
+
+        toast({
+          title: t('proposals.errors.cannotAccept', 'Cannot accept quote'),
+          description: t('proposals.errors.missingRequirements', 'Missing required selections') + ': ' + itemsText,
+          status: 'warning',
+          duration: 8000,
+          isClosable: true,
+          position: 'top',
+        })
+      } else {
+        toast({
+          title: t('common.error', 'Error'),
+          description: error.message || t('proposals.errors.acceptFailed', 'Failed to accept quote. Please try again.'),
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+          position: 'top',
+        })
+      }
       setIsSubmitting(false)
     }
   }
@@ -251,10 +298,6 @@ const ItemSelectionStep = ({
 
   const handleTabSelect = (tab) => {
     setActiveTab(tab)
-  }
-
-  const handleSubmit = (values) => {
-    updateFormData(values)
   }
 
   const openEditModal = (index) => {
@@ -269,10 +312,13 @@ const ItemSelectionStep = ({
     )
 
     if (existingEntry) {
-      Swal.fire({
-        icon: 'error',
+      toast({
         title: t('common.error', 'Error'),
-        text: t('proposals.create.summary.duplicate', 'Duplicate'),
+        description: t('proposals.create.summary.duplicate', 'Duplicate'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+        position: 'top',
       })
       return
     }
