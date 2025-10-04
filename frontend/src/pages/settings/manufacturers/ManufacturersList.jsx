@@ -19,7 +19,7 @@ import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
 import { buildUploadUrl } from '../../../utils/uploads'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturers, updateManufacturerStatus } from '../../../store/slices/manufacturersSlice'
-import Swal from 'sweetalert2'
+import { useToast } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
@@ -45,6 +45,7 @@ const ManufacturersList = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const toast = useToast()
   const apiUrl = import.meta.env.VITE_API_URL
 
   const { list: allManufacturers, loading, error } = useSelector((state) => state.manufacturers)
@@ -115,26 +116,22 @@ const ManufacturersList = () => {
       .unwrap()
       .then(() => {
         dispatch(fetchManufacturers())
-        Swal.fire({
-          toast: true,
-          position: 'top',
-          icon: 'success',
+        toast({
           title: t('settings.manufacturers.toast.updateSuccess'),
-          showConfirmButton: false,
-          timer: 1500,
-          width: 360,
+          status: 'success',
+          duration: 1500,
+          isClosable: true,
+          position: 'top',
         })
       })
       .catch((err) => {
         console.error('Toggle manufacturer failed:', err)
-        Swal.fire({
-          toast: true,
-          position: 'top',
-          icon: 'error',
+        toast({
           title: t('settings.manufacturers.toast.updateFailed'),
-          showConfirmButton: false,
-          timer: 1500,
-          width: 330,
+          status: 'error',
+          duration: 1500,
+          isClosable: true,
+          position: 'top',
         })
       })
   }
