@@ -26,6 +26,7 @@ import {
   BookOpen,
   ScrollText,
   Cog,
+  Box as BoxIcon,
 } from 'lucide-react'
 import { hasPermission, isContractor, hasModuleAccess, isAdmin } from './helpers/permissions'
 
@@ -152,6 +153,13 @@ const useNavItems = () => {
         icon: icon(FolderOpen),
       })
     }
+
+    items.push({
+      type: 'link',
+      label: t('nav.3dKitchen', '3D Kitchen'),
+      to: '/3d-kitchen',
+      icon: icon(BoxIcon),
+    })
 
     items.push({
       type: 'link',

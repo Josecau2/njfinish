@@ -1,19 +1,16 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
 import {
   Flex,
   HStack,
   IconButton,
-  Button,
   useColorMode,
   useColorModeValue,
   Text,
   Box,
-  Icon,
 } from '@chakra-ui/react'
-import { Menu, SunMedium, Moon, Box as BoxIcon } from 'lucide-react'
+import { Menu, SunMedium, Moon } from 'lucide-react'
 import NotificationBell from './NotificationBell'
 import LanguageSwitcher from './LanguageSwitcher'
 import { AppHeaderDropdown } from './header'
@@ -28,7 +25,6 @@ import { ICON_SIZE_MD } from '../constants/iconSizes'
 const AppHeader = () => {
   const dispatch = useDispatch()
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const { colorMode, toggleColorMode } = useColorMode()
 
   const sidebarShow = useSelector((state) => state.sidebar.sidebarShow)
@@ -88,29 +84,6 @@ const AppHeader = () => {
         </HStack>
 
         <HStack spacing={{ base: 1, md: 2 }} align="center">
-          <Button
-            leftIcon={<Icon as={BoxIcon} boxSize={ICON_SIZE_MD} />}
-            variant="solid"
-            colorScheme="brand"
-            size="sm"
-            onClick={() => navigate('/3d-kitchen')}
-            display={{ base: 'none', md: 'flex' }}
-            _hover={{ transform: 'translateY(-1px)', boxShadow: 'md' }}
-            transition="all 0.2s"
-          >
-            {t('nav.3dKitchen', '3D Kitchen')}
-          </Button>
-          <IconButton
-            display={{ base: 'flex', md: 'none' }}
-            variant="solid"
-            colorScheme="brand"
-            size="sm"
-            aria-label={t('nav.3dKitchen', '3D Kitchen')}
-            icon={<BoxIcon size={ICON_SIZE_MD} />}
-            onClick={() => navigate('/3d-kitchen')}
-            minW="36px"
-            minH="36px"
-          />
           <IconButton
             variant="ghost"
             aria-label={t('common.toggleTheme', 'Toggle color mode')}
