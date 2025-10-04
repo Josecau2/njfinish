@@ -45,7 +45,6 @@ import PageContainer from '../../components/PageContainer'
 import { RefreshCw, Send, FileText, X, HelpCircle, Percent, Search } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import PageHeader from '../../components/PageHeader'
-import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
@@ -117,6 +116,7 @@ const getLeadLocation = (lead) => {
 
 const LeadsPage = () => {
   const { t } = useTranslation()
+  const toast = useToast()
 
   // Color mode values
   const textGray600 = useColorModeValue('gray.600', 'gray.400')
@@ -191,7 +191,13 @@ const LeadsPage = () => {
       setLeads(incoming.map(normalizeLead))
     } catch (err) {
       console.error('Failed to fetch leads:', err)
-      Swal.fire(t('common.error'), t('leadsPage.alerts.fetchError'), 'error')
+      toast({
+        title: t('common.error'),
+        description: t('leadsPage.alerts.fetchError'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } finally {
       setLoading(false)
     }
@@ -230,10 +236,22 @@ const LeadsPage = () => {
     try {
       await axiosInstance.patch(`/api/admin/leads/${lead.id}`, { status: nextStatus })
       await fetchLeads()
-      Swal.fire(t('common.success'), t('leadsPage.alerts.statusUpdated'), 'success')
+      toast({
+        title: t('common.success'),
+        description: t('leadsPage.alerts.statusUpdated'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
     } catch (err) {
       console.error('Failed to update lead status:', err)
-      Swal.fire(t('common.error'), t('leadsPage.alerts.statusUpdateFailed'), 'error')
+      toast({
+        title: t('common.error'),
+        description: t('leadsPage.alerts.statusUpdateFailed'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } finally {
       setUpdatingStatusId(null)
     }
@@ -280,19 +298,21 @@ const LeadsPage = () => {
       )
       setSelectedLead(updatedLeadFromServer)
       setNoteText('')
-      Swal.fire({
+      toast({
         title: t('common.success'),
-        text: t('leadsPage.alerts.noteSaved'),
-        icon: 'success',
-        zIndex: 9999,
+        description: t('leadsPage.alerts.noteSaved'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
       })
     } catch (err) {
       console.error('Failed to add note:', err)
-      Swal.fire({
+      toast({
         title: t('common.error'),
-        text: t('leadsPage.alerts.noteSaveFailed'),
-        icon: 'error',
-        zIndex: 9999,
+        description: t('leadsPage.alerts.noteSaveFailed'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
       })
     } finally {
       setSavingNote(false)
