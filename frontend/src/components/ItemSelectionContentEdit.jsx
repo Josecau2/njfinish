@@ -1331,10 +1331,8 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         mb={4}
                         flexWrap="wrap"
                         align="stretch"
-                        className="style-selection-mobile"
                     >
                         <Box
-                            className="current-style-section"
                             minW="250px"
                             flexShrink={0}
                         >
@@ -1342,12 +1340,10 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                 {t('proposalUI.currentStyle')}
                             </Heading>
                             <Flex
-                                className="current-style-content"
                                 gap={4}
                                 align="flex-start"
                             >
                                 <Box
-                                    className="current-style-image"
                                     w="100px"
                                     flexShrink={0}
                                 >
@@ -1375,7 +1371,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                     />
                                 </Box>
                                 <Stack
-                                    className="current-style-info"
                                     spacing={6}
                                     flex="1"
                                 >
@@ -1412,14 +1407,13 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                         {!hideOtherStyles && (
                             <>
                                 <Box
-                                    className="style-separator"
                                     w="1px"
                                     bg={bgGray300}
                                     mx={4}
                                     display={{ base: 'none', lg: 'block' }}
                                 />
 
-                                <Box className="other-styles-section" flex="1">
+                                <Box flex="1">
                                     {unavailableCount > 0 && (
                                         <Alert status="warning" py={2} px={3} mb={3} borderRadius="md">
                                             <AlertIcon />
@@ -1431,7 +1425,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                     )}
 
                                     <Flex
-                                        className="other-styles-header"
                                         justify="space-between"
                                         align="center"
                                         mb={3}
@@ -1515,13 +1508,13 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                 {t('proposalUI.noStyles')}
                                             </Text>
                                         ) : (
-                                            <Box className="styles-carousel-container">
+                                            <Box>
                                                 {filteredItems.length === 0 ? (
                                                     <Text py={4} textAlign="center" color={textGray500} fontSize="sm">
                                                         {t('proposalUI.styleComparison.selectItemsMessage')}
                                                     </Text>
                                                 ) : isStylesCollapsed ? (
-                                                    <Stack className="styles-compact-list" spacing={4}>
+                                                    <Stack spacing={4}>
                                                         {stylesMeta.map((styleItem, index) => {
                                                             const isCurrentStyle = styleItem.id === selectedStyleData?.id;
                                                             const hasAnyItems = filteredItems.length > 0;
@@ -1530,21 +1523,27 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                             return (
                                                                 <Flex
                                                                     key={`compact-style-${styleItem.id}-${index}`}
-                                                                    className={`compact-style-item styleCard ${isCurrentStyle ? 'current-style' : ''}`}
+                                                                    p={3}
+                                                                    borderRadius="md"
+                                                                    borderWidth="2px"
+                                                                    borderColor={isCurrentStyle ? borderBlue : borderGray200}
+                                                                    bg={isCurrentStyle ? "blue.50" : "white"}
+                                                                    cursor={readOnly || disabled ? 'not-allowed' : 'pointer'}
+                                                                    opacity={disabled ? 0.5 : 1}
                                                                     aria-disabled={disabled || readOnly}
                                                                     align="center"
                                                                     justify="space-between"
                                                                     onClick={() => {
                                                                         if (!readOnly) handleStyleSelect(styleItem.id);
                                                                     }}
-                                                                    cursor={readOnly ? 'default' : 'pointer'}
+                                                                    _hover={readOnly || disabled ? {} : { transform: 'scale(1.02)', transition: 'all 0.2s' }}
                                                                 >
-                                                                    <Box className="style-info">
-                                                                        <Text className="style-name">
+                                                                    <Box>
+                                                                        <Text fontWeight={isCurrentStyle ? "bold" : "medium"} fontSize="md">
                                                                             {styleItem.style}
                                                                         </Text>
                                                                         {isCurrentStyle && (
-                                                                            <Text className="current-style-indicator">
+                                                                            <Text fontSize="xs" color={textBlue500} mt={1}>
                                                                                 {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
                                                                             </Text>
                                                                         )}
@@ -1555,7 +1554,6 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                     </Stack>
                                                 ) : (
                                                     <Box
-                                                        className="styles-carousel-track"
                                                         display="flex"
                                                         gap="1rem"
                                                         transform={`translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`}
@@ -1574,21 +1572,16 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                             return (
                                                                 <Box
                                                                     key={`style-${styleItem.id}-${index}`}
-                                                                    className="style-carousel-item styleCard"
                                                                     textAlign="center"
                                                                     aria-disabled={disabled || readOnly}
-                                                                    cursor={readOnly ? 'default' : 'pointer'}
+                                                                    cursor={readOnly || disabled ? 'not-allowed' : 'pointer'}
+                                                                    opacity={disabled ? 0.5 : 1}
                                                                     transition="transform 0.2s ease"
                                                                     flexShrink={0}
                                                                     onClick={() => {
-                                                                        if (!readOnly) handleStyleSelect(styleItem.id);
+                                                                        if (!readOnly && !disabled) handleStyleSelect(styleItem.id);
                                                                     }}
-                                                                    onMouseEnter={(e) => {
-                                                                        if (!readOnly) e.currentTarget.style.transform = 'scale(1.02)';
-                                                                    }}
-                                                                    onMouseLeave={(e) => {
-                                                                        if (!readOnly) e.currentTarget.style.transform = 'scale(1)';
-                                                                    }}
+                                                                    _hover={readOnly || disabled ? {} : { transform: 'scale(1.02)' }}
                                                                 >
                                                                     <Image
                                                                         src={
@@ -1703,7 +1696,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                 </Box>
             )}
             {!readOnly && isUserAdmin && (
-                <Box mt={5} className="custom-items-mobile" maxW="100%">
+                <Box mt={5} maxW="100%">
                     <Stack
                         direction={{ base: 'column', md: 'row' }}
                         spacing={4}
