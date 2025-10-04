@@ -462,14 +462,14 @@ const PaymentsList = ({ isContractor }) => {
       </VStack>
 
       {!isInitialLoading && filtered.length > 0 ? (
-        <div>
+        <Box>
           <PaginationComponent
             currentPage={pagination?.currentPage || page}
             totalPages={totalPages}
             onPageChange={setPage}
             itemsPerPage={pagination?.itemsPerPage || pageSize}
           />
-        </div>
+        </Box>
       ) : null}
 
       {/* Create Payment Modal */}

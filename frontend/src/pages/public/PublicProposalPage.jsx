@@ -115,14 +115,14 @@ export default function PublicProposalPage() {
         </CardHeader>
         <CardBody>
           {proposal.description && (
-            <div>
+            <Box>
               <h6>{t('publicQuote.description')}</h6>
               <p>{proposal.description}</p>
-            </div>
+            </Box>
           )}
 
           {typeof total === 'number' && (
-            <div>
+            <Box>
               <h6>{t('publicQuote.total')}</h6>
               <Text fontSize="xl" fontWeight="bold">
                 $
@@ -131,12 +131,12 @@ export default function PublicProposalPage() {
                   maximumFractionDigits: 2,
                 })}
               </Text>
-            </div>
+            </Box>
           )}
 
           {/* Minimal summary of items if present */}
           {proposal.manufacturersData?.items?.length > 0 && (
-            <div>
+            <Box>
               <h6>{t('publicQuote.summary')}</h6>
               <ul>
                 {proposal.manufacturersData.items.slice(0, 10).map((it, idx) => (
@@ -147,7 +147,7 @@ export default function PublicProposalPage() {
                 ))}
                 {proposal.manufacturersData.items.length > 10 && <li>…</li>}
               </ul>
-            </div>
+            </Box>
           )}
 
           <Flex mt={4} gap={2}>

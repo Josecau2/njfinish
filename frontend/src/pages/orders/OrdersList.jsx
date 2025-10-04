@@ -788,14 +788,14 @@ const OrdersList = ({
         )}
       </VStack>
 
-      <div>
+      <Box>
         <PaginationComponent
           currentPage={page}
           totalPages={Math.ceil(filtered.length / perPage) || 1}
           onPageChange={setPage}
           itemsPerPage={perPage}
         />
-      </div>
+      </Box>
 
       {/* Payment Receipt Modal */}
       <PrintPaymentReceiptModal

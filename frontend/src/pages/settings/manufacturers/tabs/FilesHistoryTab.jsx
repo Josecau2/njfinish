@@ -20,7 +20,7 @@ const FilesHistoryTab = ({ manufacturer }) => {
   // Example: http://localhost:3001/uploads or whatever your server is serving
 
   return (
-    <div>
+    <Box>
       <h5>{t('settings.manufacturers.filesHistory.title')}</h5>
 
       {files.length === 0 ? (
@@ -74,7 +74,7 @@ const FilesHistoryTab = ({ manufacturer }) => {
           </Table>
         </Box>
       )}
-    </div>
+    </Box>
   )
 }
 export default FilesHistoryTab

@@ -1045,12 +1045,12 @@ const TypesTab = ({ manufacturer }) => {
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
               {/* Left Column - Image Management */}
               <Box>
-                <div>
+                <Box>
                   <strong>{t('types.meta.type', 'Type')}:</strong> {selectedType.type}
-                </div>
+                </Box>
 
                 {/* Current Image Preview */}
-                <div>
+                <Box>
                   <h6>{t('types.meta.currentImage', 'Current Image')}:</h6>
                   <Box
                     display="flex"
@@ -1072,7 +1072,7 @@ const TypesTab = ({ manufacturer }) => {
                       onError={handleImageError}
                     />
                   </Box>
-                </div>
+                </Box>
 
                 {/* File Upload */}
                 <Box mb={4}>

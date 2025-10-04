@@ -89,7 +89,7 @@ const EditManuMultiplier = () => {
         <CardHeader>{t('settings.multipliers.editManufacturer')}</CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit}>
-            <div>
+            <Box>
               <FormLabel htmlFor="name">{t('settings.multipliers.form.name')}</FormLabel>
               <Input
                 type="text"
@@ -100,9 +100,9 @@ const EditManuMultiplier = () => {
                 required
                 placeholder="Enter manufacturer name"
               />
-            </div>
+            </Box>
 
-            <div>
+            <Box>
               <FormLabel htmlFor="email">{t('settings.multipliers.form.email')}</FormLabel>
               <Input
                 type="email"
@@ -113,9 +113,9 @@ const EditManuMultiplier = () => {
                 required
                 placeholder="Enter manufacturer email"
               />
-            </div>
+            </Box>
 
-            <div>
+            <Box>
               <FormLabel htmlFor="multiplier">{t('settings.multipliers.form.multiplier')}</FormLabel>
               <Input
                 type="number"
@@ -126,7 +126,7 @@ const EditManuMultiplier = () => {
                 onChange={handleChange}
                 placeholder="Enter multiplier"
               />
-            </div>
+            </Box>
 
             <FormControl mb={3}>
               <Checkbox
