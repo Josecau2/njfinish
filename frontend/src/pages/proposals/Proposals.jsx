@@ -37,6 +37,10 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
 
   // Color mode values - MUST be before useState
   const cardBg = useColorModeValue("white", "gray.800")
+  const iconGray400 = useColorModeValue("gray.400", "gray.500")
+  const iconGray500 = useColorModeValue("gray.500", "gray.400")
+  const iconBlue500 = useColorModeValue("blue.500", "blue.400")
+  const borderGray600 = useColorModeValue("gray.600", "gray.400")
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTab, setActiveTab] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)

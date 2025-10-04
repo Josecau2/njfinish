@@ -231,13 +231,13 @@ const ItemSelectionStep = ({
         formData: { ...formData, type: '0' },
       }
 
-      const createResponse = await dispatch(sendFormDataToBackend(createPayload))
+      const createResponse = await sendFormDataToBackend(createPayload)
 
-      if (!createResponse.payload.success) {
-        throw new Error(createResponse.payload.message || 'Failed to create quote')
+      if (!createResponse.data?.success) {
+        throw new Error(createResponse.data?.message || 'Failed to create quote')
       }
 
-      const newProposalId = createResponse.payload.data?.id
+      const newProposalId = createResponse.data?.data?.id
 
       if (!newProposalId) {
         throw new Error('Quote created but no ID returned')

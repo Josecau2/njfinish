@@ -49,6 +49,9 @@ const EditProposal = ({
   contractorGroupName,
 } = {}) => {
   const { id } = useParams()
+  const decodedId = decodeParam(id)
+  const numericId = Number(decodedId)
+  const requestId = Number.isFinite(numericId) ? numericId : decodedId
   const navigate = useNavigate()
   const { t } = useTranslation()
   const dispatch = useDispatch()
@@ -64,6 +67,13 @@ const EditProposal = ({
   const badgeBgUnselected = useColorModeValue("blue.100", "blue.900")
   const badgeColorSelected = useColorModeValue("white", "white")
   const badgeColorUnselected = useColorModeValue("blue.600", "blue.200")
+
+  const normalizeManufacturersData = (data) => {
+    if (!data) return []
+    if (Array.isArray(data)) return data
+    if (typeof data === 'object') return Object.values(data)
+    return []
+  }
 
   // Get user info from store/localStorage
   const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
@@ -108,6 +118,7 @@ const EditProposal = ({
   }
 
   const [formData, setFormData] = useState(defaultFormData)
+  const manufacturersData = normalizeManufacturersData(formData?.manufacturersData)
   // Determine if form should be disabled (locked quote OR contractor viewing accepted quote)
   const isAccepted = formData?.status === 'Proposal accepted' || formData?.status === 'accepted'
   const isFormDisabled = !!formData?.is_locked || (isAccepted && !isAdmin)
@@ -123,18 +134,35 @@ const EditProposal = ({
   })
   // Fetch initial data
   useEffect(() => {
+    if (!requestId) {
+      setLoading(false)
+      toast({
+        title: t('proposals.errors.invalidIdTitle', 'Unable to open quote'),
+        description: t('proposals.errors.invalidIdDescription', 'The quote identifier is invalid or missing.'),
+        status: 'error',
+      })
+      return
+    }
+
     axiosInstance
-      .get(`/api/quotes/proposalByID/${id}`)
+      .get(`/api/quotes/proposalByID/${requestId}`)
       .then((res) => {
-        setInitialData(res.data)
-        setFormData(res.data || defaultFormData)
+        const merged = { ...defaultFormData, ...(res.data || {}) }
+        const normalized = { ...merged, manufacturersData: normalizeManufacturersData(merged.manufacturersData) }
+        setInitialData(normalized)
+        setFormData(normalized)
         setLoading(false)
       })
       .catch((err) => {
         console.error('Error fetching quote:', err)
         setLoading(false)
+        toast({
+          title: t('proposals.errors.fetchFailedTitle', 'Failed to load quote'),
+          description: err?.response?.data?.message || err.message || t('proposals.errors.fetchFailedDescription', 'We could not load this quote.'),
+          status: 'error',
+        })
       })
-  }, [id])
+  }, [requestId, t, toast])
 
   // Fetch designers
   useEffect(() => {
@@ -162,24 +190,24 @@ const EditProposal = ({
 
   // Fetch manufacturers data
   useEffect(() => {
-    if (formData?.manufacturersData?.length > 0) {
+    if (manufacturersData.length > 0) {
       // Initialize index; actual selectedVersion will be set when details are ready
       if (selectedVersionIndex === null) setSelectedVersionIndex(0)
 
-      formData.manufacturersData.forEach((item) => {
+      manufacturersData.forEach((item) => {
         if (item.manufacturer && !manufacturersByIdMap[item.manufacturer]) {
           // Don't load full catalog data for quote editing - only manufacturer info needed
           dispatch(fetchManufacturerById({ id: item.manufacturer, includeCatalog: false }))
         }
       })
     }
-  }, [formData?.manufacturersData, dispatch, manufacturersByIdMap, selectedVersionIndex])
+  }, [manufacturersData, dispatch, manufacturersByIdMap, selectedVersionIndex])
 
   useEffect(() => {
     if (!Array.isArray(formData.manufacturersData) || formData.manufacturersData.length === 0)
       return
 
-    const details = formData.manufacturersData.map((item) => ({
+    const details = manufacturersData.map((item) => ({
       ...item,
       manufacturerData: manufacturersByIdMap[item.manufacturer],
     }))
@@ -207,7 +235,7 @@ const EditProposal = ({
         dispatch(setSelectVersionNewEdit(next))
       }
     }
-  }, [formData.manufacturersData, manufacturersByIdMap, selectedVersionIndex])
+  }, [manufacturersData, manufacturersByIdMap, selectedVersionIndex])
 
   // Update selected version in Redux
   useEffect(() => {
@@ -240,7 +268,7 @@ const EditProposal = ({
   }
 
   const saveEditVersionName = () => {
-    const existingEntry = formData.manufacturersData.find(
+    const existingEntry = manufacturersData.find(
       (entry, idx) => entry.versionName === editedVersionName && idx !== currentEditIndex,
     )
     if (existingEntry) {
@@ -256,7 +284,7 @@ const EditProposal = ({
       })
       return
     }
-    const updatedManufacturersData = [...formData.manufacturersData]
+    const updatedManufacturersData = [...manufacturersData]
     updatedManufacturersData[currentEditIndex].versionName = editedVersionName
     updateFormData({ manufacturersData: updatedManufacturersData })
     setEditModalOpen(false)
@@ -268,7 +296,7 @@ const EditProposal = ({
   }
 
   const confirmDelete = () => {
-    const updatedManufacturersData = formData.manufacturersData.filter(
+    const updatedManufacturersData = manufacturersData.filter(
       (_, i) => i !== currentDeleteIndex,
     )
     updateFormData({ manufacturersData: updatedManufacturersData })
@@ -284,13 +312,13 @@ const EditProposal = ({
   }
 
   const duplicateVersion = (index) => {
-    const copy = { ...formData.manufacturersData[index] }
+    const copy = { ...manufacturersData[index] }
     copy.versionName = `Copy of ${copy.versionName}`
-    updateFormData({ manufacturersData: [...formData.manufacturersData, copy] })
+    updateFormData({ manufacturersData: [...manufacturersData, copy] })
   }
 
   const versionDetails =
-    formData?.manufacturersData?.map((item) => ({
+    manufacturersData.map((item) => ({
       ...item,
       manufacturerData: manufacturersByIdMap[item.manufacturer],
     })) || []
@@ -382,7 +410,13 @@ const EditProposal = ({
             duration: 5000,
             isClosable: true,
           })
-          setFormData(response.data.data || finalData)
+          setFormData(() => {
+
+          const merged = { ...defaultFormData, ...(response.data.data || finalData) }
+
+          return { ...merged, manufacturersData: normalizeManufacturersData(merged.manufacturersData) }
+
+        })
         }
       } else {
         const apiMsg = response.data?.message

@@ -187,11 +187,13 @@ const LoginPage = () => {
                   </FormLabel>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
                     size="lg"
                     placeholder={t('auth.emailPlaceholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
                     minH="44px"
                   />
                 </FormControl>
@@ -203,6 +205,7 @@ const LoginPage = () => {
                   <InputGroup size="lg">
                     <Input
                       id="password"
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder={t('auth.passwordPlaceholder')}
                       value={password}

@@ -270,34 +270,36 @@ const CustomerTable = ({
             <Box display={{ base: 'none', lg: 'block' }}>
               <StandardCard variant="outline">
                 <CardBody>
-                  <Table variant="simple">
-                    <Thead>
-                      <Tr>
-                        <Th>{t('customers.location', 'Location')}</Th>
-                        <Th>{t('customers.name', 'Name')}</Th>
-                        <Th>{t('customers.email', 'Email')}</Th>
-                        <Th>{t('customers.phone', 'Phone')}</Th>
-                        <Th>{t('customers.address', 'Address')}</Th>
-                        <Th>{t('customers.proposalsHeader', 'Proposals')}</Th>
-                        <Th>{t('customers.ordersHeader', 'Orders')}</Th>
-                        <Th textAlign="center">{t('customers.actions', 'Actions')}</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <Tr key={i}>
-                          <Td><Skeleton height="20px" width="60px" /></Td>
-                          <Td><Skeleton height="20px" /></Td>
-                          <Td><Skeleton height="20px" /></Td>
-                          <Td><Skeleton height="20px" width="80%" /></Td>
-                          <Td><Skeleton height="20px" width="90%" /></Td>
-                          <Td><Skeleton height="20px" width="40px" /></Td>
-                          <Td><Skeleton height="20px" width="40px" /></Td>
-                          <Td><Skeleton height="32px" width="80px" mx="auto" /></Td>
+                  <TableContainer>
+                    <Table variant="simple">
+                      <Thead>
+                        <Tr>
+                          <Th>{t('customers.location', 'Location')}</Th>
+                          <Th>{t('customers.name', 'Name')}</Th>
+                          <Th>{t('customers.email', 'Email')}</Th>
+                          <Th>{t('customers.phone', 'Phone')}</Th>
+                          <Th>{t('customers.address', 'Address')}</Th>
+                          <Th>{t('customers.proposalsHeader', 'Proposals')}</Th>
+                          <Th>{t('customers.ordersHeader', 'Orders')}</Th>
+                          <Th textAlign="center">{t('customers.actions', 'Actions')}</Th>
                         </Tr>
-                      ))}
-                    </Tbody>
-                  </Table>
+                      </Thead>
+                      <Tbody>
+                        {[1, 2, 3, 4, 5].map((i) => (
+                          <Tr key={i}>
+                            <Td><Skeleton height="20px" width="60px" /></Td>
+                            <Td><Skeleton height="20px" /></Td>
+                            <Td><Skeleton height="20px" /></Td>
+                            <Td><Skeleton height="20px" width="80%" /></Td>
+                            <Td><Skeleton height="20px" width="90%" /></Td>
+                            <Td><Skeleton height="20px" width="40px" /></Td>
+                            <Td><Skeleton height="20px" width="40px" /></Td>
+                            <Td><Skeleton height="32px" width="80px" mx="auto" /></Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
                 </CardBody>
               </StandardCard>
             </Box>
@@ -406,10 +408,10 @@ const CustomerTable = ({
                                   {t('customers.main', 'Main')}
                                 </Badge>
                               </Td>
-                              <Td fontWeight="medium" isTruncated maxW="200px">{cust.name || 'N/A'}</Td>
-                              <Td color={textGray600} isTruncated maxW="200px">{cust.email || 'N/A'}</Td>
-                              <Td color={textGray600} isTruncated maxW="150px">{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Td>
-                              <Td color={textGray600} isTruncated maxW="250px">{formatAddress(cust) || t('customers.noAddress', 'No address')}</Td>
+                              <Td fontWeight="medium" isTruncated maxW={{ base: "150px", lg: "180px", xl: "220px", "2xl": "280px" }}>{cust.name || 'N/A'}</Td>
+                              <Td color={textGray600} isTruncated maxW={{ base: "150px", lg: "180px", xl: "220px", "2xl": "280px" }}>{cust.email || 'N/A'}</Td>
+                              <Td color={textGray600} isTruncated maxW={{ base: "120px", lg: "140px", xl: "160px" }}>{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Td>
+                              <Td color={textGray600} isTruncated maxW={{ base: "180px", lg: "220px", xl: "280px", "2xl": "320px" }}>{formatAddress(cust) || t('customers.noAddress', 'No address')}</Td>
                               <Td>
                                 <Badge colorScheme="brand">
                                   {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
