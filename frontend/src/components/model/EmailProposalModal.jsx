@@ -203,7 +203,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
   return (
     <Modal isOpen={show} onClose={handleCancel} size="xl" isCentered scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent as="form" onSubmit={handleSubmit(onSubmit)} className="email-proposal-modal">
+      <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader>
           <Text fontSize="lg" fontWeight="semibold">
             {t('proposalCommon.emailTitle')}
