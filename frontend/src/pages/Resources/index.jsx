@@ -522,15 +522,6 @@ const Resources = ({ isContractor, contractorGroupName }) => {
     }
   }, [filters.medium, activeTab])
 
-  // Reverse tab sync - update medium when tab changes manually
-  useEffect(() => {
-    const tabToMediumMap = { 0: 'announcements', 1: 'links', 2: 'files' }
-    const expectedMedium = tabToMediumMap[activeTab]
-    if (expectedMedium && filters.medium !== expectedMedium && filters.medium !== 'all') {
-      setFilters((prev) => ({ ...prev, medium: expectedMedium }))
-    }
-  }, [activeTab, filters.medium])
-
   const categoriesForDisplay = useMemo(
     () => (isAdmin ? categoryReference : resourceData?.categories || []),
     [isAdmin, categoryReference, resourceData],
@@ -1416,7 +1407,19 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             </Button>
 
             {/* Resource tabs */}
-            <Tabs index={activeTab} onChange={setActiveTab} variant="enclosed" colorScheme="brand">
+            <Tabs
+              index={activeTab}
+              onChange={(index) => {
+                setActiveTab(index)
+                const tabToMediumMap = { 0: 'announcements', 1: 'links', 2: 'files' }
+                const medium = tabToMediumMap[index]
+                if (medium) {
+                  setFilters((prev) => ({ ...prev, medium }))
+                }
+              }}
+              variant="enclosed"
+              colorScheme="brand"
+            >
               <TabList>
                 <Tab>
                   {t('resources.types.announcements', 'Announcements')} ({announcementsCount})
