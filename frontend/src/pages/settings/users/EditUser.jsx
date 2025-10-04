@@ -154,7 +154,7 @@ const EditUserForm = () => {
           </Box>
         </HStack>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <Box as="form" onSubmit={handleSubmit(onSubmit)}>
             <VStack spacing={8} align="stretch">
               {/* Basic Information Section */}
               <StandardCard>
@@ -526,7 +526,7 @@ const EditUserForm = () => {
                 </Button>
               </HStack>
             </VStack>
-          </form>
+          </Box>
         </VStack>
       </PageContainer>
   )

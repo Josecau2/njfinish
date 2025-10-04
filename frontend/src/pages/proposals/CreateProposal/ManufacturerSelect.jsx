@@ -193,7 +193,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
     <Box w="full" my={4}>
       <StandardCard shadow="md" borderRadius="xl">
         <CardBody p={{ base: 4, md: 6 }}>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <Box as="form" onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={6}>
               <Flex justify="space-between" align={{ base: 'stretch', md: 'center' }} flexDir={{ base: 'column', md: 'row' }} gap={4}>
                 <Heading size="md" color={headingColor}>
@@ -385,7 +385,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                 </Box>
               )}
             </Stack>
-          </form>
+          </Box>
         </CardBody>
       </StandardCard>
     </Box>

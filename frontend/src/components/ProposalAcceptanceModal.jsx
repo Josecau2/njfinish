@@ -18,6 +18,7 @@ import {
   Stack,
   Text,
   useToast,
+  Box,
 } from '@chakra-ui/react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
@@ -150,7 +151,7 @@ const ProposalAcceptanceModal = ({
     <Modal isOpen={show} onClose={handleClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" closeOnOverlayClick={!isSubmitting}>
       <ModalOverlay as={motion.div} {...overlayMotionProps} />
       <ModalContent as={motion.div} {...contentMotionProps}>
-        <form onSubmit={submitProposal}>
+        <Box as="form" onSubmit={submitProposal}>
           <ModalHeader>{t('proposalAcceptance.title')}</ModalHeader>
           <ModalCloseButton disabled={isSubmitting} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
 
@@ -209,7 +210,7 @@ const ProposalAcceptanceModal = ({
               {t('proposalAcceptance.confirm')}
             </Button>
           </ModalFooter>
-        </form>
+        </Box>
       </ModalContent>
     </Modal>
   )

@@ -158,7 +158,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <Box as="form" onSubmit={handleSubmit}>
           <Stack spacing={6}>
             <StandardCard variant="outline">
               <CardHeader fontWeight="semibold" bg={cardHeaderBg} borderBottomWidth="1px">
@@ -414,7 +414,7 @@ const EditManufacturerTab = ({ manufacturer, id }) => {
               </Button>
             </Box>
           </Stack>
-        </form>
+        </Box>
       </Stack>
     </PageContainer>
   )

@@ -207,7 +207,7 @@ const AddUserGroupForm = () => {
         ]}
       />
 
-      <form onSubmit={handleSubmit}>
+      <Box as="form" onSubmit={handleSubmit}>
         <FormControl>
           <FormSection title={t('settings.userGroups.form.titles.groupInfo')} customization={customization}>
             <Flex gap={4} wrap="wrap">
@@ -337,7 +337,7 @@ const AddUserGroupForm = () => {
             </CardBody>
           </StandardCard>
         </FormControl>
-      </form>
+      </Box>
 
       {/* Cancel Confirmation Dialog */}
       <AlertDialog

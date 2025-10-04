@@ -321,7 +321,7 @@ const AddUserForm = () => {
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <Box as="form" onSubmit={handleSubmit}>
         {/* Basic Information Section */}
         <FormSection title={t('settings.users.form.titles.basicInfo')} icon={User}>
           <Flex gap={6} wrap="wrap">
@@ -673,7 +673,7 @@ const AddUserForm = () => {
             </Flex>
           </CardBody>
         </StandardCard>
-      </form>
+      </Box>
 
       {/* Restore Deleted User Dialog */}
       <AlertDialog

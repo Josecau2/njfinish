@@ -88,7 +88,7 @@ const EditManuMultiplier = () => {
       <StandardCard maxW="600px" mx="auto" my="20px">
         <CardHeader>{t('settings.multipliers.editManufacturer')}</CardHeader>
         <CardBody>
-          <form onSubmit={handleSubmit}>
+          <Box as="form" onSubmit={handleSubmit}>
             <Box>
               <FormLabel htmlFor="name">{t('settings.multipliers.form.name')}</FormLabel>
               <Input
@@ -149,7 +149,7 @@ const EditManuMultiplier = () => {
                 Save Changes
               </Button>
             </Flex>
-          </form>
+          </Box>
         </CardBody>
       </StandardCard>
     </Box>

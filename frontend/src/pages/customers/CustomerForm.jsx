@@ -235,7 +235,7 @@ const CustomerForm = ({
         <CardBody>
           {error && <Alert status="error">{error}</Alert>}
 
-          <form onSubmit={handleSubmit}>
+          <Box as="form" onSubmit={handleSubmit}>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
               <FormControl isInvalid={!!formErrors.name} mb={3}>
                 <FormLabel htmlFor="name">{t('customers.form.labels.fullName')} *</FormLabel>
@@ -487,7 +487,7 @@ const CustomerForm = ({
                   : t('customers.form.actions.create')}
               </Button>
             </Flex>
-          </form>
+          </Box>
         </CardBody>
       </StandardCard>
     </PageContainer>
