@@ -7,7 +7,7 @@ import { Settings, ArrowLeft, UserPlus } from '@/icons-lucide'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { addUser } from '../../../store/slices/userGroupSlice'
-import Swal from 'sweetalert2'
+import { useToast, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useDisclosure } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
 const FormSection = ({ title, icon, children, customization = {} }) => (
@@ -88,6 +88,9 @@ const AddUserGroupForm = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const toast = useToast()
+  const { isOpen: isCancelOpen, onOpen: onCancelOpen, onClose: onCancelClose } = useDisclosure()
+  const cancelRef = useRef()
   const [formData, setFormData] = useState(initialForm)
   const initialFormRef = useRef(initialForm)
   const [errors, setErrors] = useState({})
@@ -142,18 +145,32 @@ const AddUserGroupForm = () => {
       const action = await dispatch(addUser({ ...formData, force }))
       const payload = action?.payload
       if (payload?.status === 200) {
-        await Swal.fire(
-          t('common.success') + '!',
-          payload.message || t('settings.userGroups.alerts.created'),
-          'success',
-        )
+        toast({
+          title: t('common.success'),
+          description: payload.message || t('settings.userGroups.alerts.created'),
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
         navigate('/settings/users/groups')
         return
       }
       const serverMsg = payload?.message || action?.error?.message || t('settings.userGroups.alerts.createFailed')
-      await Swal.fire(t('common.error'), serverMsg, 'error')
+      toast({
+        title: t('common.error'),
+        description: serverMsg,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } catch (err) {
-      await Swal.fire(t('common.error'), err?.message || t('settings.userGroups.alerts.genericError'), 'error')
+      toast({
+        title: t('common.error'),
+        description: err?.message || t('settings.userGroups.alerts.genericError'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } finally {
       setLoading(false)
     }
@@ -305,16 +322,7 @@ const AddUserGroupForm = () => {
                   variant="ghost"
                   onClick={() => {
                     if (isFormDirty()) {
-                      Swal.fire({
-                        title: t('common.confirm'),
-                        text: t('settings.userGroups.alerts.leaveWarning'),
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: t('settings.userGroups.alerts.leaveAnyway'),
-                        cancelButtonText: t('settings.userGroups.alerts.stayOnPage'),
-                      }).then((result) => {
-                        if (result.isConfirmed) navigate('/settings/users/groups')
-                      })
+                      onCancelOpen()
                     } else {
                       navigate('/settings/users/groups')
                     }
@@ -330,6 +338,34 @@ const AddUserGroupForm = () => {
           </StandardCard>
         </FormControl>
       </form>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog
+        isOpen={isCancelOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onCancelClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('common.confirm')}
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              {t('settings.userGroups.alerts.leaveWarning')}
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onCancelClose}>
+                {t('settings.userGroups.alerts.stayOnPage')}
+              </Button>
+              <Button colorScheme="red" onClick={() => { onCancelClose(); navigate('/settings/users/groups'); }} ml={3}>
+                {t('settings.userGroups.alerts.leaveAnyway')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </PageContainer>
   )
 }
