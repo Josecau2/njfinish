@@ -473,7 +473,6 @@ export default function FileViewerModal({
       visible={modalVisible}
       onClose={onClose}
       size={size}
-      className='file-viewer-modal'
       title={title || file?.name || 'Preview'}
       footer={
         <>
