@@ -12,6 +12,7 @@ import {
   Box,
   Button,
   CardBody,
+  CardFooter,
   CardHeader,
   Center,
   Checkbox,
@@ -1118,7 +1119,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       medium: dominant,
                     }))
                   }
-                  minH="380px"
+                  minH={{ base: '320px', md: '380px' }}
                   display="flex"
                   flexDirection="column"
                 >
@@ -1174,10 +1175,17 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       </HStack>
 
                       {isAdmin && (
-                        <HStack opacity={0.7} _groupHover={{ opacity: 1 }} flexShrink={0}>
+                        <HStack
+                          opacity={0.7}
+                          _groupHover={{ opacity: 1 }}
+                          flexShrink={0}
+                          spacing={1}
+                          display={{ base: 'none', sm: 'flex' }}
+                        >
                           <IconButton
-                            minH="44px"
-                            minW="44px"
+                            size={{ base: 'sm', md: 'md' }}
+                            minH={{ base: '36px', md: '44px' }}
+                            minW={{ base: '36px', md: '44px' }}
                             variant="ghost"
                             icon={<Edit size={16} />}
                             aria-label={t('resources.actions.editCategory', 'Edit category')}
@@ -1187,8 +1195,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                             }}
                           />
                           <IconButton
-                            minH="44px"
-                            minW="44px"
+                            size={{ base: 'sm', md: 'md' }}
+                            minH={{ base: '36px', md: '44px' }}
+                            minW={{ base: '36px', md: '44px' }}
                             variant="ghost"
                             colorScheme="green"
                             icon={<Plus size={16} />}
@@ -1199,8 +1208,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                             }}
                           />
                           <IconButton
-                            minH="44px"
-                            minW="44px"
+                            size={{ base: 'sm', md: 'md' }}
+                            minH={{ base: '36px', md: '44px' }}
+                            minW={{ base: '36px', md: '44px' }}
                             variant="ghost"
                             colorScheme="red"
                             icon={<Trash size={16} />}
@@ -1232,7 +1242,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       </Text>
                     )}
 
-                    <HStack spacing={2} mb={3}>
+                    <HStack spacing={2} mb={3} flexWrap="wrap">
                       <Badge
                         colorScheme="orange"
                         display="flex"
@@ -1362,14 +1372,13 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     )}
                   </CardBody>
 
-                  <Box position="absolute" bottom={2} right={2}>
+                  <CardFooter pt={2} pb={3} px={4}>
                     <Button
                       size="sm"
                       colorScheme="blue"
-                      px={3}
-                      py={1}
-                      h="auto"
-                      fontSize="0.75rem"
+                      w="full"
+                      minH="44px"
+                      fontSize={{ base: 'sm', md: '0.75rem' }}
                       rounded="full"
                       fontWeight="medium"
                       onClick={(e) => {
@@ -1383,7 +1392,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     >
                       {t('common.view', 'View')}
                     </Button>
-                  </Box>
+                  </CardFooter>
                 </StandardCard>
               )
             })}
@@ -1454,8 +1463,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       .map((announcement) => (
                         <StandardCard key={announcement.id} bg={cardBg}>
                           <CardBody>
-                            <HStack justify="space-between">
-                              <VStack align="start" flex={1}>
+                            <Stack
+                              direction={{ base: 'column', md: 'row' }}
+                              justify="space-between"
+                              spacing={{ base: 3, md: 4 }}
+                            >
+                              <VStack align="start" flex={1} minW={0}>
                                 <Heading size="sm">{announcement.title}</Heading>
                                 {announcement.summary && (
                                   <Text fontSize="sm" color={textSecondary}>
@@ -1471,7 +1484,11 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                               </VStack>
 
                               {isAdmin && (
-                                <HStack>
+                                <HStack
+                                  flexShrink={0}
+                                  spacing={2}
+                                  alignSelf={{ base: 'flex-end', md: 'flex-start' }}
+                                >
                                   <IconButton
                                     size="sm"
                                     variant="ghost"
@@ -1533,7 +1550,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                   />
                                 </HStack>
                               )}
-                            </HStack>
+                            </Stack>
                           </CardBody>
                         </StandardCard>
                       ))}
@@ -1569,8 +1586,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       .map((link) => (
                         <StandardCard key={link.id} bg={cardBg}>
                           <CardBody>
-                            <HStack justify="space-between">
-                              <VStack align="start" flex={1}>
+                            <Stack
+                              direction={{ base: 'column', md: 'row' }}
+                              justify="space-between"
+                              spacing={{ base: 3, md: 4 }}
+                            >
+                              <VStack align="start" flex={1} minW={0}>
                                 <Link
                                   href={link.url}
                                   isExternal
@@ -1587,7 +1608,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                     {link.description}
                                   </Text>
                                 )}
-                                <HStack>
+                                <HStack flexWrap="wrap">
                                   <Badge>{link.type}</Badge>
                                   {link.isPinned && (
                                     <Badge colorScheme="yellow" display="flex" alignItems="center" gap={1}>
@@ -1599,7 +1620,11 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                               </VStack>
 
                               {isAdmin && (
-                                <HStack>
+                                <HStack
+                                  flexShrink={0}
+                                  spacing={2}
+                                  alignSelf={{ base: 'flex-end', md: 'flex-start' }}
+                                >
                                   <IconButton
                                     size="sm"
                                     variant="ghost"
@@ -1655,7 +1680,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                   />
                                 </HStack>
                               )}
-                            </HStack>
+                            </Stack>
                           </CardBody>
                         </StandardCard>
                       ))}
@@ -1695,27 +1720,34 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                         return (
                           <StandardCard key={file.id} bg={cardBg}>
                             <CardBody>
-                              <HStack justify="space-between">
-                                <HStack flex={1}>
+                              <Stack
+                                direction={{ base: 'column', sm: 'row' }}
+                                spacing={{ base: 3, sm: 4 }}
+                                align={{ base: 'stretch', sm: 'flex-start' }}
+                              >
+                                <HStack flex={1} minW={0} align="flex-start">
                                   {thumbUrl && (
-                                    <AspectRatio ratio={1} w="60px">
+                                    <AspectRatio
+                                      ratio={1}
+                                      w={{ base: '50px', md: '60px' }}
+                                      flexShrink={0}
+                                    >
                                       <Image
                                         src={thumbUrl}
                                         alt={file.name}
                                         objectFit="cover"
                                         rounded="md"
-                                        maxW="100%"
                                       />
                                     </AspectRatio>
                                   )}
-                                  <VStack align="start" flex={1}>
+                                  <VStack align="start" flex={1} minW={0} spacing={1}>
                                     <Text fontWeight="bold">{file.name}</Text>
                                     {file.description && (
                                       <Text fontSize="sm" color={textSecondary}>
                                         {file.description}
                                       </Text>
                                     )}
-                                    <HStack>
+                                    <HStack flexWrap="wrap">
                                       <Badge>{fileKind}</Badge>
                                       {file.isPinned && (
                                         <Badge colorScheme="yellow" display="flex" alignItems="center" gap={1}>
@@ -1727,7 +1759,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                   </VStack>
                                 </HStack>
 
-                                <HStack>
+                                <HStack
+                                  flexShrink={0}
+                                  spacing={1}
+                                  flexWrap={{ base: 'wrap', sm: 'nowrap' }}
+                                  justify={{ base: 'flex-end', sm: 'flex-start' }}
+                                >
                                   <IconButton
                                     size="sm"
                                     variant="ghost"
@@ -1812,7 +1849,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                     </>
                                   )}
                                 </HStack>
-                              </HStack>
+                              </Stack>
                             </CardBody>
                           </StandardCard>
                         )
