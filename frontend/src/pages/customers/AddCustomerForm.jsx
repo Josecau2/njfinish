@@ -74,11 +74,10 @@ const CustomFormInput = ({
       <InputGroup>
         {icon && (
           <InputLeftAddon
-            style={{
-              background: 'linear-gradient(135deg, var(--chakra-colors-gray-50) 0%, var(--chakra-colors-gray-100) 100%)',
-              border: '1px solid var(--chakra-colors-gray-200)',
-              borderRight: 'none',
-            }}
+            bgGradient="linear(135deg, gray.50 0%, gray.100 100%)"
+            borderWidth="1px"
+            borderColor="gray.200"
+            borderRight="none"
           >
             <Icon as={icon} boxSize={ICON_BOX_MD} color={iconColor} />
           </InputLeftAddon>
@@ -92,25 +91,18 @@ const CustomFormInput = ({
           isInvalid={!!validationErrors[name]}
           ref={(el) => (inputRefs.current[name] = el)}
           placeholder={placeholder}
-          style={{
-            border: `1px solid ${validationErrors[name] ? "red.500" : 'var(--chakra-colors-gray-200)'}`,
-            borderRadius: icon ? '0 10px 10px 0' : '10px',
-            fontSize: 'sm',
-            padding: '12px 16px',
-            transition: 'all 0.3s ease',
-            borderLeft: icon ? 'none' : '1px solid var(--chakra-colors-gray-200)',
-          }}
-          onFocus={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = 'var(--chakra-colors-blue-500)'
-              e.target.style.boxShadow = 'var(--chakra-shadows-outline)'
-            }
-          }}
-          onBlur={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = 'var(--chakra-colors-gray-200)'
-              e.target.style.boxShadow = 'none'
-            }
+          borderWidth="1px"
+          borderColor={validationErrors[name] ? "red.500" : "gray.200"}
+          borderRadius={icon ? "0 10px 10px 0" : "10px"}
+          fontSize="sm"
+          px={4}
+          py={3}
+          transition="all 0.3s ease"
+          borderLeft={icon ? "none" : "1px solid"}
+          borderLeftColor={icon ? "transparent" : "gray.200"}
+          _focus={{
+            borderColor: validationErrors[name] ? "red.500" : "blue.500",
+            boxShadow: validationErrors[name] ? "none" : "outline",
           }}
           {...props}
         />
@@ -147,11 +139,10 @@ const CustomFormSelect = ({
       <InputGroup>
         {icon && (
           <InputLeftAddon
-            style={{
-              background: 'linear-gradient(135deg, var(--chakra-colors-gray-50) 0%, var(--chakra-colors-gray-100) 100%)',
-              border: '1px solid var(--chakra-colors-gray-200)',
-              borderRight: 'none',
-            }}
+            bgGradient="linear(135deg, gray.50 0%, gray.100 100%)"
+            borderWidth="1px"
+            borderColor="gray.200"
+            borderRight="none"
           >
             <Icon as={icon} boxSize={ICON_BOX_MD} color={iconColor} />
           </InputLeftAddon>
@@ -163,25 +154,18 @@ const CustomFormSelect = ({
           onChange={handleChange}
           isInvalid={!!validationErrors[name]}
           ref={(el) => (inputRefs.current[name] = el)}
-          style={{
-            border: `1px solid ${validationErrors[name] ? "red.500" : 'var(--chakra-colors-gray-200)'}`,
-            borderRadius: icon ? '0 10px 10px 0' : '10px',
-            fontSize: 'sm',
-            padding: '12px 16px',
-            transition: 'all 0.3s ease',
-            borderLeft: icon ? 'none' : '1px solid var(--chakra-colors-gray-200)',
-          }}
-          onFocus={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = 'var(--chakra-colors-blue-500)'
-              e.target.style.boxShadow = 'var(--chakra-shadows-outline)'
-            }
-          }}
-          onBlur={(e) => {
-            if (!validationErrors[name]) {
-              e.target.style.borderColor = 'var(--chakra-colors-gray-200)'
-              e.target.style.boxShadow = 'none'
-            }
+          borderWidth="1px"
+          borderColor={validationErrors[name] ? "red.500" : "gray.200"}
+          borderRadius={icon ? "0 10px 10px 0" : "10px"}
+          fontSize="sm"
+          px={4}
+          py={3}
+          transition="all 0.3s ease"
+          borderLeft={icon ? "none" : "1px solid"}
+          borderLeftColor={icon ? "transparent" : "gray.200"}
+          _focus={{
+            borderColor: validationErrors[name] ? "red.500" : "blue.500",
+            boxShadow: validationErrors[name] ? "none" : "outline",
           }}
           {...props}
         >
@@ -347,11 +331,9 @@ const AddCustomerForm = () => {
             fontWeight="semibold"
             onClick={() => navigate('/customers')}
             aria-label={t('form.actions.backToCustomers')}
-            style={{
-              borderRadius: '5px',
-              border: 'none',
-              transition: 'all 0.3s ease',
-            }}
+            borderRadius="5px"
+            border="none"
+            transition="all 0.3s ease"
           >
             <Icon as={ArrowLeft} />
             {t('form.actions.backToCustomers')}
@@ -359,7 +341,7 @@ const AddCustomerForm = () => {
         }
       />
 
-      <form onSubmit={handleSubmit}>
+      <Box as="form" onSubmit={handleSubmit}>
         {/* Basic Information Section */}
         <FormSection title={t('customers.form.titles.basicInfo')} icon={User}>
           <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
@@ -635,11 +617,10 @@ const AddCustomerForm = () => {
                 onClick={() => navigate('/customers')}
                 px={4}
                 fontWeight="semibold"
-                style={{
-                  borderRadius: '5px',
-                  border: '1px solid var(--chakra-colors-gray-200)',
-                  transition: 'all 0.3s ease',
-                }}
+                borderRadius="5px"
+                borderWidth="1px"
+                borderColor="gray.200"
+                transition="all 0.3s ease"
               >
                 <Icon as={ArrowLeft} />
                 {t('form.actions.cancel')}
@@ -650,13 +631,12 @@ const AddCustomerForm = () => {
                 isDisabled={isSubmitting}
                 px={5}
                 fontWeight="semibold"
-                style={{
-                  borderRadius: '5px',
-                  border: 'none',
-                  backgroundColor: headerBg,
-                  color: textColor,
-                  transition: 'all 0.3s ease',
-                }}
+                borderRadius="5px"
+                border="none"
+                bg={headerBg}
+                color={textColor}
+                transition="all 0.3s ease"
+                _hover={{ opacity: 0.9 }}
               >
                 {isSubmitting ? (
                   <>
@@ -673,7 +653,7 @@ const AddCustomerForm = () => {
             </Flex>
           </CardBody>
         </StandardCard>
-      </form>
+      </Box>
     </PageContainer>
   )
 }
