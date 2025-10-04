@@ -1,14 +1,15 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Link } from '@chakra-ui/react'
+import { Box, Link, Text, useColorModeValue } from '@chakra-ui/react'
 
 const DocsLink = (props) => {
   const { href, name, text, ...rest } = props
+  const textColor = useColorModeValue('gray.600', 'gray.400')
 
   const _href = name ? `https://coreui.io/react/docs/components/${name}` : href
 
   return (
-    <div className="float-end">
+    <Box float="right">
       <Link
         minH="44px"
         py={2}
@@ -16,11 +17,10 @@ const DocsLink = (props) => {
         href={_href}
         rel="noreferrer noopener"
         target="_blank"
-        className="card-header-action"
       >
-        <small className="text-body-secondary">{text || 'docs'}</small>
+        <Text as="small" color={textColor}>{text || 'docs'}</Text>
       </Link>
-    </div>
+    </Box>
   )
 }
 
