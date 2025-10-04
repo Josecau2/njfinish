@@ -7,7 +7,7 @@ import { User, Settings, ArrowLeft, Save, Users } from '@/icons-lucide'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { decodeParam } from '../../../utils/obfuscate'
-import Swal from 'sweetalert2'
+import { useToast, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useDisclosure } from '@chakra-ui/react'
 import axiosInstance from '../../../helpers/axiosInstance'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
@@ -110,8 +110,11 @@ const moduleDescriptionKeys = {
 const EditUserGroupForm = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const toast = useToast()
   const { id: rawId } = useParams()
   const id = decodeParam(rawId)
+  const { isOpen: isCancelOpen, onOpen: onCancelOpen, onClose: onCancelClose } = useDisclosure()
+  const cancelRef = useRef()
   const [formData, setFormData] = useState(initialForm)
   const initialFormRef = useRef(initialForm)
   const [errors, setErrors] = useState({})
@@ -142,7 +145,13 @@ const EditUserGroupForm = () => {
         }
       } catch (error) {
         console.error('Error fetching user group:', error)
-        Swal.fire(t('common.error'), t('settings.userGroups.edit.loadFailedOne'), 'error')
+        toast({
+          title: t('common.error'),
+          description: t('settings.userGroups.edit.loadFailedOne'),
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
         navigate('/settings/users')
       } finally {
         setLoadingData(false)
@@ -152,7 +161,7 @@ const EditUserGroupForm = () => {
     if (id) {
       fetchUserGroup()
     }
-  }, [id, navigate, t])
+  }, [id, navigate, t, toast])
 
   const validate = () => {
     const newErrors = {}
@@ -182,19 +191,23 @@ const EditUserGroupForm = () => {
     try {
       const response = await axiosInstance.put(`/api/usersgroups/${id}`, formData)
       if (response.data.status === 200) {
-        Swal.fire(
-          `${t('common.success')}!`,
-          response.data.message || t('settings.userGroups.alerts.updated'),
-          'success',
-        )
+        toast({
+          title: t('common.success'),
+          description: response.data.message || t('settings.userGroups.alerts.updated'),
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
         navigate('/settings/users')
       }
     } catch (error) {
-      Swal.fire(
-        t('common.error'),
-        error.message || t('settings.userGroups.alerts.genericError'),
-        'error',
-      )
+      toast({
+        title: t('common.error'),
+        description: error.message || t('settings.userGroups.alerts.genericError'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } finally {
       setLoading(false)
     }
@@ -204,20 +217,7 @@ const EditUserGroupForm = () => {
 
   const handleCancel = () => {
     if (isFormDirty()) {
-      Swal.fire({
-        title: t('common.confirm'),
-        text: t('settings.userGroups.alerts.leaveWarning'),
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: t('settings.userGroups.alerts.leaveAnyway'),
-        cancelButtonText: t('settings.userGroups.alerts.stayOnPage'),
-        confirmButtonColor: 'var(--chakra-colors-red-500)',
-        cancelButtoncolor: "gray.500",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate('/settings/users')
-        }
-      })
+      onCancelOpen()
     } else {
       navigate('/settings/users')
     }
@@ -385,6 +385,34 @@ const EditUserGroupForm = () => {
           </StandardCard>
         </Stack>
       </Box>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog
+        isOpen={isCancelOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onCancelClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('common.confirm')}
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              {t('settings.userGroups.alerts.leaveWarning')}
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onCancelClose}>
+                {t('settings.userGroups.alerts.stayOnPage')}
+              </Button>
+              <Button colorScheme="red" onClick={() => { onCancelClose(); navigate('/settings/users'); }} ml={3}>
+                {t('settings.userGroups.alerts.leaveAnyway')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </PageContainer>
   )
 }
