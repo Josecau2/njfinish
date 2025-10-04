@@ -10,8 +10,8 @@ import { addUser } from '../../../store/slices/userGroupSlice'
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
 
-const FormSection = ({ title, icon, children, className = '', customization = {} }) => (
-  <StandardCard mb={{ base: 2, md: 4 }} className={`border-0 shadow-sm ${className}`}>
+const FormSection = ({ title, icon, children, customization = {} }) => (
+  <StandardCard mb={{ base: 2, md: 4 }} borderWidth="0" boxShadow="sm">
     <CardBody p={{ base: 3, md: 4 }}>
       <HStack mb={3} align="center" spacing={4}>
         <Box
