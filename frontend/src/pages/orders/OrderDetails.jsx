@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import PageHeader from '../../components/PageHeader'
 import StandardCard from '../../components/StandardCard'
+import FileViewerModal from '../../components/FileViewerModal'
 import { useTranslation } from 'react-i18next'
 import {
   Container,
@@ -289,10 +290,7 @@ const OrderDetails = () => {
 
   const closePdfModal = () => {
     setShowPdf(false)
-    if (pdfUrl) {
-      URL.revokeObjectURL(pdfUrl)
-      setPdfUrl(null)
-    }
+    setPdfUrl(null)
   }
 
   if (loading) {
@@ -316,12 +314,8 @@ const OrderDetails = () => {
   }
   const handleViewPdf = async () => {
     try {
-      const resp = await axiosInstance.get(`/api/orders/${id}/manufacturer-pdf`, {
-        responseType: 'blob',
-      })
-      const blob = new Blob([resp.data], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
-      setPdfUrl(url)
+      // Set the PDF URL directly (FileViewerModal will handle auth headers)
+      setPdfUrl(`/api/orders/${id}/manufacturer-pdf`)
       setShowPdf(true)
     } catch (e) {
       openNotice(
@@ -1130,36 +1124,16 @@ const OrderDetails = () => {
           </CardBody>
         </StandardCard>
       </Stack>
-      <Modal size={{ base: 'full', lg: '5xl' }} isOpen={showPdf} onClose={closePdfModal}>
-        <ModalOverlay />
-        <ModalContent maxH="90vh">
-          <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
-            {t('orders.pdf.title', 'Manufacturer PDF')}
-          </ModalHeader>
-          <ModalCloseButton color={textColor} />
-          <ModalBody p={0} height="80vh">
-            {pdfUrl ? (
-              <Box as="object" data={pdfUrl} type="application/pdf" width="100%" height="100%">
-                <Box
-                  as="iframe"
-                  title={t('orders.pdf.iframeTitle', 'Manufacturer PDF')}
-                  src={pdfUrl}
-                  width="100%"
-                  height="100%"
-                  border="0"
-                />
-              </Box>
-            ) : (
-              <Center py={10} color={iconGray500}>
-                {t('orders.pdf.loading', 'Loading...')}
-              </Center>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={closePdfModal}>{t('common.close', 'Close')}</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <FileViewerModal
+        visible={showPdf}
+        onClose={closePdfModal}
+        file={{
+          name: t('orders.pdf.title', 'Manufacturer PDF'),
+          type: 'pdf',
+        }}
+        resolveFileUrl={() => pdfUrl}
+        title={t('orders.pdf.title', 'Manufacturer PDF')}
+      />
 
       <Modal
         size={{ base: 'full', lg: 'xl' }}
