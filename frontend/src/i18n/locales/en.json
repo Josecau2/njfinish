@@ -111,7 +111,11 @@
       "selectGroup": "-- Select Group --",
       "selectLocation": "Select location"
     },
-    "qty": "Qty"
+    "qty": "Qty",
+    "notAvailable": "N/A"
+  },
+  "actions": {
+    "editManufacturer": "Edit {{name}}"
   },
   "globalMods": {
     "title": "Global Modifications",
@@ -2961,16 +2965,25 @@
     "manufacturers": {
       "header": "Manufacturers",
       "subtitle": "Manage your manufacturing partners",
+      "title": "Manufacturers",
       "add": "New Manufacturer",
+      "create": "Add Manufacturer",
       "search": "Search",
       "searchPlaceholder": "Search by name or email...",
       "sortBy": "Sort by",
       "order": "Order",
+      "noEmail": "No email provided",
+      "emptyState": "No manufacturers match the current filters.",
+      "list": {
+        "manufacturerId": "ID: {{id}}"
+      },
       "sort": {
         "id": "ID",
         "name": "Name",
         "email": "Email",
-        "capacity": "Capacity"
+        "capacity": "Capacity",
+        "asc": "Ascending",
+        "desc": "Descending"
       },
       "orderOptions": {
         "descending": "Descending",
