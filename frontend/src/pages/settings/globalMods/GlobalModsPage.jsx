@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { Trans, useTranslation } from 'react-i18next'
 import axiosInstance from '../../../helpers/axiosInstance'
 import PageHeader from '../../../components/PageHeader'
-import { CardBody, CardHeader, Flex, Box, FormControl, Input, Select, Textarea, Checkbox, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Table, TableContainer, Thead, Tbody, Tr, Th, Td, useColorModeValue } from '@chakra-ui/react'
+import { CardBody, CardHeader, Flex, Box, FormControl, Input, Select, Textarea, Checkbox, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Table, TableContainer, Thead, Tbody, Tr, Th, Td, useColorModeValue, Image, SimpleGrid, Text } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { AppIconButton } from '../../../components/common/AppButton'
 
@@ -551,12 +551,13 @@ const GlobalModsPage = () => {
                           </div>
                         </div>
                       ) : (
-                        <div
-
-                          style={{ backgroundColor: "gray.50", width: 60, height: 60 }}
+                        <Box
+                          bg="gray.50"
+                          w={60}
+                          h={60}
                         >
                           <small>📁</small>
-                        </div>
+                        </Box>
                       )}
                     </Box>
                   </Flex>
@@ -567,12 +568,13 @@ const GlobalModsPage = () => {
                 <div key={cat.id}>
                   <Box as="h6" mb={2} display="flex" alignItems="center" gap={2}>
                     {cat.image && (
-                      <img
+                      <Image
                         src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${cat.image}`}
                         alt={cat.name}
-                        width={28}
-                        height={28}
-                        style={{ objectFit: 'cover', borderRadius: 4 }}
+                        w={28}
+                        h={28}
+                        objectFit="cover"
+                        borderRadius={4}
                         borderWidth="1px"
                         borderColor={borderColor}
                         onError={(e) => {
@@ -610,35 +612,32 @@ const GlobalModsPage = () => {
                     {(cat.templates || []).map((tpl) => (
                       <Box key={tpl.id}>
                         <Box
-
-                          style={{ gap: 10 }}
+                          gap={10}
                         >
                           {(tpl.sampleImage || tpl.fieldsConfig?.modSampleImage?.enabled) && (
-                            <img
+                            <Image
                               src={
                                 tpl.sampleImage
                                   ? `${import.meta.env.VITE_API_URL || ''}/uploads/images/${tpl.sampleImage}`
                                   : '/images/nologo.png'
                               }
                               alt={tpl.name}
-                              style={{
-                                width: 72,
-                                height: 72,
-                                objectFit: 'cover',
-                                borderRadius: 6,
-                              }}
+                              w={72}
+                              h={72}
+                              objectFit="cover"
+                              borderRadius={6}
                               onError={(e) => {
                                 e.currentTarget.src = '/images/nologo.png'
                               }}
                             />
                           )}
-                          <div>
-                            <div>{tpl.name}</div>
-                            <div>
+                          <Box>
+                            <Text>{tpl.name}</Text>
+                            <Text>
                               {tpl.defaultPrice != null
                                 ? `$${Number(tpl.defaultPrice).toFixed(2)}`
                                 : t('globalMods.template.blueprint')}
-                            </div>
+                            </Text>
                           <AppIconButton
                             size="sm"
                             colorScheme="orange"
@@ -1209,36 +1208,33 @@ const GlobalModsPage = () => {
                     </Box>
                     <Box md={6}>
                       {newTemplate.sampleImage ? (
-                        <div>
-                          <img
+                        <Box>
+                          <Image
                             src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${newTemplate.sampleImage}`}
                             alt={t('globalMods.builder.sampleUpload.previewAlt')}
-                            style={{
-                              width: '100%',
-                              maxHeight: 120,
-                              objectFit: 'cover',
-                              borderRadius: 8,
-                            }}
+                            w="100%"
+                            maxH={120}
+                            objectFit="cover"
+                            borderRadius={8}
                             onError={(e) => {
                               e.currentTarget.src = '/images/nologo.png'
                             }}
                           />
-                          <div>
+                          <Box>
                             <small>
                               {t('globalMods.builder.sampleUpload.uploaded', {
                                 name: newTemplate.sampleImage,
                               })}
                             </small>
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
                       ) : (
-                        <div
-
-                          style={{ backgroundColor: "gray.50" }}
+                        <Box
+                          bg="gray.50"
                         >
-                          <div>📷</div>
+                          <Box>📷</Box>
                           <small>{t('globalMods.builder.sampleUpload.none')}</small>
-                        </div>
+                        </Box>
                       )}
                     </Box>
                   </Flex>
@@ -1993,36 +1989,33 @@ const GlobalModsPage = () => {
                     </Box>
                     <Box md={6}>
                       {newTemplate.sampleImage ? (
-                        <div>
-                          <img
+                        <Box>
+                          <Image
                             src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${newTemplate.sampleImage}`}
                             alt={t('globalMods.builder.sampleUpload.previewAlt')}
-                            style={{
-                              width: '100%',
-                              maxHeight: 120,
-                              objectFit: 'cover',
-                              borderRadius: 8,
-                            }}
+                            w="100%"
+                            maxH={120}
+                            objectFit="cover"
+                            borderRadius={8}
                             onError={(e) => {
                               e.currentTarget.src = '/images/nologo.png'
                             }}
                           />
-                          <div>
+                          <Box>
                             <small>
                               {t('globalMods.builder.sampleUpload.uploaded', {
                                 name: newTemplate.sampleImage,
                               })}
                             </small>
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
                       ) : (
-                        <div
-
-                          style={{ backgroundColor: "gray.50" }}
+                        <Box
+                          bg="gray.50"
                         >
-                          <div>📷</div>
+                          <Box>📷</Box>
                           <small>{t('globalMods.builder.sampleUpload.none')}</small>
-                        </div>
+                        </Box>
                       )}
                     </Box>
                   </Flex>
@@ -2097,22 +2090,21 @@ const GlobalModsPage = () => {
                   }}
                 />
                 {editCategory.image && (
-                  <div>
-                    <img
+                  <Box>
+                    <Image
                       src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editCategory.image}`}
                       alt="Category"
-                      style={{
-                        width: '100%',
-                        maxHeight: 140,
-                        objectFit: 'cover',
-                        borderRadius: 8,
-                        border: '1px solid #e9ecef',
-                      }}
+                      w="100%"
+                      maxH={140}
+                      objectFit="cover"
+                      borderRadius={8}
+                      borderWidth="1px"
+                      borderColor="gray.200"
                       onError={(e) => {
                         e.currentTarget.src = '/images/nologo.png'
                       }}
                     />
-                  </div>
+                  </Box>
                 )}
               </Box>
             </Flex>
@@ -2180,22 +2172,21 @@ const GlobalModsPage = () => {
                   }}
                 />
                 {editTemplate.sampleImage && (
-                  <div>
-                    <img
+                  <Box>
+                    <Image
                       src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editTemplate.sampleImage}`}
                       alt={t('globalMods.modal.editTemplate.sampleAlt')}
-                      style={{
-                        width: '100%',
-                        maxHeight: 140,
-                        objectFit: 'cover',
-                        borderRadius: 8,
-                        border: '1px solid #e9ecef',
-                      }}
+                      w="100%"
+                      maxH={140}
+                      objectFit="cover"
+                      borderRadius={8}
+                      borderWidth="1px"
+                      borderColor="gray.200"
                       onError={(e) => {
                         e.currentTarget.src = '/images/nologo.png'
                       }}
                     />
-                  </div>
+                  </Box>
                 )}
               </Box>
             </Flex>
@@ -2251,16 +2242,15 @@ const GlobalModsPage = () => {
                     <h6>
                       {category.image && (
                         <>
-                          <img
+                          <Image
                             src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${category.image}`}
                             alt={category.name}
-                            width={20}
-                            height={20}
-                            style={{
-                              objectFit: 'cover',
-                              borderRadius: 4,
-                              border: '1px solid #e9ecef',
-                            }}
+                            w={20}
+                            h={20}
+                            objectFit="cover"
+                            borderRadius={4}
+                            borderWidth="1px"
+                            borderColor="gray.200"
                             onError={(e) => {
                               e.currentTarget.src = '/images/nologo.png'
                             }}
