@@ -1,4 +1,4 @@
-import { Table, Tbody, Td, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react';
+import { Table, Tbody, Td, Th, Thead, Tr, useColorModeValue, useToast } from '@chakra-ui/react';
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { CardBody, Flex, Box, FormControl, Textarea, Badge, Button, HStack, Text } from '@chakra-ui/react'
@@ -8,11 +8,11 @@ import PageContainer from '../../../components/PageContainer'
 import { useTranslation } from 'react-i18next'
 import { getLatestTerms, saveTerms, getAcceptance } from '../../../helpers/termsApi'
 import { isAdmin as isAdminCheck } from '../../../helpers/permissions'
-import Swal from 'sweetalert2'
 
 
 const TermsPage = () => {
   const { t } = useTranslation()
+  const toast = useToast()
   const user = useSelector((s) => s.auth.user)
   const isAdmin = useMemo(() => isAdminCheck(user), [user])
 
@@ -55,29 +55,31 @@ const TermsPage = () => {
     try {
       await saveTerms({ content, bumpVersion: bumpVersion ? true : false })
       // Success feedback
-      await Swal.fire({
-        icon: 'success',
+      toast({
         title: bumpVersion
           ? t('settings.terms.publishedTitle', 'Published')
           : t('common.saved', 'Saved'),
-        text: bumpVersion
+        description: bumpVersion
           ? t(
               'settings.terms.publishedMessage',
               'A new version of your Terms & Conditions has been published.',
             )
           : t('settings.terms.updatedMessage', 'Your Terms & Conditions have been updated.'),
-        timer: 1600,
-        showConfirmButton: false,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
       })
       await load()
     } catch (error) {
       console.error('Save terms error:', error)
-      Swal.fire({
-        icon: 'error',
+      toast({
         title: t('common.error', 'Error'),
-        text:
+        description:
           error?.response?.data?.message ||
           t('settings.terms.saveError', 'Failed to save terms. Please try again.'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
       })
     } finally {
       setSaving(false)
