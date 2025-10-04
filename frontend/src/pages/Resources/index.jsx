@@ -5,7 +5,55 @@ import { useSelector } from 'react-redux'
 import axiosInstance from '../../helpers/axiosInstance'
 import { getFreshestToken } from '../../utils/authToken'
 import { getContrastColor } from '../../utils/colorUtils'
-import { Alert, AspectRatio, Badge, Box, Button, CardBody, CardHeader, Center, Container, Divider, Flex, FormControl, FormLabel, Grid, GridItem, HStack, Heading, Icon, Image, Input, InputGroup, InputLeftElement, Link, List, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Stack, Switch, Tab, TabList, TabPanel, TabPanels, Tabs, Text, Textarea, VStack, useColorModeValue, useToast } from '@chakra-ui/react'
+import {
+  Alert,
+  AspectRatio,
+  Badge,
+  Box,
+  Button,
+  CardBody,
+  CardHeader,
+  Center,
+  Container,
+  Divider,
+  Flex,
+  FormControl,
+  FormLabel,
+  Grid,
+  GridItem,
+  HStack,
+  Heading,
+  Icon,
+  Image,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Link,
+  List,
+  ListItem,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Switch,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  Textarea,
+  VStack,
+  useColorModeValue,
+  useToast,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import {
   ArrowLeft,
@@ -43,7 +91,7 @@ import {
   Shield,
   Upload,
   Eye,
-  Pin
+  Pin,
 } from 'lucide-react'
 import PageHeader from '../../components/PageHeader'
 import withContractorScope from '../../components/withContractorScope'
@@ -97,7 +145,7 @@ const ICON_OPTIONS = [
   { value: 'Tag', icon: Tag, label: 'Tag' },
   { value: 'User', icon: User, label: 'User' },
   { value: 'Video', icon: Video, label: 'Video' },
-  { value: 'Wallet', icon: Wallet, label: 'Wallet' }
+  { value: 'Wallet', icon: Wallet, label: 'Wallet' },
 ]
 
 const API_ROOT = '/api/resources'
@@ -253,30 +301,51 @@ const Resources = ({ isContractor, contractorGroupName }) => {
   const [filters, setFilters] = useState({ search: '', categoryId: 'all', medium: 'all' })
   const [activeTab, setActiveTab] = useState(0)
   const [fileDownloadPermissions, setFileDownloadPermissions] = useState({})
-  const [categoryModal, setCategoryModal] = useState({ visible: false, isEdit: false, form: { ...emptyCategoryForm } })
-  const [linkModal, setLinkModal] = useState({ visible: false, isEdit: false, form: { ...emptyLinkForm } })
-  const [fileModal, setFileModal] = useState({ visible: false, isEdit: false, form: { ...emptyFileForm } })
-  const [announcementModal, setAnnouncementModal] = useState({ visible: false, isEdit: false, form: { ...emptyAnnouncementForm } })
+  const [categoryModal, setCategoryModal] = useState({
+    visible: false,
+    isEdit: false,
+    form: { ...emptyCategoryForm },
+  })
+  const [linkModal, setLinkModal] = useState({
+    visible: false,
+    isEdit: false,
+    form: { ...emptyLinkForm },
+  })
+  const [fileModal, setFileModal] = useState({
+    visible: false,
+    isEdit: false,
+    form: { ...emptyFileForm },
+  })
+  const [announcementModal, setAnnouncementModal] = useState({
+    visible: false,
+    isEdit: false,
+    form: { ...emptyAnnouncementForm },
+  })
   const [viewerModal, setViewerModal] = useState({ visible: false, file: null })
 
   const isAdmin = !isContractor
 
   const bgColor = useColorModeValue('gray.50', 'gray.900')
   const cardBg = useColorModeValue('white', 'gray.800')
-  const searchIconColor = useColorModeValue("gray.400", "gray.500")
-  const textSecondary = useColorModeValue("gray.600", "gray.400")
-  const textMuted = useColorModeValue("gray.500", "gray.400")
-  const linkColor = useColorModeValue("blue.500", "blue.300")
+  const searchIconColor = useColorModeValue('gray.400', 'gray.500')
+  const textSecondary = useColorModeValue('gray.600', 'gray.400')
+  const textMuted = useColorModeValue('gray.500', 'gray.400')
+  const linkColor = useColorModeValue('blue.500', 'blue.300')
+  const previewBg = useColorModeValue('blackAlpha.50', 'whiteAlpha.50')
+  const previewHoverBg = useColorModeValue('blackAlpha.100', 'whiteAlpha.100')
   const accentColor = customization?.primaryColor || 'blue.600'
 
-  const canDownloadFile = useCallback((fileId) => {
-    return isAdmin || fileDownloadPermissions[fileId] === true
-  }, [isAdmin, fileDownloadPermissions])
+  const canDownloadFile = useCallback(
+    (fileId) => {
+      return isAdmin || fileDownloadPermissions[fileId] === true
+    },
+    [isAdmin, fileDownloadPermissions],
+  )
 
   const toggleFileDownloadPermission = useCallback((fileId) => {
-    setFileDownloadPermissions(prev => ({
+    setFileDownloadPermissions((prev) => ({
       ...prev,
-      [fileId]: !prev[fileId]
+      [fileId]: !prev[fileId],
     }))
   }, [])
 
@@ -310,40 +379,49 @@ const Resources = ({ isContractor, contractorGroupName }) => {
         return null
       }
     },
-    [apiBaseUrl]
+    [apiBaseUrl],
   )
 
-  const resolveCategoryThumbUrl = useCallback((categoryOrUrl) => {
-    const token = getFreshestToken()
-    let urlStr = null
-    if (!categoryOrUrl) return null
-    if (typeof categoryOrUrl === 'string') {
-      urlStr = categoryOrUrl
-    } else if (categoryOrUrl.thumbnailUrl) {
-      urlStr = categoryOrUrl.thumbnailUrl
-    }
-    if (!urlStr) return null
-    try {
-      if (/^https?:\/\//i.test(urlStr)) {
-        return urlStr
+  const resolveCategoryThumbUrl = useCallback(
+    (categoryOrUrl) => {
+      const token = getFreshestToken()
+      let urlStr = null
+      if (!categoryOrUrl) return null
+      if (typeof categoryOrUrl === 'string') {
+        urlStr = categoryOrUrl
+      } else if (categoryOrUrl.thumbnailUrl) {
+        urlStr = categoryOrUrl.thumbnailUrl
       }
-      const base = apiBaseUrl || (typeof window !== 'undefined' ? window.location.origin : '')
-      if (!base) return null
-      const u = new URL(urlStr, base)
-      if (token) u.searchParams.set('token', token)
-      return u.toString()
-    } catch (e) {
-      console.error('Error building category thumbnail URL', e)
-      return null
-    }
-  }, [apiBaseUrl])
+      if (!urlStr) return null
+      try {
+        if (/^https?:\/\//i.test(urlStr)) {
+          return urlStr
+        }
+        const base = apiBaseUrl || (typeof window !== 'undefined' ? window.location.origin : '')
+        if (!base) return null
+        const u = new URL(urlStr, base)
+        if (token) u.searchParams.set('token', token)
+        return u.toString()
+      } catch (e) {
+        console.error('Error building category thumbnail URL', e)
+        return null
+      }
+    },
+    [apiBaseUrl],
+  )
 
   const getFileKind = useCallback((file) => {
-    const type = (file?.mimeType || file?.mime_type || file?.fileType || '').toString().toLowerCase()
-    const name = (file?.originalName || file?.original_name || file?.name || '').toString().toLowerCase()
+    const type = (file?.mimeType || file?.mime_type || file?.fileType || '')
+      .toString()
+      .toLowerCase()
+    const name = (file?.originalName || file?.original_name || file?.name || '')
+      .toString()
+      .toLowerCase()
     const ext = name.includes('.') ? name.split('.').pop() : ''
-    const isImage = type.startsWith('image/') || ['jpg','jpeg','png','gif','bmp','webp','svg'].includes(ext)
-    const isVideo = type.startsWith('video/') || ['mp4','mov','m4v','webm','ogg','avi','mkv'].includes(ext)
+    const isImage =
+      type.startsWith('image/') || ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(ext)
+    const isVideo =
+      type.startsWith('video/') || ['mp4', 'mov', 'm4v', 'webm', 'ogg', 'avi', 'mkv'].includes(ext)
     const isPdf = type.includes('pdf') || ext === 'pdf'
     if (isImage) return 'image'
     if (isVideo) return 'video'
@@ -351,19 +429,22 @@ const Resources = ({ isContractor, contractorGroupName }) => {
     return 'other'
   }, [])
 
-  const resolveFileThumbUrl = useCallback((file) => {
-    if (!file) return null
-    if (file.thumbnailUrl) {
-      return resolveCategoryThumbUrl(file.thumbnailUrl)
-    }
-    const kind = getFileKind(file)
-    const apiThumb = resolveFileUrl(file, 'thumbnail')
-    if (apiThumb) return apiThumb
-    if (kind === 'image') {
-      return resolveFileUrl(file)
-    }
-    return null
-  }, [getFileKind, resolveCategoryThumbUrl, resolveFileUrl])
+  const resolveFileThumbUrl = useCallback(
+    (file) => {
+      if (!file) return null
+      if (file.thumbnailUrl) {
+        return resolveCategoryThumbUrl(file.thumbnailUrl)
+      }
+      const kind = getFileKind(file)
+      const apiThumb = resolveFileUrl(file, 'thumbnail')
+      if (apiThumb) return apiThumb
+      if (kind === 'image') {
+        return resolveFileUrl(file)
+      }
+      return null
+    },
+    [getFileKind, resolveCategoryThumbUrl, resolveFileUrl],
+  )
 
   const showFeedback = (type, message) => {
     toast({
@@ -383,7 +464,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       setResourceData(response.data?.data || null)
     } catch (error) {
       console.error('Error loading resources:', error)
-      const message = error.response?.data?.message || t('resources.messages.loadFailed', 'Failed to load resources')
+      const message =
+        error.response?.data?.message ||
+        t('resources.messages.loadFailed', 'Failed to load resources')
       showFeedback('error', message)
       setResourceData(null)
     } finally {
@@ -412,12 +495,15 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
   const categoriesForDisplay = useMemo(
     () => (isAdmin ? categoryReference : resourceData?.categories || []),
-    [isAdmin, categoryReference, resourceData]
+    [isAdmin, categoryReference, resourceData],
   )
 
   const categoryMap = useMemo(() => buildCategoryMap(categoriesForDisplay), [categoriesForDisplay])
 
-  const flattenedCategories = useMemo(() => flattenCategories(categoriesForDisplay), [categoriesForDisplay])
+  const flattenedCategories = useMemo(
+    () => flattenCategories(categoriesForDisplay),
+    [categoriesForDisplay],
+  )
 
   const parentCategoryOptions = useMemo(() => {
     const excludeId = categoryModal.isEdit ? categoryModal.form.id : null
@@ -432,7 +518,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       if (filters.categoryId === 'uncategorized') return !categoryId
       return Number(filters.categoryId) === Number(categoryId)
     },
-    [filters.categoryId]
+    [filters.categoryId],
   )
 
   const passesFilters = useCallback(
@@ -457,7 +543,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       }
       return haystack.some((value) => value && value.toLowerCase().includes(normalizedSearch))
     },
-    [filters.medium, normalizedSearch, passesCategory]
+    [filters.medium, normalizedSearch, passesCategory],
   )
 
   const passesFiltersIgnoringMedium = useCallback(
@@ -479,7 +565,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       }
       return haystack.some((value) => value && value.toLowerCase().includes(normalizedSearch))
     },
-    [normalizedSearch, passesCategory]
+    [normalizedSearch, passesCategory],
   )
 
   const resourcesByCategory = useMemo(() => {
@@ -518,6 +604,122 @@ const Resources = ({ isContractor, contractorGroupName }) => {
     )
   }, [resourceData])
 
+  // Helper function to compare pinned items for sorting
+  const comparePinned = (a, b) => {
+    const pa = a?.isPinned ? 1 : 0
+    const pb = b?.isPinned ? 1 : 0
+    if (pa !== pb) return pb - pa // pinned first
+    const poa = Number(a?.pinnedOrder ?? a?.pinned_order ?? 0)
+    const pob = Number(b?.pinnedOrder ?? b?.pinned_order ?? 0)
+    if (poa !== pob) return poa - pob // lower pinned order first
+    return 0
+  }
+
+  // Get all descendant category IDs for a given category
+  const getDescendantIds = useCallback((category) => {
+    const ids = []
+    const walk = (node) => {
+      if (!node) return
+      if (Array.isArray(node.children)) {
+        node.children.forEach((child) => {
+          ids.push(child.id)
+          walk(child)
+        })
+      }
+    }
+    walk(category)
+    return ids
+  }, [])
+
+  // Aggregate category data including resources from subcategories
+  const aggregateCategoryData = useCallback(
+    (category) => {
+      const allIds = new Set([String(category.id), ...getDescendantIds(category).map(String)])
+      const anns = (resourceData?.announcements || []).filter(
+        (a) =>
+          allIds.has(String(a?.categoryId ?? a?.category_id)) &&
+          passesFiltersIgnoringMedium(a, 'announcements'),
+      )
+      const links = (resourceData?.links || []).filter(
+        (l) =>
+          allIds.has(String(l?.categoryId ?? l?.category_id)) &&
+          passesFiltersIgnoringMedium(l, 'links'),
+      )
+      const files = (resourceData?.files || []).filter(
+        (f) =>
+          allIds.has(String(f?.categoryId ?? f?.category_id)) &&
+          passesFiltersIgnoringMedium(f, 'files'),
+      )
+
+      const sortPinnedThen = (arr, by) =>
+        arr.slice().sort((a, b) => {
+          const pc = comparePinned(a, b)
+          if (pc !== 0) return pc
+          if (by === 'date') {
+            const da = a?.publishAt ? new Date(a.publishAt).getTime() : 0
+            const db = b?.publishAt ? new Date(b.publishAt).getTime() : 0
+            return db - da
+          }
+          return String(a?.title || a?.name || '').localeCompare(String(b?.title || b?.name || ''))
+        })
+
+      const annsSorted = sortPinnedThen(anns, 'date')
+      const linksSorted = sortPinnedThen(links, 'alpha')
+      const filesSorted = sortPinnedThen(files, 'alpha')
+
+      // Build a mixed preview list (max 3)
+      const preview = []
+      annsSorted.slice(0, 1).forEach((a) => preview.push({ type: 'announcement', item: a }))
+      linksSorted.slice(0, 1).forEach((l) => preview.push({ type: 'link', item: l }))
+      filesSorted.slice(0, 1).forEach((f) => preview.push({ type: 'file', item: f }))
+      // If less than 3, fill with remaining by highest volumes
+      const remaining = [
+        ...annsSorted.slice(1),
+        ...linksSorted.slice(1),
+        ...filesSorted.slice(1),
+      ].slice(0, Math.max(0, 3 - preview.length))
+      remaining.forEach((it) => {
+        const type = it.title && it.summary ? 'announcement' : it.url ? 'link' : 'file'
+        preview.push({ type, item: it })
+      })
+
+      const totals = { announcements: anns.length, links: links.length, files: files.length }
+      const dominant = Object.entries(totals).sort((a, b) => b[1] - a[1])[0]?.[0] || 'links'
+      return { totals, preview, dominant }
+    },
+    [getDescendantIds, resourceData, passesFiltersIgnoringMedium],
+  )
+
+  // Handler to open links in new tab
+  const handleOpenLink = (link) => {
+    if (link?.url) {
+      window.open(link.url, '_blank', 'noopener')
+    }
+  }
+
+  // Handler to download files with permission check
+  const handleDownloadFile = (file) => {
+    if (!canDownloadFile(file.id)) {
+      showFeedback(
+        'warning',
+        t(
+          'resources.messages.downloadNotAllowed',
+          'Downloads are not allowed for this file. Contact an administrator for access.',
+        ),
+      )
+      return
+    }
+
+    const url = resolveFileUrl(file)
+    if (!url) {
+      showFeedback('error', t('resources.messages.fileAccessFailed', 'Failed to access file'))
+      return
+    }
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener')
+    }
+  }
+
   // Modal handlers
   const openCategoryModal = (category = null, parentId = null) => {
     setCategoryModal({
@@ -530,7 +732,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             color: category.color || '',
             icon: category.icon || '',
             pendingThumbnail: null,
-            pendingThumbnailPreview: null
+            pendingThumbnailPreview: null,
           }
         : { ...emptyCategoryForm, parentId: parentId || '' },
     })
@@ -544,12 +746,14 @@ const Resources = ({ isContractor, contractorGroupName }) => {
     setLinkModal({
       visible: true,
       isEdit: !!link,
-      form: link ? {
-        ...link,
-        categoryId: link.categoryId || '',
-        type: link.type || 'external',
-        tags: serializeTags(link.tags)
-      } : { ...emptyLinkForm },
+      form: link
+        ? {
+            ...link,
+            categoryId: link.categoryId || '',
+            type: link.type || 'external',
+            tags: serializeTags(link.tags),
+          }
+        : { ...emptyLinkForm },
     })
   }
 
@@ -568,7 +772,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             tags: serializeTags(file.tags),
             pendingThumbnail: null,
             pendingThumbnailPreview: null,
-            file: null
+            file: null,
           }
         : { ...emptyFileForm },
     })
@@ -635,7 +839,10 @@ const Resources = ({ isContractor, contractorGroupName }) => {
           })
         } catch (thumbnailError) {
           console.error('Error uploading pending thumbnail:', thumbnailError)
-          showFeedback('warning', t('resources.messages.thumbnailUploadFailed', 'Failed to upload thumbnail'))
+          showFeedback(
+            'warning',
+            t('resources.messages.thumbnailUploadFailed', 'Failed to upload thumbnail'),
+          )
         }
       }
 
@@ -645,7 +852,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       showFeedback('success', t('resources.messages.categorySaved', 'Category saved successfully'))
     } catch (error) {
       console.error('Error saving category:', error)
-      const message = error.response?.data?.message || t('resources.messages.categorySaveFailed', 'Failed to save category')
+      const message =
+        error.response?.data?.message ||
+        t('resources.messages.categorySaveFailed', 'Failed to save category')
       showFeedback('error', message)
     } finally {
       setActionLoading(false)
@@ -653,7 +862,15 @@ const Resources = ({ isContractor, contractorGroupName }) => {
   }
 
   const handleDeleteCategory = async (category) => {
-    if (!confirm(t('resources.messages.confirmDeleteCategory', 'Are you sure you want to delete this category?'))) return
+    if (
+      !confirm(
+        t(
+          'resources.messages.confirmDeleteCategory',
+          'Are you sure you want to delete this category?',
+        ),
+      )
+    )
+      return
     try {
       setActionLoading(true)
       const token = getFreshestToken()
@@ -662,10 +879,15 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       })
       await fetchResources()
       if (isAdmin) await fetchCategories()
-      showFeedback('success', t('resources.messages.categoryDeleted', 'Category deleted successfully'))
+      showFeedback(
+        'success',
+        t('resources.messages.categoryDeleted', 'Category deleted successfully'),
+      )
     } catch (error) {
       console.error('Error deleting category:', error)
-      const message = error.response?.data?.message || t('resources.messages.categoryDeleteFailed', 'Failed to delete category')
+      const message =
+        error.response?.data?.message ||
+        t('resources.messages.categoryDeleteFailed', 'Failed to delete category')
       showFeedback('error', message)
     } finally {
       setActionLoading(false)
@@ -676,15 +898,24 @@ const Resources = ({ isContractor, contractorGroupName }) => {
     setScaffoldLoading(true)
     try {
       const token = getFreshestToken()
-      await axiosInstance.post(SCAFFOLD_ENDPOINT, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await axiosInstance.post(
+        SCAFFOLD_ENDPOINT,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      )
       await fetchResources()
       if (isAdmin) await fetchCategories()
-      showFeedback('success', t('resources.messages.scaffoldCreated', 'Category scaffold created successfully'))
+      showFeedback(
+        'success',
+        t('resources.messages.scaffoldCreated', 'Category scaffold created successfully'),
+      )
     } catch (error) {
       console.error('Error creating scaffold:', error)
-      const message = error.response?.data?.message || t('resources.messages.scaffoldFailed', 'Failed to create scaffold')
+      const message =
+        error.response?.data?.message ||
+        t('resources.messages.scaffoldFailed', 'Failed to create scaffold')
       showFeedback('error', message)
     } finally {
       setScaffoldLoading(false)
@@ -706,7 +937,11 @@ const Resources = ({ isContractor, contractorGroupName }) => {
     <PageContainer>
       <PageHeader
         title={t('resources.title', 'Resources')}
-        subtitle={isContractor ? t('resources.contractorSubtitle', 'Browse available resources and documentation') : t('resources.adminSubtitle', 'Manage resources, categories, and content')}
+        subtitle={
+          isContractor
+            ? t('resources.contractorSubtitle', 'Browse available resources and documentation')
+            : t('resources.adminSubtitle', 'Manage resources, categories, and content')
+        }
       />
 
       <VStack spacing={6} align="stretch">
@@ -721,7 +956,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <Input
                   placeholder={t('resources.search.placeholder', 'Search resources...')}
                   value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
                   name="resources-search"
                   id="resources-search"
                 />
@@ -730,30 +965,37 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               <Select
                 w="200px"
                 value={filters.categoryId}
-                onChange={(e) => setFilters(prev => ({ ...prev, categoryId: e.target.value }))}
+                onChange={(e) => setFilters((prev) => ({ ...prev, categoryId: e.target.value }))}
                 name="resources-category"
                 id="resources-category"
               >
-                <option value="all">{t('resources.filters.allCategories', 'All Categories')}</option>
+                <option value="all">
+                  {t('resources.filters.allCategories', 'All Categories')}
+                </option>
                 {flattenedCategories.map(({ id, name, level }) => (
                   <option key={id} value={id}>
-                    {'  '.repeat(level)}{name}
+                    {'  '.repeat(level)}
+                    {name}
                   </option>
                 ))}
                 {hasUncategorized && (
-                  <option value="uncategorized">{t('resources.filters.uncategorized', 'Uncategorized')}</option>
+                  <option value="uncategorized">
+                    {t('resources.filters.uncategorized', 'Uncategorized')}
+                  </option>
                 )}
               </Select>
 
               <Select
                 w="150px"
                 value={filters.medium}
-                onChange={(e) => setFilters(prev => ({ ...prev, medium: e.target.value }))}
+                onChange={(e) => setFilters((prev) => ({ ...prev, medium: e.target.value }))}
                 name="resources-medium"
                 id="resources-medium"
               >
                 <option value="all">{t('resources.filters.allTypes', 'All Types')}</option>
-                <option value="announcements">{t('resources.types.announcements', 'Announcements')}</option>
+                <option value="announcements">
+                  {t('resources.types.announcements', 'Announcements')}
+                </option>
                 <option value="links">{t('resources.types.links', 'Links')}</option>
                 <option value="files">{t('resources.types.files', 'Files')}</option>
               </Select>
@@ -769,8 +1011,8 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               colorScheme="brand"
               onClick={() => openCategoryModal()}
               minH="44px"
-              maxW={{ base: "180px", md: "none" }}
-              fontSize={{ base: "sm", md: "md" }}
+              maxW={{ base: '180px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('resources.actions.newCategory', 'New Category')}
             </Button>
@@ -780,8 +1022,8 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               onClick={handleCreateCategoryScaffold}
               isLoading={scaffoldLoading}
               minH="44px"
-              maxW={{ base: "180px", md: "none" }}
-              fontSize={{ base: "sm", md: "md" }}
+              maxW={{ base: '180px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('resources.actions.scaffold', 'Create Scaffold')}
             </Button>
@@ -794,19 +1036,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             {categoriesForDisplay.map((category) => {
               const thumbUrl = resolveCategoryThumbUrl(category)
               const color = category.color || accentColor
-
-              // Calculate totals for this category
-              const totals = {
-                announcements: (resourceData?.announcements || []).filter(item =>
-                  (item.categoryId === category.id) && passesFiltersIgnoringMedium(item, 'announcements')
-                ).length,
-                links: (resourceData?.links || []).filter(item =>
-                  (item.categoryId === category.id) && passesFiltersIgnoringMedium(item, 'links')
-                ).length,
-                files: (resourceData?.files || []).filter(item =>
-                  (item.categoryId === category.id) && passesFiltersIgnoringMedium(item, 'files')
-                ).length,
-              }
+              const { totals, preview, dominant } = aggregateCategoryData(category)
 
               return (
                 <StandardCard
@@ -816,19 +1046,45 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   cursor="pointer"
                   transition="all 0.2s"
                   _hover={{ transform: 'translateY(-2px)', shadow: 'md' }}
-                  onClick={() => setFilters(prev => ({ ...prev, categoryId: String(category.id) }))}
-                  h="300px"
+                  onClick={() =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      categoryId: String(category.id),
+                      medium: dominant,
+                    }))
+                  }
+                  minH="380px"
+                  maxH="380px"
                   overflow="hidden"
+                  display="flex"
+                  flexDirection="column"
                 >
                   {thumbUrl && (
-                    <AspectRatio ratio={16/9} h="120px">
-                      <Image src={thumbUrl} alt={category.name} objectFit="cover" />
-                    </AspectRatio>
+                    <Box position="relative" h="120px" overflow="hidden">
+                      <Image
+                        src={thumbUrl}
+                        alt={category.name}
+                        w="100%"
+                        h="100%"
+                        objectFit="cover"
+                        transition="transform 0.3s ease"
+                        _hover={{ transform: 'scale(1.05)' }}
+                      />
+                      <Box
+                        position="absolute"
+                        top={0}
+                        left={0}
+                        w="100%"
+                        h="100%"
+                        bgGradient={`linear(135deg, ${color}15 0%, transparent 50%)`}
+                        pointerEvents="none"
+                      />
+                    </Box>
                   )}
 
                   <CardHeader pb={2}>
-                    <HStack justify="space-between">
-                      <HStack>
+                    <HStack justify="space-between" align="start">
+                      <HStack align="start" flex={1} minW={0}>
                         <Box
                           w={8}
                           h={8}
@@ -838,15 +1094,16 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                           display="flex"
                           alignItems="center"
                           justifyContent="center"
+                          flexShrink={0}
                         >
                           <Folder color={color} size={ICON_SIZE_MD} />
                         </Box>
-                        <VStack align="start" spacing={0}>
-                          <Text fontWeight="bold" fontSize="sm" noOfLines={1}>
+                        <VStack align="start" spacing={0} flex={1} minW={0}>
+                          <Text fontWeight="bold" fontSize="sm" noOfLines={1} title={category.name}>
                             {category.name}
                           </Text>
                           {category.isPinned && (
-                            <Badge colorScheme="yellow" size="sm">
+                            <Badge colorScheme="yellow" size="sm" fontSize="0.65rem">
                               {t('resources.labels.pinned', 'Pinned')}
                             </Badge>
                           )}
@@ -854,33 +1111,42 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       </HStack>
 
                       {isAdmin && (
-                        <HStack opacity={0.7} _groupHover={{ opacity: 1 }}>
+                        <HStack opacity={0.7} _groupHover={{ opacity: 1 }} flexShrink={0}>
                           <Button
-            minH="44px"
+                            minH="28px"
                             size="sm"
                             variant="ghost"
                             p={1}
-                            onClick={(e) => { e.stopPropagation(); openCategoryModal(category); }}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openCategoryModal(category)
+                            }}
                           >
                             <Edit size={14} />
                           </Button>
                           <Button
-            minH="44px"
+                            minH="28px"
                             size="sm"
                             variant="ghost"
                             p={1}
                             colorScheme="green"
-                            onClick={(e) => { e.stopPropagation(); openCategoryModal(null, category.id); }}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openCategoryModal(null, category.id)
+                            }}
                           >
                             <Plus size={14} />
                           </Button>
                           <Button
-            minH="44px"
+                            minH="28px"
                             size="sm"
                             variant="ghost"
                             p={1}
                             colorScheme="red"
-                            onClick={(e) => { e.stopPropagation(); handleDeleteCategory(category); }}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDeleteCategory(category)
+                            }}
                           >
                             <Trash size={14} />
                           </Button>
@@ -889,25 +1155,159 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     </HStack>
                   </CardHeader>
 
-                  <CardBody pt={0}>
+                  <CardBody pt={0} flex={1} display="flex" flexDirection="column" overflow="hidden">
                     {category.description && (
-                      <Text fontSize="sm" color={textSecondary} noOfLines={2} mb={3}>
+                      <Text
+                        fontSize="sm"
+                        color={textSecondary}
+                        noOfLines={2}
+                        mb={3}
+                        lineHeight="1.3"
+                        maxH="2.6rem"
+                        overflow="hidden"
+                      >
                         {category.description}
                       </Text>
                     )}
 
-                    <HStack spacing={4}>
-                      <Badge colorScheme="orange">
+                    <HStack spacing={2} mb={3}>
+                      <Badge
+                        colorScheme="orange"
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                        fontSize="0.7rem"
+                      >
+                        <Video size={10} />
                         {totals.announcements}
                       </Badge>
-                      <Badge colorScheme="green">
+                      <Badge
+                        colorScheme="green"
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                        fontSize="0.7rem"
+                      >
+                        <LinkIcon size={10} />
                         {totals.links}
                       </Badge>
-                      <Badge colorScheme="brand">
+                      <Badge
+                        colorScheme="blue"
+                        display="flex"
+                        alignItems="center"
+                        gap={1}
+                        fontSize="0.7rem"
+                      >
+                        <Download size={10} />
                         {totals.files}
                       </Badge>
                     </HStack>
+
+                    {preview.length > 0 ? (
+                      <Box flex={1} minH="100px" maxH="120px" overflow="hidden">
+                        <Text
+                          color={textMuted}
+                          textTransform="uppercase"
+                          fontWeight="bold"
+                          mb={2}
+                          fontSize="0.7rem"
+                          letterSpacing="0.5px"
+                        >
+                          {t('resources.labels.preview', 'Preview')}
+                        </Text>
+                        <VStack spacing={1} align="stretch" maxH="90px" overflowY="auto">
+                          {preview.slice(0, 2).map(({ type, item }, idx) => {
+                            const IconComponent =
+                              type === 'announcement'
+                                ? Video
+                                : type === 'link'
+                                  ? LinkIcon
+                                  : Download
+                            const label = item.title || item.name || item.url || ''
+                            const handleClick = (e) => {
+                              e.stopPropagation()
+                              if (type === 'link') handleOpenLink(item)
+                              if (type === 'file') handleDownloadFile(item)
+                              if (type === 'announcement')
+                                setFilters((prev) => ({
+                                  ...prev,
+                                  medium: 'announcements',
+                                  categoryId: String(category.id),
+                                }))
+                            }
+                            return (
+                              <HStack
+                                key={`prev-${category.id}-${idx}`}
+                                p={2}
+                                rounded="md"
+                                bg={previewBg}
+                                cursor="pointer"
+                                transition="background 0.2s"
+                                _hover={{ bg: previewHoverBg }}
+                                onClick={handleClick}
+                                spacing={2}
+                              >
+                                <IconComponent
+                                  size={12}
+                                  style={{ flexShrink: 0, color: textMuted }}
+                                />
+                                <Text
+                                  fontSize="0.8rem"
+                                  fontWeight="medium"
+                                  noOfLines={1}
+                                  flex={1}
+                                  title={label}
+                                >
+                                  {label}
+                                </Text>
+                              </HStack>
+                            )
+                          })}
+                        </VStack>
+                      </Box>
+                    ) : (
+                      <Box
+                        flex={1}
+                        minH="100px"
+                        display="flex"
+                        flexDirection="column"
+                        justifyContent="center"
+                        alignItems="center"
+                        py={3}
+                      >
+                        <Folder
+                          size={24}
+                          style={{ opacity: 0.3, color: textMuted, marginBottom: 8 }}
+                        />
+                        <Text fontSize="0.75rem" color={textMuted}>
+                          {t('resources.messages.noContent', 'No content available')}
+                        </Text>
+                      </Box>
+                    )}
                   </CardBody>
+
+                  <Box position="absolute" bottom={2} right={2}>
+                    <Button
+                      size="sm"
+                      colorScheme="blue"
+                      px={3}
+                      py={1}
+                      h="auto"
+                      fontSize="0.75rem"
+                      rounded="full"
+                      fontWeight="medium"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setFilters((prev) => ({
+                          ...prev,
+                          categoryId: String(category.id),
+                          medium: dominant,
+                        }))
+                      }}
+                    >
+                      {t('common.view', 'View')}
+                    </Button>
+                  </Box>
                 </StandardCard>
               )
             })}
@@ -922,10 +1322,10 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               leftIcon={<ArrowLeft size={ICON_SIZE_MD} />}
               variant="ghost"
               alignSelf="flex-start"
-              onClick={() => setFilters(prev => ({ ...prev, categoryId: 'all' }))}
+              onClick={() => setFilters((prev) => ({ ...prev, categoryId: 'all' }))}
               minH="44px"
-              maxW={{ base: "220px", md: "none" }}
-              fontSize={{ base: "sm", md: "md" }}
+              maxW={{ base: '220px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('resources.actions.backToCategories', 'Back to Categories')}
             </Button>
@@ -933,71 +1333,135 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             {/* Resource tabs */}
             <Tabs index={activeTab} onChange={setActiveTab} variant="enclosed" colorScheme="brand">
               <TabList>
-                <Tab>{t('resources.types.announcements', 'Announcements')} ({(resourceData?.announcements || []).filter(item => passesFilters(item, 'announcements')).length})</Tab>
-                <Tab>{t('resources.types.links', 'Links')} ({(resourceData?.links || []).filter(item => passesFilters(item, 'links')).length})</Tab>
-                <Tab>{t('resources.types.files', 'Files')} ({(resourceData?.files || []).filter(item => passesFilters(item, 'files')).length})</Tab>
+                <Tab>
+                  {t('resources.types.announcements', 'Announcements')} (
+                  {
+                    (resourceData?.announcements || []).filter((item) =>
+                      passesFilters(item, 'announcements'),
+                    ).length
+                  }
+                  )
+                </Tab>
+                <Tab>
+                  {t('resources.types.links', 'Links')} (
+                  {
+                    (resourceData?.links || []).filter((item) => passesFilters(item, 'links'))
+                      .length
+                  }
+                  )
+                </Tab>
+                <Tab>
+                  {t('resources.types.files', 'Files')} (
+                  {
+                    (resourceData?.files || []).filter((item) => passesFilters(item, 'files'))
+                      .length
+                  }
+                  )
+                </Tab>
               </TabList>
 
               <TabPanels>
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openAnnouncementModal()} alignSelf="flex-start" minH="44px" maxW={{ base: "220px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
+                      <Button
+                        leftIcon={<Plus size={ICON_SIZE_MD} />}
+                        colorScheme="brand"
+                        onClick={() => openAnnouncementModal()}
+                        alignSelf="flex-start"
+                        minH="44px"
+                        maxW={{ base: '220px', md: 'none' }}
+                        fontSize={{ base: 'sm', md: 'md' }}
+                      >
                         {t('resources.actions.newAnnouncement', 'New Announcement')}
                       </Button>
                     )}
 
-                    {(resourceData?.announcements || []).filter(item => passesFilters(item, 'announcements')).map((announcement) => (
-                      <StandardCard key={announcement.id} bg={cardBg}>
-                        <CardBody>
-                          <HStack justify="space-between">
-                            <VStack align="start" flex={1}>
-                              <Heading size="sm">{announcement.title}</Heading>
-                              {announcement.summary && (
-                                <Text fontSize="sm" color={textSecondary}>{announcement.summary}</Text>
-                              )}
-                              {announcement.isPinned && (
-                                <Badge colorScheme="yellow">
-                                  <Pin size={12} style={{ marginRight: 4 }} />
-                                  {t('resources.labels.pinned', 'Pinned')}
-                                </Badge>
-                              )}
-                            </VStack>
+                    {(resourceData?.announcements || [])
+                      .filter((item) => passesFilters(item, 'announcements'))
+                      .map((announcement) => (
+                        <StandardCard key={announcement.id} bg={cardBg}>
+                          <CardBody>
+                            <HStack justify="space-between">
+                              <VStack align="start" flex={1}>
+                                <Heading size="sm">{announcement.title}</Heading>
+                                {announcement.summary && (
+                                  <Text fontSize="sm" color={textSecondary}>
+                                    {announcement.summary}
+                                  </Text>
+                                )}
+                                {announcement.isPinned && (
+                                  <Badge colorScheme="yellow">
+                                    <Pin size={12} style={{ marginRight: 4 }} />
+                                    {t('resources.labels.pinned', 'Pinned')}
+                                  </Badge>
+                                )}
+                              </VStack>
 
-                            {isAdmin && (
-                              <HStack>
-                                <Button size="sm" variant="ghost" minH="44px" onClick={() => openAnnouncementModal(announcement)}>
-                                  <Edit size={ICON_SIZE_MD} />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  colorScheme="red"
-                                  onClick={async () => {
-                                    if (!confirm(t('common.confirmDelete', 'Are you sure you want to delete this announcement?'))) return
-                                    try {
-                                      const token = getFreshestToken()
-                                      await axiosInstance.delete(`${ANNOUNCEMENTS_ENDPOINT}/${announcement.id}`, {
-                                        headers: { Authorization: `Bearer ${token}` }
-                                      })
-                                      await fetchResources()
-                                      showFeedback('success', t('resources.messages.announcementDeleted', 'Announcement deleted'))
-                                    } catch (error) {
-                                      console.error('Error deleting announcement:', error)
-                                      showFeedback('error', t('resources.messages.announcementDeleteFailed', 'Failed to delete announcement'))
-                                    }
-                                  }}
-                                >
-                                  <Trash size={ICON_SIZE_MD} />
-                                </Button>
-                              </HStack>
-                            )}
-                          </HStack>
-                        </CardBody>
-                      </StandardCard>
-                    ))}
+                              {isAdmin && (
+                                <HStack>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    minH="44px"
+                                    onClick={() => openAnnouncementModal(announcement)}
+                                  >
+                                    <Edit size={ICON_SIZE_MD} />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    colorScheme="red"
+                                    onClick={async () => {
+                                      if (
+                                        !confirm(
+                                          t(
+                                            'common.confirmDelete',
+                                            'Are you sure you want to delete this announcement?',
+                                          ),
+                                        )
+                                      )
+                                        return
+                                      try {
+                                        const token = getFreshestToken()
+                                        await axiosInstance.delete(
+                                          `${ANNOUNCEMENTS_ENDPOINT}/${announcement.id}`,
+                                          {
+                                            headers: { Authorization: `Bearer ${token}` },
+                                          },
+                                        )
+                                        await fetchResources()
+                                        showFeedback(
+                                          'success',
+                                          t(
+                                            'resources.messages.announcementDeleted',
+                                            'Announcement deleted',
+                                          ),
+                                        )
+                                      } catch (error) {
+                                        console.error('Error deleting announcement:', error)
+                                        showFeedback(
+                                          'error',
+                                          t(
+                                            'resources.messages.announcementDeleteFailed',
+                                            'Failed to delete announcement',
+                                          ),
+                                        )
+                                      }
+                                    }}
+                                  >
+                                    <Trash size={ICON_SIZE_MD} />
+                                  </Button>
+                                </HStack>
+                              )}
+                            </HStack>
+                          </CardBody>
+                        </StandardCard>
+                      ))}
 
-                    {(resourceData?.announcements || []).filter(item => passesFilters(item, 'announcements')).length === 0 && (
+                    {(resourceData?.announcements || []).filter((item) =>
+                      passesFilters(item, 'announcements'),
+                    ).length === 0 && (
                       <Text textAlign="center" color={textMuted} py={8}>
                         {t('resources.empty.announcements', 'No announcements found')}
                       </Text>
@@ -1008,69 +1472,108 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openLinkModal()} alignSelf="flex-start" minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
+                      <Button
+                        leftIcon={<Plus size={ICON_SIZE_MD} />}
+                        colorScheme="brand"
+                        onClick={() => openLinkModal()}
+                        alignSelf="flex-start"
+                        minH="44px"
+                        maxW={{ base: '140px', md: 'none' }}
+                        fontSize={{ base: 'sm', md: 'md' }}
+                      >
                         {t('resources.actions.newLink', 'New Link')}
                       </Button>
                     )}
 
-                    {(resourceData?.links || []).filter(item => passesFilters(item, 'links')).map((link) => (
-                      <StandardCard key={link.id} bg={cardBg}>
-                        <CardBody>
-                          <HStack justify="space-between">
-                            <VStack align="start" flex={1}>
-                              <Link href={link.url} isExternal color={linkColor} fontWeight="bold">
-                                minH="44px"
-                                py={2}
-                                {link.title}
-                              </Link>
-                              {link.description && (
-                                <Text fontSize="sm" color={textSecondary}>{link.description}</Text>
-                              )}
-                              <HStack>
-                                <Badge>{link.type}</Badge>
-                                {link.isPinned && (
-                                  <Badge colorScheme="yellow">
-                                    <Pin size={12} style={{ marginRight: 4 }} />
-                                    {t('resources.labels.pinned', 'Pinned')}
-                                  </Badge>
-                                )}
-                              </HStack>
-                            </VStack>
-
-                            {isAdmin && (
-                              <HStack>
-                                <Button size="sm" variant="ghost" minH="44px" onClick={() => openLinkModal(link)}>
-                                  <Edit size={ICON_SIZE_MD} />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  colorScheme="red"
-                                  onClick={async () => {
-                                    if (!confirm(t('common.confirmDelete', 'Are you sure you want to delete this link?'))) return
-                                    try {
-                                      const token = getFreshestToken()
-                                      await axiosInstance.delete(`${LINKS_ENDPOINT}/${link.id}`, {
-                                        headers: { Authorization: `Bearer ${token}` }
-                                      })
-                                      await fetchResources()
-                                      showFeedback('success', t('resources.messages.linkDeleted', 'Link deleted'))
-                                    } catch (error) {
-                                      console.error('Error deleting link:', error)
-                                      showFeedback('error', t('resources.messages.linkDeleteFailed', 'Failed to delete link'))
-                                    }
-                                  }}
+                    {(resourceData?.links || [])
+                      .filter((item) => passesFilters(item, 'links'))
+                      .map((link) => (
+                        <StandardCard key={link.id} bg={cardBg}>
+                          <CardBody>
+                            <HStack justify="space-between">
+                              <VStack align="start" flex={1}>
+                                <Link
+                                  href={link.url}
+                                  isExternal
+                                  color={linkColor}
+                                  fontWeight="bold"
                                 >
-                                  <Trash size={ICON_SIZE_MD} />
-                                </Button>
-                              </HStack>
-                            )}
-                          </HStack>
-                        </CardBody>
-                      </StandardCard>
-                    ))}
+                                  minH="44px" py={2}
+                                  {link.title}
+                                </Link>
+                                {link.description && (
+                                  <Text fontSize="sm" color={textSecondary}>
+                                    {link.description}
+                                  </Text>
+                                )}
+                                <HStack>
+                                  <Badge>{link.type}</Badge>
+                                  {link.isPinned && (
+                                    <Badge colorScheme="yellow">
+                                      <Pin size={12} style={{ marginRight: 4 }} />
+                                      {t('resources.labels.pinned', 'Pinned')}
+                                    </Badge>
+                                  )}
+                                </HStack>
+                              </VStack>
 
-                    {(resourceData?.links || []).filter(item => passesFilters(item, 'links')).length === 0 && (
+                              {isAdmin && (
+                                <HStack>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    minH="44px"
+                                    onClick={() => openLinkModal(link)}
+                                  >
+                                    <Edit size={ICON_SIZE_MD} />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    colorScheme="red"
+                                    onClick={async () => {
+                                      if (
+                                        !confirm(
+                                          t(
+                                            'common.confirmDelete',
+                                            'Are you sure you want to delete this link?',
+                                          ),
+                                        )
+                                      )
+                                        return
+                                      try {
+                                        const token = getFreshestToken()
+                                        await axiosInstance.delete(`${LINKS_ENDPOINT}/${link.id}`, {
+                                          headers: { Authorization: `Bearer ${token}` },
+                                        })
+                                        await fetchResources()
+                                        showFeedback(
+                                          'success',
+                                          t('resources.messages.linkDeleted', 'Link deleted'),
+                                        )
+                                      } catch (error) {
+                                        console.error('Error deleting link:', error)
+                                        showFeedback(
+                                          'error',
+                                          t(
+                                            'resources.messages.linkDeleteFailed',
+                                            'Failed to delete link',
+                                          ),
+                                        )
+                                      }
+                                    }}
+                                  >
+                                    <Trash size={ICON_SIZE_MD} />
+                                  </Button>
+                                </HStack>
+                              )}
+                            </HStack>
+                          </CardBody>
+                        </StandardCard>
+                      ))}
+
+                    {(resourceData?.links || []).filter((item) => passesFilters(item, 'links'))
+                      .length === 0 && (
                       <Text textAlign="center" color={textMuted} py={8}>
                         {t('resources.empty.links', 'No links found')}
                       </Text>
@@ -1081,97 +1584,141 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openFileModal()} alignSelf="flex-start" minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
+                      <Button
+                        leftIcon={<Plus size={ICON_SIZE_MD} />}
+                        colorScheme="brand"
+                        onClick={() => openFileModal()}
+                        alignSelf="flex-start"
+                        minH="44px"
+                        maxW={{ base: '140px', md: 'none' }}
+                        fontSize={{ base: 'sm', md: 'md' }}
+                      >
                         {t('resources.actions.newFile', 'New File')}
                       </Button>
                     )}
 
-                    {(resourceData?.files || []).filter(item => passesFilters(item, 'files')).map((file) => {
-                      const thumbUrl = resolveFileThumbUrl(file)
-                      const fileKind = getFileKind(file)
-                      const canDownload = canDownloadFile(file.id)
+                    {(resourceData?.files || [])
+                      .filter((item) => passesFilters(item, 'files'))
+                      .map((file) => {
+                        const thumbUrl = resolveFileThumbUrl(file)
+                        const fileKind = getFileKind(file)
+                        const canDownload = canDownloadFile(file.id)
 
-                      return (
-                        <StandardCard key={file.id} bg={cardBg}>
-                          <CardBody>
-                            <HStack justify="space-between">
-                              <HStack flex={1}>
-                                {thumbUrl && (
-                                  <Image src={thumbUrl} alt={file.name} boxSize="60px" objectFit="cover" rounded="md" />
-                                )}
-                                <VStack align="start" flex={1}>
-                                  <Text fontWeight="bold">{file.name}</Text>
-                                  {file.description && (
-                                    <Text fontSize="sm" color={textSecondary}>{file.description}</Text>
+                        return (
+                          <StandardCard key={file.id} bg={cardBg}>
+                            <CardBody>
+                              <HStack justify="space-between">
+                                <HStack flex={1}>
+                                  {thumbUrl && (
+                                    <Image
+                                      src={thumbUrl}
+                                      alt={file.name}
+                                      boxSize="60px"
+                                      objectFit="cover"
+                                      rounded="md"
+                                    />
                                   )}
-                                  <HStack>
-                                    <Badge>{fileKind}</Badge>
-                                    {file.isPinned && (
-                                      <Badge colorScheme="yellow">
-                                        <Pin size={12} style={{ marginRight: 4 }} />
-                                        {t('resources.labels.pinned', 'Pinned')}
-                                      </Badge>
+                                  <VStack align="start" flex={1}>
+                                    <Text fontWeight="bold">{file.name}</Text>
+                                    {file.description && (
+                                      <Text fontSize="sm" color={textSecondary}>
+                                        {file.description}
+                                      </Text>
                                     )}
-                                  </HStack>
-                                </VStack>
-                              </HStack>
+                                    <HStack>
+                                      <Badge>{fileKind}</Badge>
+                                      {file.isPinned && (
+                                        <Badge colorScheme="yellow">
+                                          <Pin size={12} style={{ marginRight: 4 }} />
+                                          {t('resources.labels.pinned', 'Pinned')}
+                                        </Badge>
+                                      )}
+                                    </HStack>
+                                  </VStack>
+                                </HStack>
 
-                              <HStack>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => setViewerModal({ visible: true, file })}
-                                >
-                                  <Eye size={ICON_SIZE_MD} />
-                                </Button>
-                                {canDownload && (
+                                <HStack>
                                   <Button
                                     size="sm"
                                     variant="ghost"
-                                    onClick={() => {
-                                      const url = resolveFileUrl(file)
-                                      if (url) window.open(url, '_blank')
-                                    }}
+                                    onClick={() => setViewerModal({ visible: true, file })}
                                   >
-                                    <Download size={ICON_SIZE_MD} />
+                                    <Eye size={ICON_SIZE_MD} />
                                   </Button>
-                                )}
-                                {isAdmin && (
-                                  <>
-                                    <Button size="sm" variant="ghost" minH="44px" onClick={() => openFileModal(file)}>
-                                      <Edit size={ICON_SIZE_MD} />
-                                    </Button>
+                                  {canDownload && (
                                     <Button
                                       size="sm"
                                       variant="ghost"
-                                      colorScheme="red"
-                                      onClick={async () => {
-                                        if (!confirm(t('common.confirmDelete', 'Are you sure you want to delete this file?'))) return
-                                        try {
-                                          const token = getFreshestToken()
-                                          await axiosInstance.delete(`${FILES_ENDPOINT}/${file.id}`, {
-                                            headers: { Authorization: `Bearer ${token}` }
-                                          })
-                                          await fetchResources()
-                                          showFeedback('success', t('resources.messages.fileDeleted', 'File deleted'))
-                                        } catch (error) {
-                                          console.error('Error deleting file:', error)
-                                          showFeedback('error', t('resources.messages.fileDeleteFailed', 'Failed to delete file'))
-                                        }
+                                      onClick={() => {
+                                        const url = resolveFileUrl(file)
+                                        if (url) window.open(url, '_blank')
                                       }}
                                     >
-                                      <Trash size={ICON_SIZE_MD} />
+                                      <Download size={ICON_SIZE_MD} />
                                     </Button>
-                                  </>
-                                )}
+                                  )}
+                                  {isAdmin && (
+                                    <>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        minH="44px"
+                                        onClick={() => openFileModal(file)}
+                                      >
+                                        <Edit size={ICON_SIZE_MD} />
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        colorScheme="red"
+                                        onClick={async () => {
+                                          if (
+                                            !confirm(
+                                              t(
+                                                'common.confirmDelete',
+                                                'Are you sure you want to delete this file?',
+                                              ),
+                                            )
+                                          )
+                                            return
+                                          try {
+                                            const token = getFreshestToken()
+                                            await axiosInstance.delete(
+                                              `${FILES_ENDPOINT}/${file.id}`,
+                                              {
+                                                headers: { Authorization: `Bearer ${token}` },
+                                              },
+                                            )
+                                            await fetchResources()
+                                            showFeedback(
+                                              'success',
+                                              t('resources.messages.fileDeleted', 'File deleted'),
+                                            )
+                                          } catch (error) {
+                                            console.error('Error deleting file:', error)
+                                            showFeedback(
+                                              'error',
+                                              t(
+                                                'resources.messages.fileDeleteFailed',
+                                                'Failed to delete file',
+                                              ),
+                                            )
+                                          }
+                                        }}
+                                      >
+                                        <Trash size={ICON_SIZE_MD} />
+                                      </Button>
+                                    </>
+                                  )}
+                                </HStack>
                               </HStack>
-                            </HStack>
-                          </CardBody>
-                        </StandardCard>
-                      )
-                    })}
+                            </CardBody>
+                          </StandardCard>
+                        )
+                      })}
 
-                    {(resourceData?.files || []).filter(item => passesFilters(item, 'files')).length === 0 && (
+                    {(resourceData?.files || []).filter((item) => passesFilters(item, 'files'))
+                      .length === 0 && (
                       <Text textAlign="center" color={textMuted} py={8}>
                         {t('resources.empty.files', 'No files found')}
                       </Text>
@@ -1185,11 +1732,18 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </VStack>
 
       {/* Category Modal */}
-      <Modal isOpen={categoryModal.visible} onClose={closeCategoryModal} size={{ base: "full", lg: "lg" }} scrollBehavior="inside">
+      <Modal
+        isOpen={categoryModal.visible}
+        onClose={closeCategoryModal}
+        size={{ base: 'full', lg: 'lg' }}
+        scrollBehavior="inside"
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            {categoryModal.isEdit ? t('resources.modals.editCategory', 'Edit Category') : t('resources.modals.newCategory', 'New Category')}
+            {categoryModal.isEdit
+              ? t('resources.modals.editCategory', 'Edit Category')
+              : t('resources.modals.newCategory', 'New Category')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -1198,7 +1752,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.name', 'Name')}</FormLabel>
                 <Input
                   value={categoryModal.form.name}
-                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, name: e.target.value } }))}
+                  onChange={(e) =>
+                    setCategoryModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, name: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1207,7 +1766,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <Textarea
                   rows={3}
                   value={categoryModal.form.description}
-                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, description: e.target.value } }))}
+                  onChange={(e) =>
+                    setCategoryModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, description: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1215,12 +1779,18 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.parentCategory', 'Parent Category')}</FormLabel>
                 <Select
                   value={categoryModal.form.parentId}
-                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, parentId: e.target.value } }))}
+                  onChange={(e) =>
+                    setCategoryModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, parentId: e.target.value },
+                    }))
+                  }
                 >
                   <option value="">{t('resources.options.noParent', 'No Parent')}</option>
                   {parentCategoryOptions.map(({ id, name, level }) => (
                     <option key={id} value={id}>
-                      {'  '.repeat(level)}{name}
+                      {'  '.repeat(level)}
+                      {name}
                     </option>
                   ))}
                 </Select>
@@ -1231,7 +1801,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <Input
                   type="color"
                   value={categoryModal.form.color}
-                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, color: e.target.value } }))}
+                  onChange={(e) =>
+                    setCategoryModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, color: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1239,7 +1814,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.icon', 'Icon')}</FormLabel>
                 <Select
                   value={categoryModal.form.icon}
-                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, icon: e.target.value } }))}
+                  onChange={(e) =>
+                    setCategoryModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, icon: e.target.value },
+                    }))
+                  }
                 >
                   <option value="">{t('resources.fields.selectIcon', 'Select an icon...')}</option>
                   {ICON_OPTIONS.map((option) => (
@@ -1259,13 +1839,13 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     const file = e.target.files?.[0]
                     if (file) {
                       const preview = URL.createObjectURL(file)
-                      setCategoryModal(prev => ({
+                      setCategoryModal((prev) => ({
                         ...prev,
                         form: {
                           ...prev.form,
                           pendingThumbnail: file,
-                          pendingThumbnailPreview: preview
-                        }
+                          pendingThumbnailPreview: preview,
+                        },
                       }))
                     }
                   }}
@@ -1292,7 +1872,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.slug', 'Slug')}</FormLabel>
                 <Input
                   value={categoryModal.form.slug}
-                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, slug: e.target.value } }))}
+                  onChange={(e) =>
+                    setCategoryModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, slug: e.target.value },
+                    }))
+                  }
                   placeholder={t('resources.fields.slugHelp', 'Used for URLs and quick references')}
                 />
               </FormControl>
@@ -1302,7 +1887,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <Input
                   type="number"
                   value={categoryModal.form.sortOrder}
-                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, sortOrder: e.target.value } }))}
+                  onChange={(e) =>
+                    setCategoryModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, sortOrder: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1310,7 +1900,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel mb="0">{t('resources.fields.active', 'Active')}</FormLabel>
                 <Switch
                   isChecked={categoryModal.form.isActive}
-                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, isActive: e.target.checked } }))}
+                  onChange={(e) =>
+                    setCategoryModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, isActive: e.target.checked },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1318,7 +1913,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel mb="0">{t('resources.fields.pinned', 'Pinned')}</FormLabel>
                 <Switch
                   isChecked={categoryModal.form.isPinned}
-                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, isPinned: e.target.checked } }))}
+                  onChange={(e) =>
+                    setCategoryModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, isPinned: e.target.checked },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1328,7 +1928,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   <Input
                     type="number"
                     value={categoryModal.form.pinnedOrder}
-                    onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, pinnedOrder: e.target.value } }))}
+                    onChange={(e) =>
+                      setCategoryModal((prev) => ({
+                        ...prev,
+                        form: { ...prev.form, pinnedOrder: e.target.value },
+                      }))
+                    }
                   />
                 </FormControl>
               )}
@@ -1346,11 +1951,18 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </Modal>
 
       {/* Link Modal */}
-      <Modal isOpen={linkModal.visible} onClose={closeLinkModal} size={{ base: "full", lg: "lg" }} scrollBehavior="inside">
+      <Modal
+        isOpen={linkModal.visible}
+        onClose={closeLinkModal}
+        size={{ base: 'full', lg: 'lg' }}
+        scrollBehavior="inside"
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            {linkModal.isEdit ? t('resources.modals.editLink', 'Edit Link') : t('resources.modals.newLink', 'New Link')}
+            {linkModal.isEdit
+              ? t('resources.modals.editLink', 'Edit Link')
+              : t('resources.modals.newLink', 'New Link')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -1359,7 +1971,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.title', 'Title')}</FormLabel>
                 <Input
                   value={linkModal.form.title}
-                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, title: e.target.value } }))}
+                  onChange={(e) =>
+                    setLinkModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, title: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1367,7 +1984,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.url', 'URL')}</FormLabel>
                 <Input
                   value={linkModal.form.url}
-                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, url: e.target.value } }))}
+                  onChange={(e) =>
+                    setLinkModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, url: e.target.value },
+                    }))
+                  }
                   placeholder="https://example.com"
                 />
               </FormControl>
@@ -1376,7 +1998,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.type', 'Type')}</FormLabel>
                 <Select
                   value={linkModal.form.type}
-                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, type: e.target.value } }))}
+                  onChange={(e) =>
+                    setLinkModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, type: e.target.value },
+                    }))
+                  }
                 >
                   {LINK_TYPE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -1391,7 +2018,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <Textarea
                   rows={3}
                   value={linkModal.form.description}
-                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, description: e.target.value } }))}
+                  onChange={(e) =>
+                    setLinkModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, description: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1399,12 +2031,18 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.category', 'Category')}</FormLabel>
                 <Select
                   value={linkModal.form.categoryId}
-                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, categoryId: e.target.value } }))}
+                  onChange={(e) =>
+                    setLinkModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, categoryId: e.target.value },
+                    }))
+                  }
                 >
                   <option value="">{t('resources.options.noCategory', 'No Category')}</option>
                   {flattenedCategories.map(({ id, name, level }) => (
                     <option key={id} value={id}>
-                      {'  '.repeat(level)}{name}
+                      {'  '.repeat(level)}
+                      {name}
                     </option>
                   ))}
                 </Select>
@@ -1414,7 +2052,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.thumbnailUrl', 'Thumbnail URL')}</FormLabel>
                 <Input
                   value={linkModal.form.thumbnailUrl}
-                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, thumbnailUrl: e.target.value } }))}
+                  onChange={(e) =>
+                    setLinkModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, thumbnailUrl: e.target.value },
+                    }))
+                  }
                   placeholder="https://"
                 />
               </FormControl>
@@ -1423,7 +2066,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.tags', 'Tags')}</FormLabel>
                 <Input
                   value={linkModal.form.tags}
-                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, tags: e.target.value } }))}
+                  onChange={(e) =>
+                    setLinkModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, tags: e.target.value },
+                    }))
+                  }
                   placeholder="tag1, tag2"
                 />
               </FormControl>
@@ -1432,7 +2080,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.ctaLabel', 'CTA Label')}</FormLabel>
                 <Input
                   value={linkModal.form.ctaLabel}
-                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, ctaLabel: e.target.value } }))}
+                  onChange={(e) =>
+                    setLinkModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, ctaLabel: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1440,7 +2093,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.ctaUrl', 'CTA URL')}</FormLabel>
                 <Input
                   value={linkModal.form.ctaUrl}
-                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, ctaUrl: e.target.value } }))}
+                  onChange={(e) =>
+                    setLinkModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, ctaUrl: e.target.value },
+                    }))
+                  }
                   placeholder="https://"
                 />
               </FormControl>
@@ -1449,7 +2107,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.status', 'Status')}</FormLabel>
                 <Select
                   value={linkModal.form.status}
-                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, status: e.target.value } }))}
+                  onChange={(e) =>
+                    setLinkModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, status: e.target.value },
+                    }))
+                  }
                 >
                   <option value="active">{t('resources.status.active', 'Active')}</option>
                   <option value="draft">{t('resources.status.draft', 'Draft')}</option>
@@ -1461,7 +2124,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel mb="0">{t('resources.fields.pinned', 'Pinned')}</FormLabel>
                 <Switch
                   isChecked={linkModal.form.isPinned}
-                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, isPinned: e.target.checked } }))}
+                  onChange={(e) =>
+                    setLinkModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, isPinned: e.target.checked },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1471,7 +2139,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   <Input
                     type="number"
                     value={linkModal.form.pinnedOrder}
-                    onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, pinnedOrder: e.target.value } }))}
+                    onChange={(e) =>
+                      setLinkModal((prev) => ({
+                        ...prev,
+                        form: { ...prev.form, pinnedOrder: e.target.value },
+                      }))
+                    }
                   />
                 </FormControl>
               )}
@@ -1480,19 +2153,22 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.visibility', 'Visibility')}</FormLabel>
                 <VStack align="start" spacing={2}>
                   {GROUP_VISIBILITY_OPTIONS.map((option) => (
-                    <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label
+                      key={option}
+                      style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
                       <input
                         type="checkbox"
                         checked={linkModal.form.visibleToGroupTypes.includes(option)}
                         onChange={(e) => {
-                          setLinkModal(prev => ({
+                          setLinkModal((prev) => ({
                             ...prev,
                             form: {
                               ...prev.form,
                               visibleToGroupTypes: e.target.checked
                                 ? [...prev.form.visibleToGroupTypes, option]
-                                : prev.form.visibleToGroupTypes.filter(v => v !== option)
-                            }
+                                : prev.form.visibleToGroupTypes.filter((v) => v !== option),
+                            },
                           }))
                         }}
                       />
@@ -1516,7 +2192,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   const payload = {
                     ...linkModal.form,
                     tags: normalizeTagsInput(linkModal.form.tags),
-                    visibleToGroupTypes: normalizeVisibilityInput(linkModal.form.visibleToGroupTypes),
+                    visibleToGroupTypes: normalizeVisibilityInput(
+                      linkModal.form.visibleToGroupTypes,
+                    ),
                   }
 
                   if (linkModal.isEdit) {
@@ -1531,10 +2209,16 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
                   await fetchResources()
                   closeLinkModal()
-                  showFeedback('success', t('resources.messages.linkSaved', 'Link saved successfully'))
+                  showFeedback(
+                    'success',
+                    t('resources.messages.linkSaved', 'Link saved successfully'),
+                  )
                 } catch (error) {
                   console.error('Error saving link:', error)
-                  showFeedback('error', t('resources.messages.linkSaveFailed', 'Failed to save link'))
+                  showFeedback(
+                    'error',
+                    t('resources.messages.linkSaveFailed', 'Failed to save link'),
+                  )
                 } finally {
                   setActionLoading(false)
                 }
@@ -1548,11 +2232,18 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </Modal>
 
       {/* File Modal */}
-      <Modal isOpen={fileModal.visible} onClose={closeFileModal} size={{ base: "full", lg: "lg" }} scrollBehavior="inside">
+      <Modal
+        isOpen={fileModal.visible}
+        onClose={closeFileModal}
+        size={{ base: 'full', lg: 'lg' }}
+        scrollBehavior="inside"
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            {fileModal.isEdit ? t('resources.modals.editFile', 'Edit File') : t('resources.modals.newFile', 'New File')}
+            {fileModal.isEdit
+              ? t('resources.modals.editFile', 'Edit File')
+              : t('resources.modals.newFile', 'New File')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -1561,7 +2252,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.name', 'Name')}</FormLabel>
                 <Input
                   value={fileModal.form.name}
-                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, name: e.target.value } }))}
+                  onChange={(e) =>
+                    setFileModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, name: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1569,7 +2265,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.file', 'File')}</FormLabel>
                 <Input
                   type="file"
-                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, file: e.target.files[0] } }))}
+                  onChange={(e) =>
+                    setFileModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, file: e.target.files[0] },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1578,7 +2279,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <Textarea
                   rows={3}
                   value={fileModal.form.description}
-                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, description: e.target.value } }))}
+                  onChange={(e) =>
+                    setFileModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, description: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1586,12 +2292,18 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.category', 'Category')}</FormLabel>
                 <Select
                   value={fileModal.form.categoryId}
-                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, categoryId: e.target.value } }))}
+                  onChange={(e) =>
+                    setFileModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, categoryId: e.target.value },
+                    }))
+                  }
                 >
                   <option value="">{t('resources.options.noCategory', 'No Category')}</option>
                   {flattenedCategories.map(({ id, name, level }) => (
                     <option key={id} value={id}>
-                      {'  '.repeat(level)}{name}
+                      {'  '.repeat(level)}
+                      {name}
                     </option>
                   ))}
                 </Select>
@@ -1606,13 +2318,13 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     const file = e.target.files?.[0]
                     if (file) {
                       const preview = URL.createObjectURL(file)
-                      setFileModal(prev => ({
+                      setFileModal((prev) => ({
                         ...prev,
                         form: {
                           ...prev.form,
                           pendingThumbnail: file,
-                          pendingThumbnailPreview: preview
-                        }
+                          pendingThumbnailPreview: preview,
+                        },
                       }))
                     }
                   }}
@@ -1639,7 +2351,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.tags', 'Tags')}</FormLabel>
                 <Input
                   value={fileModal.form.tags}
-                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, tags: e.target.value } }))}
+                  onChange={(e) =>
+                    setFileModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, tags: e.target.value },
+                    }))
+                  }
                   placeholder="tag1, tag2"
                 />
               </FormControl>
@@ -1648,7 +2365,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.ctaLabel', 'CTA Label')}</FormLabel>
                 <Input
                   value={fileModal.form.ctaLabel}
-                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, ctaLabel: e.target.value } }))}
+                  onChange={(e) =>
+                    setFileModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, ctaLabel: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1656,7 +2378,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.ctaUrl', 'CTA URL')}</FormLabel>
                 <Input
                   value={fileModal.form.ctaUrl}
-                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, ctaUrl: e.target.value } }))}
+                  onChange={(e) =>
+                    setFileModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, ctaUrl: e.target.value },
+                    }))
+                  }
                   placeholder="https://"
                 />
               </FormControl>
@@ -1665,7 +2392,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.status', 'Status')}</FormLabel>
                 <Select
                   value={fileModal.form.status}
-                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, status: e.target.value } }))}
+                  onChange={(e) =>
+                    setFileModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, status: e.target.value },
+                    }))
+                  }
                 >
                   <option value="active">{t('resources.status.active', 'Active')}</option>
                   <option value="draft">{t('resources.status.draft', 'Draft')}</option>
@@ -1677,7 +2409,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel mb="0">{t('resources.fields.pinned', 'Pinned')}</FormLabel>
                 <Switch
                   isChecked={fileModal.form.isPinned}
-                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, isPinned: e.target.checked } }))}
+                  onChange={(e) =>
+                    setFileModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, isPinned: e.target.checked },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1687,7 +2424,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   <Input
                     type="number"
                     value={fileModal.form.pinnedOrder}
-                    onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, pinnedOrder: e.target.value } }))}
+                    onChange={(e) =>
+                      setFileModal((prev) => ({
+                        ...prev,
+                        form: { ...prev.form, pinnedOrder: e.target.value },
+                      }))
+                    }
                   />
                 </FormControl>
               )}
@@ -1696,19 +2438,22 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.visibility', 'Visibility')}</FormLabel>
                 <VStack align="start" spacing={2}>
                   {GROUP_VISIBILITY_OPTIONS.map((option) => (
-                    <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label
+                      key={option}
+                      style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
                       <input
                         type="checkbox"
                         checked={fileModal.form.visibleToGroupTypes.includes(option)}
                         onChange={(e) => {
-                          setFileModal(prev => ({
+                          setFileModal((prev) => ({
                             ...prev,
                             form: {
                               ...prev.form,
                               visibleToGroupTypes: e.target.checked
                                 ? [...prev.form.visibleToGroupTypes, option]
-                                : prev.form.visibleToGroupTypes.filter(v => v !== option)
-                            }
+                                : prev.form.visibleToGroupTypes.filter((v) => v !== option),
+                            },
                           }))
                         }}
                       />
@@ -1745,7 +2490,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   const payload = {
                     ...fileModal.form,
                     tags: normalizeTagsInput(fileModal.form.tags),
-                    visibleToGroupTypes: normalizeVisibilityInput(fileModal.form.visibleToGroupTypes),
+                    visibleToGroupTypes: normalizeVisibilityInput(
+                      fileModal.form.visibleToGroupTypes,
+                    ),
                   }
                   delete payload.file
                   delete payload.pendingThumbnail
@@ -1761,24 +2508,30 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     await axiosInstance.put(`${FILES_ENDPOINT}/${fileModal.form.id}`, formData, {
                       headers: {
                         Authorization: `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data'
+                        'Content-Type': 'multipart/form-data',
                       },
                     })
                   } else {
                     await axiosInstance.post(FILES_ENDPOINT, formData, {
                       headers: {
                         Authorization: `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data'
+                        'Content-Type': 'multipart/form-data',
                       },
                     })
                   }
 
                   await fetchResources()
                   closeFileModal()
-                  showFeedback('success', t('resources.messages.fileSaved', 'File saved successfully'))
+                  showFeedback(
+                    'success',
+                    t('resources.messages.fileSaved', 'File saved successfully'),
+                  )
                 } catch (error) {
                   console.error('Error saving file:', error)
-                  showFeedback('error', t('resources.messages.fileSaveFailed', 'Failed to save file'))
+                  showFeedback(
+                    'error',
+                    t('resources.messages.fileSaveFailed', 'Failed to save file'),
+                  )
                 } finally {
                   setActionLoading(false)
                 }
@@ -1792,11 +2545,18 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       </Modal>
 
       {/* Announcement Modal */}
-      <Modal isOpen={announcementModal.visible} onClose={closeAnnouncementModal} size={{ base: "full", lg: "lg" }} scrollBehavior="inside">
+      <Modal
+        isOpen={announcementModal.visible}
+        onClose={closeAnnouncementModal}
+        size={{ base: 'full', lg: 'lg' }}
+        scrollBehavior="inside"
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            {announcementModal.isEdit ? t('resources.modals.editAnnouncement', 'Edit Announcement') : t('resources.modals.newAnnouncement', 'New Announcement')}
+            {announcementModal.isEdit
+              ? t('resources.modals.editAnnouncement', 'Edit Announcement')
+              : t('resources.modals.newAnnouncement', 'New Announcement')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -1805,7 +2565,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.title', 'Title')}</FormLabel>
                 <Input
                   value={announcementModal.form.title}
-                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, title: e.target.value } }))}
+                  onChange={(e) =>
+                    setAnnouncementModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, title: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1814,7 +2579,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <Textarea
                   rows={2}
                   value={announcementModal.form.summary}
-                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, summary: e.target.value } }))}
+                  onChange={(e) =>
+                    setAnnouncementModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, summary: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1823,7 +2593,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <Textarea
                   rows={5}
                   value={announcementModal.form.body}
-                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, body: e.target.value } }))}
+                  onChange={(e) =>
+                    setAnnouncementModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, body: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1831,12 +2606,18 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.category', 'Category')}</FormLabel>
                 <Select
                   value={announcementModal.form.categoryId}
-                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, categoryId: e.target.value } }))}
+                  onChange={(e) =>
+                    setAnnouncementModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, categoryId: e.target.value },
+                    }))
+                  }
                 >
                   <option value="">{t('resources.options.noCategory', 'No Category')}</option>
                   {flattenedCategories.map(({ id, name, level }) => (
                     <option key={id} value={id}>
-                      {'  '.repeat(level)}{name}
+                      {'  '.repeat(level)}
+                      {name}
                     </option>
                   ))}
                 </Select>
@@ -1846,7 +2627,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.status', 'Status')}</FormLabel>
                 <Select
                   value={announcementModal.form.status}
-                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, status: e.target.value } }))}
+                  onChange={(e) =>
+                    setAnnouncementModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, status: e.target.value },
+                    }))
+                  }
                 >
                   <option value="published">{t('resources.status.published', 'Published')}</option>
                   <option value="draft">{t('resources.status.draft', 'Draft')}</option>
@@ -1859,7 +2645,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <Input
                   type="datetime-local"
                   value={announcementModal.form.publishAt}
-                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, publishAt: e.target.value } }))}
+                  onChange={(e) =>
+                    setAnnouncementModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, publishAt: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1868,7 +2659,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <Input
                   type="datetime-local"
                   value={announcementModal.form.expireAt}
-                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, expireAt: e.target.value } }))}
+                  onChange={(e) =>
+                    setAnnouncementModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, expireAt: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1876,7 +2672,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.ctaLabel', 'CTA Label')}</FormLabel>
                 <Input
                   value={announcementModal.form.ctaLabel}
-                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, ctaLabel: e.target.value } }))}
+                  onChange={(e) =>
+                    setAnnouncementModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, ctaLabel: e.target.value },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1884,7 +2685,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.ctaUrl', 'CTA URL')}</FormLabel>
                 <Input
                   value={announcementModal.form.ctaUrl}
-                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, ctaUrl: e.target.value } }))}
+                  onChange={(e) =>
+                    setAnnouncementModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, ctaUrl: e.target.value },
+                    }))
+                  }
                   placeholder="https://"
                 />
               </FormControl>
@@ -1893,7 +2699,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel mb="0">{t('resources.fields.pinned', 'Pinned')}</FormLabel>
                 <Switch
                   isChecked={announcementModal.form.isPinned}
-                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, isPinned: e.target.checked } }))}
+                  onChange={(e) =>
+                    setAnnouncementModal((prev) => ({
+                      ...prev,
+                      form: { ...prev.form, isPinned: e.target.checked },
+                    }))
+                  }
                 />
               </FormControl>
 
@@ -1903,7 +2714,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   <Input
                     type="number"
                     value={announcementModal.form.pinnedOrder}
-                    onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, pinnedOrder: e.target.value } }))}
+                    onChange={(e) =>
+                      setAnnouncementModal((prev) => ({
+                        ...prev,
+                        form: { ...prev.form, pinnedOrder: e.target.value },
+                      }))
+                    }
                   />
                 </FormControl>
               )}
@@ -1912,19 +2728,22 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.visibility', 'Visibility')}</FormLabel>
                 <VStack align="start" spacing={2}>
                   {GROUP_VISIBILITY_OPTIONS.map((option) => (
-                    <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label
+                      key={option}
+                      style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
                       <input
                         type="checkbox"
                         checked={announcementModal.form.visibleToGroupTypes.includes(option)}
                         onChange={(e) => {
-                          setAnnouncementModal(prev => ({
+                          setAnnouncementModal((prev) => ({
                             ...prev,
                             form: {
                               ...prev.form,
                               visibleToGroupTypes: e.target.checked
                                 ? [...prev.form.visibleToGroupTypes, option]
-                                : prev.form.visibleToGroupTypes.filter(v => v !== option)
-                            }
+                                : prev.form.visibleToGroupTypes.filter((v) => v !== option),
+                            },
                           }))
                         }}
                       />
@@ -1948,15 +2767,21 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   const payload = {
                     ...announcementModal.form,
                     tags: normalizeTagsInput(announcementModal.form.tags),
-                    visibleToGroupTypes: normalizeVisibilityInput(announcementModal.form.visibleToGroupTypes),
+                    visibleToGroupTypes: normalizeVisibilityInput(
+                      announcementModal.form.visibleToGroupTypes,
+                    ),
                     publishAt: toISOStringOrNull(announcementModal.form.publishAt),
                     expireAt: toISOStringOrNull(announcementModal.form.expireAt),
                   }
 
                   if (announcementModal.isEdit) {
-                    await axiosInstance.put(`${ANNOUNCEMENTS_ENDPOINT}/${announcementModal.form.id}`, payload, {
-                      headers: { Authorization: `Bearer ${token}` },
-                    })
+                    await axiosInstance.put(
+                      `${ANNOUNCEMENTS_ENDPOINT}/${announcementModal.form.id}`,
+                      payload,
+                      {
+                        headers: { Authorization: `Bearer ${token}` },
+                      },
+                    )
                   } else {
                     await axiosInstance.post(ANNOUNCEMENTS_ENDPOINT, payload, {
                       headers: { Authorization: `Bearer ${token}` },
@@ -1965,10 +2790,16 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
                   await fetchResources()
                   closeAnnouncementModal()
-                  showFeedback('success', t('resources.messages.announcementSaved', 'Announcement saved successfully'))
+                  showFeedback(
+                    'success',
+                    t('resources.messages.announcementSaved', 'Announcement saved successfully'),
+                  )
                 } catch (error) {
                   console.error('Error saving announcement:', error)
-                  showFeedback('error', t('resources.messages.announcementSaveFailed', 'Failed to save announcement'))
+                  showFeedback(
+                    'error',
+                    t('resources.messages.announcementSaveFailed', 'Failed to save announcement'),
+                  )
                 } finally {
                   setActionLoading(false)
                 }
