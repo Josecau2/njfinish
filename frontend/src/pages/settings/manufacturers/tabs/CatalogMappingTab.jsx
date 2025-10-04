@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import PageHeader from '../../../../components/PageHeader'
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormControl, FormLabel, HStack, Icon, Image, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Table, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue } from '@chakra-ui/react'
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Divider, Flex, FormControl, FormLabel, Heading, HStack, Icon, Image, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue } from '@chakra-ui/react'
 // Use lucide icons (React components) only via centralized module
 import { Plus, ChevronDown, ChevronUp, RefreshCw, Sparkles, Upload, Wrench } from '@/icons-lucide'
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice'
@@ -3353,25 +3353,27 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <div>
               <h6>Existing assignments</h6>
               {assignLoading ? (
-                <div>Loading…</div>
+                <Flex justify="center" py={4}>
+                  <Spinner size="sm" />
+                </Flex>
               ) : (
-                <div>
-                  <table className="table table-sm align-middle">
-                    <thead>
-                      <tr>
-                        <th>Template</th>
-                        <th>Scope</th>
-                        <th>Target</th>
-                        <th>Price</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                <TableContainer>
+                  <Table size="sm" variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th>Template</Th>
+                        <Th>Scope</Th>
+                        <Th>Target</Th>
+                        <Th>Price</Th>
+                        <Th></Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
                       {globalAssignments.map((a) => (
-                        <tr key={a.id}>
-                          <td>{a.template?.name}</td>
-                          <td>{a.scope}</td>
-                          <td>
+                        <Tr key={a.id}>
+                          <Td>{a.template?.name}</Td>
+                          <Td>{a.scope}</Td>
+                          <Td>
                             {a.scope === 'style'
                               ? a.targetStyle
                               : a.scope === 'type'
@@ -3379,15 +3381,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 : a.scope === 'item'
                                   ? `Item ${a.catalogDataId}`
                                   : 'All'}
-                          </td>
-                          <td>
+                          </Td>
+                          <Td>
                             {a.overridePrice != null
                               ? `$${Number(a.overridePrice).toFixed(2)}`
                               : a.template?.defaultPrice != null
                                 ? `$${Number(a.template.defaultPrice).toFixed(2)}`
                                 : '—'}
-                          </td>
-                          <td>
+                          </Td>
+                          <Td>
                             <Button
                               colorScheme="red"
                               size="sm"
@@ -3395,19 +3397,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             >
                               Remove
                             </Button>
-                          </td>
-                        </tr>
+                          </Td>
+                        </Tr>
                       ))}
                       {globalAssignments.length === 0 && (
-                        <tr>
-                          <td colSpan="5">
-                            No assignments
-                          </td>
-                        </tr>
+                        <Tr>
+                          <Td colSpan={5} textAlign="center" py={4}>
+                            <Text color={textSecondary}>No assignments</Text>
+                          </Td>
+                        </Tr>
                       )}
-                    </tbody>
-                  </table>
-                </div>
+                    </Tbody>
+                  </Table>
+                </TableContainer>
               )}
             </div>
           </ModalBody>
@@ -3436,33 +3438,33 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <ModalContent>
           <PageHeader title={`Global Mods — ${selectedCatalogItem?.code || ''}`} />
           <ModalBody>
-            <Box>
-              <table className="table table-sm align-middle">
-                <thead>
-                  <tr>
-                    <th>Template</th>
-                    <th>Category</th>
-                    <th>Scope</th>
-                    <th>Price</th>
-                    <th>Active</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
+            <TableContainer>
+              <Table size="sm" variant="simple">
+                <Thead>
+                  <Tr>
+                    <Th>Template</Th>
+                    <Th>Category</Th>
+                    <Th>Scope</Th>
+                    <Th>Price</Th>
+                    <Th>Active</Th>
+                    <Th></Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
                   {itemGlobalList.map((a) => (
-                    <tr key={a.id}>
-                      <td>{a.template?.name}</td>
-                      <td>{a.template?.category?.name || '-'}</td>
-                      <td>{a.scope}</td>
-                      <td>
+                    <Tr key={a.id}>
+                      <Td>{a.template?.name}</Td>
+                      <Td>{a.template?.category?.name || '-'}</Td>
+                      <Td>{a.scope}</Td>
+                      <Td>
                         {a.overridePrice != null
                           ? `$${Number(a.overridePrice).toFixed(2)}`
                           : a.template?.defaultPrice != null
                             ? `$${Number(a.template.defaultPrice).toFixed(2)}`
                             : '—'}
-                      </td>
-                      <td>{a.isActive === false ? 'Suppressed' : 'Active'}</td>
-                      <td>
+                      </Td>
+                      <Td>{a.isActive === false ? 'Suppressed' : 'Active'}</Td>
+                      <Td>
                         {a.scope === 'item' ? (
                           <Button
                             colorScheme="red"
@@ -3488,19 +3490,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             Suppress
                           </Button>
                         )}
-                      </td>
-                    </tr>
+                      </Td>
+                    </Tr>
                   ))}
                   {itemGlobalList.length === 0 && (
-                    <tr>
-                      <td colSpan="6">
-                        No global templates apply
-                      </td>
-                    </tr>
+                    <Tr>
+                      <Td colSpan={6} textAlign="center" py={4}>
+                        <Text color={textSecondary}>No global templates apply</Text>
+                      </Td>
+                    </Tr>
                   )}
-                </tbody>
-              </table>
-            </Box>
+                </Tbody>
+              </Table>
+            </TableContainer>
             <hr />
             <VStack spacing={3} align="stretch">
               <FormControl>
@@ -7232,8 +7234,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               ? t('settings.manufacturers.catalogMapping.subTypes.editTitle')
               : t('settings.manufacturers.catalogMapping.subTypes.create')
           }
-          className="rounded-0 border-0"
-          cardClassName="rounded-0 border-bottom"
+          borderRadius="0"
+          borderWidth="0"
         />
         <ModalBody>
           <Box>
@@ -7343,8 +7345,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             'settings.manufacturers.catalogMapping.subTypes.assignModal.title',
             'Assign Catalog Items to Sub-Type',
           )}
-          className="rounded-0 border-0"
-          cardClassName="rounded-0 border-bottom"
+          borderRadius="0"
+          borderWidth="0"
         />
         <ModalBody>
           <div>
