@@ -1,6 +1,7 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import {
+  Box,
   Table,
   Thead,
   Tbody,
@@ -25,7 +26,7 @@ const FilesHistoryTab = ({ manufacturer }) => {
       {files.length === 0 ? (
         <p>{t('settings.manufacturers.filesHistory.empty')}</p>
       ) : (
-        <div className="table-wrap">
+        <Box overflowX="auto">
           <Table variant="simple" size="md">
             <Thead>
               <Tr>
@@ -53,8 +54,8 @@ const FilesHistoryTab = ({ manufacturer }) => {
               {files.map((file, idx) => (
                 <Tr key={file.id}>
                   <Td>{idx + 1}</Td>
-                  <Td className="text-break">{file.original_name}</Td>
-                  <Td className="text-break">{file.filename}</Td>
+                  <Td wordBreak="break-word">{file.original_name}</Td>
+                  <Td wordBreak="break-word">{file.filename}</Td>
                   <Td>{(file.file_size / 1024).toFixed(2)}</Td>
                   <Td>{new Date(file.createdAt).toLocaleString()}</Td>
                   <Td>
@@ -71,7 +72,7 @@ const FilesHistoryTab = ({ manufacturer }) => {
               ))}
             </Tbody>
           </Table>
-        </div>
+        </Box>
       )}
     </div>
   )
