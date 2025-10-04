@@ -49,6 +49,7 @@ const CustomerForm = ({
   // Color mode values - MUST be before useState
   const textColor = useColorModeValue('gray.800', 'gray.200')
   const subtextColor = useColorModeValue('gray.600', 'gray.400')
+  const errorColor = useColorModeValue('red.500', 'red.300')
 
   const { loading, error } = useSelector((state) => state.customers)
   const customers = useSelector((state) => state.customers.list)
@@ -211,268 +212,230 @@ const CustomerForm = ({
 
           <form onSubmit={handleSubmit}>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-              <Box>
-                <div style={{ marginBottom: 'var(--sp-3)' }}>
-                  <FormLabel htmlFor="name">{t('customers.form.labels.fullName')} *</FormLabel>
-                  <InputGroup>
-                    <InputLeftAddon>
-                      <User size={ICON_SIZE_MD} />
-                    </InputLeftAddon>
-                    <Input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      isInvalid={!!formErrors.name}
-                      required
-                      minH="44px"
-                    />
-                  </InputGroup>
-                  {formErrors.name && (
-                    <div className="invalid-feedback d-block">{formErrors.name}</div>
-                  )}
-                </div>
-              </Box>
+              <FormControl isInvalid={!!formErrors.name} mb={3}>
+                <FormLabel htmlFor="name">{t('customers.form.labels.fullName')} *</FormLabel>
+                <InputGroup>
+                  <InputLeftAddon>
+                    <User size={ICON_SIZE_MD} />
+                  </InputLeftAddon>
+                  <Input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    minH="44px"
+                  />
+                </InputGroup>
+                <FormErrorMessage color={errorColor}>{formErrors.name}</FormErrorMessage>
+              </FormControl>
 
-              <Box>
-                <div style={{ marginBottom: 'var(--sp-3)' }}>
-                  <FormLabel htmlFor="email">{t('customers.form.labels.email')}</FormLabel>
-                  <InputGroup>
-                    <InputLeftAddon>
-                      <Mail size={ICON_SIZE_MD} />
-                    </InputLeftAddon>
-                    <Input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      isInvalid={!!formErrors.email}
-                    />
-                  </InputGroup>
-                  {formErrors.email && (
-                    <div className="invalid-feedback d-block">{formErrors.email}</div>
-                  )}
-                </div>
-              </Box>
+              <FormControl isInvalid={!!formErrors.email} mb={3}>
+                <FormLabel htmlFor="email">{t('customers.form.labels.email')}</FormLabel>
+                <InputGroup>
+                  <InputLeftAddon>
+                    <Mail size={ICON_SIZE_MD} />
+                  </InputLeftAddon>
+                  <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                  />
+                </InputGroup>
+                <FormErrorMessage color={errorColor}>{formErrors.email}</FormErrorMessage>
+              </FormControl>
             </SimpleGrid>
 
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-              <Box>
-                <div>
-                  <FormLabel htmlFor="mobile">{t('customers.form.labels.mobile')}</FormLabel>
-                  <InputGroup>
-                    <InputLeftAddon>
-                      <Phone size={ICON_SIZE_MD} />
-                    </InputLeftAddon>
-                    <Input
-                      type="tel"
-                      id="mobile"
-                      name="mobile"
-                      value={formData.mobile}
-                      onChange={handleInputChange}
-                      isInvalid={!!formErrors.phone}
-                    />
-                  </InputGroup>
-                </div>
-              </Box>
+              <FormControl isInvalid={!!formErrors.phone}>
+                <FormLabel htmlFor="mobile">{t('customers.form.labels.mobile')}</FormLabel>
+                <InputGroup>
+                  <InputLeftAddon>
+                    <Phone size={ICON_SIZE_MD} />
+                  </InputLeftAddon>
+                  <Input
+                    type="tel"
+                    id="mobile"
+                    name="mobile"
+                    value={formData.mobile}
+                    onChange={handleInputChange}
+                  />
+                </InputGroup>
+              </FormControl>
 
-              <Box>
-                <div>
-                  <FormLabel htmlFor="homePhone">{t('customers.form.labels.homePhone')}</FormLabel>
-                  <InputGroup>
-                    <InputLeftAddon>
-                      <Phone size={ICON_SIZE_MD} />
-                    </InputLeftAddon>
-                    <Input
-                      type="tel"
-                      id="homePhone"
-                      name="homePhone"
-                      value={formData.homePhone}
-                      onChange={handleInputChange}
-                      isInvalid={!!formErrors.phone}
-                    />
-                  </InputGroup>
-                  {formErrors.phone && (
-                    <div className="invalid-feedback d-block">{formErrors.phone}</div>
-                  )}
-                </div>
-              </Box>
+              <FormControl isInvalid={!!formErrors.phone}>
+                <FormLabel htmlFor="homePhone">{t('customers.form.labels.homePhone')}</FormLabel>
+                <InputGroup>
+                  <InputLeftAddon>
+                    <Phone size={ICON_SIZE_MD} />
+                  </InputLeftAddon>
+                  <Input
+                    type="tel"
+                    id="homePhone"
+                    name="homePhone"
+                    value={formData.homePhone}
+                    onChange={handleInputChange}
+                  />
+                </InputGroup>
+                <FormErrorMessage color={errorColor}>{formErrors.phone}</FormErrorMessage>
+              </FormControl>
             </SimpleGrid>
 
             <SimpleGrid columns={{ base: 1 }} spacing={4}>
-              <Box>
-                <div>
-                  <FormLabel htmlFor="address">{t('customers.form.labels.address')}</FormLabel>
-                  <InputGroup>
-                    <InputLeftAddon>
-                      <MapPin size={ICON_SIZE_MD} />
-                    </InputLeftAddon>
-                    <Input
-                      type="text"
-                      id="address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                    />
-                  </InputGroup>
-                </div>
-              </Box>
+              <FormControl>
+                <FormLabel htmlFor="address">{t('customers.form.labels.address')}</FormLabel>
+                <InputGroup>
+                  <InputLeftAddon>
+                    <MapPin size={ICON_SIZE_MD} />
+                  </InputLeftAddon>
+                  <Input
+                    type="text"
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                  />
+                </InputGroup>
+              </FormControl>
             </SimpleGrid>
 
             <SimpleGrid columns={{ base: 1, md: 4 }} spacing={4}>
-              <Box>
-                <div>
-                  <FormLabel htmlFor="aptOrSuite">{t('customers.form.labels.aptSuite')}</FormLabel>
-                  <Input
-                    type="text"
-                    id="aptOrSuite"
-                    name="aptOrSuite"
-                    value={formData.aptOrSuite}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </Box>
+              <FormControl>
+                <FormLabel htmlFor="aptOrSuite">{t('customers.form.labels.aptSuite')}</FormLabel>
+                <Input
+                  type="text"
+                  id="aptOrSuite"
+                  name="aptOrSuite"
+                  value={formData.aptOrSuite}
+                  onChange={handleInputChange}
+                />
+              </FormControl>
 
-              <Box>
-                <div>
-                  <FormLabel htmlFor="city">{t('customers.form.labels.city')}</FormLabel>
-                  <Input
-                    type="text"
-                    id="city"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </Box>
+              <FormControl>
+                <FormLabel htmlFor="city">{t('customers.form.labels.city')}</FormLabel>
+                <Input
+                  type="text"
+                  id="city"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                />
+              </FormControl>
 
-              <Box>
-                <div>
-                  <FormLabel htmlFor="state">{t('customers.form.labels.state')}</FormLabel>
-                  <Input
-                    type="text"
-                    id="state"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </Box>
+              <FormControl>
+                <FormLabel htmlFor="state">{t('customers.form.labels.state')}</FormLabel>
+                <Input
+                  type="text"
+                  id="state"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleInputChange}
+                />
+              </FormControl>
 
-              <Box>
-                <div>
-                  <FormLabel htmlFor="zipCode">{t('customers.form.labels.zipCode')}</FormLabel>
-                  <Input
-                    type="text"
-                    id="zipCode"
-                    name="zipCode"
-                    value={formData.zipCode}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </Box>
+              <FormControl>
+                <FormLabel htmlFor="zipCode">{t('customers.form.labels.zipCode')}</FormLabel>
+                <Input
+                  type="text"
+                  id="zipCode"
+                  name="zipCode"
+                  value={formData.zipCode}
+                  onChange={handleInputChange}
+                />
+              </FormControl>
             </SimpleGrid>
 
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-              <Box>
-                <div>
-                  <FormLabel htmlFor="companyName">
-                    {t('customers.form.labels.companyName')}
-                  </FormLabel>
-                  <Input
-                    type="text"
-                    id="companyName"
-                    name="companyName"
-                    value={formData.companyName}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </Box>
+              <FormControl>
+                <FormLabel htmlFor="companyName">
+                  {t('customers.form.labels.companyName')}
+                </FormLabel>
+                <Input
+                  type="text"
+                  id="companyName"
+                  name="companyName"
+                  value={formData.companyName}
+                  onChange={handleInputChange}
+                />
+              </FormControl>
 
-              <Box>
-                <div>
-                  <FormLabel htmlFor="customerType">
-                    {t('customers.form.labels.customerType')}
-                  </FormLabel>
-                  <Select
-                    id="customerType"
-                    name="customerType"
-                    value={formData.customerType}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">{t('customers.form.select.selectType')}</option>
-                    <option value="Residential">{t('customers.form.types.residential')}</option>
-                    <option value="Commercial">{t('customers.form.types.commercial')}</option>
-                    <option value="Contractor">{t('customers.form.types.contractor')}</option>
-                    <option value="Sub Contractor">
-                      {t('customers.form.types.subContractor')}
-                    </option>
-                  </Select>
-                </div>
-              </Box>
+              <FormControl>
+                <FormLabel htmlFor="customerType">
+                  {t('customers.form.labels.customerType')}
+                </FormLabel>
+                <Select
+                  id="customerType"
+                  name="customerType"
+                  value={formData.customerType}
+                  onChange={handleInputChange}
+                >
+                  <option value="">{t('customers.form.select.selectType')}</option>
+                  <option value="Residential">{t('customers.form.types.residential')}</option>
+                  <option value="Commercial">{t('customers.form.types.commercial')}</option>
+                  <option value="Contractor">{t('customers.form.types.contractor')}</option>
+                  <option value="Sub Contractor">
+                    {t('customers.form.types.subContractor')}
+                  </option>
+                </Select>
+              </FormControl>
             </SimpleGrid>
 
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-              <Box>
-                <div>
-                  <FormLabel htmlFor="leadSource">
-                    {t('customers.form.labels.leadSource')}
-                  </FormLabel>
-                  <Select
-                    id="leadSource"
-                    name="leadSource"
-                    value={formData.leadSource}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">{t('customers.form.select.selectSource')}</option>
-                    <option value="Website">{t('customers.form.sources.website')}</option>
-                    <option value="Referral">{t('customers.form.sources.referral')}</option>
-                    <option value="Google">{t('customers.form.sources.google')}</option>
-                    <option value="Facebook">{t('customers.form.sources.facebook')}</option>
-                    <option value="Phone Call">{t('customers.form.sources.phoneCall')}</option>
-                    <option value="Walk-in">{t('customers.form.sources.walkIn')}</option>
-                    <option value="Other">{t('customers.form.sources.other')}</option>
-                  </Select>
-                </div>
-              </Box>
+              <FormControl>
+                <FormLabel htmlFor="leadSource">
+                  {t('customers.form.labels.leadSource')}
+                </FormLabel>
+                <Select
+                  id="leadSource"
+                  name="leadSource"
+                  value={formData.leadSource}
+                  onChange={handleInputChange}
+                >
+                  <option value="">{t('customers.form.select.selectSource')}</option>
+                  <option value="Website">{t('customers.form.sources.website')}</option>
+                  <option value="Referral">{t('customers.form.sources.referral')}</option>
+                  <option value="Google">{t('customers.form.sources.google')}</option>
+                  <option value="Facebook">{t('customers.form.sources.facebook')}</option>
+                  <option value="Phone Call">{t('customers.form.sources.phoneCall')}</option>
+                  <option value="Walk-in">{t('customers.form.sources.walkIn')}</option>
+                  <option value="Other">{t('customers.form.sources.other')}</option>
+                </Select>
+              </FormControl>
 
-              <Box>
-                <div>
-                  <FormLabel htmlFor="defaultDiscount">
-                    {t('customers.form.labels.defaultDiscount')}
-                  </FormLabel>
-                  <Input
-                    type="number"
-                    id="defaultDiscount"
-                    name="defaultDiscount"
-                    value={formData.defaultDiscount}
-                    onChange={handleInputChange}
-                    min="0"
-                    max="100"
-                  />
-                </div>
-              </Box>
+              <FormControl>
+                <FormLabel htmlFor="defaultDiscount">
+                  {t('customers.form.labels.defaultDiscount')}
+                </FormLabel>
+                <Input
+                  type="number"
+                  id="defaultDiscount"
+                  name="defaultDiscount"
+                  value={formData.defaultDiscount}
+                  onChange={handleInputChange}
+                  min="0"
+                  max="100"
+                />
+              </FormControl>
             </SimpleGrid>
 
             <SimpleGrid columns={{ base: 1 }} spacing={4}>
-              <Box>
-                <div>
-                  <FormLabel htmlFor="note">{t('customers.form.labels.notes')}</FormLabel>
-                  <Textarea
-                    id="note"
-                    name="note"
-                    rows="3"
-                    value={formData.note}
-                    onChange={handleInputChange}
-                    placeholder={t('customers.form.placeholders.notes')}
-                  />
-                </div>
-              </Box>
+              <FormControl>
+                <FormLabel htmlFor="note">{t('customers.form.labels.notes')}</FormLabel>
+                <Textarea
+                  id="note"
+                  name="note"
+                  rows="3"
+                  value={formData.note}
+                  onChange={handleInputChange}
+                  placeholder={t('customers.form.placeholders.notes')}
+                />
+              </FormControl>
             </SimpleGrid>
 
-            <div className="d-flex justify-content-end gap-2">
+            <Flex justify="flex-end" gap={2}>
               <Button
                 type="button"
                 variant="outline"
@@ -498,7 +461,7 @@ const CustomerForm = ({
                   ? t('customers.form.actions.update')
                   : t('customers.form.actions.create')}
               </Button>
-            </div>
+            </Flex>
           </form>
         </CardBody>
       </StandardCard>
