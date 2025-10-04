@@ -419,7 +419,6 @@ const ManufacturerForm = () => {
       m={2}
       bg={bgGray50}
       minH="100vh"
-      className="manufacturer-form"
     >
       <style>{`
           @media (max-width: 1023px) {
