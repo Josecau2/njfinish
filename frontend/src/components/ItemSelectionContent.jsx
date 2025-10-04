@@ -1499,10 +1499,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                         mb={4}
                         flexWrap="wrap"
                         align="stretch"
-                        className="style-selection-mobile"
                     >
                         <Box
-                            className="current-style-section"
                             minW="250px"
                             flexShrink={0}
                         >
@@ -1510,12 +1508,10 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                 {t('proposalUI.currentStyle')}
                             </Heading>
                             <Flex
-                                className="current-style-content"
                                 gap={4}
                                 align="flex-start"
                             >
                                 <Box
-                                    className="current-style-image"
                                     w="100px"
                                     flexShrink={0}
                                 >
@@ -1543,7 +1539,6 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                     />
                                 </Box>
                                 <Stack
-                                    className="current-style-info"
                                     spacing={6}
                                     flex="1"
                                 >
@@ -1575,16 +1570,14 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                         </Box>
 
                         <Box
-                            className="style-separator"
                             w="1px"
                             bg={separatorBg}
                             mx={4}
                             display={{ base: 'none', lg: 'block' }}
                         />
 
-                        <Box className="other-styles-section" flex="1">
+                        <Box flex="1">
                             <Flex
-                                className="other-styles-header"
                                 justify="space-between"
                                 align="center"
                                 mb={3}
@@ -1678,13 +1671,13 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                         {t('proposalUI.noStyles')}
                                     </Text>
                                 ) : (
-                                    <Box className="styles-carousel-container">
+                                    <Box>
                                         {filteredItems.length === 0 ? (
                                             <Text py={4} textAlign="center" color={colorGray500} fontSize="sm">
                                                 {t('proposalUI.styleComparison.selectItemsMessage')}
                                             </Text>
                                         ) : isStylesCollapsed ? (
-                                            <Stack className="styles-compact-list" spacing={4}>
+                                            <Stack spacing={4}>
                                                 {stylesMeta.map((styleItem, index) => {
                                                     const isCurrentStyle = styleItem.id === selectedStyleData?.id;
                                                     const hasAnyItems = filteredItems.length > 0;
@@ -1693,18 +1686,25 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                     return (
                                                         <Flex
                                                             key={`compact-style-${styleItem.id}-${index}`}
-                                                            className={`compact-style-item styleCard ${isCurrentStyle ? 'current-style' : ''}`}
+                                                            p={3}
+                                                            borderRadius="md"
+                                                            borderWidth="2px"
+                                                            borderColor={isCurrentStyle ? styleCardBorderSelected : styleCardBorderUnselected}
+                                                            bg={isCurrentStyle ? styleCardBgSelected : styleCardBgUnselected}
+                                                            cursor={disabled ? 'not-allowed' : 'pointer'}
+                                                            opacity={disabled ? 0.5 : 1}
                                                             aria-disabled={disabled}
                                                             align="center"
                                                             justify="space-between"
                                                             onClick={() => handleStyleSelect(styleItem.id)}
+                                                            _hover={disabled ? {} : { transform: 'scale(1.02)', transition: 'all 0.2s' }}
                                                         >
-                                                            <Box className="style-info">
-                                                                <Text className="style-name">
+                                                            <Box>
+                                                                <Text fontWeight={isCurrentStyle ? "bold" : "medium"} fontSize="md" color={styleCardTextColor}>
                                                                     {styleItem.style}
                                                                 </Text>
                                                                 {isCurrentStyle && (
-                                                                    <Text className="current-style-indicator">
+                                                                    <Text fontSize="xs" color={styleCardLabelColor} mt={1}>
                                                                         {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
                                                                     </Text>
                                                                 )}
@@ -1715,7 +1715,6 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                             </Stack>
                                         ) : (
                                             <Box
-                                                className="styles-carousel-track"
                                                 display="flex"
                                                 gap="1rem"
                                                 transform={`translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`}
@@ -1734,19 +1733,14 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                     return (
                                                         <Box
                                                             key={`style-${styleItem.id}-${index}`}
-                                                            className="style-carousel-item styleCard"
                                                             textAlign="center"
                                                             aria-disabled={disabled}
-                                                            cursor="pointer"
+                                                            cursor={disabled ? 'not-allowed' : 'pointer'}
+                                                            opacity={disabled ? 0.5 : 1}
                                                             transition="transform 0.2s ease"
                                                             flexShrink={0}
-                                                            onClick={() => handleStyleSelect(styleItem.id)}
-                                                            onMouseEnter={(e) => {
-                                                                e.currentTarget.style.transform = 'scale(1.02)';
-                                                            }}
-                                                            onMouseLeave={(e) => {
-                                                                e.currentTarget.style.transform = 'scale(1)';
-                                                            }}
+                                                            onClick={() => !disabled && handleStyleSelect(styleItem.id)}
+                                                            _hover={disabled ? {} : { transform: 'scale(1.02)' }}
                                                         >
                                                             <Image
                                                                 src={
@@ -1862,7 +1856,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 </Box>
             )}
             {isUserAdmin && (
-                <Box mt={5} className="custom-items-mobile" maxW="100%">
+                <Box mt={5} maxW="100%">
                     <Stack
                         direction={{ base: 'column', md: 'row' }}
                         spacing={4}
@@ -2017,9 +2011,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     mt={5}
                     mb={5}
                     justify="center"
-                    className="totals-summary-mobile"
                 >
-                    <Box className="summary-panel" w="full" maxW="420px">
+                    <Box w="full" maxW="420px">
                         <Table variant="simple" size="sm">
                             <Tbody>
                                 <Tr>
