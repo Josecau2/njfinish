@@ -254,7 +254,7 @@ const AppSidebar = () => {
           },
         }}
       >
-        <AppSidebarNav items={navItems} collapsed={collapsed} onNavigate={handleNavigate} fontColor={sidebarColor} />
+        <AppSidebarNav items={navItems} collapsed={collapsed} onNavigate={handleNavigate} fontColor={sidebarColor} sidebarBg={sidebarBg} />
       </Box>
 
       {/* Sidebar Footer - visible on both mobile and desktop */}

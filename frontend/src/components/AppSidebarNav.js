@@ -16,6 +16,79 @@ const isActivePath = (pathname, target) => {
   return pathname.startsWith(`${target}/`)
 }
 
+// Calculate luminance for contrast
+const getLuminance = (r, g, b) => {
+  const [rs, gs, bs] = [r, g, b].map((c) => {
+    const val = c / 255
+    return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4)
+  })
+  return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs
+}
+
+// Parse CSS color to RGB
+const parseColor = (color) => {
+  if (!color) return null
+
+  // Handle hex colors
+  if (color.startsWith('#')) {
+    const hex = color.slice(1)
+    if (hex.length === 3) {
+      const r = parseInt(hex[0] + hex[0], 16)
+      const g = parseInt(hex[1] + hex[1], 16)
+      const b = parseInt(hex[2] + hex[2], 16)
+      return { r, g, b }
+    }
+    if (hex.length === 6) {
+      const r = parseInt(hex.slice(0, 2), 16)
+      const g = parseInt(hex.slice(2, 4), 16)
+      const b = parseInt(hex.slice(4, 6), 16)
+      return { r, g, b }
+    }
+  }
+
+  // Handle rgb/rgba
+  const rgbMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+  if (rgbMatch) {
+    return {
+      r: parseInt(rgbMatch[1]),
+      g: parseInt(rgbMatch[2]),
+      b: parseInt(rgbMatch[3]),
+    }
+  }
+
+  return null
+}
+
+// Calculate hover colors with proper contrast based on background
+const calculateHoverColors = (bgColor) => {
+  const rgb = parseColor(bgColor)
+
+  if (!rgb) {
+    // Fallback to default values
+    return {
+      normal: 'whiteAlpha.200',
+      active: 'whiteAlpha.300',
+    }
+  }
+
+  const luminance = getLuminance(rgb.r, rgb.g, rgb.b)
+  const isDark = luminance < 0.5
+
+  if (isDark) {
+    // Dark background - use lighter, more visible hover states
+    return {
+      normal: 'whiteAlpha.200',
+      active: 'whiteAlpha.300',
+    }
+  } else {
+    // Light background - use darker hover states
+    return {
+      normal: 'blackAlpha.100',
+      active: 'blackAlpha.200',
+    }
+  }
+}
+
 const buildColors = (fontColor) => {
   const base = fontColor && fontColor.trim() ? fontColor : 'rgba(226, 232, 240, 0.87)'
   // For icons, use currentColor to inherit from parent or a visible color
@@ -40,23 +113,22 @@ const hasActiveChild = (children, pathname) => {
   })
 }
 
-const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
+const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor, sidebarBg }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const sidebarPinned = useSelector((state) => state.sidebar.sidebarPinned)
 
-  // Color mode values for hover states
-  // Normal hover (lighter shade)
-  const navHoverBg = useColorModeValue('gray.100', 'whiteAlpha.100')
-  // Active item hover (darker shade)
-  const navActiveHoverBg = useColorModeValue('gray.200', 'whiteAlpha.200')
-  // Menu item hover
-  const menuItemHoverBg = useColorModeValue('blue.50', 'whiteAlpha.200')
-  // Menu item active hover
-  const menuItemActiveBg = useColorModeValue('blue.100', 'whiteAlpha.300')
-
   const colors = useMemo(() => buildColors(fontColor), [fontColor])
+
+  // Calculate dynamic hover colors based on sidebar background
+  const hoverColors = useMemo(() => calculateHoverColors(sidebarBg), [sidebarBg])
+
+  // Apply hover colors with higher opacity for better visibility
+  const navHoverBg = hoverColors.normal
+  const navActiveHoverBg = hoverColors.active
+  const menuItemHoverBg = hoverColors.normal
+  const menuItemActiveBg = hoverColors.active
 
   const handleNavigate = (target, isExternal = false) => {
     if (!target) return
@@ -466,6 +538,7 @@ AppSidebarNav.propTypes = {
   collapsed: PropTypes.bool,
   onNavigate: PropTypes.func,
   fontColor: PropTypes.string,
+  sidebarBg: PropTypes.string,
 }
 
 export default AppSidebarNav
