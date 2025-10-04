@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { CardBody, CardHeader, FormControl, Input, FormLabel, Spinner, Alert, Button } from '@chakra-ui/react'
+import { Box, CardBody, CardHeader, Checkbox, Flex, FormControl, Input, FormLabel, Spinner, Alert, Button } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
@@ -67,7 +67,7 @@ const EditManuMultiplier = () => {
     navigate('/settings/manufacturers')
   }
 
-  if (loading) return <Spinner className="mx-auto d-block" />
+  if (loading) return <Spinner mx="auto" display="block" />
 
   if (error)
     return (
@@ -77,12 +77,7 @@ const EditManuMultiplier = () => {
     )
 
   return (
-    <div className="multiplier-edit">
-      {/* Scoped responsive/touch styles */}
-      <style>{`
-                .multiplier-edit .form-control, .multiplier-edit .btn { min-height: 44px; }
-                .multiplier-edit .form-check-input { width: 2.25rem; height: 1.25rem; }
-            `}</style>
+    <Box>
 
       <PageHeader
         title="Edit Manufacturer Multiplier"
@@ -133,34 +128,31 @@ const EditManuMultiplier = () => {
               />
             </div>
 
-            <div className="form-check mb-3">
-              <input
-                type="checkbox"
+            <FormControl mb={3}>
+              <Checkbox
                 id="enabled"
                 name="enabled"
-               
-                checked={formData.enabled}
+                isChecked={formData.enabled}
                 onChange={handleChange}
-              />
-              <label htmlFor="enabled">
+              >
                 Enabled
-              </label>
-            </div>
+              </Checkbox>
+            </FormControl>
 
             {error && <Alert status="error">{error}</Alert>}
 
-            <div className="d-flex justify-content-end gap-2">
+            <Flex justifyContent="flex-end" gap={2}>
               <Button colorScheme="gray" onClick={() => navigate(-1)}>
                 Cancel
               </Button>
               <Button colorScheme="brand" type="submit">
                 Save Changes
               </Button>
-            </div>
+            </Flex>
           </form>
         </CardBody>
       </StandardCard>
-    </div>
+    </Box>
   )
 }
 
