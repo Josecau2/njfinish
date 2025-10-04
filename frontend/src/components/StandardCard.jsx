@@ -21,7 +21,6 @@ export const StandardCard = forwardRef(function StandardCard(
     variant = 'outline',
     interactive = false,
     children,
-    className,
     bg,
     borderColor,
     ...props
@@ -57,7 +56,6 @@ export const StandardCard = forwardRef(function StandardCard(
       borderColor={resolvedBorderColor}
       role="group"
       {...interactiveProps}
-      className={className}
       {...props}
     >
       {children}
@@ -79,7 +77,7 @@ export const StandardCard = forwardRef(function StandardCard(
  * @param {object} ...props - Additional Chakra props
  */
 export const MobileListCard = forwardRef(function MobileListCard(
-  { interactive = false, children, className, ...props },
+  { interactive = false, children, ...props },
   ref,
 ) {
   return (
@@ -88,7 +86,6 @@ export const MobileListCard = forwardRef(function MobileListCard(
       interactive={interactive}
       p={{ base: 4, md: 5 }}
       w="full"
-      className={className}
       {...props}
     >
       {children}
