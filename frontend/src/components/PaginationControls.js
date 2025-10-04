@@ -1,69 +1,64 @@
-import { Icon } from '@chakra-ui/react'
+import { Icon, Flex, IconButton, useColorModeValue } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 const PaginationControls = ({ page, totalPages, goPrev, goNext }) => {
   const { t } = useTranslation()
-  const commonButtonStyle = {
-    backgroundColor: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    padding: '6px',
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: "2xl",
-    transition: 'background-color 0.2s ease, color 0.2s ease',
-    color: '#333',
-    minWidth: '44px',
-    minHeight: '44px',
-  }
-
-  const disabledButtonStyle = {
-    ...commonButtonStyle,
-    cursor: 'not-allowed',
-    color: '#ccc',
-  }
+  const hoverBg = useColorModeValue('#e9ecef', 'gray.700')
+  const iconColor = useColorModeValue('#333', 'gray.200')
+  const disabledColor = useColorModeValue('#ccc', 'gray.600')
 
   return (
-    <div
-      style={{ display: 'flex', gap: '12px', alignItems: 'center' }}
+    <Flex
+      gap="12px"
+      align="center"
       aria-label={t('common.ariaLabels.pagination', 'Pagination')}
       role="group"
     >
-      <button
+      <IconButton
         onClick={goPrev}
-        disabled={page === 1}
+        isDisabled={page === 1}
         aria-label={t('common.ariaLabels.previous', 'Previous')}
-        aria-disabled={page === 1}
-        style={page === 1 ? disabledButtonStyle : commonButtonStyle}
-        onMouseEnter={(e) => {
-          if (page !== 1) e.currentTarget.style.backgroundColor = '#e9ecef'
+        bg="transparent"
+        border="none"
+        p="6px"
+        borderRadius="50%"
+        fontSize="2xl"
+        color={page === 1 ? disabledColor : iconColor}
+        minW="44px"
+        minH="44px"
+        transition="background-color 0.2s ease, color 0.2s ease"
+        _hover={{
+          bg: page === 1 ? 'transparent' : hoverBg,
         }}
-        onMouseLeave={(e) => {
-          if (page !== 1) e.currentTarget.style.backgroundColor = 'transparent'
+        _disabled={{
+          cursor: 'not-allowed',
         }}
-      >
-        <Icon as={ChevronLeft} />
-      </button>
+        icon={<Icon as={ChevronLeft} />}
+      />
 
-      <button
+      <IconButton
         onClick={goNext}
-        disabled={page === totalPages}
+        isDisabled={page === totalPages}
         aria-label={t('common.ariaLabels.next', 'Next')}
-        aria-disabled={page === totalPages}
-        style={page === totalPages ? disabledButtonStyle : commonButtonStyle}
-        onMouseEnter={(e) => {
-          if (page !== totalPages) e.currentTarget.style.backgroundColor = '#e9ecef'
+        bg="transparent"
+        border="none"
+        p="6px"
+        borderRadius="50%"
+        fontSize="2xl"
+        color={page === totalPages ? disabledColor : iconColor}
+        minW="44px"
+        minH="44px"
+        transition="background-color 0.2s ease, color 0.2s ease"
+        _hover={{
+          bg: page === totalPages ? 'transparent' : hoverBg,
         }}
-        onMouseLeave={(e) => {
-          if (page !== totalPages) e.currentTarget.style.backgroundColor = 'transparent'
+        _disabled={{
+          cursor: 'not-allowed',
         }}
-      >
-        <Icon as={ChevronRight} />
-      </button>
-    </div>
+        icon={<Icon as={ChevronRight} />}
+      />
+    </Flex>
   )
 }
 
