@@ -13,13 +13,6 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   SimpleGrid,
   Spinner,
   Stack,
@@ -28,6 +21,7 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
+import FileViewerModal from '../../../components/FileViewerModal'
 import { motion } from 'framer-motion'
 import {
   Download,
@@ -67,8 +61,9 @@ const maxFileSize = 50 * 1024 * 1024 // 50MB
 
 const getFileType = (mimeType) => {
   if (acceptedTypes.images.includes(mimeType)) return 'image'
-  if (acceptedTypes.documents.includes(mimeType)) return 'document'
   if (acceptedTypes.videos.includes(mimeType)) return 'video'
+  if (mimeType === 'application/pdf') return 'pdf'
+  if (acceptedTypes.documents.includes(mimeType)) return 'document'
   return 'unknown'
 }
 
@@ -262,28 +257,6 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
     setPreviewModal({ open: true, file })
   }
 
-  const renderPreview = (file) => {
-    if (file.type === 'image') {
-      return <Box as="img" src={file.url} alt={file.name} maxH="60vh" mx="auto" borderRadius="lg" />
-    }
-    if (file.type === 'video') {
-      return (
-        <Box as="video" maxH="60vh" mx="auto" controls borderRadius="lg">
-          <source src={file.url} type="video/mp4" />
-        </Box>
-      )
-    }
-    return (
-      <Box maxW="100%" textAlign="center">
-        <iframe
-          title={file.name}
-          src={file.url}
-          style={{ width: '100%', minHeight: '60vh', borderRadius: '12px', border: 'none' }}
-        />
-      </Box>
-    )
-  }
-
   return (
     <>
       <StandardCard
@@ -375,7 +348,9 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                                 ? 'green'
                                 : file.type === 'video'
                                   ? 'orange'
-                                  : 'blue'
+                                  : file.type === 'pdf'
+                                    ? 'red'
+                                    : 'blue'
                             }
                             textTransform="uppercase"
                             fontWeight="semibold"
@@ -451,39 +426,15 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
         </CardBody>
       </StandardCard>
 
-      <Modal
-        isOpen={previewModal.open}
+      <FileViewerModal
+        visible={previewModal.open}
         onClose={() => setPreviewModal({ open: false, file: null })}
+        file={previewModal.file}
+        resolveFileUrl={(file) => file?.url}
+        onDownload={downloadFile}
+        title={previewModal.file?.name}
         size={{ base: 'full', md: 'lg', lg: 'xl' }}
-        scrollBehavior="inside"
-        isCentered
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{previewModal.file?.name}</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>{previewModal.file && renderPreview(previewModal.file)}</ModalBody>
-          <ModalFooter>
-            <Button
-              variant="ghost"
-              onClick={() => setPreviewModal({ open: false, file: null })}
-              mr={3}
-            >
-              {t('common.cancel')}
-            </Button>
-            <Button
-              colorScheme="brand"
-              leftIcon={<Icon as={Download} boxSize={ICON_BOX_MD} />}
-              onClick={() => downloadFile(previewModal.file)}
-              minH="44px"
-              maxW={{ base: '140px', md: 'none' }}
-              fontSize={{ base: 'sm', md: 'md' }}
-            >
-              {t('files.download')}
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      />
     </>
   )
 }
