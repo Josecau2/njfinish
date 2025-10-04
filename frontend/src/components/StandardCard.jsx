@@ -55,6 +55,7 @@ export const StandardCard = forwardRef(function StandardCard(
       alignItems="stretch"
       bg={resolvedBg}
       borderColor={resolvedBorderColor}
+      role="group"
       {...interactiveProps}
       className={className}
       {...props}

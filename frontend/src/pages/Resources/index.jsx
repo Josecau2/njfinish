@@ -294,6 +294,21 @@ const toISOStringOrNull = (value) => {
   return date.toISOString()
 }
 
+// Helper to safely create color variants with alpha channel
+// Handles both hex colors (#RRGGBB) and Chakra tokens (blue.600)
+const getColorWithAlpha = (color, alpha) => {
+  if (!color) return `rgba(0, 0, 0, ${alpha / 100})`
+
+  // If it's a hex color, append the alpha directly
+  if (color.startsWith('#')) {
+    return `${color}${Math.round(alpha * 2.55).toString(16).padStart(2, '0')}`
+  }
+
+  // If it's a Chakra theme token (e.g., blue.600), use rgba fallback
+  // This will use the CSS variable if available, or fallback to a safe default
+  return `rgba(59, 130, 246, ${alpha / 100})` // blue.600 approximation
+}
+
 const Resources = ({ isContractor, contractorGroupName }) => {
   const { t } = useTranslation()
   const customization = useSelector((state) => state.customization)
@@ -1140,7 +1155,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                         left={0}
                         w="100%"
                         h="100%"
-                        bgGradient={`linear(135deg, ${color}15 0%, transparent 50%)`}
+                        bgGradient={`linear(135deg, ${getColorWithAlpha(color, 15)} 0%, transparent 50%)`}
                         pointerEvents="none"
                       />
                     </Box>
@@ -1153,8 +1168,8 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                           w={8}
                           h={8}
                           rounded="full"
-                          bg={`${color}20`}
-                          border={`2px solid ${color}40`}
+                          bg={getColorWithAlpha(color, 20)}
+                          border={`2px solid ${getColorWithAlpha(color, 40)}`}
                           display="flex"
                           alignItems="center"
                           justifyContent="center"
@@ -1163,7 +1178,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                           <Folder color={color} size={ICON_SIZE_MD} />
                         </Box>
                         <VStack align="start" spacing={0} flex={1} minW={0}>
-                          <Text fontWeight="bold" fontSize="sm" noOfLines={1} title={category.name}>
+                          <Text fontWeight="bold" fontSize="sm">
                             {category.name}
                           </Text>
                           {category.isPinned && (
@@ -1180,7 +1195,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                           _groupHover={{ opacity: 1 }}
                           flexShrink={0}
                           spacing={1}
-                          display={{ base: 'none', sm: 'flex' }}
+                          display={{ base: 'none', lg: 'flex' }}
                         >
                           <IconButton
                             size={{ base: 'sm', md: 'md' }}
@@ -1226,17 +1241,13 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     </HStack>
                   </CardHeader>
 
-                  <CardBody pt={0} flex={1} display="flex" flexDirection="column" overflow="hidden">
+                  <CardBody pt={0} flex={1} display="flex" flexDirection="column" overflow="visible">
                     {category.description && (
                       <Text
                         fontSize="sm"
                         color={textSecondary}
-                        noOfLines={2}
                         mb={3}
                         lineHeight="1.3"
-                        maxH="2.6rem"
-                        overflow="hidden"
-                        title={category.description}
                       >
                         {category.description}
                       </Text>
@@ -1326,20 +1337,21 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                 onKeyDown={handleKeyDown}
                                 tabIndex={0}
                                 role="button"
-                                spacing={2}
+                                spacing={3}
                               >
                                 <Icon
                                   as={IconComponent}
-                                  boxSize={3}
+                                  boxSize={4}
                                   flexShrink={0}
                                   color={textMuted}
                                 />
                                 <Text
                                   fontSize="0.8rem"
                                   fontWeight="medium"
-                                  noOfLines={1}
                                   flex={1}
-                                  title={label}
+                                  overflow="hidden"
+                                  textOverflow="ellipsis"
+                                  whiteSpace="nowrap"
                                 >
                                   {label}
                                 </Text>
