@@ -440,7 +440,7 @@ const GlobalModsPage = () => {
         title={t('globalMods.title', 'Global Modifications')}
         mobileLayout="stack"
         rightContent={
-          <div className="global-mods-actions d-flex">
+          <Flex gap={3}>
             <Button
               colorScheme="brand"
               onClick={() => setShowCreateModModal(true)}
@@ -462,7 +462,7 @@ const GlobalModsPage = () => {
             >
               {t('globalMods.ui.buttons.assignModification')}
             </Button>
-          </div>
+          </Flex>
         }
       />
 
@@ -474,8 +474,8 @@ const GlobalModsPage = () => {
               {loading && <div>{t('common.loading')}</div>}
               {error && <div>{error}</div>}
               {/* Category Creation Section */}
-              <StandardCard className="mb-3 border-success">
-                <CardHeader className="bg-success text-white">
+              <StandardCard mb={3} borderColor="green.500" borderWidth="1px">
+                <CardHeader bg="green.500" color="white">
                   <h6>{t('globalMods.category.createTitle')}</h6>
                 </CardHeader>
                 <CardBody>
@@ -565,7 +565,7 @@ const GlobalModsPage = () => {
 
               {gallery.map((cat) => (
                 <div key={cat.id}>
-                  <h6 className="mb-2 d-flex align-items-center gap-2">
+                  <Box as="h6" mb={2} display="flex" alignItems="center" gap={2}>
                     {cat.image && (
                       <img
                         src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${cat.image}`}
@@ -582,7 +582,7 @@ const GlobalModsPage = () => {
                     )}
                     <span>{cat.name}</span>
                     <Badge colorScheme="gray">{(cat.templates || []).length}</Badge>
-                    <div className="ms-auto d-flex gap-1">
+                    <Flex ml="auto" gap={1}>
                       <AppIconButton
                         size="sm"
                         colorScheme="orange"
@@ -643,7 +643,10 @@ const GlobalModsPage = () => {
                             size="sm"
                             colorScheme="orange"
                             variant="outline"
-                            className="position-absolute top-0 end-0 m-1"
+                            position="absolute"
+                            top={0}
+                            right={0}
+                            m={1}
                             onClick={() => openEditTemplate(tpl)}
                             title={t('globalMods.template.editTooltip')}
                             aria-label={t('globalMods.template.editTooltip')}
@@ -667,8 +670,8 @@ const GlobalModsPage = () => {
             <CardHeader>{t('globalMods.template.createHeader')}</CardHeader>
             <CardBody>
               {/* Required Fields Section */}
-              <StandardCard className="mb-4 border-primary">
-                <CardHeader className="bg-primary text-white">
+              <StandardCard mb={4} borderColor="blue.500" borderWidth="1px">
+                <CardHeader bg="blue.500" color="white">
                   <h6>{t('globalMods.template.requiredFields')}</h6>
                 </CardHeader>
                 <CardBody>
@@ -681,7 +684,7 @@ const GlobalModsPage = () => {
                         placeholder={t('globalMods.template.namePlaceholder')}
                         value={newTemplate.name}
                         onChange={(e) => setNewTemplate((n) => ({ ...n, name: e.target.value }))}
-                        className={!newTemplate.name.trim() ? 'border-danger' : ''}
+                        borderColor={!newTemplate.name.trim() ? 'red.500' : undefined}
                         required
                       />
                       {!newTemplate.name.trim() && (
@@ -704,7 +707,7 @@ const GlobalModsPage = () => {
                         onChange={(e) =>
                           setNewTemplate((n) => ({ ...n, defaultPrice: e.target.value }))
                         }
-                        className={!newTemplate.defaultPrice ? 'border-danger' : ''}
+                        borderColor={!newTemplate.defaultPrice ? 'red.500' : undefined}
                         required
                       />
                       {!newTemplate.defaultPrice && (
@@ -750,7 +753,7 @@ const GlobalModsPage = () => {
               </Flex>
 
               {/* Guided builder */}
-              <div className="border rounded p-3 mb-3">
+              <Box borderWidth="1px" borderRadius="md" p={3} mb={3}>
                 <h6>{t('globalMods.builder.title')}</h6>
                 <Flex>
                   <Box md={4}>
@@ -768,7 +771,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.sliders.height.enabled && (
-                      <div className="d-flex gap-2 mt-2">
+                      <Flex gap={2} mt={2}>
                         <Input
                           type="number"
                           placeholder={t('globalMods.builder.min')}
@@ -840,7 +843,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.sliders.width.enabled && (
-                      <div className="d-flex gap-2 mt-2">
+                      <Flex gap={2} mt={2}>
                         <Input
                           type="number"
                           placeholder={t('globalMods.builder.min')}
@@ -912,7 +915,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.sliders.depth.enabled && (
-                      <div className="d-flex gap-2 mt-2">
+                      <Flex gap={2} mt={2}>
                         <Input
                           type="number"
                           placeholder={t('globalMods.builder.min')}
@@ -1015,7 +1018,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.qtyRange.enabled && (
-                      <div className="d-flex gap-2 mt-2">
+                      <Flex gap={2} mt={2}>
                         <Input
                           type="number"
                           placeholder={t('globalMods.builder.quantityLimits.minQty')}
@@ -1178,14 +1181,14 @@ const GlobalModsPage = () => {
               </div>
 
               {/* Sample Image Upload Section */}
-              <StandardCard className="mb-3 border-info">
-                <CardHeader className="bg-info text-white">
+              <StandardCard mb={3} borderColor="cyan.500" borderWidth="1px">
+                <CardHeader bg="cyan.500" color="white">
                   <h6>{t('globalMods.builder.sampleUpload.title')}</h6>
                 </CardHeader>
                 <CardBody>
                   <Flex>
                     <Box md={6}>
-                      <label className="form-label mb-2">
+                      <Box as="label" mb={2}>
                         {t('globalMods.builder.sampleUpload.uploadLabel')}
                       </label>
                       <Input
@@ -1465,7 +1468,7 @@ const GlobalModsPage = () => {
                 </div>
               )}
 
-              <div className="mt-3 d-flex gap-2">
+              <Flex mt={3} gap={2}>
                 <Button colorScheme="gray" onClick={() => setShowCreateModModal(false)}>
                   {t('common.cancel')}
                 </Button>
@@ -1485,8 +1488,8 @@ const GlobalModsPage = () => {
               <h6>{t('globalMods.modal.add.step2Title')}</h6>
 
               {/* Required Fields Section */}
-              <StandardCard className="mb-4 border-primary">
-                <CardHeader className="bg-primary text-white">
+              <StandardCard mb={4} borderColor="blue.500" borderWidth="1px">
+                <CardHeader bg="blue.500" color="white">
                   <h6>Required Fields</h6>
                 </CardHeader>
                 <CardBody>
@@ -1499,7 +1502,7 @@ const GlobalModsPage = () => {
                         placeholder={t('globalMods.template.namePlaceholder')}
                         value={newTemplate.name}
                         onChange={(e) => setNewTemplate((n) => ({ ...n, name: e.target.value }))}
-                        className={!newTemplate.name.trim() ? 'border-danger' : ''}
+                        borderColor={!newTemplate.name.trim() ? 'red.500' : undefined}
                         required
                       />
                       {!newTemplate.name.trim() && (
@@ -1520,7 +1523,7 @@ const GlobalModsPage = () => {
                         onChange={(e) =>
                           setNewTemplate((n) => ({ ...n, defaultPrice: e.target.value }))
                         }
-                        className={!newTemplate.defaultPrice ? 'border-danger' : ''}
+                        borderColor={!newTemplate.defaultPrice ? 'red.500' : undefined}
                         required
                       />
                       {!newTemplate.defaultPrice && (
@@ -1534,7 +1537,7 @@ const GlobalModsPage = () => {
               </StandardCard>
 
               {/* Guided builder - same as main form */}
-              <div className="border rounded p-3 mb-3">
+              <Box borderWidth="1px" borderRadius="md" p={3} mb={3}>
                 <h6>{t('globalMods.builder.title')}</h6>
                 <Flex>
                   <Box md={4}>
@@ -1552,7 +1555,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.sliders.height.enabled && (
-                      <div className="d-flex gap-2 mt-2">
+                      <Flex gap={2} mt={2}>
                         <Input
                           type="number"
                           placeholder={t('globalMods.builder.min')}
@@ -1624,7 +1627,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.sliders.width.enabled && (
-                      <div className="d-flex gap-2 mt-2">
+                      <Flex gap={2} mt={2}>
                         <Input
                           type="number"
                           placeholder={t('globalMods.builder.min')}
@@ -1696,7 +1699,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.sliders.depth.enabled && (
-                      <div className="d-flex gap-2 mt-2">
+                      <Flex gap={2} mt={2}>
                         <Input
                           type="number"
                           placeholder={t('globalMods.builder.min')}
@@ -1799,7 +1802,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.qtyRange.enabled && (
-                      <div className="d-flex gap-2 mt-2">
+                      <Flex gap={2} mt={2}>
                         <Input
                           type="number"
                           placeholder={t('globalMods.builder.quantityLimits.minQty')}
@@ -1962,14 +1965,14 @@ const GlobalModsPage = () => {
               </div>
 
               {/* Sample Image Upload Section */}
-              <StandardCard className="mb-3 border-info">
-                <CardHeader className="bg-info text-white">
+              <StandardCard mb={3} borderColor="cyan.500" borderWidth="1px">
+                <CardHeader bg="cyan.500" color="white">
                   <h6>{t('globalMods.builder.sampleUpload.title')}</h6>
                 </CardHeader>
                 <CardBody>
                   <Flex>
                     <Box md={6}>
-                      <label className="form-label mb-2">
+                      <Box as="label" mb={2}>
                         {t('globalMods.builder.sampleUpload.uploadLabel')}
                       </label>
                       <Input
@@ -2026,7 +2029,7 @@ const GlobalModsPage = () => {
                 </CardBody>
               </StandardCard>
 
-              <div className="mt-4 d-flex justify-content-between gap-2">
+              <Flex mt={4} justifyContent="space-between" gap={2}>
                 <Button colorScheme="gray" variant="outline" onClick={() => setCreateStep(1)}>
                   {t('common.back')}
                 </Button>
@@ -2114,7 +2117,7 @@ const GlobalModsPage = () => {
               </Box>
             </Flex>
           </ModalBody>
-          <ModalFooter className="d-flex gap-2 justify-content-end">
+          <ModalFooter display="flex" gap={2} justifyContent="flex-end">
             <Button
               colorScheme="gray"
               variant="outline"
@@ -2199,7 +2202,7 @@ const GlobalModsPage = () => {
             {/* Task 7: Add "Mark as Ready" toggle */}
             <Flex>
               <Box md={12}>
-                <div className="border-top pt-3">
+                <Box borderTopWidth="1px" pt={3}>
                   <Checkbox
                     label={t('globalMods.modal.editTemplate.ready.label')}
                     checked={editTemplate.isReady}
@@ -2207,14 +2210,14 @@ const GlobalModsPage = () => {
                       setEditTemplate((t) => ({ ...t, isReady: e.target.checked }))
                     }
                   />
-                  <small className="text-muted d-block mt-1">
+                  <Box as="small" color="gray.500" display="block" mt={1}>
                     {t('globalMods.modal.editTemplate.ready.hint')}
                   </small>
                 </div>
               </Box>
             </Flex>
           </ModalBody>
-          <ModalFooter className="d-flex gap-2 justify-content-end">
+          <ModalFooter display="flex" gap={2} justifyContent="flex-end">
             <Button colorScheme="gray" onClick={() => setShowEditTemplateModal(false)}>
               {t('common.cancel')}
             </Button>
@@ -2242,7 +2245,7 @@ const GlobalModsPage = () => {
           <ModalBody>
           <div>
             {gallery.map((category) => (
-              <div key={category.id} className="col-md-6 mb-4">
+              <Box key={category.id} flex="1" minW="50%" mb={4}>
                 <div>
                   <div>
                     <h6>
@@ -2433,7 +2436,7 @@ const GlobalModsPage = () => {
           </Flex>
 
           </ModalBody>
-          <ModalFooter className="d-flex gap-2 justify-content-end">
+          <ModalFooter display="flex" gap={2} justifyContent="flex-end">
             <Button colorScheme="gray" onClick={() => setShowAssignModal(false)}>
               {t('globalMods.modal.assign.cancel')}
             </Button>
@@ -2466,7 +2469,7 @@ const GlobalModsPage = () => {
           </ModalHeader>
           <ModalBody>
             <div>
-              <div className="alert alert-warning">
+              <Box bg="orange.100" p={3} borderRadius="md">
                 <strong>
                   <Trans i18nKey="globalMods.modal.deleteCategory.warning">⚠️ Warning:</Trans>
                 </strong>{' '}
@@ -2486,8 +2489,8 @@ const GlobalModsPage = () => {
                     />
                   </p>
 
-                  <div className="d-flex flex-column gap-3">
-                    <div className="form-check">
+                  <Flex flexDirection="column" gap={3}>
+                    <Box>
                       <input
                         type="radio"
                         name="deleteMode"
@@ -2502,7 +2505,7 @@ const GlobalModsPage = () => {
                     </div>
 
                     {deleteMode === 'move' && (
-                      <div className="mt-2 ms-4">
+                      <Box mt={2} ml={4}>
                         <Select
                           value={moveToCategoryId}
                           onChange={(e) => setMoveToCategoryId(e.target.value)}
@@ -2522,14 +2525,14 @@ const GlobalModsPage = () => {
                             ))}
                         </Select>
                         {!moveToCategoryId && (
-                          <small className="text-muted d-block mt-1">
+                          <Box as="small" color="gray.500" display="block" mt={1}>
                             {t('globalMods.modal.deleteCategory.move.mustSelect')}
                           </small>
                         )}
                       </div>
                     )}
 
-                    <div className="form-check">
+                    <Box>
                       <input
                         type="radio"
                         name="deleteMode"
@@ -2546,7 +2549,7 @@ const GlobalModsPage = () => {
                     </div>
 
                     {deleteMode === 'withMods' && (
-                      <div className="alert alert-danger mt-2 ms-4">
+                      <Box bg="red.100" p={3} borderRadius="md" mt={2} ml={4}>
                         <small>
                           <Trans
                             i18nKey="globalMods.modal.deleteCategory.withMods.danger"
