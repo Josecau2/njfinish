@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { addUser } from '../../../store/slices/userSlice'
 import { fetchLocations } from '../../../store/slices/locationSlice'
-import Swal from 'sweetalert2'
+import { AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useDisclosure } from '@chakra-ui/react'
 import { fetchUsers } from '../../../store/slices/userGroupSlice'
 import { useTranslation } from 'react-i18next'
 import PageHeader from '../../../components/PageHeader'
@@ -183,6 +183,10 @@ const AddUserForm = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const toast = useToast()
+  const { isOpen: isRestoreOpen, onOpen: onRestoreOpen, onClose: onRestoreClose } = useDisclosure()
+  const { isOpen: isCancelOpen, onOpen: onCancelOpen, onClose: onCancelClose } = useDisclosure()
+  const restoreRef = useRef()
+  const cancelRef = useRef()
 
   // Color mode values - MUST be before useState
   const salesRepBgActive = useColorModeValue("green.100", "green.900")
@@ -200,6 +204,7 @@ const AddUserForm = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [pendingSubmit, setPendingSubmit] = useState(null)
 
   useEffect(() => {
     dispatch(fetchUsers())
@@ -250,34 +255,40 @@ const AddUserForm = () => {
       const response = await dispatch(addUser({ ...formData, force }))
 
       if (response?.payload?.email_exists_but_deleted) {
-        const result = await Swal.fire({
-          title: t('settings.users.alerts.emailDeletedTitle'),
-          text: t('settings.users.alerts.emailDeletedText'),
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonText: t('settings.users.alerts.restoreYes'),
-          cancelButtonText: t('common.no'),
-        })
-
-        if (result.isConfirmed) {
-          return handleSubmit(e, true)
-        } else {
-          return
-        }
+        setPendingSubmit(e)
+        onRestoreOpen()
+        setLoading(false)
+        return
       }
 
       if (response?.payload?.status == 200) {
-        Swal.fire(t('common.success') + '!', response.payload.message, 'success')
+        toast({
+          title: t('common.success'),
+          description: response.payload.message,
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
         navigate('/settings/users')
       }
     } catch (error) {
-      Swal.fire(
-        t('common.error'),
-        error.message || t('settings.users.alerts.genericError'),
-        'error',
-      )
+      toast({
+        title: t('common.error'),
+        description: error.message || t('settings.users.alerts.genericError'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const confirmRestore = () => {
+    onRestoreClose()
+    if (pendingSubmit) {
+      handleSubmit(pendingSubmit, true)
+      setPendingSubmit(null)
     }
   }
 
@@ -641,20 +652,7 @@ const AddUserForm = () => {
                 leftIcon={<Icon as={ArrowLeft} />}
                 onClick={() => {
                   if (isFormDirty()) {
-                    Swal.fire({
-                      title: t('common.confirm') || 'Are you sure?',
-                      text: t('settings.users.form.alerts.leaveWarning'),
-                      icon: 'warning',
-                      showCancelButton: true,
-                      confirmButtonText: t('settings.users.form.alerts.leaveAnyway'),
-                      cancelButtonText: t('settings.users.form.alerts.stayOnPage'),
-                      confirmButtonColor: 'var(--chakra-colors-red-500)',
-                      cancelButtoncolor: "gray.500",
-                    }).then((result) => {
-                      if (result.isConfirmed) {
-                        navigate('/settings/users')
-                      }
-                    })
+                    onCancelOpen()
                   } else {
                     navigate('/settings/users')
                   }
@@ -676,6 +674,62 @@ const AddUserForm = () => {
           </CardBody>
         </StandardCard>
       </form>
+
+      {/* Restore Deleted User Dialog */}
+      <AlertDialog
+        isOpen={isRestoreOpen}
+        leastDestructiveRef={restoreRef}
+        onClose={onRestoreClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('settings.users.alerts.emailDeletedTitle')}
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              {t('settings.users.alerts.emailDeletedText')}
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={restoreRef} onClick={onRestoreClose}>
+                {t('common.no')}
+              </Button>
+              <Button colorScheme="blue" onClick={confirmRestore} ml={3}>
+                {t('settings.users.alerts.restoreYes')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog
+        isOpen={isCancelOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onCancelClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('common.confirm')}
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              {t('settings.users.form.alerts.leaveWarning')}
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onCancelClose}>
+                {t('settings.users.form.alerts.stayOnPage')}
+              </Button>
+              <Button colorScheme="red" onClick={() => { onCancelClose(); navigate('/settings/users'); }} ml={3}>
+                {t('settings.users.form.alerts.leaveAnyway')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </PageContainer>
   )
 }
