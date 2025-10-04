@@ -16,6 +16,9 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react'
 import { Download, File, Link2Off } from '@/icons-lucide'
+import Lightbox from 'yet-another-react-lightbox'
+import { Zoom, Video, Fullscreen } from 'yet-another-react-lightbox/plugins'
+import 'yet-another-react-lightbox/styles.css'
 import axiosInstance from '../helpers/axiosInstance'
 import NeutralModal from './NeutralModal'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
@@ -329,6 +332,86 @@ export default function FileViewerModal({
           Download
         </Button>
       </VStack>
+    )
+  }
+
+  // Use Lightbox for images and videos
+  if (modalVisible && (detectedType === 'image' || detectedType === 'video') && inlineUrl) {
+    const slides = []
+
+    if (detectedType === 'image') {
+      slides.push({
+        src: inlineUrl,
+        alt: file?.name || 'preview',
+      })
+    } else if (detectedType === 'video') {
+      slides.push({
+        type: 'video',
+        width: 1920,
+        height: 1080,
+        sources: [
+          {
+            src: inlineUrl,
+            type: file?.mimeType || 'video/mp4',
+          },
+        ],
+      })
+    }
+
+    const bgColor = useColorModeValue('rgba(0,0,0,0.9)', 'rgba(0,0,0,0.95)')
+    const buttonColor = useColorModeValue('#ffffff', '#ffffff')
+
+    return (
+      <Lightbox
+        open={modalVisible}
+        close={onClose}
+        slides={slides}
+        plugins={[Zoom, Video, Fullscreen]}
+        video={{
+          controls: true,
+          autoPlay: false,
+          muted: false,
+        }}
+        zoom={{
+          maxZoomPixelRatio: 3,
+          scrollToZoom: true,
+        }}
+        animation={{ fade: 300, swipe: 250 }}
+        controller={{
+          closeOnBackdropClick: true,
+          closeOnPullDown: true,
+          closeOnPullUp: true,
+        }}
+        styles={{
+          container: {
+            backgroundColor: bgColor,
+          },
+          button: {
+            color: buttonColor,
+          },
+        }}
+        toolbar={{
+          buttons: [
+            <Button
+              key="download"
+              size="sm"
+              colorScheme="brand"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleDownload()
+              }}
+              leftIcon={<Icon as={Download} />}
+              position="absolute"
+              top={4}
+              right={16}
+              zIndex={10}
+            >
+              Download
+            </Button>,
+            'close',
+          ],
+        }}
+      />
     )
   }
 
