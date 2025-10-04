@@ -196,7 +196,9 @@
       "Bash(frontend/src/views/pages/page404/Page404.jsx)",
       "Bash(do echo \"=== $file ===\" grep -n \"InputGroup\\|InputLeftElement\\|Input\" \"$file\")",
       "Bash(/tmp/check_hooks_order.sh:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(if grep -q \"useTranslation\" \"$file\")",
+      "Bash(else)"
     ],
     "deny": [],
     "ask": []
