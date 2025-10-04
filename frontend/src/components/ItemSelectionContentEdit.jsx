@@ -1497,7 +1497,9 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                     </Flex>
 
                                     <Box
-                                        className={`other-styles-carousel-container ${isStylesCollapsed ? 'collapsed-view' : ''}`}
+                                        maxH={isStylesCollapsed ? '0' : '500px'}
+                                        overflow="hidden"
+                                        transition="max-height 0.3s ease"
                                     >
                                         {collectionsLoading ? (
                                             <Text py={4} color={textGray500}>

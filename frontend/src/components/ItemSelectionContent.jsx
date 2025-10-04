@@ -1660,7 +1660,9 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             )}
 
                             <Box
-                                className={`other-styles-carousel-container ${isStylesCollapsed ? 'collapsed-view' : ''}`}
+                                maxH={isStylesCollapsed ? '0' : '500px'}
+                                overflow="hidden"
+                                transition="max-height 0.3s ease"
                             >
                                 {collectionsLoading ? (
                                     <Text py={4} color={colorGray500}>
