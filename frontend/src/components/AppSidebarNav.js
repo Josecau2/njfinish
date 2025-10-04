@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
-import { Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react'
+import { Menu, MenuButton, MenuItem, MenuList, useColorModeValue } from '@chakra-ui/react'
 import { ChevronDown } from 'lucide-react'
 import { setSidebarShow, setSidebarUnfoldable } from '../store/slices/sidebarSlice'
 import { ICON_SIZE_MD, ICON_SIZE_SM } from '../constants/iconSizes'
@@ -60,6 +60,13 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const sidebarPinned = useSelector((state) => state.sidebar.sidebarPinned)
+
+  // Color mode values for hover states
+  const hoverBgLight = useColorModeValue('gray.100', 'whiteAlpha.100')
+  const hoverBgDark = useColorModeValue('gray.200', 'whiteAlpha.200')
+  const menuItemHoverBg = useColorModeValue('blue.50', 'whiteAlpha.200')
+  const menuItemActiveBg = useColorModeValue('blue.100', 'whiteAlpha.300')
+
   const colors = useMemo(() => buildColors(fontColor), [fontColor])
 
   const handleNavigate = (target, isExternal = false) => {
@@ -286,6 +293,10 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
         .c-sidebar-nav {
           height: 100%;
           width: 100%;
+          --nav-hover-bg: var(--sidebar-nav-hover-bg, var(--chakra-colors-whiteAlpha-100));
+          --nav-active-hover-bg: var(--sidebar-nav-active-hover-bg, var(--chakra-colors-whiteAlpha-200));
+          --menu-item-hover-bg: var(--sidebar-menu-item-hover-bg, var(--chakra-colors-blue-50));
+          --menu-item-active-bg: var(--sidebar-menu-item-active-bg, var(--chakra-colors-blue-100));
         }
         .c-sidebar-nav .simplebar-scrollbar:before {
           background: var(--chakra-colors-whiteAlpha-400);
@@ -325,7 +336,10 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           text-align: left;
         }
         .c-sidebar-nav .nav-link:hover {
-          background: var(--chakra-colors-whiteAlpha-100);
+          background: var(--nav-hover-bg);
+        }
+        .c-sidebar-nav .nav-link.active:hover {
+          background: var(--nav-active-hover-bg);
         }
         /* Mobile: tighter padding for better use of space */
         @media (max-width: 1023px) {
@@ -434,12 +448,37 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
           gap: 0.75rem;
           width: 100%;
         }
-        .nav-group-menu-item.active,
         .nav-group-menu-item:hover {
-          background: var(--chakra-colors-blue-100);
+          background: var(--menu-item-hover-bg);
+        }
+        .nav-group-menu-item.active,
+        .nav-group-menu-item.active:hover {
+          background: var(--menu-item-active-bg);
+        }
+        .nav-group-toggle:hover {
+          background: var(--nav-hover-bg);
+        }
+        .nav-group-toggle.active:hover {
+          background: var(--nav-active-hover-bg);
+        }
+        /* Child/nested items hover states */
+        .c-sidebar-nav .nav-group-items .nav-link:hover {
+          background: var(--nav-hover-bg);
+        }
+        .c-sidebar-nav .nav-group-items .nav-link.active:hover {
+          background: var(--nav-active-hover-bg);
         }
       `}</style>
-      <nav className="c-sidebar-nav" data-collapsed={collapsed ? 'true' : 'false'}>
+      <nav
+        className="c-sidebar-nav"
+        data-collapsed={collapsed ? 'true' : 'false'}
+        style={{
+          '--sidebar-nav-hover-bg': `var(--chakra-colors-${hoverBgLight.replace('.', '-')})`,
+          '--sidebar-nav-active-hover-bg': `var(--chakra-colors-${hoverBgDark.replace('.', '-')})`,
+          '--sidebar-menu-item-hover-bg': `var(--chakra-colors-${menuItemHoverBg.replace('.', '-')})`,
+          '--sidebar-menu-item-active-bg': `var(--chakra-colors-${menuItemActiveBg.replace('.', '-')})`,
+        }}
+      >
         <SimpleBar style={{ height: '100%' }}>
           <ul className="nav">
             {items?.map((item) => renderItem(item))}
