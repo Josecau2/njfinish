@@ -2561,12 +2561,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       )}
                       <div>
                         {subType.requires_hinge_side && (
-                          <Badge colorScheme="info">
+                          <Badge colorScheme="blue">
                             {t('settings.manufacturers.catalogMapping.subTypes.requiresHinge')}
                           </Badge>
                         )}
                         {subType.requires_exposed_side && (
-                          <Badge colorScheme="warning">
+                          <Badge colorScheme="orange">
                             {t('settings.manufacturers.catalogMapping.subTypes.requiresExposed')}
                           </Badge>
                         )}
@@ -2590,7 +2590,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           {t('common.edit')}
                         </Button>
                         <Button
-                          color="success"
+                          colorScheme="green"
                           size="sm"
                           onClick={() => {
                             setSelectedSubType(subType.id)
@@ -2758,7 +2758,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </div>
               <Flex gap={2} flexShrink={0}>
                 <Button
-                  color="info"
+                  colorScheme="blue"
                   size="sm"
                   onClick={() => handleEditStyleNameClick(styleFilter)}
                   disabled={isEditingStyleName}
@@ -2773,7 +2773,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   )}
                 </Button>
                 <Button
-                  color="warning"
+                  colorScheme="orange"
                   size="sm"
                   onClick={() => handleDeleteStyleClick(styleFilter)}
                   disabled={isDeleting}
@@ -2942,13 +2942,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <Td style={{ cursor: 'pointer' }}>
                       <Button
                         size="sm"
-                        color="dark"
+                        colorScheme="gray"
                         onClick={() => handleShowStyleOnClick(item)}
 
                         style={{
-                          backgroundcolor: "gray.500",
-                          bordercolor: "gray.500",
-                          color: 'white',
                           fontSize: "xs",
                           padding: '4px 8px',
                         }}
@@ -4675,7 +4672,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {t('common.cancel')}
             </Button>
             <Button
-              color="warning"
+              colorScheme="orange"
               onClick={handleRollback}
               disabled={!selectedBackup || isRollingBack}
             >
@@ -6278,7 +6275,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   </Button>
                                   <Button
                                     size="sm"
-                                    color="success"
+                                    colorScheme="green"
                                     title={t(
                                       'settings.manufacturers.catalogMapping.gallery.tooltips.assignToManufacturer',
                                     )}
