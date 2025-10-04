@@ -70,38 +70,24 @@ app.use((req, res, next) => {
 const allowedOrigins = env.CORS_ALLOWED_ORIGINS;
 
 // Configure CORS based on environment
-const baseCorsOptions = {
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
 
-const corsOptionsDelegate = (req, callback) => {
-  const origin = req.header('Origin');
-
-  // Always allow same-origin or non-browser requests
-  if (!origin) {
-    return callback(null, { ...baseCorsOptions, origin: true, credentials: true });
-  }
-
-  // Loosen CORS restrictions for public asset delivery
-  if (req.path && req.path.startsWith('/uploads')) {
-    return callback(null, {
-      ...baseCorsOptions,
-      origin: true,
-      credentials: false,
-      methods: ['GET', 'HEAD', 'OPTIONS'],
-    });
-  }
-
-  if (allowedOrigins.includes(origin)) {
-    return callback(null, { ...baseCorsOptions, origin, credentials: true });
-  }
-
-  console.warn('CORS blocked origin:', origin);
-  return callback(new Error('Not allowed by CORS'));
-};
-
-app.use(cors(corsOptionsDelegate));
+app.use(cors(corsOptions));
 
 // app.use(cors());
 // Stripe webhook must be mounted before body parsers so we can access the raw payload
@@ -117,23 +103,9 @@ app.use('/api/payment-config', paymentConfigRoutes);
 app.use('/api', apiRoutes);
 
 const uploadsRouter = express.Router();
-// Basic CORS for image/file requests (img tags can't send auth headers)
-uploadsRouter.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (origin) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-  } else {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  next();
-});
-// Publicly serve uploaded assets safely (controller validates path)
-uploadsRouter.use(serveUpload);
+uploadsRouter.use(attachTokenFromQuery({ extraParams: ['access_token', 'authToken'] }));
+uploadsRouter.use(verifyTokenWithGroup);
+uploadsRouter.use('/', serveUpload);
 app.use('/uploads', uploadsRouter);
 
 // Serve SPA static assets from configurable directory (defaults to /app/build)
