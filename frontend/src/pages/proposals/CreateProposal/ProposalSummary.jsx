@@ -359,12 +359,8 @@ const ItemSelectionStep = ({
 
   return (
     <>
-      <style>{`
-        .proposal-summary-form .btn { min-height: 44px; }
-        .proposal-version-badges { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      `}</style>
-      <Box className="quote-form-mobile">
-        <Flex className="button-group" gap={3}>
+      <Box>
+        <Flex gap={3}>
           {!hideBack && (
             <Button
               variant="outline"
@@ -379,8 +375,8 @@ const ItemSelectionStep = ({
             </Button>
           )}
         </Flex>
-        <Box className="proposal-summary-form">
-          <Box className="form-section">
+        <Box>
+          <Box>
             <SimpleGrid columns={{ base: 1, md: 6 }} spacing={4}>
               <FormControl isInvalid={!!errors.designer}>
                 <FormLabel htmlFor="designer">{t('proposals.fields.designer', 'Designer')} *</FormLabel>
@@ -505,13 +501,13 @@ const ItemSelectionStep = ({
             </SimpleGrid>
           </Box>
 
-          <Box className="proposal-version-badges" mt={6}>
+          <Box mt={6} overflowX="auto" sx={{ WebkitOverflowScrolling: 'touch' }}>
+            <Flex gap={3} flexWrap="nowrap">
                 {versionDetails.map((version, index) => {
                   const isSelected = index === selectedVersionIndex
                   return (
                     <Badge
                       key={index}
-                      className={`proposal-version-badge p-2 d-flex ${isSelected ? 'selected' : ''}`}
                       fontSize="sm"
                       bg={isSelected ? 'blue.700' : 'blue.100'}
                       color={isSelected ? 'blue.50' : 'blue.700'}
@@ -520,6 +516,9 @@ const ItemSelectionStep = ({
                       cursor="pointer"
                       _hover={{ transform: 'scale(1.05)' }}
                       onClick={() => handleBadgeClick(index, version)}
+                      p={2}
+                      display="flex"
+                      flexShrink={0}
                     >
                       <VStack align="start" spacing={1}>
                         {!isContractor && (
@@ -585,7 +584,8 @@ const ItemSelectionStep = ({
                     </Badge>
                   )
                 })}
-              </Box>
+            </Flex>
+          </Box>
               <Divider my={6} />
 
               <Tabs
