@@ -2241,7 +2241,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         />
 
         {/* Action Buttons Row */}
-        <Flex gap={3} flexWrap="wrap" className="catalog-actions">
+        <Flex gap={3} flexWrap="wrap">
           <Button
             bg={headerBg}
             color={textColor}
@@ -2906,7 +2906,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <Th minW="70px">
                     {t('settings.manufacturers.catalogMapping.table.type')}
                   </Th>
-                  <Th minW="120px" className="actions-column">
+                  <Th minW="120px" textAlign="center">
                     {t('settings.manufacturers.catalogMapping.table.actions')}
                   </Th>
                 </Tr>
