@@ -117,13 +117,24 @@ const CatalogTableEdit = ({
   })
   const api_url = import.meta.env.VITE_API_URL
 
-  // Dark mode colors
+  // Dark mode colors - ALL at component top level
   const textRed500 = useColorModeValue("red.500", "red.300")
   const textGreen500 = useColorModeValue("green.500", "green.300")
   const borderGray400 = useColorModeValue("gray.400", "gray.600")
   const rowBgEven = useColorModeValue("gray.50", "gray.700")
   const rowBgOdd = useColorModeValue("white", "gray.800")
   const rowBorder = useColorModeValue("gray.200", "gray.600")
+  const bgGray50 = useColorModeValue("gray.50", "gray.800")
+  const bgGray100 = useColorModeValue("gray.100", "gray.700")
+  const bgGray300 = useColorModeValue("gray.300", "gray.600")
+  const borderGray200 = useColorModeValue("gray.200", "gray.600")
+  const borderGray300 = useColorModeValue("gray.300", "gray.600")
+  const textGray600 = useColorModeValue("gray.600", "gray.400")
+  const textGray800 = useColorModeValue("gray.800", "gray.200")
+  const textGray500 = useColorModeValue("gray.500", "gray.400")
+  const borderGray100 = useColorModeValue("gray.100", "gray.700")
+  const bgGray800 = useColorModeValue("gray.50", "gray.800")
+  const bgGreen50 = useColorModeValue("green.50", "green.900")
 
   // Map internal codes to localized short labels
   const codeToLabel = (code) => {
@@ -295,32 +306,29 @@ const CatalogTableEdit = ({
               <Box
                 textAlign={{ base: "center", md: "start" }}
                 border="1px solid"
-                borderColor={useColorModeValue("gray.300", "gray.600")}
+                borderColor={borderGray300}
                 borderRadius="md"
                 p={3}
-                bg={useColorModeValue("gray.50", "gray.800")}
+                bg={bgGray800}
                 w="full"
                 maxW="520px"
                 mx="auto"
               >
-                <img
+                <Image
                   src={
                     selectedTypeInfo.image
                       ? `${api_url}/uploads/types/${selectedTypeInfo.image}`
                       : '/images/nologo.png'
                   }
                   alt={selectedTypeInfo.type}
-                  className="img-fluid"
-                  style={{
-                    maxWidth: '100%',
-                    height: 'auto',
-                    maxHeight: '455px',
-                    objectFit: 'contain',
-                    background: 'white',
-                    borderRadius: '6px',
-                    border: '1px solid',
-                    borderColor: 'var(--chakra-colors-gray-300)',
-                  }}
+                  maxW="100%"
+                  h="auto"
+                  maxH="455px"
+                  objectFit="contain"
+                  bg="white"
+                  borderRadius="6px"
+                  border="1px solid"
+                  borderColor={borderGray300}
                   onError={(e) => {
                     if (selectedTypeInfo.image && !e.target.dataset.fallbackTried) {
                       e.target.dataset.fallbackTried = '1'
@@ -331,31 +339,31 @@ const CatalogTableEdit = ({
                   }}
                 />
               </Box>
-              <Box flex="1" border="1px solid" borderColor={useColorModeValue("gray.300", "gray.600")} borderRadius="md" p={3} bg={useColorModeValue("gray.50", "gray.800")} minW={0}>
+              <Box flex="1" border="1px solid" borderColor={borderGray300} borderRadius="md" p={3} bg={bgGray800} minW={0}>
                 <Flex mb={3} align="center" gap={2}>
                   <Badge colorScheme="gray">{t('Type')}</Badge>
                   <Text as="strong" fontSize="lg">{selectedTypeInfo.type}</Text>
                 </Flex>
                 {selectedTypeInfo.code && (
-                  <Box mb={2} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
-                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">{t('catalog.labels.code', 'Code')}:</Text>{' '}
-                    <strong>{selectedTypeInfo.code}</strong>
+                  <Box mb={2} borderBottom="1px solid" borderColor={borderGray200} pb={2}>
+                    <Text as="span" color={textGray600} fontWeight="medium">{t('catalog.labels.code', 'Code')}:</Text>{' '}
+                    <Text as="strong">{selectedTypeInfo.code}</Text>
                   </Box>
                 )}
                 {selectedTypeInfo.name && (
-                  <Box mb={2} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
-                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">{t('catalog.labels.name', 'Name')}:</Text>{' '}
-                    <strong>{selectedTypeInfo.name}</strong>
+                  <Box mb={2} borderBottom="1px solid" borderColor={borderGray200} pb={2}>
+                    <Text as="span" color={textGray600} fontWeight="medium">{t('catalog.labels.name', 'Name')}:</Text>{' '}
+                    <Text as="strong">{selectedTypeInfo.name}</Text>
                   </Box>
                 )}
                 {selectedTypeInfo.shortName && (
-                  <Box mb={3} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
-                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">{t('catalog.labels.short', 'Short')}:</Text>{' '}
-                    <strong>{selectedTypeInfo.shortName}</strong>
+                  <Box mb={3} borderBottom="1px solid" borderColor={borderGray200} pb={2}>
+                    <Text as="span" color={textGray600} fontWeight="medium">{t('catalog.labels.short', 'Short')}:</Text>{' '}
+                    <Text as="strong">{selectedTypeInfo.shortName}</Text>
                   </Box>
                 )}
                 <Box mt={3}>
-                  <Text as="strong" color={useColorModeValue("gray.600", "gray.400")} display="block" mb={2}>{t('catalog.labels.description', 'Description')}:</Text>
+                  <Text as="strong" color={textGray600} display="block" mb={2}>{t('catalog.labels.description', 'Description')}:</Text>
                   <Text whiteSpace="pre-wrap" lineHeight="1.6" fontSize="md">
                     {selectedTypeInfo.longDescription ||
                       selectedTypeInfo.description ||
@@ -365,7 +373,7 @@ const CatalogTableEdit = ({
               </Box>
             </Flex>
           ) : (
-            <Box color={useColorModeValue("gray.600", "gray.400")} textAlign="center" p={4} border="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} borderRadius="md" bg={useColorModeValue("gray.50", "gray.800")}>
+            <Box color={textGray600} textAlign="center" p={4} border="1px solid" borderColor={borderGray200} borderRadius="md" bg={bgGray800}>
               {t('No type information available.')}
             </Box>
           )}
@@ -389,8 +397,8 @@ const CatalogTableEdit = ({
           </ModalFooter>
         </ModalContent>
       </Modal>
-      {/* Controls - align with create (adds catalog-controls-mobile for responsive) */}
-      <Flex flexWrap="wrap" gap={3} align="center" justify="space-between" mb={4} className="catalog-controls-mobile">
+      {/* Controls - align with create (responsive layout) */}
+      <Flex flexWrap="wrap" gap={3} align="center" justify="space-between" mb={4}>
         {!readOnly && (
           <Box
             position="relative"
@@ -421,7 +429,17 @@ const CatalogTableEdit = ({
             </InputGroup>
             {showSuggestions && filteredOptions.length > 0 && (
               <Box
-                className="dropdown-menu show"
+                position="absolute"
+                top="100%"
+                left={0}
+                right={0}
+                mt={1}
+                bg={bgGray800}
+                border="1px solid"
+                borderColor={borderGray200}
+                borderRadius="md"
+                boxShadow="lg"
+                zIndex={1000}
                 w="full"
                 maxH="260px"
                 overflowY="auto"
@@ -524,14 +542,18 @@ const CatalogTableEdit = ({
               <Th>{t('proposalColumns.item')}</Th>
               {subTypeRequirements.requiresHinge && (
                 <Th
-                  style={{ backgroundcolor: "red.50", color: "red.600", fontWeight: 'bold' }}
+                  bg="red.50"
+                  color="red.600"
+                  fontWeight="bold"
                 >
                   {t('proposalColumns.hingeSide')}
                 </Th>
               )}
               {subTypeRequirements.requiresExposed && (
                 <Th
-                  style={{ backgroundcolor: "red.50", color: "red.600", fontWeight: 'bold' }}
+                  bg="red.50"
+                  color="red.600"
+                  fontWeight="bold"
                 >
                   {t('proposalColumns.exposedSide')}
                 </Th>
@@ -567,39 +589,32 @@ const CatalogTableEdit = ({
               return (
                 <React.Fragment key={idx}>
                   <Tr
-                    className={item.unavailable ? 'table-danger' : ''}
-                    style={{
-                      backgroundColor: item.unavailable
-                        ? undefined
-                        : idx % 2 === 0
-                          ? 'var(--chakra-colors-gray-50)'
-                          : 'white',
-                      borderBottom: '2px solid',
-                      borderBottomColor: 'var(--chakra-colors-gray-200)',
-                      ...(idx === 0 ? { borderTop: '2px solid', borderTopColor: 'var(--chakra-colors-gray-200)' } : {}),
-                    }}
+                    bg={item.unavailable ? textRed500 : (idx % 2 === 0 ? rowBgEven : rowBgOdd)}
+                    borderBottom="2px solid"
+                    borderBottomColor={rowBorder}
+                    borderTop={idx === 0 ? "2px solid" : undefined}
+                    borderTopColor={idx === 0 ? rowBorder : undefined}
                   >
-                    <Td style={{ width: '56px' }}>
-                      <span
-                        className="shadow-sm"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          minWidth: '36px',
-                          height: '28px',
-                          padding: '0 10px',
-                          borderRadius: '9999px',
-                          backgroundColor: headerBg,
-                          color: textColor,
-                          fontWeight: 700,
-                          fontSize: "16px",
-                          letterSpacing: '0.2px',
-                        }}
+                    <Td w="56px">
+                      <Box
+                        as="span"
+                        display="inline-flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        minW="36px"
+                        h="28px"
+                        px="10px"
+                        borderRadius="full"
+                        bg={headerBg}
+                        color={textColor}
+                        fontWeight={700}
+                        fontSize="16px"
+                        letterSpacing="0.2px"
+                        boxShadow="sm"
                         title={`Row ${idx + 1}`}
                       >
                         {idx + 1}
-                      </span>
+                      </Box>
                     </Td>
                     <Td>
                       <Input
@@ -607,32 +622,30 @@ const CatalogTableEdit = ({
                         min="1"
                         value={item.qty}
                         onChange={(e) => updateQty(idx, parseInt(e.target.value))}
-                        style={{ width: '70px', textAlign: 'center' }}
+                        w="70px"
+                        textAlign="center"
                         isDisabled={readOnly}
                       />
                     </Td>
 
                     <Td style={rowStyle}>
-                      <Flex align="center" gap={2} style={{ minWidth: 0 }}>
+                      <Flex align="center" gap={2} minW={0}>
                         <Flex
                           align="baseline"
                           gap={2}
                           wrap="wrap"
-                          style={{ minWidth: 0 }}
+                          minW={0}
                         >
-                          <strong>{item.code}</strong>
+                          <Text as="strong">{item.code}</Text>
                           {item?.description ? (
                             <Text
                               as="span"
-                              color={useColorModeValue("gray.600", "gray.400")}
+                              color={textGray600}
                               noOfLines={1}
-                              style={{
-                                maxWidth: '420px',
-                                display: 'inline-block',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                              }}
+                              maxW="420px"
+                              overflow="hidden"
+                              textOverflow="ellipsis"
+                              whiteSpace="nowrap"
                               title={item.description}
                             >
                               — {item.description}
@@ -658,13 +671,12 @@ const CatalogTableEdit = ({
 
                     {subTypeRequirements.requiresHinge && (
                       <Td
-                        style={{
-                          backgroundColor:
-                            subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
-                            (!item.hingeSide || item.hingeSide === '-')
-                              ? 'var(--chakra-colors-red-50)'
-                              : 'transparent',
-                        }}
+                        bg={
+                          subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
+                          (!item.hingeSide || item.hingeSide === '-')
+                            ? 'red.50'
+                            : 'transparent'
+                        }
                       >
                         {assembled ? (
                           <Box>
@@ -709,13 +721,12 @@ const CatalogTableEdit = ({
 
                     {subTypeRequirements.requiresExposed && (
                       <Td
-                        style={{
-                          backgroundColor:
-                            subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
-                            (!item.exposedSide || item.exposedSide === '-')
-                              ? 'var(--chakra-colors-red-50)'
-                              : 'transparent',
-                        }}
+                        bg={
+                          subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
+                          (!item.exposedSide || item.exposedSide === '-')
+                            ? 'red.50'
+                            : 'transparent'
+                        }
                       >
                         {assembled ? (
                           <Box>
@@ -810,26 +821,25 @@ const CatalogTableEdit = ({
                       const groupKeys = Object.keys(groups)
                       return (
                         <>
-                          <Tr className="modification-header">
+                          <Tr>
                             <Td
                               colSpan={10}
-                              style={{
-                                backgroundColor: headerBg,
-                                color: textColor,
-                                padding: '8px 16px',
-                                paddingLeft: '56px',
-                                fontSize: "14px",
-                                borderTop: `2px solid ${headerBg}`,
-                                borderLeft: `6px solid ${headerBg}`,
-                                borderTopLeftRadius: '6px',
-                                borderTopRightRadius: '6px',
-                                boxShadow: 'inset 0 0 0 1px var(--chakra-colors-blackAlpha-50)',
-                              }}
+                              bg={headerBg}
+                              color={textColor}
+                              p="8px 16px"
+                              pl="56px"
+                              fontSize="14px"
+                              borderTop={`2px solid ${headerBg}`}
+                              borderLeft={`6px solid ${headerBg}`}
+                              borderTopLeftRadius="6px"
+                              borderTopRightRadius="6px"
+                              boxShadow="inset 0 0 0 1px var(--chakra-colors-blackAlpha-50)"
                             >
                               <Icon
                                 as={Wrench}
                                 mr={2}
-                                style={{ fontSize: "14px", color: textColor }}
+                                fontSize="14px"
+                                color={textColor}
                               />
                               <Text as="span" fontWeight="bold">{t('proposalDoc.modifications')}</Text>
                             </Td>
@@ -837,18 +847,17 @@ const CatalogTableEdit = ({
                           {groupKeys.map((gkey, gi) => (
                             <React.Fragment key={`modgrp-${idx}-${gkey}`}>
                               <Tr
-                                className="modification-category"
-                                style={{ backgroundColor: 'var(--chakra-colors-gray-100)' }}
+                                bg={bgGray100}
                               >
                                 <Td
                                   colSpan={10}
                                   fontWeight="semibold"
-                                  color={useColorModeValue("gray.600", "gray.400")}
+                                  color={textGray600}
                                   pl="72px"
                                   fontSize="14px"
                                   borderLeft={`6px solid ${headerBg}`}
                                   borderBottom="1px solid"
-                                  borderBottomColor="gray.300"
+                                  borderBottomColor={borderGray300}
                                 >
                                   📂 {gkey}
                                 </Td>
@@ -859,22 +868,19 @@ const CatalogTableEdit = ({
                                 return (
                                   <React.Fragment key={`mod-${idx}-${gkey}-${modIdx}`}>
                                     <Tr
-                                      className="modification-item"
                                       bg={rowBgEven}
-                                      style={{
-                                        borderLeft: `6px solid ${headerBg}`,
-                                        fontSize: "14px",
-                                        borderBottom: isLastRow
-                                          ? `2px solid ${headerBg}`
-                                          : '1px solid var(--chakra-colors-gray-200)',
-                                      }}
+                                      borderLeft={`6px solid ${headerBg}`}
+                                      fontSize="14px"
+                                      borderBottom={isLastRow ? `2px solid ${headerBg}` : '1px solid'}
+                                      borderBottomColor={isLastRow ? undefined : rowBorder}
                                     >
                                       <Td
-                                        style={{ paddingLeft: '88px', color: "gray.500" }}
+                                        pl="88px"
+                                        color={textGray500}
                                       >
                                         ↳
                                       </Td>
-                                      <Td style={{ fontWeight: '500' }}>
+                                      <Td fontWeight="500">
                                         {mod.qty}
                                       </Td>
                                       <Td colSpan={3} pl={2}>
@@ -885,9 +891,9 @@ const CatalogTableEdit = ({
                                             px={2.5}
                                             py={0.5}
                                             borderRadius="full"
-                                            bg={useColorModeValue("gray.100", "gray.700")}
+                                            bg={bgGray100}
                                             border={`1px solid ${headerBg}`}
-                                            color={useColorModeValue("gray.800", "gray.200")}
+                                            color={textGray800}
                                             fontWeight="600"
                                             lineHeight={1.2}
                                             boxShadow="sm"
@@ -901,11 +907,11 @@ const CatalogTableEdit = ({
                                             return details ? (
                                               <Text
                                                 as="span"
-                                                color={useColorModeValue("gray.600", "gray.400")}
+                                                color={textGray600}
                                                 fontSize="14px"
                                                 padding="2px 8px"
                                                 borderRadius="6px"
-                                                bg={useColorModeValue("gray.50", "gray.800")}
+                                                bg={bgGray50}
                                                 border="1px dashed"
                                                 borderColor={borderGray400}
                                               >
@@ -918,7 +924,7 @@ const CatalogTableEdit = ({
                                       <Td color={textGreen500} fontWeight="medium">
                                         {formatPrice(mod.price || 0)}
                                       </Td>
-                                      <Td style={{ color: "gray.500" }}>
+                                      <Td color={textGray500}>
                                         -
                                       </Td>
                                       <Td>
@@ -927,13 +933,11 @@ const CatalogTableEdit = ({
                                       <Td color={textGreen500} fontWeight="semibold">
                                         {formatPrice((mod.price || 0) * (mod.qty || 1))}
                                       </Td>
-                                      <Td style={{ textAlign: 'center' }}>
+                                      <Td textAlign="center">
                                         {!readOnly && (
                                           <Icon as={Trash}
-                                            style={{
-                                              cursor: 'pointer',
-                                              fontSize: "14px",
-                                            }}
+                                            cursor="pointer"
+                                            fontSize="14px"
                                             color={textRed500}
                                             onClick={() =>
                                               handleDeleteModification(
@@ -948,13 +952,11 @@ const CatalogTableEdit = ({
                                     </Tr>
                                     {isLastRow && (
                                       <Tr>
-                                        <Td colSpan={10} style={{ padding: 0 }}>
-                                          <div
-                                            style={{
-                                              height: '10px',
-                                              borderBottom: '1px dashed',
-                                              borderBottomColor: 'var(--chakra-colors-gray-400)',
-                                            }}
+                                        <Td colSpan={10} p={0}>
+                                          <Box
+                                            h="10px"
+                                            borderBottom="1px dashed"
+                                            borderBottomColor={borderGray400}
                                           />
                                         </Td>
                                       </Tr>
@@ -977,7 +979,7 @@ const CatalogTableEdit = ({
 
       {/* Mobile card view to match create */}
       <Box display={{ base: 'block', lg: 'none' }}>
-      <div className="mobile-card-view mobile-only">
+      <Box>
         {selectVersion?.items?.map((item, idx) => {
           const assembled = !!isAssembled
           const qty = Number(item.qty || 1)
@@ -1001,47 +1003,57 @@ const CatalogTableEdit = ({
                 mb={3}
                 p={4}
               >
-                <div className="item-header">
-                  <div className="item-number">{idx + 1}</div>
+                <Flex justify="space-between" align="center" mb={3}>
+                  <Box
+                    display="inline-flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    minW="36px"
+                    h="28px"
+                    px="10px"
+                    borderRadius="full"
+                    bg={headerBg}
+                    color={textColor}
+                    fontWeight={700}
+                    fontSize="16px"
+                  >
+                    {idx + 1}
+                  </Box>
                   {!readOnly && (
-                    <div className="item-actions">
+                    <Flex gap={3}>
                       <Icon as={Settings}
-                        style={{
-                          cursor: 'pointer',
-                          color: 'var(--cui-primary)',
-                          fontSize: "18px",
-                        }}
+                        cursor="pointer"
+                        color="blue.500"
+                        fontSize="18px"
                         onClick={() => handleOpenModificationModal(idx, item.id)}
                       />
                       <Icon as={Trash}
-                        style={{
-                          cursor: 'pointer',
-                          color: 'var(--cui-danger)',
-                          fontSize: "18px",
-                        }}
+                        cursor="pointer"
+                        color={textRed500}
+                        fontSize="18px"
                         onClick={() => handleDelete(idx)}
                       />
-                    </div>
+                    </Flex>
                   )}
-                </div>
+                </Flex>
 
-                <div className="item-detail-row">
-                  <span className="item-label">{t('proposalColumns.item')}</span>
+                <Flex mb={2} justify="space-between" align="center">
+                  <Text fontWeight="medium" color={textGray600}>{t('proposalColumns.item')}</Text>
                   <Flex
                     align="center"
                     gap={2}
                     wrap="wrap"
-                    style={{ minWidth: 0 }}
+                    minW={0}
                   >
-                    <span className="item-value item-code" style={rowStyle}>
-                      <strong>{item.code}</strong>
-                    </span>
+                    <Text fontWeight="bold" style={rowStyle}>
+                      {item.code}
+                    </Text>
                     {item?.description ? (
                       <Text
                         as="span"
-                        color={useColorModeValue("gray.600", "gray.400")}
+                        color={textGray600}
                         noOfLines={1}
-                        maxWidth="220px"
+                        maxW="220px"
                         overflow="hidden"
                         textOverflow="ellipsis"
                         whiteSpace="nowrap"
@@ -1065,43 +1077,43 @@ const CatalogTableEdit = ({
                       </Button>
                     )}
                   </Flex>
-                </div>
+                </Flex>
 
-                <div className="item-detail-row">
-                  <span className="item-label">{t('proposalColumns.qty')}</span>
+                <Flex mb={2} justify="space-between" align="center">
+                  <Text fontWeight="medium" color={textGray600}>{t('proposalColumns.qty')}</Text>
                   <Input
                     type="number"
                     min="1"
                     value={item.qty}
                     onChange={(e) => updateQty(idx, parseInt(e.target.value))}
-                    className="qty-input-mobile"
+                    w="80px"
+                    textAlign="center"
                     isDisabled={readOnly}
                   />
-                </div>
+                </Flex>
 
-                <div className="item-detail-row">
-                  <span className="item-label">{t('proposalColumns.price')}</span>
-                  <span className="item-value" style={rowStyle}>
+                <Flex mb={2} justify="space-between" align="center">
+                  <Text fontWeight="medium" color={textGray600}>{t('proposalColumns.price')}</Text>
+                  <Text style={rowStyle}>
                     {formatPrice(item.unavailable ? 0 : item.price)}
-                  </span>
-                </div>
+                  </Text>
+                </Flex>
 
                 {assembled && (
                   <>
                     {subTypeRequirements.requiresHinge && (
-                      <div
-                        className="item-detail-row"
-                        style={{
-                          backgroundColor:
-                            subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
-                            (!item.hingeSide || item.hingeSide === '-')
-                              ? 'var(--chakra-colors-red-50)'
-                              : 'transparent',
-                          padding: '0.5rem',
-                          borderRadius: '4px',
-                        }}
+                      <Box
+                        mb={2}
+                        bg={
+                          subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
+                          (!item.hingeSide || item.hingeSide === '-')
+                            ? 'red.50'
+                            : 'transparent'
+                        }
+                        p="0.5rem"
+                        borderRadius="4px"
                       >
-                        <span className="item-label">{t('proposalColumns.hingeSide')}</span>
+                        <Text fontWeight="medium" color={textGray600} mb={2}>{t('proposalColumns.hingeSide')}</Text>
                         {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                           (!item.hingeSide || item.hingeSide === '-') && (
                             <Box
@@ -1115,7 +1127,7 @@ const CatalogTableEdit = ({
                               })}
                             </Box>
                           )}
-                        <Flex className="btn-group-mobile" gap={2}>
+                        <Flex gap={2}>
                           {hingeOptions.map((opt) => (
                             <Button
                               key={opt}
@@ -1132,23 +1144,22 @@ const CatalogTableEdit = ({
                             </Button>
                           ))}
                         </Flex>
-                      </div>
+                      </Box>
                     )}
 
                     {subTypeRequirements.requiresExposed && (
-                      <div
-                        className="item-detail-row"
-                        style={{
-                          backgroundColor:
-                            subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
-                            (!item.exposedSide || item.exposedSide === '-')
-                              ? 'var(--chakra-colors-red-50)'
-                              : 'transparent',
-                          padding: '0.5rem',
-                          borderRadius: '4px',
-                        }}
+                      <Box
+                        mb={2}
+                        bg={
+                          subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
+                          (!item.exposedSide || item.exposedSide === '-')
+                            ? 'red.50'
+                            : 'transparent'
+                        }
+                        p="0.5rem"
+                        borderRadius="4px"
                       >
-                        <span className="item-label">{t('proposalColumns.exposedSide')}</span>
+                        <Text fontWeight="medium" color={textGray600} mb={2}>{t('proposalColumns.exposedSide')}</Text>
                         {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                           (!item.exposedSide || item.exposedSide === '-') && (
                             <Box
@@ -1162,7 +1173,7 @@ const CatalogTableEdit = ({
                               })}
                             </Box>
                           )}
-                        <Flex className="btn-group-mobile" gap={2}>
+                        <Flex gap={2}>
                           {exposedOptions.map((opt) => (
                             <Button
                               key={opt}
@@ -1179,31 +1190,37 @@ const CatalogTableEdit = ({
                             </Button>
                           ))}
                         </Flex>
-                      </div>
+                      </Box>
                     )}
 
-                    <div className="item-detail-row">
-                      <span className="item-label">{t('proposalColumns.assemblyCost')}</span>
-                      <span className="item-value" style={rowStyle}>
+                    <Flex mb={2} justify="space-between" align="center">
+                      <Text fontWeight="medium" color={textGray600}>{t('proposalColumns.assemblyCost')}</Text>
+                      <Text style={rowStyle}>
                         {formatPrice(item.unavailable ? 0 : assemblyFee)}
-                      </span>
-                    </div>
+                      </Text>
+                    </Flex>
                   </>
                 )}
 
                 {/* Modifications summary on mobile */}
-                <div className="item-detail-row">
-                  <span className="item-label">
+                <Flex mb={2} justify="space-between" align="center">
+                  <Text fontWeight="medium" color={textGray600}>
                     {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
-                  </span>
-                  <span className="item-value">{formatPrice(modsTotal)}</span>
-                </div>
+                  </Text>
+                  <Text>{formatPrice(modsTotal)}</Text>
+                </Flex>
 
-                <div className="total-highlight">
-                  <strong style={rowStyle}>
+                <Box
+                  mt={3}
+                  p={2}
+                  bg={bgGreen50}
+                  borderRadius="md"
+                  textAlign="center"
+                >
+                  <Text fontWeight="bold" style={rowStyle}>
                     {t('proposalColumns.total')}: {formatPrice(item.unavailable ? 0 : total)}
-                  </strong>
-                </div>
+                  </Text>
+                </Box>
 
               </Box>
 
@@ -1211,109 +1228,93 @@ const CatalogTableEdit = ({
               {Array.isArray(item.modifications) &&
                 item.modifications.length > 0 &&
                 item.modifications.map((mod, modIdx) => (
-                  <div
+                  <Box
                     key={`mobile-mod-${idx}-${modIdx}`}
-                    style={{
-                      background: headerBg,
-                      color: textColor,
-                      border: `1px solid ${headerBg}`,
-                      borderRadius: '6px',
-                      padding: '0.75rem',
-                      marginTop: '0.75rem',
-                      marginBottom: '1.5rem',
-                      marginLeft: 'auto',
-                      marginRight: 'auto',
-                      maxWidth: '90%',
-                      position: 'relative',
-                      boxShadow: 'sm',
-                    }}
+                    bg={headerBg}
+                    color={textColor}
+                    border={`1px solid ${headerBg}`}
+                    borderRadius="6px"
+                    p="0.75rem"
+                    mt="0.75rem"
+                    mb="1.5rem"
+                    ml="auto"
+                    mr="auto"
+                    maxW="90%"
+                    position="relative"
+                    boxShadow="sm"
                   >
                     {/* Item indicator badge */}
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: '-8px',
-                        left: '12px',
-                        background: textColor,
-                        color: headerBg,
-                        borderRadius: '50%',
-                        width: '24px',
-                        height: '24px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: "12px",
-                        fontWeight: 'bold',
-                        border: `2px solid ${headerBg}`,
-                      }}
+                    <Box
+                      position="absolute"
+                      top="-8px"
+                      left="12px"
+                      bg={textColor}
+                      color={headerBg}
+                      borderRadius="50%"
+                      w="24px"
+                      h="24px"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      fontSize="12px"
+                      fontWeight="bold"
+                      border={`2px solid ${headerBg}`}
                     >
                       {idx + 1}
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '0.5rem',
-                      }}
+                    </Box>
+                    <Flex
+                      justify="space-between"
+                      align="center"
+                      mb="0.5rem"
                     >
-                      <span
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: '600',
-                          color: textColor,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                        }}
+                      <Text
+                        fontSize="12px"
+                        fontWeight="600"
+                        color={textColor}
+                        textTransform="uppercase"
+                        letterSpacing="0.5px"
                       >
                         {t('proposalDoc.modifications')}
-                      </span>
+                      </Text>
                       {!readOnly && (
                         <Icon as={Trash}
-                          style={{ cursor: 'pointer', color: 'var(--cui-danger)' }}
+                          cursor="pointer"
+                          color="red.400"
                           onClick={() => handleDeleteModification(idx, modIdx)}
                         />
                       )}
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        fontSize: "14px",
-                        marginBottom: '0.25rem',
-                      }}
+                    </Flex>
+                    <Flex
+                      justify="space-between"
+                      fontSize="14px"
+                      mb="0.25rem"
                     >
-                      <span>{mod.name || t('proposalUI.mod.unnamed')}</span>
+                      <Text>{mod.name || t('proposalUI.mod.unnamed')}</Text>
                       {(() => {
                         const details = buildSelectedOptionsText(mod?.selectedOptions)
-                        return details ? <span style={{ opacity: 0.7 }}> — {details}</span> : null
+                        return details ? <Text opacity={0.7}> — {details}</Text> : null
                       })()}
-                      <span>{t('common.qty', 'Qty')}: {mod.qty}</span>
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        fontSize: "14px",
-                        marginBottom: '0',
-                      }}
+                      <Text>{t('common.qty', 'Qty')}: {mod.qty}</Text>
+                    </Flex>
+                    <Flex
+                      justify="space-between"
+                      fontSize="14px"
+                      mb={0}
                     >
-                      <span>
+                      <Text>
                         {t('proposalColumns.price')}: {formatPrice(mod.price || 0)}
-                      </span>
-                      <span>
-                        <strong>
-                          {t('proposalColumns.total')}:{' '}
-                          {formatPrice((mod.price || 0) * (mod.qty || 1))}
-                        </strong>
-                      </span>
-                    </div>
-                  </div>
+                      </Text>
+                      <Text fontWeight="bold">
+                        {t('proposalColumns.total')}:{' '}
+                        {formatPrice((mod.price || 0) * (mod.qty || 1))}
+                      </Text>
+                    </Flex>
+                  </Box>
                 ))}
             </React.Fragment>
           )
         })}
-      </div>
+      </Box>
       </Box>
     </Box>
   )
