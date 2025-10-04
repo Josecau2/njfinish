@@ -76,7 +76,7 @@ const EditManufacturer = () => {
   ]
 
   return (
-    <Box className="edit-manufacturer-page">
+    <Box>
       <Tabs index={activeKey} onChange={setActiveKey} variant="unstyled" isLazy>
         <TabList
           gap={{ base: 2, md: 3 }}
@@ -86,7 +86,6 @@ const EditManufacturer = () => {
           borderBottom="1px solid"
           borderColor={borderGray200}
           pb={{ base: 2, md: 0 }}
-          className="manufacturer-tabs"
           sx={{
             '& button[role="tab"]': {
               minHeight: '44px',
