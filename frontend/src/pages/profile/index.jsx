@@ -1,7 +1,7 @@
 import StandardCard from '../../components/StandardCard'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Box, Button, CardBody, CardHeader, Flex, FormControl, FormErrorMessage, FormLabel, Input, Select, SimpleGrid, Spinner, useColorModeValue } from '@chakra-ui/react'
+import { Box, Button, CardBody, CardHeader, Flex, FormControl, FormErrorMessage, FormLabel, Input, Select, SimpleGrid, Spinner, useColorModeValue, Heading, Text } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUserById, updateUser } from '../../store/slices/userSlice'
 import Swal from 'sweetalert2'
@@ -139,10 +139,9 @@ const ProfilePage = () => {
   // Show loader while initial data is loading
   if (isLoading) {
     return (
-      <Box className="profile-container" role="status" aria-live="polite">
-        <StandardCard className="profile-card">
-          <CardBody minH="400px"
-          >
+      <Box role="status" aria-live="polite">
+        <StandardCard mx={{ base: 2, sm: 'auto' }}>
+          <CardBody minH="400px" display="flex" alignItems="center" justifyContent="center">
             <Spinner color={accentColor} size="lg" />
           </CardBody>
         </StandardCard>
@@ -151,19 +150,13 @@ const ProfilePage = () => {
   }
 
   return (
-    <Box className="profile-container">
-      <style>{`
-        .profile-form input, .profile-form select, .profile-form button { min-height:44px; }
-        @media (max-width: 576px) {
-          .profile-card { margin: 0 .5rem; }
-        }
-      `}</style>
-      <StandardCard className="profile-card">
+    <Box>
+      <StandardCard mx={{ base: 2, sm: 'auto' }}>
         <CardHeader>
-          <h4>{t('profile.header')}</h4>
+          <Heading as="h4" size="md">{t('profile.header')}</Heading>
         </CardHeader>
         <CardBody>
-          <Box as="form" onSubmit={handleSubmit} className="profile-form">
+          <Box as="form" onSubmit={handleSubmit}>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
               <FormControl isRequired isInvalid={!!errors.name}>
                 <FormLabel htmlFor="name" fontSize="sm" fontWeight="medium" color={labelColor}>
@@ -178,6 +171,7 @@ const ProfilePage = () => {
                   aria-required="true"
                   aria-invalid={!!errors.name}
                   placeholder={t('profile.enterName')}
+                  minH="44px"
                 />
                 <FormErrorMessage>{errors.name}</FormErrorMessage>
               </FormControl>
@@ -192,6 +186,7 @@ const ProfilePage = () => {
                   bg={bgGray100}
                   cursor="not-allowed"
                   aria-readonly="true"
+                  minH="44px"
                 />
               </FormControl>
 
@@ -204,6 +199,7 @@ const ProfilePage = () => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder={t('profile.leaveBlank')}
+                  minH="44px"
                 />
               </FormControl>
 
@@ -217,6 +213,7 @@ const ProfilePage = () => {
                   onChange={handleChange}
                   aria-invalid={!!errors.confirmPassword}
                   placeholder={t('profile.reenterPassword')}
+                  minH="44px"
                 />
                 <FormErrorMessage>{errors.confirmPassword}</FormErrorMessage>
               </FormControl>
@@ -234,6 +231,7 @@ const ProfilePage = () => {
                     onChange={handleChange}
                     aria-required="true"
                     placeholder={`-- ${t('profile.selectLocation')} --`}
+                    minH="44px"
                   >
                     {(locations || []).map((loc) => (
                       <option key={loc.id} value={loc.id}>
@@ -255,6 +253,7 @@ const ProfilePage = () => {
                 color={accentTextColor}
                 border="none"
                 _hover={{ bg: accentColor }}
+                minH="44px"
               >
                 {submitting ? (
                   <>
