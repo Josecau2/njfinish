@@ -465,6 +465,17 @@
       "uploadImage": "Upload Image",
       "assignCTA": "Assign {{count}} item(s) to \"{{type}}\"",
       "assignedSuccess": "Successfully assigned {{count}} items to {{type}}"
+    },
+    "bulkEdit": {
+      "updateMultiple": "Update {{count}} Types",
+      "renameType": "Rename Type",
+      "changeCategory": "Change Type Category",
+      "instructions": "Edit the following fields for the selected {{count}} types. Leave fields empty to keep existing values.",
+      "note": "Note:",
+      "noteText": "Changes will apply to all selected types",
+      "currentType": "Current Type",
+      "newType": "New Type",
+      "category": "Category"
     }
   },
   "proposalUI": {
@@ -601,6 +612,23 @@
       "success": "Password reset successful.",
       "error": "Password reset failed.",
       "requestError": "Failed to reset password."
+    },
+    "signUp": {
+      "title": "Sign Up",
+      "subtitle": "Create your account to get started.",
+      "alreadyHaveAccount": "Already have an account?",
+      "signInLink": "Sign in here",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "companyName": "Company Name",
+      "phone": "Phone Number",
+      "submit": "Create Account",
+      "submitting": "Creating account...",
+      "success": "Account created successfully!",
+      "termsAgree": "I agree to the terms and conditions"
     }
   },
   "nav": {
@@ -1018,7 +1046,43 @@
     "creditCard": "Credit card",
     "bankTransfer": "Bank transfer",
     "paypal": "PayPal",
-    "other": "Other"
+    "other": "Other",
+    "configuration": {
+      "title": "Payment Configuration",
+      "currencies": "USD, EUR, CAD",
+      "gateway": "Payment Gateway",
+      "testMode": "Test Mode",
+      "liveMode": "Live Mode"
+    }
+  },
+  "admin": {
+    "contractors": {
+      "title": "Contractors",
+      "contractorId": "ID: {{id}}",
+      "list": {
+        "id": "ID",
+        "name": "Contractor Name",
+        "email": "Email",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "details": {
+        "title": "Contractor Details",
+        "overview": "Overview",
+        "proposals": "Proposals",
+        "customers": "Customers",
+        "settings": "Settings"
+      },
+      "customersTab": {
+        "title": "Customers",
+        "customerId": "ID: {{id}}"
+      }
+    }
+  },
+  "proposals": {
+    "edit": {
+      "basicInformation": "Basic Information"
+    }
   },
   "paymentConfig": {
     "title": "Payment Configuration",
@@ -2421,6 +2485,13 @@
             "description": "Enter detailed description"
           }
         },
+        "preview": {
+          "forgotPassword": "Forgot password?",
+          "sampleFirstName": "Jane",
+          "sampleLastName": "Doe",
+          "sampleCity": "City",
+          "sampleBusinessName": "Your business name"
+        },
         "requestAccess": {
           "title": "Request Access Page",
           "pageTitle": "Page title",
@@ -2735,6 +2806,15 @@
             "multiplier": "Enter multiplier"
           }
         }
+      },
+      "manufacturerMultipliers": {
+        "edit": {
+          "title": "Edit Manufacturer Multiplier",
+          "saveChanges": "Save Changes",
+          "namePlaceholder": "Enter manufacturer name",
+          "emailPlaceholder": "Enter manufacturer email",
+          "multiplierPlaceholder": "Enter multiplier"
+        }
       }
     },
     "locations": {
@@ -3005,6 +3085,21 @@
       "catalogMapping": {
         "title": "Catalog Data",
         "empty": "No catalog data available.",
+        "assign": "Assign",
+        "selectAll": "Select All ({{count}} items)",
+        "price": "Price",
+        "type": "Type",
+        "style": "Style",
+        "applyingAssemblyCost": "Applying assembly cost...",
+        "assemblyFee": "Assembly Fee",
+        "catalogItems": "Catalog Items",
+        "searchPlaceholder": "Search catalog items...",
+        "bulkUpdate": "Bulk Update",
+        "updateSelected": "Update Selected",
+        "clearSelection": "Clear Selection",
+        "itemsSelected": "{{count}} items selected",
+        "noItemsSelected": "No items selected",
+        "selectItemsFirst": "Please select items first",
         "subTypes": {
           "header": "Cabinet Sub-Types",
           "create": "Create Sub-Type",
@@ -3901,6 +3996,87 @@
   "errors": {
     "actions": {
       "refreshPage": "Refresh Page"
+    }
+  },
+  "calendar": {
+    "title": "Calendar",
+    "noEvents": "No events found",
+    "addEvent": "Add Event",
+    "today": "Today",
+    "month": "Month",
+    "week": "Week",
+    "day": "Day",
+    "agenda": "Agenda"
+  },
+  "modals": {
+    "fileViewer": {
+      "title": "File Viewer",
+      "close": "Close",
+      "noPreview": "Preview is not available for this file type.",
+      "loading": "Loading file..."
+    },
+    "editManufacturer": {
+      "title": "Edit Manufacturer",
+      "cancelAria": "Cancel editing manufacturer",
+      "saveAria": "Save manufacturer changes",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "fields": {
+        "name": "Manufacturer Name",
+        "email": "Email",
+        "active": "Active"
+      }
+    }
+  },
+  "components": {
+    "pdfViewer": {
+      "reset": "Reset",
+      "page": "Page",
+      "loadingDocument": "Loading PDF document...",
+      "loadingPage": "Loading page...",
+      "loadFailed": "Failed to load page",
+      "noPreview": "Preview is not available for this file type.",
+      "close": "Close"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "markAllRead": "Mark all read",
+      "noNew": "No new notifications"
+    },
+    "errors": {
+      "applicationError": "The application encountered an error. Please refresh to try again.",
+      "pageError": "Something went wrong while loading this page.",
+      "tryAgain": "Try again",
+      "refresh": "Refresh page"
+    },
+    "languageSwitcher": {
+      "selectLanguage": "Select language",
+      "english": "English",
+      "spanish": "Spanish"
+    },
+    "loader": {
+      "loading": "Loading…",
+      "pleaseWait": "Please wait..."
+    },
+    "styleMerger": {
+      "merge": "Merge",
+      "from": "From",
+      "into": "Into",
+      "selectStyles": "Select styles to merge",
+      "sourceStyle": "Source style",
+      "targetStyle": "Target style"
+    },
+    "itemSelection": {
+      "noCustomItems": "No custom items added yet",
+      "addCustomItem": "Add Custom Item"
+    },
+    "docs": {
+      "explore": "Explore Documentation",
+      "description": "Our Admin Panel is not simply a bundle of third-party pieces. It is the only open-source React dashboard built on a professional, enterprise-grade UI component library. This example shows the basic usage; for extended demos, detailed API docs, and customization guidance, visit the documentation."
+    },
+    "docsIcons": {
+      "explore": "Explore Documentation",
+      "description": "CoreUI Icons package ships with more than 1500 icons in multiple formats - SVG, PNG, and webfonts. They are carefully designed for common actions and items so you can reuse them across your web or mobile products. Visit the documentation to explore the full set."
     }
   },
   "showroom": {
