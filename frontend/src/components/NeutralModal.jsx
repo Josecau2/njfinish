@@ -18,7 +18,6 @@ export default function NeutralModal({
   size = 'xl',
   footer = null,
   children,
-  className = '',
 }) {
   const { t } = useTranslation()
   const customization = useSelector((state) => state.customization) || {}
@@ -56,7 +55,6 @@ export default function NeutralModal({
       isCentered
       size={chakraSize}
       scrollBehavior="inside"
-      className={`neutral-modal ${className}`.trim()}
     >
       <ModalOverlay />
       <ModalContent>
