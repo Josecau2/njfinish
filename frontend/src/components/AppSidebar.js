@@ -27,7 +27,6 @@ import {
 import ShowroomModeToggle from './showroom/ShowroomModeToggle'
 import { resolveBrandAssetUrl } from '../utils/brandAssets'
 import { isAdmin } from '../helpers/permissions'
-import styles from './AppSidebar.module.css'
 import { ICON_BOX_MD } from '../constants/iconSizes'
 
 const AppSidebar = () => {
@@ -67,31 +66,21 @@ const AppSidebar = () => {
     }
   })()
 
-  const isDesktop = useBreakpointValue({ base: false, lg: true })
-  // Mobile is NEVER collapsed - always show full nav with icons + labels
-  const collapsed = isDesktop && !sidebarPinned && sidebarUnfoldable
-
-  const sidebarClassNames = [
-    styles.modernSidebar,
-    'sidebar',
-    'sidebar-dark',
-    'border-end',
-    collapsed ? styles.sidebarCollapsed : styles.sidebarExpanded,
-    sidebarShow ? 'show' : '',
-    !collapsed && !sidebarPinned ? 'expanded-temp' : '',
-  ]
-    .filter(Boolean)
-    .join(' ')
-
+  // All color mode values at component top
   const defaultSidebarBg = useColorModeValue('white', 'slate.900')
   const defaultSidebarColor = useColorModeValue('gray.800', 'slate.50')
-  const sidebarBg = customization.sidebarBg || defaultSidebarBg
-  const sidebarColor = customization.sidebarFontColor || defaultSidebarColor
   const overlayColor = useColorModeValue('blackAlpha.400', 'blackAlpha.600')
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100')
   const pinButtonColor = useColorModeValue('gray.600', 'whiteAlpha.800')
   const pinButtonHoverBg = useColorModeValue('gray.100', 'whiteAlpha.100')
   const pinButtonBorderColor = useColorModeValue('gray.300', 'whiteAlpha.300')
+
+  const isDesktop = useBreakpointValue({ base: false, lg: true })
+  // Mobile is NEVER collapsed - always show full nav with icons + labels
+  const collapsed = isDesktop && !sidebarPinned && sidebarUnfoldable
+
+  const sidebarBg = customization.sidebarBg || defaultSidebarBg
+  const sidebarColor = customization.sidebarFontColor || defaultSidebarColor
 
   const resolvedLogo = resolveBrandAssetUrl(customization.logoImage)
 
@@ -165,28 +154,26 @@ const AppSidebar = () => {
           {resolvedLogo ? (
             <>
               {/* Full sidebar logo - visible when expanded */}
-              <LazyLoadImage
+              <Box
+                as={LazyLoadImage}
                 src={resolvedLogo}
                 alt="Logo"
-                className="sidebar-brand-full"
-                style={{
-                  maxHeight: '40px',
-                  maxWidth: '160px',
-                  objectFit: 'contain'
-                }}
+                display={collapsed ? "none" : "block"}
+                maxH="40px"
+                maxW="160px"
+                objectFit="contain"
                 effect="blur"
                 placeholderSrc=""
               />
               {/* Collapsed sidebar logo - visible when collapsed */}
-              <LazyLoadImage
+              <Box
+                as={LazyLoadImage}
                 src={resolvedLogo}
                 alt="Logo"
-                className="sidebar-brand-narrow"
-                style={{
-                  maxHeight: '28px',
-                  maxWidth: '28px',
-                  objectFit: 'contain'
-                }}
+                display={collapsed ? "block" : "none"}
+                maxH="28px"
+                maxW="28px"
+                objectFit="contain"
                 effect="blur"
                 placeholderSrc=""
               />
@@ -200,7 +187,7 @@ const AppSidebar = () => {
                 lineHeight="1"
                 noOfLines={1}
                 color={sidebarColor}
-                className="sidebar-brand-full"
+                display={collapsed ? "none" : "block"}
               >
                 {customization.logoText || 'NJ Cabinets'}
               </Text>
@@ -208,7 +195,7 @@ const AppSidebar = () => {
               <Icon
                 boxSize="28px"
                 color={sidebarColor}
-                className="sidebar-brand-narrow"
+                display={collapsed ? "block" : "none"}
                 as={() => (
                   <svg viewBox="0 0 118 46" xmlns="http://www.w3.org/2000/svg">
                     <path fill="currentColor" d="M0 0h118v46H0z"/>
@@ -219,7 +206,9 @@ const AppSidebar = () => {
           )}
         </Flex>
         {!isDesktop && (
-          <IconButton size="lg" aria-label={t('common.ariaLabels.closeSidebar', 'Close sidebar')}
+          <IconButton
+            size="lg"
+            aria-label={t('common.ariaLabels.closeSidebar', 'Close sidebar')}
             icon={<Icon as={X} boxSize={ICON_BOX_MD} />}
             variant="ghost"
             color={pinButtonColor}
@@ -227,7 +216,6 @@ const AppSidebar = () => {
             minW="44px"
             h="44px"
             onClick={handleClose}
-            className={styles.modernSidebarClose}
           />
         )}
       </Flex>
@@ -237,7 +225,6 @@ const AppSidebar = () => {
       <Box
         flex="1"
         minH="0"
-        className="sidebar-nav"
       >
         <AppSidebarNav items={navItems} collapsed={collapsed} onNavigate={handleNavigate} fontColor={sidebarColor} sidebarBg={sidebarBg} />
       </Box>
@@ -248,7 +235,6 @@ const AppSidebar = () => {
         borderTop="1px solid"
         borderTopColor={borderColor}
         flexShrink={0}
-        className={styles.modernSidebarFooter}
         p={2}
       >
         {/* Footer buttons row - both buttons side by side when expanded */}
@@ -274,7 +260,6 @@ const AppSidebar = () => {
                 borderColor: pinButtonBorderColor
               }}
               onClick={handlePinToggle}
-              className="sidebar-footer-pin-btn"
             />
           ) : (
             <Button
@@ -289,10 +274,9 @@ const AppSidebar = () => {
                 borderColor: pinButtonBorderColor
               }}
               onClick={handlePinToggle}
-              className="sidebar-footer-pin-btn"
               fontSize="xs"
             >
-              <Text fontSize="xs" className="pin-label">
+              <Text fontSize="xs">
                 {sidebarPinned ? t('nav.sidebar.unpin') : t('nav.sidebar.pin')}
               </Text>
             </Button>
@@ -308,7 +292,6 @@ const AppSidebar = () => {
         isOpen={sidebarShow}
         placement="left"
         onClose={handleClose}
-        // Remove default size to use custom width
       >
         <DrawerOverlay bg={overlayColor} />
         <DrawerContent
@@ -320,13 +303,11 @@ const AppSidebar = () => {
           boxShadow="none"
           overflow="hidden"
           sx={{
-            // Remove all default Chakra Drawer padding/margin
             '& > *': {
               padding: 0,
               margin: 0,
             }
           }}
-          className={sidebarClassNames}
         >
           {SidebarBody}
         </DrawerContent>
@@ -346,7 +327,6 @@ const AppSidebar = () => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       zIndex="1050"
-      className={sidebarClassNames}
     >
       {SidebarBody}
     </Box>
