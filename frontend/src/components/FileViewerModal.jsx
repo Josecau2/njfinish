@@ -1,24 +1,30 @@
-import React, { useEffect, useMemo, useState, Suspense, lazy } from 'react'
+  import React, { useEffect, useMemo, useState, Suspense, lazy } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Alert,
   AlertDescription,
   AlertIcon,
+  AspectRatio,
   Box,
   Button,
   Center,
   Icon,
+  IconButton,
   Image,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Spinner,
   Text,
   VStack,
   HStack,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { Download, File, Link2Off } from '@/icons-lucide'
-import Lightbox from 'yet-another-react-lightbox'
-import { Zoom, Video, Fullscreen } from 'yet-another-react-lightbox/plugins'
-import 'yet-another-react-lightbox/styles.css'
+import { Download, File, Link2Off, ZoomIn, X } from '@/icons-lucide'
 import axiosInstance from '../helpers/axiosInstance'
 import NeutralModal from './NeutralModal'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
@@ -58,10 +64,12 @@ export default function FileViewerModal({
   // Color mode values
   const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
   const iconGray400 = useColorModeValue('gray.400', 'gray.500')
+  const modalBg = useColorModeValue('white', 'gray.800')
   const [textContent, setTextContent] = useState('')
   const [xmlContent, setXmlContent] = useState('')
   const [isMobile, setIsMobile] = useState(false)
   const [blobUrl, setBlobUrl] = useState(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const modalVisible = (typeof visible === 'boolean' ? visible : undefined) ?? Boolean(isOpen)
 
   useEffect(() => {
@@ -371,7 +379,7 @@ export default function FileViewerModal({
     )
   }
 
-  // Use Lightbox for images and videos (use blob URL with auth)
+  // Use Chakra Modal for images and videos (use blob URL with auth)
   if (modalVisible && (detectedType === 'image' || detectedType === 'video')) {
     // Show loading state while fetching blob
     if (!blobUrl) {
@@ -385,81 +393,72 @@ export default function FileViewerModal({
       )
     }
 
-    const slides = []
-
-    if (detectedType === 'image') {
-      slides.push({
-        src: blobUrl,
-        alt: file?.name || 'preview',
-      })
-    } else if (detectedType === 'video') {
-      slides.push({
-        type: 'video',
-        width: 1920,
-        height: 1080,
-        sources: [
-          {
-            src: blobUrl,
-            type: file?.mimeType || 'video/mp4',
-          },
-        ],
-      })
+    const handleClose = () => {
+      setIsFullscreen(false)
+      onClose()
     }
 
-    const bgColor = useColorModeValue('rgba(0,0,0,0.9)', 'rgba(0,0,0,0.95)')
-    const buttonColor = useColorModeValue('#ffffff', '#ffffff')
-
     return (
-      <Lightbox
-        open={modalVisible}
-        close={onClose}
-        slides={slides}
-        plugins={[Zoom, Video, Fullscreen]}
-        video={{
-          controls: true,
-          autoPlay: false,
-          muted: false,
-        }}
-        zoom={{
-          maxZoomPixelRatio: 3,
-          scrollToZoom: true,
-        }}
-        animation={{ fade: 300, swipe: 250 }}
-        controller={{
-          closeOnBackdropClick: true,
-          closeOnPullDown: true,
-          closeOnPullUp: true,
-        }}
-        styles={{
-          container: {
-            backgroundColor: bgColor,
-          },
-          button: {
-            color: buttonColor,
-          },
-        }}
-        toolbar={{
-          buttons: [
-            <Button
-              key="download"
-              size="sm"
-              colorScheme="brand"
-              onClick={(e) => {
-                e.stopPropagation()
-                handleDownload()
-              }}
-              leftIcon={<Icon as={Download} />}
-              position="absolute"
-              top={4}
-              right={16}
-              zIndex={10}
-            >
-              Download
-            </Button>,
-            'close',
-          ],
-        }}
-      />
+      <Modal
+        isOpen={modalVisible}
+        onClose={handleClose}
+        size={isFullscreen ? 'full' : '6xl'}
+        isCentered
+        motionPreset="slideInBottom"
+      >
+        <ModalOverlay bg="blackAlpha.900" />
+        <ModalContent bg={isFullscreen ? 'black' : modalBg} maxW={isFullscreen ? '100vw' : undefined}>
+          <ModalHeader display="flex" justifyContent="space-between" alignItems="center" p={4}>
+            <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
+              {file?.name || 'Preview'}
+            </Text>
+            <HStack spacing={2}>
+              <Button
+                size="sm"
+                colorScheme="brand"
+                onClick={handleDownload}
+                leftIcon={<Icon as={Download} boxSize={ICON_BOX_MD} />}
+              >
+                Download
+              </Button>
+              <IconButton
+                size="sm"
+                aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+                icon={<Icon as={ZoomIn} boxSize={ICON_BOX_MD} />}
+                onClick={() => setIsFullscreen(!isFullscreen)}
+                variant="ghost"
+              />
+            </HStack>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody p={0} display="flex" alignItems="center" justifyContent="center">
+            {detectedType === 'image' ? (
+              <Box w="100%" h="100%" display="flex" alignItems="center" justifyContent="center" p={4}>
+                <Image
+                  src={blobUrl}
+                  alt={file?.name || 'preview'}
+                  maxW="100%"
+                  maxH={isFullscreen ? '90vh' : '70vh'}
+                  objectFit="contain"
+                />
+              </Box>
+            ) : detectedType === 'video' ? (
+              <AspectRatio ratio={16 / 9} w="100%" maxW="100%">
+                <Box
+                  as="video"
+                  controls
+                  src={blobUrl}
+                  sx={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                  }}
+                />
+              </AspectRatio>
+            ) : null}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     )
   }
 

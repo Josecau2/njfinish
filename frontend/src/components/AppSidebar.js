@@ -8,12 +8,11 @@ import {
   Flex,
   Icon,
   IconButton,
+  Image,
   Text,
   useBreakpointValue,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { LazyLoadImage } from 'react-lazy-load-image-component'
-import 'react-lazy-load-image-component/src/effects/blur.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { Pin, PinOff, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -154,28 +153,24 @@ const AppSidebar = () => {
           {resolvedLogo ? (
             <>
               {/* Full sidebar logo - visible when expanded */}
-              <Box
-                as={LazyLoadImage}
+              <Image
                 src={resolvedLogo}
                 alt="Logo"
                 display={collapsed ? "none" : "block"}
                 maxH="40px"
                 maxW="160px"
                 objectFit="contain"
-                effect="blur"
-                placeholderSrc=""
+                loading="lazy"
               />
               {/* Collapsed sidebar logo - visible when collapsed */}
-              <Box
-                as={LazyLoadImage}
+              <Image
                 src={resolvedLogo}
                 alt="Logo"
                 display={collapsed ? "block" : "none"}
                 maxH="28px"
                 maxW="28px"
                 objectFit="contain"
-                effect="blur"
-                placeholderSrc=""
+                loading="lazy"
               />
             </>
           ) : (

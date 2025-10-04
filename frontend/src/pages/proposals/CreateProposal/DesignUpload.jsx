@@ -7,6 +7,7 @@ import {
   Flex,
   Heading,
   Icon,
+  Image,
   Input,
   SimpleGrid,
   Spinner,
@@ -20,8 +21,6 @@ import {
 } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
-import { LazyLoadImage } from 'react-lazy-load-image-component'
-import 'react-lazy-load-image-component/src/effects/blur.css'
 import { CloudUpload, PenSquare, UploadCloud } from 'lucide-react'
 import axiosInstance from '../../../helpers/axiosInstance'
 import { buildUploadUrl } from '../../../utils/uploads'
@@ -253,16 +252,18 @@ const DesignImportStep = ({
                         transition="transform 0.2s"
                         transform={hoveredId === style.id ? 'scale(1.03)' : 'scale(1)'}
                       >
-                        <LazyLoadImage
+                        <Image
                           src={
                             style.styleVariants?.[0]?.image
                               ? buildUploadUrl(`/uploads/images/${style.styleVariants[0].image}`)
                               : '/images/nologo.png'
                           }
                           alt={style.styleVariants?.[0]?.shortName || style.style}
-                          style={{ width: '100%', height: 210, objectFit: 'cover' }}
-                          placeholderSrc="/images/nologo.png"
-                          effect="blur"
+                          w="100%"
+                          h="210px"
+                          objectFit="cover"
+                          loading="lazy"
+                          fallbackSrc="/images/nologo.png"
                           onError={(event) => {
                             const fileName = style.styleVariants?.[0]?.image
                             if (fileName && !event.target.dataset.fallbackTried) {

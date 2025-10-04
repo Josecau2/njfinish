@@ -2,8 +2,6 @@ import React, { useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import SimpleBar from 'simplebar-react'
-import 'simplebar-react/dist/simplebar.min.css'
 import { Box, Flex, Menu, MenuButton, MenuItem, MenuList, Text, useColorModeValue } from '@chakra-ui/react'
 import { ChevronDown } from 'lucide-react'
 import { setSidebarShow, setSidebarUnfoldable } from '../store/slices/sidebarSlice'
@@ -512,7 +510,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor, sideba
   }
 
   return (
-    <SimpleBar style={{ maxHeight: '100%', height: '100%' }}>
+    <Box maxH="100%" h="100%" overflowY="auto" overflowX="hidden">
       <Box
         as="ul"
         listStyleType="none"
@@ -522,7 +520,7 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor, sideba
       >
         {items?.map((item) => renderItem(item))}
       </Box>
-    </SimpleBar>
+    </Box>
   )
 }
 
