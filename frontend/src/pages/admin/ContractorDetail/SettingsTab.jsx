@@ -1,12 +1,17 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Flex, Box, CardBody, CardHeader, Badge, Alert, List, ListItem } from '@chakra-ui/react'
+import { Flex, Box, CardBody, CardHeader, Badge, Alert, List, ListItem, SimpleGrid, Text, Heading, Code, Icon, VStack, HStack, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { Settings, Shield, Users, CheckCircle, XCircle, Info } from 'lucide-react'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const SettingsTab = ({ contractor }) => {
   const { t } = useTranslation()
+
+  // Color mode values
+  const bgLight = useColorModeValue('gray.50', 'gray.800')
+  const textSecondary = useColorModeValue('gray.600', 'gray.400')
+
   const contractorSettings = contractor.contractor_settings || {}
 
   // Parse modules if they're stored as JSON string
@@ -65,15 +70,15 @@ const SettingsTab = ({ contractor }) => {
   }
 
   return (
-    <Flex>
-      {/* Module Settings */}
-      <Box md={6}>
+    <VStack spacing={6} align="stretch">
+      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+        {/* Module Settings */}
         <StandardCard>
           <CardHeader>
-            <strong>
-              <Shield size={ICON_SIZE_MD} aria-hidden="true" />
-              {t('contractorsAdmin.detail.moduleAccess.title')}
-            </strong>
+            <HStack spacing={2}>
+              <Icon as={Shield} boxSize={ICON_BOX_MD} aria-hidden="true" />
+              <Text fontWeight="bold">{t('contractorsAdmin.detail.moduleAccess.title')}</Text>
+            </HStack>
           </CardHeader>
           <CardBody>
             {Object.keys(modules).length === 0 ? (
@@ -82,43 +87,39 @@ const SettingsTab = ({ contractor }) => {
                 {t('contractorsAdmin.detail.settings.noModuleSettings')}
               </Alert>
             ) : (
-              <List>
+              <List spacing={3}>
                 {Object.entries(modules).map(([key, value]) => (
-                  <ListItem
-                    key={key}
-                   
-                  >
-                    <span>
-                      <strong>{moduleLabels[key] || key}</strong>
-                      <br />
-                      <small>
-                        {key === 'dashboard' &&
-                          t('contractorsAdmin.detail.settings.moduleDescriptions.dashboard')}
-                        {key === 'proposals' &&
-                          t('contractorsAdmin.detail.settings.moduleDescriptions.proposals')}
-                        {key === 'customers' &&
-                          t('contractorsAdmin.detail.settings.moduleDescriptions.customers')}
-                        {key === 'resources' &&
-                          t('contractorsAdmin.detail.settings.moduleDescriptions.resources')}
-                      </small>
-                    </span>
-                    {formatBoolean(value)}
+                  <ListItem key={key}>
+                    <Flex justify="space-between" align="start" gap={3}>
+                      <Box flex="1">
+                        <Text fontWeight="bold">{moduleLabels[key] || key}</Text>
+                        <Text fontSize="sm" color={textSecondary} mt={1}>
+                          {key === 'dashboard' &&
+                            t('contractorsAdmin.detail.settings.moduleDescriptions.dashboard')}
+                          {key === 'proposals' &&
+                            t('contractorsAdmin.detail.settings.moduleDescriptions.proposals')}
+                          {key === 'customers' &&
+                            t('contractorsAdmin.detail.settings.moduleDescriptions.customers')}
+                          {key === 'resources' &&
+                            t('contractorsAdmin.detail.settings.moduleDescriptions.resources')}
+                        </Text>
+                      </Box>
+                      <Box>{formatBoolean(value)}</Box>
+                    </Flex>
                   </ListItem>
                 ))}
               </List>
             )}
           </CardBody>
         </StandardCard>
-      </Box>
 
-      {/* Contractor Settings */}
-      <Box md={6}>
+        {/* Contractor Settings */}
         <StandardCard>
           <CardHeader>
-            <strong>
-              <Settings size={ICON_SIZE_MD} aria-hidden="true" />
-              {t('contractorsAdmin.detail.settings.title')}
-            </strong>
+            <HStack spacing={2}>
+              <Icon as={Settings} boxSize={ICON_BOX_MD} aria-hidden="true" />
+              <Text fontWeight="bold">{t('contractorsAdmin.detail.settings.title')}</Text>
+            </HStack>
           </CardHeader>
           <CardBody>
             {Object.keys(parsedContractorSettings).length === 0 ? (
@@ -127,122 +128,120 @@ const SettingsTab = ({ contractor }) => {
                 {t('contractorsAdmin.detail.settings.noneConfigured')}
               </Alert>
             ) : (
-              <List>
+              <List spacing={3}>
                 {Object.entries(parsedContractorSettings).map(([key, value]) => (
-                  <ListItem
-                    key={key}
-                   
-                  >
-                    <span>
-                      <strong>{settingsLabels[key] || key.replace(/_/g, ' ')}</strong>
-                      <br />
-                      <small>
-                        {key === 'allow_subcontractors' &&
-                          t('contractorsAdmin.detail.settings.descriptions.allowSubcontractors')}
-                        {key === 'max_users' &&
-                          t('contractorsAdmin.detail.settings.descriptions.maxUsers')}
-                        {key === 'billing_enabled' &&
-                          t('contractorsAdmin.detail.settings.descriptions.billingEnabled')}
-                        {key === 'custom_branding' &&
-                          t('contractorsAdmin.detail.settings.descriptions.customBranding')}
-                        {key === 'api_access' &&
-                          t('contractorsAdmin.detail.settings.descriptions.apiAccess')}
-                        {key === 'data_retention_days' &&
-                          t('contractorsAdmin.detail.settings.descriptions.dataRetentionDays')}
-                      </small>
-                    </span>
-                    <span>
-                      {typeof value === 'boolean' ? (
-                        formatBoolean(value)
-                      ) : typeof value === 'object' ? (
-                        <Badge status="info">
-                          {t('contractorsAdmin.detail.settings.objectLabel')}
-                        </Badge>
-                      ) : (
-                        <strong>{value}</strong>
-                      )}
-                    </span>
+                  <ListItem key={key}>
+                    <Flex justify="space-between" align="start" gap={3}>
+                      <Box flex="1">
+                        <Text fontWeight="bold">{settingsLabels[key] || key.replace(/_/g, ' ')}</Text>
+                        <Text fontSize="sm" color={textSecondary} mt={1}>
+                          {key === 'allow_subcontractors' &&
+                            t('contractorsAdmin.detail.settings.descriptions.allowSubcontractors')}
+                          {key === 'max_users' &&
+                            t('contractorsAdmin.detail.settings.descriptions.maxUsers')}
+                          {key === 'billing_enabled' &&
+                            t('contractorsAdmin.detail.settings.descriptions.billingEnabled')}
+                          {key === 'custom_branding' &&
+                            t('contractorsAdmin.detail.settings.descriptions.customBranding')}
+                          {key === 'api_access' &&
+                            t('contractorsAdmin.detail.settings.descriptions.apiAccess')}
+                          {key === 'data_retention_days' &&
+                            t('contractorsAdmin.detail.settings.descriptions.dataRetentionDays')}
+                        </Text>
+                      </Box>
+                      <Box>
+                        {typeof value === 'boolean' ? (
+                          formatBoolean(value)
+                        ) : typeof value === 'object' ? (
+                          <Badge status="info">
+                            {t('contractorsAdmin.detail.settings.objectLabel')}
+                          </Badge>
+                        ) : (
+                          <Text fontWeight="bold">{value}</Text>
+                        )}
+                      </Box>
+                    </Flex>
                   </ListItem>
                 ))}
               </List>
             )}
           </CardBody>
         </StandardCard>
-      </Box>
+      </SimpleGrid>
 
       {/* Raw JSON Display */}
-      <Box xs={12}>
-        <StandardCard>
-          <CardHeader>
-            <strong>
-              <Info size={ICON_SIZE_MD} aria-hidden="true" />
-              {t('contractorsAdmin.detail.settings.raw.title')}
-            </strong>
-          </CardHeader>
-          <CardBody>
-            <Flex>
-              <Box md={6}>
-                <h6>{t('contractorsAdmin.detail.settings.raw.modules')}</h6>
-                <pre className="bg-light p-3 rounded small">
-                  <code>{JSON.stringify(modules, null, 2)}</code>
-                </pre>
+      <StandardCard>
+        <CardHeader>
+          <HStack spacing={2}>
+            <Icon as={Info} boxSize={ICON_BOX_MD} aria-hidden="true" />
+            <Text fontWeight="bold">{t('contractorsAdmin.detail.settings.raw.title')}</Text>
+          </HStack>
+        </CardHeader>
+        <CardBody>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+            <Box>
+              <Heading size="sm" mb={3}>{t('contractorsAdmin.detail.settings.raw.modules')}</Heading>
+              <Box bg={bgLight} p={3} borderRadius="md" fontSize="sm" overflowX="auto">
+                <Code display="block" whiteSpace="pre" bg="transparent">
+                  {JSON.stringify(modules, null, 2)}
+                </Code>
               </Box>
-              <Box md={6}>
-                <h6>{t('contractorsAdmin.detail.settings.raw.contractorSettings')}</h6>
-                <pre className="bg-light p-3 rounded small">
-                  <code>{JSON.stringify(contractorSettings, null, 2)}</code>
-                </pre>
+            </Box>
+            <Box>
+              <Heading size="sm" mb={3}>{t('contractorsAdmin.detail.settings.raw.contractorSettings')}</Heading>
+              <Box bg={bgLight} p={3} borderRadius="md" fontSize="sm" overflowX="auto">
+                <Code display="block" whiteSpace="pre" bg="transparent">
+                  {JSON.stringify(contractorSettings, null, 2)}
+                </Code>
               </Box>
-            </Flex>
-          </CardBody>
-        </StandardCard>
-      </Box>
+            </Box>
+          </SimpleGrid>
+        </CardBody>
+      </StandardCard>
 
       {/* Summary Information */}
-      <Box xs={12}>
-        <StandardCard>
-          <CardHeader>
-            <strong>{t('contractorsAdmin.detail.settings.summary.title')}</strong>
-          </CardHeader>
-          <CardBody>
-            <Flex>
-              <Box md={4}>
-                <h4>{Object.values(modules).filter(Boolean).length}</h4>
-                <p>
-                  {t('contractorsAdmin.detail.settings.summary.enabledModules')}
-                </p>
-                <small>
-                  {t('contractorsAdmin.detail.settings.summary.ofTotal', {
-                    total: Object.keys(modules).length,
-                  })}
-                </small>
-              </Box>
-              <Box md={4}>
-                <h4>{Object.keys(contractorSettings).length}</h4>
-                <p>
-                  {t('contractorsAdmin.detail.settings.summary.settingsConfigured')}
-                </p>
-                <small>
-                  {t('contractorsAdmin.detail.settings.summary.customOptions')}
-                </small>
-              </Box>
-              <Box md={4}>
-                <h4>
-                  {contractorSettings.max_users ||
-                    t('contractorsAdmin.detail.settings.summary.unlimited')}
-                </h4>
-                <p>
-                  {t('contractorsAdmin.detail.settings.summary.maxUsers')}
-                </p>
-                <small>
-                  {t('contractorsAdmin.detail.settings.summary.userLimitHint')}
-                </small>
-              </Box>
-            </Flex>
-          </CardBody>
-        </StandardCard>
-      </Box>
-    </Flex>
+      <StandardCard>
+        <CardHeader>
+          <Text fontWeight="bold">{t('contractorsAdmin.detail.settings.summary.title')}</Text>
+        </CardHeader>
+        <CardBody>
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+            <Box>
+              <Heading size="lg">{Object.values(modules).filter(Boolean).length}</Heading>
+              <Text mt={2}>
+                {t('contractorsAdmin.detail.settings.summary.enabledModules')}
+              </Text>
+              <Text fontSize="sm" color={textSecondary} mt={1}>
+                {t('contractorsAdmin.detail.settings.summary.ofTotal', {
+                  total: Object.keys(modules).length,
+                })}
+              </Text>
+            </Box>
+            <Box>
+              <Heading size="lg">{Object.keys(contractorSettings).length}</Heading>
+              <Text mt={2}>
+                {t('contractorsAdmin.detail.settings.summary.settingsConfigured')}
+              </Text>
+              <Text fontSize="sm" color={textSecondary} mt={1}>
+                {t('contractorsAdmin.detail.settings.summary.customOptions')}
+              </Text>
+            </Box>
+            <Box>
+              <Heading size="lg">
+                {contractorSettings.max_users ||
+                  t('contractorsAdmin.detail.settings.summary.unlimited')}
+              </Heading>
+              <Text mt={2}>
+                {t('contractorsAdmin.detail.settings.summary.maxUsers')}
+              </Text>
+              <Text fontSize="sm" color={textSecondary} mt={1}>
+                {t('contractorsAdmin.detail.settings.summary.userLimitHint')}
+              </Text>
+            </Box>
+          </SimpleGrid>
+        </CardBody>
+      </StandardCard>
+    </VStack>
   )
 }
 export default SettingsTab
