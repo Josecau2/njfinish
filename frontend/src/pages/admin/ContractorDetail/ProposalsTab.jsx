@@ -4,7 +4,47 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { buildEncodedPath, genNoise } from '../../../utils/obfuscate'
-import { Accordion, AccordionButton, AccordionIcon, AccordionItem, AccordionPanel, Alert, Badge, Box, Button, ButtonGroup, CardBody, CardHeader, Flex, Input, InputGroup, InputLeftElement, List, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Progress, Select, SimpleGrid, Spinner, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tooltip, Tr, useColorModeValue } from '@chakra-ui/react'
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Alert,
+  Badge,
+  Box,
+  Button,
+  ButtonGroup,
+  CardBody,
+  CardHeader,
+  Flex,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  List,
+  ListItem,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Progress,
+  Select,
+  SimpleGrid,
+  Spinner,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tooltip,
+  Tr,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import EmptyState from '../../../components/common/EmptyState'
 import { notifyError } from '../../../helpers/notify'
 import {
@@ -22,12 +62,12 @@ import {
   Info,
   Send,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
 } from 'lucide-react'
 import {
   fetchContractorProposals,
   fetchProposalDetails,
-  clearProposalDetails
+  clearProposalDetails,
 } from '../../../store/slices/contractorSlice'
 import PaginationComponent from '../../../components/common/PaginationComponent'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
@@ -39,8 +79,8 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   const {
     contractorProposals: { data: proposals, pagination, loading, error },
-    proposalDetails
-  } = useSelector(state => state.contractors)
+    proposalDetails,
+  } = useSelector((state) => state.contractors)
 
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
@@ -52,20 +92,36 @@ const ProposalsTab = ({ contractor, groupId }) => {
   const [selectedProposal, setSelectedProposal] = useState(null)
 
   // Color mode values
-  const textGray500 = useColorModeValue("gray.500", "gray.400")
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
 
   // Status definitions with counts and colors
   const statusDefinitions = {
     all: { label: t('proposals.tabs.all'), color: 'brand', Icon: Clipboard },
     draft: { label: t('proposals.status.draft'), color: 'gray', Icon: Clipboard },
     sent: { label: t('proposals.status.sent'), color: 'blue', Icon: Send },
-    pending: { label: t('contractorsAdmin.detail.proposals.status.pending'), color: 'orange', Icon: Clock },
-    approved: { label: t('contractorsAdmin.detail.proposals.status.approved'), color: 'green', Icon: CheckCircle },
+    pending: {
+      label: t('contractorsAdmin.detail.proposals.status.pending'),
+      color: 'orange',
+      Icon: Clock,
+    },
+    approved: {
+      label: t('contractorsAdmin.detail.proposals.status.approved'),
+      color: 'green',
+      Icon: CheckCircle,
+    },
     accepted: { label: t('proposals.status.accepted'), color: 'green', Icon: CheckCircle },
     rejected: { label: t('proposals.status.rejected'), color: 'red', Icon: XCircle },
     expired: { label: t('proposals.status.expired'), color: 'gray', Icon: Clock },
-    in_progress: { label: t('contractorsAdmin.detail.proposals.status.inProgress'), color: 'blue', Icon: Clock },
-    completed: { label: t('contractorsAdmin.detail.proposals.status.completed'), color: 'green', Icon: CheckCircle }
+    in_progress: {
+      label: t('contractorsAdmin.detail.proposals.status.inProgress'),
+      color: 'blue',
+      Icon: Clock,
+    },
+    completed: {
+      label: t('contractorsAdmin.detail.proposals.status.completed'),
+      color: 'green',
+      Icon: CheckCircle,
+    },
   }
 
   // Debounce search term
@@ -79,20 +135,25 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   useEffect(() => {
     if (groupId) {
-      dispatch(fetchContractorProposals({
-        groupId,
-        page: currentPage,
-        limit: itemsPerPage,
-        status: statusFilter === 'all' ? undefined : statusFilter,
-        search: debouncedSearchTerm
-      }))
+      dispatch(
+        fetchContractorProposals({
+          groupId,
+          page: currentPage,
+          limit: itemsPerPage,
+          status: statusFilter === 'all' ? undefined : statusFilter,
+          search: debouncedSearchTerm,
+        }),
+      )
     }
   }, [dispatch, groupId, currentPage, itemsPerPage, statusFilter, debouncedSearchTerm])
 
   // notify on load error
   useEffect(() => {
     if (error) {
-      notifyError(t('contractorsAdmin.detail.proposals.loadFailed'), typeof error === 'string' ? error : '')
+      notifyError(
+        t('contractorsAdmin.detail.proposals.loadFailed'),
+        typeof error === 'string' ? error : '',
+      )
     }
   }, [error])
 
@@ -110,7 +171,9 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   const handleGoToProposal = (proposalId) => {
     // Navigate to admin read-only proposal view
-    const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/quotes/:proposalId/admin-view', { proposalId })
+    const noisy =
+      `/${genNoise(6)}/${genNoise(8)}` +
+      buildEncodedPath('/quotes/:proposalId/admin-view', { proposalId })
     navigate(noisy)
   }
 
@@ -146,7 +209,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'USD',
     }).format(amount || 0)
   }
 
@@ -158,7 +221,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
       const manufacturersData = JSON.parse(proposal.manufacturersData)
       let totalAmount = 0
 
-      manufacturersData.forEach(manufacturer => {
+      manufacturersData.forEach((manufacturer) => {
         if (manufacturer.summary && manufacturer.summary.grandTotal) {
           totalAmount += manufacturer.summary.grandTotal
         }
@@ -185,7 +248,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       })
     } catch (error) {
       console.error('Error formatting date:', error)
@@ -204,7 +267,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
       }
       return date.toLocaleDateString('en-US', {
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
       })
     } catch (error) {
       console.error('Error formatting date:', error)
@@ -216,7 +279,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
   const statusCounts = useMemo(() => {
     const counts = { all: proposals?.length || 0 }
     if (proposals && proposals.length > 0) {
-      proposals.forEach(proposal => {
+      proposals.forEach((proposal) => {
         const status = proposal.status || 'draft'
         counts[status] = (counts[status] || 0) + 1
       })
@@ -235,7 +298,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
       date: proposal.createdAt,
       Icon: Clipboard,
       color: 'secondary',
-      completed: true
+      completed: true,
     })
 
     // Add sent status if it exists
@@ -246,7 +309,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
         date: proposal.sent_at,
         Icon: Send,
         color: 'info',
-        completed: true
+        completed: true,
       })
     }
 
@@ -258,7 +321,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
         date: proposal.accepted_at,
         Icon: CheckCircle,
         color: 'success',
-        completed: true
+        completed: true,
       })
     }
 
@@ -270,7 +333,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
         date: proposal.updatedAt,
         Icon: getStatusIcon(proposal.status),
         color: getStatusColor(proposal.status),
-        completed: true
+        completed: true,
       })
     }
 
@@ -302,7 +365,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
               </strong>
             </CardHeader>
             <CardBody>
-              {error && notifyError(t('contractorsAdmin.detail.proposals.loadFailed'), typeof error === 'string' ? error : '')}
+              {error &&
+                notifyError(
+                  t('contractorsAdmin.detail.proposals.loadFailed'),
+                  typeof error === 'string' ? error : '',
+                )}
 
               {/* Search and Status Filter Chips */}
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
@@ -314,14 +381,19 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     <Input
                       type="text"
                       placeholder={t('contractorsAdmin.detail.proposals.searchPlaceholder')}
-                      aria-label={t('contractorsAdmin.detail.proposals.searchAria', 'Search proposals')}
+                      aria-label={t(
+                        'contractorsAdmin.detail.proposals.searchAria',
+                        'Search proposals',
+                      )}
                       value={searchTerm}
                       onChange={handleSearchChange}
                     />
                   </InputGroup>
                 </Box>
                 <Box>
-                  <Text fontSize="sm" color={textGray500}>{t('contractorsAdmin.detail.proposals.quickFilters')}</Text>
+                  <Text fontSize="sm" color={textGray500}>
+                    {t('contractorsAdmin.detail.proposals.quickFilters')}
+                  </Text>
                 </Box>
               </SimpleGrid>
 
@@ -338,19 +410,16 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         variant={isActive ? 'solid' : 'outline'}
                         color={definition.color}
                         size="sm"
-                       
                         onClick={() => handleStatusFilterChange(status)}
                         isDisabled={count === 0 && status !== 'all'}
                       >
-                        {(() => { const Icon = definition.Icon; return <Icon size={14} aria-hidden="true" />; })()}
+                        {(() => {
+                          const Icon = definition.Icon
+                          return <Icon size={14} aria-hidden="true" />
+                        })()}
                         {definition.label}
                         {count > 0 && (
-                          <Badge
-                            color={isActive ? 'light' : definition.color}
-                           
-                          >
-                            {count}
-                          </Badge>
+                          <Badge color={isActive ? 'light' : definition.color}>{count}</Badge>
                         )}
                       </Button>
                     )
@@ -363,75 +432,61 @@ const ProposalsTab = ({ contractor, groupId }) => {
                 <Table variant="striped">
                   <Thead>
                     <Tr>
-                      <Th
-                        cursor="pointer"
-                        onClick={() => handleSort('title')}
-                      >
+                      <Th cursor="pointer" onClick={() => handleSort('title')}>
                         {t('contractorsAdmin.detail.proposals.table.title')}
-                        {sortConfig.key === 'title' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} aria-hidden="true" />
-                        ) : (
-                          <ChevronDown size={14} aria-hidden="true" />
-                        ))}
+                        {sortConfig.key === 'title' &&
+                          (sortConfig.direction === 'asc' ? (
+                            <ChevronUp size={14} aria-hidden="true" />
+                          ) : (
+                            <ChevronDown size={14} aria-hidden="true" />
+                          ))}
                       </Th>
-                      <Th
-                        cursor="pointer"
-                        onClick={() => handleSort('customer_name')}
-                      >
+                      <Th cursor="pointer" onClick={() => handleSort('customer_name')}>
                         {t('proposals.headers.customer')}
-                        {sortConfig.key === 'customer_name' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} aria-hidden="true" />
-                        ) : (
-                          <ChevronDown size={14} aria-hidden="true" />
-                        ))}
+                        {sortConfig.key === 'customer_name' &&
+                          (sortConfig.direction === 'asc' ? (
+                            <ChevronUp size={14} aria-hidden="true" />
+                          ) : (
+                            <ChevronDown size={14} aria-hidden="true" />
+                          ))}
                       </Th>
-                      <Th
-                        cursor="pointer"
-                        onClick={() => handleSort('status')}
-                      >
+                      <Th cursor="pointer" onClick={() => handleSort('status')}>
                         {t('proposals.headers.status')}
-                        {sortConfig.key === 'status' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} aria-hidden="true" />
-                        ) : (
-                          <ChevronDown size={14} aria-hidden="true" />
-                        ))}
+                        {sortConfig.key === 'status' &&
+                          (sortConfig.direction === 'asc' ? (
+                            <ChevronUp size={14} aria-hidden="true" />
+                          ) : (
+                            <ChevronDown size={14} aria-hidden="true" />
+                          ))}
                       </Th>
-                      <Th
-                        cursor="pointer"
-                        onClick={() => handleSort('total_amount')}
-                      >
+                      <Th cursor="pointer" onClick={() => handleSort('total_amount')}>
                         {t('contractorsAdmin.detail.proposals.table.amount')}
-                        {sortConfig.key === 'total_amount' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} aria-hidden="true" />
-                        ) : (
-                          <ChevronDown size={14} aria-hidden="true" />
-                        ))}
+                        {sortConfig.key === 'total_amount' &&
+                          (sortConfig.direction === 'asc' ? (
+                            <ChevronUp size={14} aria-hidden="true" />
+                          ) : (
+                            <ChevronDown size={14} aria-hidden="true" />
+                          ))}
                       </Th>
-                      <Th
-                        cursor="pointer"
-                        onClick={() => handleSort('createdAt')}
-                      >
+                      <Th cursor="pointer" onClick={() => handleSort('createdAt')}>
                         {t('proposals.headers.date')}
-                        {sortConfig.key === 'createdAt' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} aria-hidden="true" />
-                        ) : (
-                          <ChevronDown size={14} aria-hidden="true" />
-                        ))}
+                        {sortConfig.key === 'createdAt' &&
+                          (sortConfig.direction === 'asc' ? (
+                            <ChevronUp size={14} aria-hidden="true" />
+                          ) : (
+                            <ChevronDown size={14} aria-hidden="true" />
+                          ))}
                       </Th>
-                      <Th
-                        cursor="pointer"
-                        onClick={() => handleSort('updatedAt')}
-                      >
+                      <Th cursor="pointer" onClick={() => handleSort('updatedAt')}>
                         {t('contractorsAdmin.detail.proposals.table.updated')}
-                        {sortConfig.key === 'updatedAt' && (sortConfig.direction === 'asc' ? (
-                          <ChevronUp size={14} aria-hidden="true" />
-                        ) : (
-                          <ChevronDown size={14} aria-hidden="true" />
-                        ))}
+                        {sortConfig.key === 'updatedAt' &&
+                          (sortConfig.direction === 'asc' ? (
+                            <ChevronUp size={14} aria-hidden="true" />
+                          ) : (
+                            <ChevronDown size={14} aria-hidden="true" />
+                          ))}
                       </Th>
-                      <Th w="150px">
-                        {t('proposals.headers.actions')}
-                      </Th>
+                      <Th w="150px">{t('proposals.headers.actions')}</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -460,11 +515,14 @@ const ProposalsTab = ({ contractor, groupId }) => {
                             </div>
                           </Td>
                           <Td>
-                            <Badge
-                              color={getStatusColor(proposal.status)} w="fit-content"
-                            >
-                              {(() => { const Icon = getStatusIcon(proposal.status); return <Icon size={14} aria-hidden="true" />; })()}
-                              {statusDefinitions[proposal.status]?.label || proposal.status || t('proposals.status.draft')}
+                            <Badge color={getStatusColor(proposal.status)} w="fit-content">
+                              {(() => {
+                                const Icon = getStatusIcon(proposal.status)
+                                return <Icon size={14} aria-hidden="true" />
+                              })()}
+                              {statusDefinitions[proposal.status]?.label ||
+                                proposal.status ||
+                                t('proposals.status.draft')}
                             </Badge>
                           </Td>
                           <Td>
@@ -488,7 +546,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                   colorScheme="brand"
                                   size="sm"
                                   minH="44px"
-                                  aria-label={t('contractorsAdmin.detail.proposals.actions.viewDetails', 'View proposal details')}
+                                  aria-label={t(
+                                    'contractorsAdmin.detail.proposals.actions.viewDetails',
+                                    'View proposal details',
+                                  )}
                                   onClick={() => handleViewProposal(proposal)}
                                 >
                                   <Search size={ICON_SIZE_MD} aria-hidden="true" />
@@ -500,7 +561,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                   colorScheme="brand"
                                   size="sm"
                                   minH="44px"
-                                  aria-label={t('contractorsAdmin.detail.proposals.actions.open', 'Open proposal')}
+                                  aria-label={t(
+                                    'contractorsAdmin.detail.proposals.actions.open',
+                                    'Open proposal',
+                                  )}
                                   onClick={() => handleGoToProposal(proposal.id)}
                                 >
                                   <ExternalLink size={ICON_SIZE_MD} aria-hidden="true" />
@@ -535,7 +599,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
       <Modal
         isOpen={showModal}
         onClose={handleCloseModal}
-        size={{ base: "full", lg: "xl" }}
+        size={{ base: 'full', lg: 'xl' }}
         scrollBehavior="inside"
         className="proposal-detail-modal"
       >
@@ -546,7 +610,9 @@ const ProposalsTab = ({ contractor, groupId }) => {
               {t('contractorsAdmin.detail.proposals.modal.title')}
               {selectedProposal && (
                 <Badge colorScheme={getStatusColor(selectedProposal.status)} borderRadius="full">
-                  {statusDefinitions[selectedProposal.status]?.label || selectedProposal.status || 'Draft'}
+                  {statusDefinitions[selectedProposal.status]?.label ||
+                    selectedProposal.status ||
+                    'Draft'}
                 </Badge>
               )}
             </ModalHeader>
@@ -562,19 +628,26 @@ const ProposalsTab = ({ contractor, groupId }) => {
                   {/* Header Summary */}
                   <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
                     <Box gridColumn={{ base: '1', md: 'span 2' }}>
-                      <h4>{proposalDetails.data.title || `Proposal #${proposalDetails.data.id}`}</h4>
+                      <h4>
+                        {proposalDetails.data.title || `Proposal #${proposalDetails.data.id}`}
+                      </h4>
                       <div>
                         <div>
                           <User size={14} aria-hidden="true" />
-                          <strong>{t('proposalAcceptance.labels.customer')}:</strong> {proposalDetails.data.customer?.name || t('common.na')}
+                          <strong>{t('proposalAcceptance.labels.customer')}:</strong>{' '}
+                          {proposalDetails.data.customer?.name || t('common.na')}
                         </div>
                         <div>
                           <Calendar size={14} aria-hidden="true" />
-                          <strong>{t('proposals.headers.date')}:</strong> {formatDate(proposalDetails.data.createdAt)}
+                          <strong>{t('proposals.headers.date')}:</strong>{' '}
+                          {formatDate(proposalDetails.data.createdAt)}
                         </div>
                         <div>
                           <MapPin size={14} aria-hidden="true" />
-                          <strong>{t('contractorsAdmin.detail.proposals.modal.group')}:</strong> {contractor?.name || t('common.na')}
+                          <strong>
+                            {t('contractorsAdmin.detail.proposals.modal.group')}:
+                          </strong>{' '}
+                          {contractor?.name || t('common.na')}
                         </div>
                       </div>
                     </Box>
@@ -588,10 +661,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         size="sm"
                         leftIcon={<ExternalLink size={ICON_SIZE_MD} />}
                         minH="44px"
-                        maxW={{ base: "180px", md: "none" }}
+                        maxW={{ base: '180px', md: 'none' }}
                         aria-label={t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                         onClick={() => handleGoToProposal(proposalDetails.data.id)}
-                        fontSize={{ base: "sm", md: "md" }}
+                        fontSize={{ base: 'sm', md: 'md' }}
                       >
                         {t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                       </Button>
@@ -613,14 +686,26 @@ const ProposalsTab = ({ contractor, groupId }) => {
                           <Box>
                             <List>
                               <ListItem>
-                                <span>{t('contractorsAdmin.detail.proposals.modal.proposalId')}</span>
+                                <span>
+                                  {t('contractorsAdmin.detail.proposals.modal.proposalId')}
+                                </span>
                                 <strong>#{proposalDetails.data.id}</strong>
                               </ListItem>
                               <ListItem>
                                 <span>{t('proposals.headers.status')}</span>
-                                <Badge colorScheme={getStatusColor(proposalDetails.data.status)} borderRadius="full" px={3} py={1}>
-                                  {(() => { const Icon = getStatusIcon(proposalDetails.data.status); return <Icon size={14} aria-hidden="true" />; })()}
-                                  {statusDefinitions[proposalDetails.data.status]?.label || proposalDetails.data.status || t('proposals.status.draft')}
+                                <Badge
+                                  colorScheme={getStatusColor(proposalDetails.data.status)}
+                                  borderRadius="full"
+                                  px={3}
+                                  py={1}
+                                >
+                                  {(() => {
+                                    const Icon = getStatusIcon(proposalDetails.data.status)
+                                    return <Icon size={14} aria-hidden="true" />
+                                  })()}
+                                  {statusDefinitions[proposalDetails.data.status]?.label ||
+                                    proposalDetails.data.status ||
+                                    t('proposals.status.draft')}
                                 </Badge>
                               </ListItem>
                               <ListItem>
@@ -628,8 +713,12 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                 <span>{proposalDetails.data.customer?.name || 'N/A'}</span>
                               </ListItem>
                               <ListItem>
-                                <span>{t('contractorsAdmin.detail.proposals.modal.totalAmount')}</span>
-                                <strong>{formatCurrency(calculateTotalAmount(proposalDetails.data))}</strong>
+                                <span>
+                                  {t('contractorsAdmin.detail.proposals.modal.totalAmount')}
+                                </span>
+                                <strong>
+                                  {formatCurrency(calculateTotalAmount(proposalDetails.data))}
+                                </strong>
                               </ListItem>
                             </List>
                           </Box>
@@ -650,12 +739,16 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                 </ListItem>
                               )}
                               <ListItem>
-                                <span>{t('contractorsAdmin.detail.proposals.modal.contractorGroup')}</span>
+                                <span>
+                                  {t('contractorsAdmin.detail.proposals.modal.contractorGroup')}
+                                </span>
                                 <span>{contractor?.name || 'N/A'}</span>
                               </ListItem>
                               {proposalDetails.data.accepted_at && (
                                 <ListItem>
-                                  <span>{t('contractorsAdmin.detail.proposals.modal.accepted')}</span>
+                                  <span>
+                                    {t('contractorsAdmin.detail.proposals.modal.accepted')}
+                                  </span>
                                   <span>{formatDate(proposalDetails.data.accepted_at)}</span>
                                 </ListItem>
                               )}
@@ -691,7 +784,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                 className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`}
                                 style={{ width: '40px', height: '40px', minWidth: '40px' }}
                               >
-                                {(() => { const Icon = item.Icon || Clipboard; return <Icon size={ICON_SIZE_MD} aria-hidden="true" />; })()}
+                                {(() => {
+                                  const Icon = item.Icon || Clipboard
+                                  return <Icon size={ICON_SIZE_MD} aria-hidden="true" />
+                                })()}
                               </div>
                               <div>
                                 <div>
@@ -699,16 +795,24 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                   <small>{formatDate(item.date)}</small>
                                 </div>
                                 {item.status === 'created' && (
-                                  <small>{t('contractorsAdmin.detail.proposals.timeline.created')}</small>
+                                  <small>
+                                    {t('contractorsAdmin.detail.proposals.timeline.created')}
+                                  </small>
                                 )}
                                 {item.status === 'sent' && (
-                                  <small>{t('contractorsAdmin.detail.proposals.timeline.sent')}</small>
+                                  <small>
+                                    {t('contractorsAdmin.detail.proposals.timeline.sent')}
+                                  </small>
                                 )}
                                 {item.status === 'accepted' && (
-                                  <small>{t('contractorsAdmin.detail.proposals.timeline.accepted')}</small>
+                                  <small>
+                                    {t('contractorsAdmin.detail.proposals.timeline.accepted')}
+                                  </small>
                                 )}
                                 {item.status === 'approved' && (
-                                  <small>{t('contractorsAdmin.detail.proposals.timeline.approved')}</small>
+                                  <small>
+                                    {t('contractorsAdmin.detail.proposals.timeline.approved')}
+                                  </small>
                                 )}
                               </div>
                             </div>
@@ -723,7 +827,9 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         <AccordionButton>
                           <Box flex="1" textAlign="left">
                             <Clipboard size={ICON_SIZE_MD} aria-hidden="true" />
-                            {t('contractorsAdmin.detail.proposals.itemsTitle', { count: proposalDetails.data.items.length })}
+                            {t('contractorsAdmin.detail.proposals.itemsTitle', {
+                              count: proposalDetails.data.items.length,
+                            })}
                           </Box>
                           <AccordionIcon />
                         </AccordionButton>
@@ -749,7 +855,11 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                     <Td>{item.quantity || 1}</Td>
                                     <Td>{formatCurrency(item.unit_price)}</Td>
                                     <Td>
-                                      <strong>{formatCurrency((item.quantity || 1) * (item.unit_price || 0))}</strong>
+                                      <strong>
+                                        {formatCurrency(
+                                          (item.quantity || 1) * (item.unit_price || 0),
+                                        )}
+                                      </strong>
                                     </Td>
                                   </Tr>
                                 ))}
@@ -762,18 +872,31 @@ const ProposalsTab = ({ contractor, groupId }) => {
                               <Box></Box>
                               <Box>
                                 <div>
-                                  <span>{t('contractorsAdmin.detail.proposals.totals.subtotal')}:</span>
-                                  <span>{formatCurrency(proposalDetails.data.subtotal_amount || proposalDetails.data.total_amount)}</span>
+                                  <span>
+                                    {t('contractorsAdmin.detail.proposals.totals.subtotal')}:
+                                  </span>
+                                  <span>
+                                    {formatCurrency(
+                                      proposalDetails.data.subtotal_amount ||
+                                        proposalDetails.data.total_amount,
+                                    )}
+                                  </span>
                                 </div>
                                 {proposalDetails.data.tax_amount > 0 && (
                                   <div>
-                                    <span>{t('contractorsAdmin.detail.proposals.totals.tax')}:</span>
+                                    <span>
+                                      {t('contractorsAdmin.detail.proposals.totals.tax')}:
+                                    </span>
                                     <span>{formatCurrency(proposalDetails.data.tax_amount)}</span>
                                   </div>
                                 )}
                                 <div>
-                                  <strong>{t('contractorsAdmin.detail.proposals.totals.total')}:</strong>
-                                  <strong>{formatCurrency(proposalDetails.data.total_amount)}</strong>
+                                  <strong>
+                                    {t('contractorsAdmin.detail.proposals.totals.total')}:
+                                  </strong>
+                                  <strong>
+                                    {formatCurrency(proposalDetails.data.total_amount)}
+                                  </strong>
                                 </div>
                               </Box>
                             </SimpleGrid>
@@ -798,16 +921,22 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     variant="outline"
                     leftIcon={<ExternalLink size={ICON_SIZE_MD} />}
                     minH="44px"
-                    maxW={{ base: "180px", md: "none" }}
+                    maxW={{ base: '180px', md: 'none' }}
                     aria-label={t('contractorsAdmin.detail.proposals.modal.openFull')}
                     onClick={() => handleGoToProposal(selectedProposal.id)}
-                    fontSize={{ base: "sm", md: "md" }}
+                    fontSize={{ base: 'sm', md: 'md' }}
                   >
                     {t('contractorsAdmin.detail.proposals.modal.openFull')}
                   </Button>
                 )}
               </div>
-              <Button colorScheme="gray" onClick={handleCloseModal} minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
+              <Button
+                colorScheme="gray"
+                onClick={handleCloseModal}
+                minH="44px"
+                maxW={{ base: '140px', md: 'none' }}
+                fontSize={{ base: 'sm', md: 'md' }}
+              >
                 {t('common.cancel')}
               </Button>
             </ModalFooter>

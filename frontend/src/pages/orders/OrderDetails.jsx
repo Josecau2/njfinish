@@ -4,7 +4,46 @@ import { useSelector, useDispatch } from 'react-redux'
 import PageHeader from '../../components/PageHeader'
 import StandardCard from '../../components/StandardCard'
 import { useTranslation } from 'react-i18next'
-import { Container, Stack, Box, SimpleGrid, HStack, VStack, Text, Button, Icon, Badge, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Spinner, Center, Alert, AlertIcon, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton, Image, useToast, useDisclosure, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter, useColorModeValue } from '@chakra-ui/react'
+import {
+  Container,
+  Stack,
+  Box,
+  SimpleGrid,
+  HStack,
+  VStack,
+  Text,
+  Button,
+  Icon,
+  Badge,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Spinner,
+  Center,
+  Alert,
+  AlertIcon,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  Image,
+  useToast,
+  useDisclosure,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import { ShoppingCart, ArrowLeft, FileText, Download, Mail, Trash } from 'lucide-react'
 import { fetchOrderById, clearCurrentOrder } from '../../store/slices/ordersSlice'
 import { fetchManufacturers } from '../../store/slices/manufacturersSlice'
@@ -121,7 +160,12 @@ const OrderDetails = () => {
   const [pdfUrl, setPdfUrl] = useState(null)
   const [resending, setResending] = useState(false)
   const [downloading, setDownloading] = useState(false)
-  const [notice, setNotice] = useState({ visible: false, title: '', message: '', variant: 'success' })
+  const [notice, setNotice] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    variant: 'success',
+  })
   const [previewImg, setPreviewImg] = useState(null)
   const cancelRef = useRef()
 
@@ -130,27 +174,27 @@ const OrderDetails = () => {
   const closeNotice = () => setNotice((n) => ({ ...n, visible: false }))
 
   const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return "white"
+    if (!backgroundColor) return 'white'
     const hex = backgroundColor.replace('#', '')
     const r = parseInt(hex.substr(0, 2), 16)
     const g = parseInt(hex.substr(2, 2), 16)
     const b = parseInt(hex.substr(4, 2), 16)
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-    return luminance > 0.5 ? "gray.700" : "white"
+    return luminance > 0.5 ? 'gray.700' : 'white'
   }
 
   const resolveBackground = (value) => {
     try {
       if (typeof value === 'string') {
         const trimmed = value.trim()
-        return trimmed || "white"
+        return trimmed || 'white'
       }
       if (value && typeof value === 'object') {
         if (typeof value.hex === 'string' && value.hex.trim()) return value.hex.trim()
         if (typeof value.value === 'string' && value.value.trim()) return value.value.trim()
       }
     } catch (_) {}
-    return "white"
+    return 'white'
   }
 
   const backgroundColor = resolveBackground(customization?.headerBg)
@@ -177,7 +221,8 @@ const OrderDetails = () => {
     const fromModel = order?.order_number
     const fromSnap = (() => {
       try {
-        return (typeof order?.snapshot === 'string' ? JSON.parse(order.snapshot) : order?.snapshot)?.info?.orderNumber
+        return (typeof order?.snapshot === 'string' ? JSON.parse(order.snapshot) : order?.snapshot)
+          ?.info?.orderNumber
       } catch {
         return null
       }
@@ -278,7 +323,9 @@ const OrderDetails = () => {
     } catch (e) {
       openNotice(
         t('orders.pdf.failedTitle', 'Failed to load PDF'),
-        e?.response?.data?.message || e.message || t('orders.pdf.failedMessage', 'Please try again.'),
+        e?.response?.data?.message ||
+          e.message ||
+          t('orders.pdf.failedMessage', 'Please try again.'),
         'danger',
       )
     }
@@ -301,14 +348,17 @@ const OrderDetails = () => {
       } else {
         openNotice(
           t('orders.email.resendAttemptedTitle', 'Resend Attempted'),
-          data?.result?.reason || t('orders.email.resendAttemptedMessage', 'The email was not confirmed as sent.'),
+          data?.result?.reason ||
+            t('orders.email.resendAttemptedMessage', 'The email was not confirmed as sent.'),
           'warning',
         )
       }
     } catch (e) {
       openNotice(
         t('orders.email.resendFailedTitle', 'Resend Failed'),
-        e?.response?.data?.message || e.message || t('orders.email.resendFailedMessage', 'Please try again.'),
+        e?.response?.data?.message ||
+          e.message ||
+          t('orders.email.resendFailedMessage', 'Please try again.'),
         'danger',
       )
     } finally {
@@ -322,7 +372,8 @@ const OrderDetails = () => {
       const resp = await axiosInstance.get(`/api/orders/${id}/manufacturer-pdf/download`, {
         responseType: 'blob',
       })
-      const disp = resp.headers?.['content-disposition'] || resp.headers?.get?.('content-disposition')
+      const disp =
+        resp.headers?.['content-disposition'] || resp.headers?.get?.('content-disposition')
       let filename = `Order-${id}-Manufacturer.pdf`
       if (disp && /filename\s*=\s*"?([^";]+)"?/i.test(disp)) {
         const match = disp.match(/filename\s*=\s*"?([^";]+)"?/i)
@@ -340,7 +391,9 @@ const OrderDetails = () => {
     } catch (e) {
       openNotice(
         t('orders.pdf.downloadFailedTitle', 'Download Failed'),
-        e?.response?.data?.message || e.message || t('orders.pdf.downloadFailedMessage', 'Please try again.'),
+        e?.response?.data?.message ||
+          e.message ||
+          t('orders.pdf.downloadFailedMessage', 'Please try again.'),
         'danger',
       )
     } finally {
@@ -364,7 +417,10 @@ const OrderDetails = () => {
       })
       navigate(backBasePath)
     } catch (e) {
-      const msg = e?.response?.data?.message || e.message || t('orders.toast.deleteFailed', 'Failed to delete order.')
+      const msg =
+        e?.response?.data?.message ||
+        e.message ||
+        t('orders.toast.deleteFailed', 'Failed to delete order.')
       toast({
         title: t('common.error', 'Error'),
         description: msg,
@@ -388,8 +444,8 @@ const OrderDetails = () => {
         leftIcon={<Icon as={FileText} boxSize={4} />}
         onClick={handleViewPdf}
         minH="44px"
-        maxW={{ base: "140px", md: "none" }}
-        fontSize={{ base: "xs", md: "sm" }}
+        maxW={{ base: '140px', md: 'none' }}
+        fontSize={{ base: 'xs', md: 'sm' }}
       >
         {t('orders.actions.viewPdf', 'View PDF')}
       </Button>,
@@ -404,10 +460,12 @@ const OrderDetails = () => {
         onClick={handleDownloadPdf}
         isLoading={downloading}
         minH="44px"
-        maxW={{ base: "180px", md: "none" }}
-        fontSize={{ base: "xs", md: "sm" }}
+        maxW={{ base: '180px', md: 'none' }}
+        fontSize={{ base: 'xs', md: 'sm' }}
       >
-        {downloading ? t('orders.actions.downloading', 'Downloading…') : t('orders.actions.downloadPdf', 'Download PDF')}
+        {downloading
+          ? t('orders.actions.downloading', 'Downloading…')
+          : t('orders.actions.downloadPdf', 'Download PDF')}
       </Button>,
     )
     manufacturerActions.push(
@@ -420,10 +478,12 @@ const OrderDetails = () => {
         onClick={handleResendEmail}
         isLoading={resending}
         minH="44px"
-        maxW={{ base: "180px", md: "none" }}
-        fontSize={{ base: "xs", md: "sm" }}
+        maxW={{ base: '180px', md: 'none' }}
+        fontSize={{ base: 'xs', md: 'sm' }}
       >
-        {resending ? t('orders.actions.resending', 'Resending…') : t('orders.actions.resendEmail', 'Resend Email')}
+        {resending
+          ? t('orders.actions.resending', 'Resending…')
+          : t('orders.actions.resendEmail', 'Resend Email')}
       </Button>,
     )
     manufacturerActions.push(
@@ -435,8 +495,8 @@ const OrderDetails = () => {
         leftIcon={<Icon as={Trash} boxSize={4} />}
         onClick={handleDeleteOrder}
         minH="44px"
-        maxW={{ base: "180px", md: "none" }}
-        fontSize={{ base: "xs", md: "sm" }}
+        maxW={{ base: '180px', md: 'none' }}
+        fontSize={{ base: 'xs', md: 'sm' }}
       >
         {t('orders.actions.deleteOrder', 'Delete Order')}
       </Button>,
@@ -452,8 +512,8 @@ const OrderDetails = () => {
       leftIcon={<Icon as={ArrowLeft} boxSize={4} />}
       onClick={handleBack}
       minH="44px"
-      maxW={{ base: "140px", md: "none" }}
-      fontSize={{ base: "xs", md: "sm" }}
+      maxW={{ base: '140px', md: 'none' }}
+      fontSize={{ base: 'xs', md: 'sm' }}
     >
       {t('common.back', 'Back')}
     </Button>,
@@ -555,9 +615,7 @@ const OrderDetails = () => {
 
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
           <StandardCard variant="outline">
-            <CardHeader fontWeight="semibold">
-              {t('orders.details.order', 'Order')}
-            </CardHeader>
+            <CardHeader fontWeight="semibold">{t('orders.details.order', 'Order')}</CardHeader>
             <CardBody as={Stack} spacing={4} fontSize="sm" color={borderGray700}>
               <Text>
                 <Text as="span" fontWeight="semibold">
@@ -576,7 +634,9 @@ const OrderDetails = () => {
                   {t('orders.details.date', 'Date')}:
                 </Text>{' '}
                 {order?.accepted_at || order?.date || order?.createdAt
-                  ? new Date(order.accepted_at || order.date || order.createdAt).toLocaleDateString()
+                  ? new Date(
+                      order.accepted_at || order.date || order.createdAt,
+                    ).toLocaleDateString()
                   : t('common.na')}
               </Text>
               <Text display="flex" alignItems="center" gap={4}>
@@ -617,7 +677,10 @@ const OrderDetails = () => {
                 <Text as="span" fontWeight="semibold">
                   {t('orders.details.phone', 'Phone')}:
                 </Text>{' '}
-                {order?.customer?.mobile || order?.customer?.phone || order?.customer_phone || t('common.na')}
+                {order?.customer?.mobile ||
+                  order?.customer?.phone ||
+                  order?.customer_phone ||
+                  t('common.na')}
               </Text>
               <Text>
                 <Text as="span" fontWeight="semibold">
@@ -629,9 +692,7 @@ const OrderDetails = () => {
           </StandardCard>
 
           <StandardCard variant="outline">
-            <CardHeader fontWeight="semibold">
-              {t('orders.details.totals', 'Totals')}
-            </CardHeader>
+            <CardHeader fontWeight="semibold">{t('orders.details.totals', 'Totals')}</CardHeader>
             <CardBody as={Stack} spacing={4} fontSize="sm" color={borderGray700}>
               <Text>
                 <Text as="span" fontWeight="semibold">
@@ -680,9 +741,7 @@ const OrderDetails = () => {
         </SimpleGrid>
 
         <StandardCard variant="outline">
-          <CardHeader fontWeight="semibold">
-            {t('orders.details.items', 'Items')}
-          </CardHeader>
+          <CardHeader fontWeight="semibold">{t('orders.details.items', 'Items')}</CardHeader>
           <CardBody>
             <Box display={{ base: 'none', md: 'block' }}>
               <TableContainer>
@@ -695,7 +754,9 @@ const OrderDetails = () => {
                       <Th textAlign="center">{t('orders.details.exposedSide', 'Exposed Side')}</Th>
                       <Th textAlign="right">{t('orders.details.qty', 'Qty')}</Th>
                       <Th textAlign="right">{t('orders.details.unitPrice', 'Unit Price')}</Th>
-                      <Th textAlign="right">{t('orders.details.modifications', 'Modifications')}</Th>
+                      <Th textAlign="right">
+                        {t('orders.details.modifications', 'Modifications')}
+                      </Th>
                       <Th textAlign="right">{t('orders.details.total', 'Total')}</Th>
                     </Tr>
                   </Thead>
@@ -710,7 +771,16 @@ const OrderDetails = () => {
                       </Tr>
                     ) : (
                       parsed.items.map((it, idx) => {
-                        const { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle } = computeItemView(it)
+                        const {
+                          manuName,
+                          qty,
+                          unit,
+                          total,
+                          modsTotal,
+                          styleName,
+                          thumb,
+                          thumbTitle,
+                        } = computeItemView(it)
                         const attachments = []
                         try {
                           if (Array.isArray(it.modifications)) {
@@ -727,14 +797,22 @@ const OrderDetails = () => {
                         return (
                           <Tr key={idx} verticalAlign="top">
                             <Td maxW="320px">
-                              <Text fontWeight="medium">{it.name || it.description || it.item || '-'}</Text>
+                              <Text fontWeight="medium">
+                                {it.name || it.description || it.item || '-'}
+                              </Text>
                               {Array.isArray(it.modifications) && it.modifications.length > 0 && (
                                 <Stack spacing={4} mt={2} fontSize="xs" color={borderGray600}>
                                   {it.modifications.map((m, i) => {
                                     const details = buildSelectedOptionsText(m?.selectedOptions)
-                                    const label = m?.name || m?.templateName || t('orders.details.modification', 'Modification')
+                                    const label =
+                                      m?.name ||
+                                      m?.templateName ||
+                                      t('orders.details.modification', 'Modification')
                                     return (
-                                      <Text key={`mod-${idx}-${i}`}>• {label}{details ? ` — ${details}` : ''}</Text>
+                                      <Text key={`mod-${idx}-${i}`}>
+                                        • {label}
+                                        {details ? ` — ${details}` : ''}
+                                      </Text>
                                     )
                                   })}
                                 </Stack>
@@ -781,12 +859,22 @@ const OrderDetails = () => {
                               )}
                             </Td>
                             <Td textAlign="center">
-                              <Badge colorScheme={it.hingeSide ? 'brand' : 'gray'} borderRadius="full" px={3} py={1}>
+                              <Badge
+                                colorScheme={it.hingeSide ? 'brand' : 'gray'}
+                                borderRadius="full"
+                                px={3}
+                                py={1}
+                              >
                                 {it.hingeSide || '-'}
                               </Badge>
                             </Td>
                             <Td textAlign="center">
-                              <Badge colorScheme={it.exposedSide ? 'brand' : 'gray'} borderRadius="full" px={3} py={1}>
+                              <Badge
+                                colorScheme={it.exposedSide ? 'brand' : 'gray'}
+                                borderRadius="full"
+                                px={3}
+                                py={1}
+                              >
                                 {it.exposedSide || '-'}
                               </Badge>
                             </Td>
@@ -811,7 +899,8 @@ const OrderDetails = () => {
               ) : (
                 <Stack spacing={4}>
                   {parsed.items.map((it, idx) => {
-                    const { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle } = computeItemView(it)
+                    const { manuName, qty, unit, total, modsTotal, styleName, thumb, thumbTitle } =
+                      computeItemView(it)
                     const title = it.name || it.description || it.item || '-'
                     const attachments = []
                     try {
@@ -861,17 +950,22 @@ const OrderDetails = () => {
                                 <Stack spacing={4} fontSize="xs" color={borderGray600}>
                                   {it.modifications.map((m, i) => {
                                     const details = buildSelectedOptionsText(m?.selectedOptions)
-                                    const label = m?.name || m?.templateName || t('orders.details.modification', 'Modification')
+                                    const label =
+                                      m?.name ||
+                                      m?.templateName ||
+                                      t('orders.details.modification', 'Modification')
                                     return (
                                       <Text key={`mod-mobile-${idx}-${i}`}>
-                                        • {label}{details ? ` — ${details}` : ''}
+                                        • {label}
+                                        {details ? ` — ${details}` : ''}
                                       </Text>
                                     )
                                   })}
                                 </Stack>
                               )}
                               <Text fontSize="xs" color={borderGray600}>
-                                {t('orders.details.modifications', 'Modifications')}: {currency(modsTotal)}
+                                {t('orders.details.modifications', 'Modifications')}:{' '}
+                                {currency(modsTotal)}
                               </Text>
                               {(it.hingeSide || it.exposedSide) && (
                                 <HStack spacing={4} fontSize="xs" color={borderGray600}>
@@ -882,7 +976,8 @@ const OrderDetails = () => {
                                   )}
                                   {it.exposedSide && (
                                     <Badge colorScheme="brand" borderRadius="full" px={2}>
-                                      {t('orders.details.exposedSide', 'Exposed Side')}: {it.exposedSide}
+                                      {t('orders.details.exposedSide', 'Exposed Side')}:{' '}
+                                      {it.exposedSide}
                                     </Badge>
                                   )}
                                 </HStack>
@@ -905,13 +1000,22 @@ const OrderDetails = () => {
                               )}
                               <HStack justify="space-between" fontSize="sm" pt={1}>
                                 <Text>
-                                  {t('orders.details.qty', 'Qty')}: <Text as="span" fontWeight="semibold">{qty}</Text>
+                                  {t('orders.details.qty', 'Qty')}:{' '}
+                                  <Text as="span" fontWeight="semibold">
+                                    {qty}
+                                  </Text>
                                 </Text>
                                 <Text>
-                                  {t('orders.details.unitPrice', 'Unit Price')}: <Text as="span" fontWeight="semibold">{currency(unit)}</Text>
+                                  {t('orders.details.unitPrice', 'Unit Price')}:{' '}
+                                  <Text as="span" fontWeight="semibold">
+                                    {currency(unit)}
+                                  </Text>
                                 </Text>
                                 <Text>
-                                  {t('orders.details.total', 'Total')}: <Text as="span" fontWeight="semibold">{currency(total)}</Text>
+                                  {t('orders.details.total', 'Total')}:{' '}
+                                  <Text as="span" fontWeight="semibold">
+                                    {currency(total)}
+                                  </Text>
                                 </Text>
                               </HStack>
                             </Stack>
@@ -932,12 +1036,16 @@ const OrderDetails = () => {
           </CardHeader>
           <CardBody>
             {parsed.manufacturers.length === 0 ? (
-              <Text color={iconGray500}>{t('orders.details.noManufacturers', 'No manufacturers found')}</Text>
+              <Text color={iconGray500}>
+                {t('orders.details.noManufacturers', 'No manufacturers found')}
+              </Text>
             ) : (
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                 {parsed.manufacturers.map((m, i) => {
                   const headerLabel =
-                    m.manufacturerName || m.name || `${t('orders.common.manufacturer', 'Manufacturer')} ${i + 1}`
+                    m.manufacturerName ||
+                    m.name ||
+                    `${t('orders.common.manufacturer', 'Manufacturer')} ${i + 1}`
                   const totals = m?.summary || {}
                   return (
                     <StandardCard key={`manufacturer-${i}`} variant="outline">
@@ -960,7 +1068,9 @@ const OrderDetails = () => {
                               <Text fontSize="xs" color={iconGray500}>
                                 {t('orders.details.selectedStyle', 'Selected Style')}
                               </Text>
-                              <Text fontWeight="semibold">{m.styleName || m.style || t('common.na')}</Text>
+                              <Text fontWeight="semibold">
+                                {m.styleName || m.style || t('common.na')}
+                              </Text>
                             </Stack>
                           </HStack>
                         )}
@@ -1017,7 +1127,7 @@ const OrderDetails = () => {
           </CardBody>
         </StandardCard>
       </Stack>
-      <Modal size={{ base: "full", lg: "5xl" }} isOpen={showPdf} onClose={closePdfModal}>
+      <Modal size={{ base: 'full', lg: '5xl' }} isOpen={showPdf} onClose={closePdfModal}>
         <ModalOverlay />
         <ModalContent maxH="90vh">
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
@@ -1048,7 +1158,11 @@ const OrderDetails = () => {
         </ModalContent>
       </Modal>
 
-      <Modal size={{ base: "full", lg: "xl" }} isOpen={!!previewImg} onClose={() => setPreviewImg(null)}>
+      <Modal
+        size={{ base: 'full', lg: 'xl' }}
+        isOpen={!!previewImg}
+        onClose={() => setPreviewImg(null)}
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
@@ -1057,7 +1171,12 @@ const OrderDetails = () => {
           <ModalCloseButton color={textColor} />
           <ModalBody display="flex" justifyContent="center" alignItems="center" maxH="80vh">
             {previewImg && (
-              <Image src={previewImg} alt={t('common.preview', 'Preview')} maxH="70vh" borderRadius="md" />
+              <Image
+                src={previewImg}
+                alt={t('common.preview', 'Preview')}
+                maxH="70vh"
+                borderRadius="md"
+              />
             )}
           </ModalBody>
         </ModalContent>
@@ -1071,7 +1190,11 @@ const OrderDetails = () => {
           </ModalHeader>
           <ModalCloseButton color={textColor} />
           <ModalBody>
-            <Alert status={mapAlertVariant(notice.variant)} borderRadius="md" alignItems="flex-start">
+            <Alert
+              status={mapAlertVariant(notice.variant)}
+              borderRadius="md"
+              alignItems="flex-start"
+            >
               <AlertIcon />
               <Box>
                 <Text>{notice.message}</Text>
@@ -1119,10 +1242,3 @@ const OrderDetails = () => {
 }
 
 export default OrderDetails
-
-
-
-
-
-
-

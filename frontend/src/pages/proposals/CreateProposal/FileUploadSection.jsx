@@ -1,6 +1,32 @@
 import { useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Badge, Box, Button, CardBody, CardHeader, Flex, Heading, Icon, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Text, useColorModeValue, useToast } from '@chakra-ui/react'
+import {
+  Badge,
+  Box,
+  Button,
+  CardBody,
+  CardHeader,
+  Flex,
+  Heading,
+  Icon,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Text,
+  useColorModeValue,
+  useToast,
+} from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
 import {
@@ -166,7 +192,9 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
           status: 'error',
           title: t('files.uploadErrorTitle', 'Upload failed'),
           description:
-            error?.response?.data?.message || error?.message || t('common.errorGeneric', 'Something went wrong'),
+            error?.response?.data?.message ||
+            error?.message ||
+            t('common.errorGeneric', 'Something went wrong'),
         })
       } finally {
         setUploading(false)
@@ -236,18 +264,14 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
 
   const renderPreview = (file) => {
     if (file.type === 'image') {
-      return (
-        <Box as="img" src={file.url} alt={file.name} maxH="60vh" mx="auto" borderRadius="lg" />
-
-  )
+      return <Box as="img" src={file.url} alt={file.name} maxH="60vh" mx="auto" borderRadius="lg" />
     }
     if (file.type === 'video') {
       return (
         <Box as="video" maxH="60vh" mx="auto" controls borderRadius="lg">
           <source src={file.url} type="video/mp4" />
         </Box>
-
-  )
+      )
     }
     return (
       <Box maxW="100%" textAlign="center">
@@ -257,13 +281,16 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
           style={{ width: '100%', minHeight: '60vh', borderRadius: '12px', border: 'none' }}
         />
       </Box>
-
-  )
+    )
   }
 
   return (
     <>
-      <StandardCard shadow="md" borderRadius="xl" borderColor={dragActive ? 'brand.300' : 'transparent'}>
+      <StandardCard
+        shadow="md"
+        borderRadius="xl"
+        borderColor={dragActive ? 'brand.300' : 'transparent'}
+      >
         <CardHeader borderBottomWidth="1px" borderColor={borderGray100} bg={bgGray50}>
           <Heading size="md" color={textGray800}>
             {t('files.sectionTitle', 'Supporting files')}
@@ -343,7 +370,13 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                       <CardBody>
                         <Flex justify="space-between" align="center" mb={4}>
                           <Badge
-                            colorScheme={file.type === 'image' ? 'green' : file.type === 'video' ? 'orange' : 'blue'}
+                            colorScheme={
+                              file.type === 'image'
+                                ? 'green'
+                                : file.type === 'video'
+                                  ? 'orange'
+                                  : 'blue'
+                            }
                             textTransform="uppercase"
                             fontWeight="semibold"
                           >
@@ -360,10 +393,16 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                               <Icon as={MenuIcon} boxSize={ICON_BOX_MD} />
                             </MenuButton>
                             <MenuList>
-                              <MenuItem icon={<Icon as={Eye} boxSize={ICON_BOX_MD} />} onClick={() => previewFile(file)}>
+                              <MenuItem
+                                icon={<Icon as={Eye} boxSize={ICON_BOX_MD} />}
+                                onClick={() => previewFile(file)}
+                              >
                                 {t('files.preview')}
                               </MenuItem>
-                              <MenuItem icon={<Icon as={Download} boxSize={ICON_BOX_MD} />} onClick={() => downloadFile(file)}>
+                              <MenuItem
+                                icon={<Icon as={Download} boxSize={ICON_BOX_MD} />}
+                                onClick={() => downloadFile(file)}
+                              >
                                 {t('files.download')}
                               </MenuItem>
                               <MenuItem
@@ -393,7 +432,14 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
               </SimpleGrid>
             </Box>
           ) : !uploading ? (
-            <Box mt={6} p={4} borderRadius="lg" bg={bgBlue50} borderWidth="1px" borderColor={borderBlue100}>
+            <Box
+              mt={6}
+              p={4}
+              borderRadius="lg"
+              bg={bgBlue50}
+              borderWidth="1px"
+              borderColor={borderBlue100}
+            >
               <Heading as="h4" size="sm" color={textBlue700} mb={1}>
                 {t('files.noneYet')}
               </Heading>
@@ -405,17 +451,34 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
         </CardBody>
       </StandardCard>
 
-      <Modal isOpen={previewModal.open} onClose={() => setPreviewModal({ open: false, file: null })} size={{ base: 'full', md: 'lg', lg: 'xl' }} scrollBehavior="inside" isCentered>
+      <Modal
+        isOpen={previewModal.open}
+        onClose={() => setPreviewModal({ open: false, file: null })}
+        size={{ base: 'full', md: 'lg', lg: 'xl' }}
+        scrollBehavior="inside"
+        isCentered
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{previewModal.file?.name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>{previewModal.file && renderPreview(previewModal.file)}</ModalBody>
           <ModalFooter>
-            <Button variant="ghost" onClick={() => setPreviewModal({ open: false, file: null })} mr={3}>
+            <Button
+              variant="ghost"
+              onClick={() => setPreviewModal({ open: false, file: null })}
+              mr={3}
+            >
               {t('common.cancel')}
             </Button>
-            <Button colorScheme="brand" leftIcon={<Icon as={Download} boxSize={ICON_BOX_MD} />} onClick={() => downloadFile(previewModal.file)} minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
+            <Button
+              colorScheme="brand"
+              leftIcon={<Icon as={Download} boxSize={ICON_BOX_MD} />}
+              onClick={() => downloadFile(previewModal.file)}
+              minH="44px"
+              maxW={{ base: '140px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
+            >
               {t('files.download')}
             </Button>
           </ModalFooter>

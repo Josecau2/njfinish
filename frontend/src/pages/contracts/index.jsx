@@ -1,6 +1,42 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Container, Stack, HStack, Box, SimpleGrid, Input, Select, CardBody, CardHeader, Badge, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, Icon, ButtonGroup, InputGroup, InputLeftElement, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Text, Spinner, Center, Alert, AlertIcon, useColorModeValue } from '@chakra-ui/react'
+import {
+  Container,
+  Stack,
+  HStack,
+  Box,
+  SimpleGrid,
+  Input,
+  Select,
+  CardBody,
+  CardHeader,
+  Badge,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Icon,
+  ButtonGroup,
+  InputGroup,
+  InputLeftElement,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Text,
+  Spinner,
+  Center,
+  Alert,
+  AlertIcon,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { Search, Calendar, Briefcase, FileText, Trash2 } from 'lucide-react'
@@ -37,7 +73,7 @@ const Contracts = () => {
 
   // Function to get optimal text color for contrast
   const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return "white"
+    if (!backgroundColor) return 'white'
     // Convert hex to RGB
     const hex = backgroundColor.replace('#', '')
     const r = parseInt(hex.substr(0, 2), 16)
@@ -46,7 +82,7 @@ const Contracts = () => {
     // Calculate luminance
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
     // Return dark color for light backgrounds, light color for dark backgrounds
-    return luminance > 0.5 ? "gray.700" : "white"
+    return luminance > 0.5 ? 'gray.700' : 'white'
   }
   const contractsdata = Array.isArray(contracts) ? contracts : []
 
@@ -313,7 +349,6 @@ const Contracts = () => {
   const htmlContent = generateHTMLTemplate(formData)
 
   const statusTranslationMap = {
-
     draft: 'draft',
     'measurement scheduled': 'measurementScheduled',
     'measurement done': 'measurementDone',
@@ -328,7 +363,7 @@ const Contracts = () => {
     return key ? t(`contracts.status.${key}`) : status || t('contracts.status.draft')
   }
   const filteredCount = filteredProposals?.length || 0
-  const headerBg = customization?.headerBg || "purple.500"
+  const headerBg = customization?.headerBg || 'purple.500'
   const headerTextColor = getContrastColor(headerBg)
   return (
     <PageContainer>
@@ -388,20 +423,20 @@ const Contracts = () => {
                   <Button
                     colorScheme="brand"
                     minH="44px"
-                    maxW={{ base: "140px", md: "none" }}
+                    maxW={{ base: '140px', md: 'none' }}
                     variant={viewMode === 'card' ? 'solid' : 'outline'}
                     onClick={() => setViewMode('card')}
-                    fontSize={{ base: "sm", md: "md" }}
+                    fontSize={{ base: 'sm', md: 'md' }}
                   >
                     {t('contracts.view.cards')}
                   </Button>
                   <Button
                     colorScheme="brand"
                     minH="44px"
-                    maxW={{ base: "140px", md: "none" }}
+                    maxW={{ base: '140px', md: 'none' }}
                     variant={viewMode === 'table' ? 'solid' : 'outline'}
                     onClick={() => setViewMode('table')}
-                    fontSize={{ base: "sm", md: "md" }}
+                    fontSize={{ base: 'sm', md: 'md' }}
                   >
                     {t('contracts.view.table')}
                   </Button>
@@ -505,7 +540,12 @@ const Contracts = () => {
                             </Text>
                           </HStack>
                           <HStack justify="space-between" align="center">
-                            <Badge colorScheme={getStatusColor(item.status)} borderRadius="full" px={3} py={1}>
+                            <Badge
+                              colorScheme={getStatusColor(item.status)}
+                              borderRadius="full"
+                              px={3}
+                              py={1}
+                            >
                               {getStatusLabel(item.status)}
                             </Badge>
                             <Button
@@ -515,7 +555,7 @@ const Contracts = () => {
                               onClick={() => handleNavigate(item.id)}
                               leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
                               minH="44px"
-                              maxW={{ base: "180px", md: "none" }}
+                              maxW={{ base: '180px', md: 'none' }}
                             >
                               <Text noOfLines={1}>{t('contracts.viewDetails')}</Text>
                             </Button>
@@ -586,7 +626,12 @@ const Contracts = () => {
                             </Text>
                           </Td>
                           <Td>
-                            <Badge colorScheme={getStatusColor(item.status)} borderRadius="full" px={3} py={1}>
+                            <Badge
+                              colorScheme={getStatusColor(item.status)}
+                              borderRadius="full"
+                              px={3}
+                              py={1}
+                            >
                               {getStatusLabel(item.status)}
                             </Badge>
                           </Td>
@@ -599,8 +644,8 @@ const Contracts = () => {
                                 onClick={() => handleNavigate(item.id)}
                                 leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
                                 minH="44px"
-                                maxW={{ base: "180px", md: "none" }}
-                                fontSize={{ base: "xs", md: "sm" }}
+                                maxW={{ base: '180px', md: 'none' }}
+                                fontSize={{ base: 'xs', md: 'sm' }}
                               >
                                 {t('contracts.viewDetails')}
                               </Button>
@@ -611,8 +656,8 @@ const Contracts = () => {
                                 onClick={() => handleDelete(item.id)}
                                 leftIcon={<Icon as={Trash2} boxSize={ICON_BOX_MD} />}
                                 minH="44px"
-                                maxW={{ base: "140px", md: "none" }}
-                                fontSize={{ base: "xs", md: "sm" }}
+                                maxW={{ base: '140px', md: 'none' }}
+                                fontSize={{ base: 'xs', md: 'sm' }}
                               >
                                 {t('common.delete')}
                               </Button>
@@ -622,7 +667,7 @@ const Contracts = () => {
                       ))
                     )}
                   </Tbody>
-              </Table>
+                </Table>
               </TableContainer>
             </CardBody>
           </StandardCard>
@@ -640,7 +685,12 @@ const Contracts = () => {
           </StandardCard>
         )}
       </Stack>
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} size={{ base: 'full', md: 'xl', lg: '5xl' }} scrollBehavior="inside">
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        size={{ base: 'full', md: 'xl', lg: '5xl' }}
+        scrollBehavior="inside"
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader bg={headerBg} color={headerTextColor} borderTopRadius="md">
@@ -680,7 +730,13 @@ const Contracts = () => {
             )}
           </ModalBody>
           <ModalFooter bg={bgGray50} borderBottomRadius="md">
-            <Button variant="outline" onClick={() => setShowModal(false)} minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
+            <Button
+              variant="outline"
+              onClick={() => setShowModal(false)}
+              minH="44px"
+              maxW={{ base: '140px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
+            >
               {t('common.close')}
             </Button>
           </ModalFooter>
@@ -690,8 +746,3 @@ const Contracts = () => {
   )
 }
 export default Contracts
-
-
-
-
-

@@ -1,7 +1,28 @@
-
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Box, Button, Checkbox, CheckboxGroup, Divider, HStack, Icon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Switch, Text, useBreakpointValue, useColorModeValue } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  Checkbox,
+  CheckboxGroup,
+  Divider,
+  HStack,
+  Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Switch,
+  Text,
+  useBreakpointValue,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { Controller, useForm } from 'react-hook-form'
 import { Eye, Printer, Download } from 'lucide-react'
@@ -19,11 +40,11 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
   const { t, i18n } = useTranslation()
 
   // Color mode values - MUST be before useState
-  const iconGray = useColorModeValue("gray.500", "gray.400")
-  const checkboxBg = useColorModeValue("brand.50", "brand.900")
-  const disabledColor = useColorModeValue("gray.500", "gray.400")
-  const spinnerColor = useColorModeValue("blue.500", "blue.300")
-  const previewContainerBg = useColorModeValue("gray.50", "gray.900")
+  const iconGray = useColorModeValue('gray.500', 'gray.400')
+  const checkboxBg = useColorModeValue('brand.50', 'brand.900')
+  const disabledColor = useColorModeValue('gray.500', 'gray.400')
+  const spinnerColor = useColorModeValue('blue.500', 'blue.300')
+  const previewContainerBg = useColorModeValue('gray.50', 'gray.900')
   const [pdfCustomization, setPdfCustomization] = useState(null)
   const [styleData, setStyleData] = useState(null)
   const [manufacturerNameData, setManufacturerNameData] = useState(null)
@@ -44,13 +65,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     [],
   )
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    setValue,
-    getValues,
-  } = useForm({
+  const { control, handleSubmit, reset, setValue, getValues } = useForm({
     mode: 'onBlur',
     defaultValues,
     shouldUnregister: false,
@@ -247,22 +262,19 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     [buildHtml],
   )
 
-  const openPreview = useCallback(
-    () => {
-      const values = getValues()
-      setShowPreview(true)
-      setPreviewHtml(buildHtml(values))
+  const openPreview = useCallback(() => {
+    const values = getValues()
+    setShowPreview(true)
+    setPreviewHtml(buildHtml(values))
+    requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const iframe = previewIframeRef.current
-          if (iframe?.contentWindow) {
-            iframe.contentWindow.focus()
-          }
-        })
+        const iframe = previewIframeRef.current
+        if (iframe?.contentWindow) {
+          iframe.contentWindow.focus()
+        }
       })
-    },
-    [buildHtml, getValues],
-  )
+    })
+  }, [buildHtml, getValues])
 
   const manufacturerData = useMemo(() => {
     if (!formData?.manufacturersData) return []
@@ -357,7 +369,13 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
           <ModalBody>
             <Stack spacing={6}>
               <Box borderWidth="1px" borderRadius="lg" p={4}>
-                <Text fontSize="sm" textTransform="uppercase" fontWeight="semibold" color={iconGray} mb={4}>
+                <Text
+                  fontSize="sm"
+                  textTransform="uppercase"
+                  fontWeight="semibold"
+                  color={iconGray}
+                  mb={4}
+                >
                   {t('proposalCommon.visibilityOptions', 'Visibility Options')}
                 </Text>
                 <SimpleGrid columns={isMobile ? 1 : 3} spacing={4}>
@@ -377,9 +395,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                             refreshPreview({ showProposalItems: checked })
                           }}
                         />
-                        <Text fontWeight="medium">
-                          {t('proposalCommon.showProposalItems')}
-                        </Text>
+                        <Text fontWeight="medium">{t('proposalCommon.showProposalItems')}</Text>
                       </HStack>
                     )}
                   />
@@ -399,9 +415,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                             refreshPreview({ showGroupItems: checked })
                           }}
                         />
-                        <Text fontWeight="medium">
-                          {t('proposalCommon.showGroupItems')}
-                        </Text>
+                        <Text fontWeight="medium">{t('proposalCommon.showGroupItems')}</Text>
                       </HStack>
                     )}
                   />
@@ -433,9 +447,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
               {versionOptions.length > 0 && (
                 <Box borderWidth="1px" borderRadius="lg" p={4}>
                   <HStack justify="space-between" align="center" mb={3} spacing={4} flexWrap="wrap">
-                    <Text fontWeight="semibold">
-                      {t('proposalCommon.selectVersion')}
-                    </Text>
+                    <Text fontWeight="semibold">{t('proposalCommon.selectVersion')}</Text>
                     {versionOptions.length > 1 && (
                       <HStack spacing={4}>
                         <Button size="sm" minH="44px" variant="outline" onClick={selectAllVersions}>
@@ -482,9 +494,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
 
               <Box borderWidth="1px" borderRadius="lg" p={4}>
                 <HStack justify="space-between" align="center" mb={3} spacing={4} flexWrap="wrap">
-                  <Text fontWeight="semibold">
-                    {t('proposalCommon.selectColumns')}
-                  </Text>
+                  <Text fontWeight="semibold">{t('proposalCommon.selectColumns')}</Text>
                   <HStack spacing={4}>
                     <Button size="sm" minH="44px" variant="outline" onClick={selectAllColumns}>
                       {t('common.selectAll', 'Select All')}
@@ -531,7 +541,12 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <HStack spacing={4} flexWrap={isMobile ? 'wrap' : 'nowrap'} width="100%" justify={isMobile ? 'stretch' : 'flex-end'}>
+            <HStack
+              spacing={4}
+              flexWrap={isMobile ? 'wrap' : 'nowrap'}
+              width="100%"
+              justify={isMobile ? 'stretch' : 'flex-end'}
+            >
               <MotionButton
                 variant="outline"
                 colorScheme="gray"
@@ -539,7 +554,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 whileTap={{ scale: 0.98 }}
                 flex={isMobile ? '1' : 'unset'}
                 minH="44px"
-                fontSize={{ base: "sm", md: "md" }}
+                fontSize={{ base: 'sm', md: 'md' }}
               >
                 <HStack spacing={4} justify="center" width="100%">
                   <Icon as={Eye} boxSize={ICON_BOX_MD} />
@@ -553,7 +568,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 whileTap={{ scale: 0.98 }}
                 flex={isMobile ? '1' : 'unset'}
                 minH="44px"
-                fontSize={{ base: "sm", md: "md" }}
+                fontSize={{ base: 'sm', md: 'md' }}
               >
                 <HStack spacing={4} justify="center" width="100%">
                   <Icon as={Printer} boxSize={ICON_BOX_MD} />
@@ -567,7 +582,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 whileTap={{ scale: 0.98 }}
                 flex={isMobile ? '1' : 'unset'}
                 minH="44px"
-                fontSize={{ base: "sm", md: "md" }}
+                fontSize={{ base: 'sm', md: 'md' }}
               >
                 {isLoading ? (
                   <HStack spacing={4} justify="center" width="100%">

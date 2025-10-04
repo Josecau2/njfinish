@@ -201,11 +201,11 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
   }
 
   return (
-    <Modal isOpen={show} onClose={handleCancel} size='xl' isCentered scrollBehavior='inside'>
+    <Modal isOpen={show} onClose={handleCancel} size="xl" isCentered scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent as='form' onSubmit={handleSubmit(onSubmit)} className='email-proposal-modal'>
+      <ModalContent as="form" onSubmit={handleSubmit(onSubmit)} className="email-proposal-modal">
         <ModalHeader>
-          <Text fontSize='lg' fontWeight='semibold'>
+          <Text fontSize="lg" fontWeight="semibold">
             {t('proposalCommon.emailTitle')}
           </Text>
         </ModalHeader>
@@ -214,12 +214,12 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
         <ModalBody>
           <Stack spacing={5}>
             <FormControl isInvalid={!!errors.email} isRequired>
-              <FormLabel htmlFor='email' fontWeight='semibold'>
+              <FormLabel htmlFor="email" fontWeight="semibold">
                 {t('proposalCommon.emailAddress')}
               </FormLabel>
               <Input
-                id='email'
-                type='email'
+                id="email"
+                type="email"
                 placeholder={t('proposalCommon.emailPlaceholder')}
                 isDisabled={loading}
                 {...register('email', {
@@ -234,11 +234,11 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
             </FormControl>
 
             <FormControl isInvalid={!!errors.body} isRequired>
-              <FormLabel htmlFor='body' fontWeight='semibold'>
+              <FormLabel htmlFor="body" fontWeight="semibold">
                 {t('proposalCommon.emailBody')}
               </FormLabel>
               <Textarea
-                id='body'
+                id="body"
                 rows={6}
                 placeholder={t('proposalCommon.emailBodyPlaceholder', 'Write your message...')}
                 isDisabled={loading}
@@ -249,26 +249,26 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
               <FormErrorMessage>{errors.body && errors.body.message}</FormErrorMessage>
             </FormControl>
 
-            <HStack spacing={4} align='center'>
+            <HStack spacing={4} align="center">
               <Controller
                 control={control}
-                name='sendCopy'
+                name="sendCopy"
                 render={({ field }) => (
                   <Switch
-                    id='sendCopy'
-                    colorScheme='brand'
-                    size='lg'
+                    id="sendCopy"
+                    colorScheme="brand"
+                    size="lg"
                     isChecked={field.value}
                     onChange={(event) => field.onChange(event.target.checked)}
                     isDisabled={loading}
                   />
                 )}
               />
-              <Text fontWeight='medium'>{t('proposalCommon.includeItems')}</Text>
+              <Text fontWeight="medium">{t('proposalCommon.includeItems')}</Text>
             </HStack>
 
             {catalogCount > 0 && (
-              <Text fontSize='sm' color='gray.500'>
+              <Text fontSize="sm" color="gray.500">
                 {t('proposalCommon.catalogItemsIncluded', {
                   count: catalogCount,
                   defaultValue: '{{count}} catalog items will be included in the PDF.',
@@ -276,23 +276,21 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
               </Text>
             )}
 
-            <HStack spacing={4} align='center'>
+            <HStack spacing={4} align="center">
               <Controller
                 control={control}
-                name='updateCustomerEmail'
+                name="updateCustomerEmail"
                 render={({ field }) => (
                   <Checkbox
-                    id='updateCustomerEmail'
-                    size='lg'
+                    id="updateCustomerEmail"
+                    size="lg"
                     isChecked={field.value}
                     onChange={(event) => field.onChange(event.target.checked)}
                     isDisabled={loading}
                   />
                 )}
               />
-              <Text fontWeight='semibold'>
-                {t('proposalCommon.updateCustomerEmail')}
-              </Text>
+              <Text fontWeight="semibold">{t('proposalCommon.updateCustomerEmail')}</Text>
             </HStack>
           </Stack>
         </ModalBody>
@@ -300,27 +298,27 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
         <ModalFooter>
           <HStack spacing={4}>
             <MotionButton
-              variant='outline'
-              colorScheme='gray'
+              variant="outline"
+              colorScheme="gray"
               onClick={handleCancel}
               isDisabled={loading}
               whileTap={{ scale: 0.98 }}
               minH="44px"
-              fontSize={{ base: "sm", md: "md" }}
+              fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('common.cancel')}
             </MotionButton>
             <MotionButton
-              type='submit'
-              colorScheme='brand'
+              type="submit"
+              colorScheme="brand"
               isDisabled={loading}
               whileTap={{ scale: 0.98 }}
               minH="44px"
-              fontSize={{ base: "sm", md: "md" }}
+              fontSize={{ base: 'sm', md: 'md' }}
             >
               {loading ? (
                 <HStack spacing={4}>
-                  <Spinner size='sm' />
+                  <Spinner size="sm" />
                   <Text>{t('proposalCommon.sending')}</Text>
                 </HStack>
               ) : (

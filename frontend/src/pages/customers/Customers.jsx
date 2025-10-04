@@ -1,11 +1,66 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Alert, AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertIcon, Badge, Box, Button, CardBody, Center, Container, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Skeleton, SkeletonText, Spinner, Stack, Stat, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack, useDisclosure, useToast, useColorModeValue } from '@chakra-ui/react'
+import {
+  Alert,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  AlertIcon,
+  Badge,
+  Box,
+  Button,
+  CardBody,
+  Center,
+  Container,
+  HStack,
+  Icon,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Select,
+  SimpleGrid,
+  Skeleton,
+  SkeletonText,
+  Spinner,
+  Stack,
+  Stat,
+  StatLabel,
+  StatNumber,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  VStack,
+  useDisclosure,
+  useToast,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { Search, Pencil, Trash, Plus, User, Mail, Phone, MapPin, Users, ChevronsUpDown, ChevronUp, ChevronDown } from 'lucide-react'
+import {
+  Search,
+  Pencil,
+  Trash,
+  Plus,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Users,
+  ChevronsUpDown,
+  ChevronUp,
+  ChevronDown,
+} from 'lucide-react'
 
 import { fetchCustomers, deleteCustomer } from '../../store/slices/customerSlice'
 import { buildEncodedPath, genNoise } from '../../utils/obfuscate'
@@ -26,12 +81,12 @@ const CustomerTable = ({
   const navigate = useNavigate()
 
   // Color mode values - MUST be before useState
-  const statLabelColor = useColorModeValue("gray.500", "gray.400")
-  const borderBlue = useColorModeValue("blue.500", "blue.400")
-  const iconGray = useColorModeValue("gray.400", "gray.500")
-  const textGray500 = useColorModeValue("gray.500", "gray.400")
-  const iconGray300 = useColorModeValue("gray.300", "gray.600")
-  const textGray600 = useColorModeValue("gray.600", "gray.400")
+  const statLabelColor = useColorModeValue('gray.500', 'gray.400')
+  const borderBlue = useColorModeValue('blue.500', 'blue.400')
+  const iconGray = useColorModeValue('gray.400', 'gray.500')
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const iconGray300 = useColorModeValue('gray.300', 'gray.600')
+  const textGray600 = useColorModeValue('gray.600', 'gray.400')
 
   const customers = useSelector((state) => state.customers.list)
   const loading = useSelector((state) => state.customers.loading)
@@ -79,7 +134,9 @@ const CustomerTable = ({
   }
 
   const handleEdit = (customer) => {
-    const noisyPath = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/customers/edit/:id', { id: customer.id })
+    const noisyPath =
+      `/${genNoise(6)}/${genNoise(8)}` +
+      buildEncodedPath('/customers/edit/:id', { id: customer.id })
     navigate(noisyPath)
   }
 
@@ -124,7 +181,8 @@ const CustomerTable = ({
       toast({
         title: t('common.error', 'Error!'),
         description:
-          err.message || t('customers.deleteFailed', 'Failed to delete customer. Please try again.'),
+          err.message ||
+          t('customers.deleteFailed', 'Failed to delete customer. Please try again.'),
         status: 'error',
         duration: 4000,
         isClosable: true,
@@ -137,8 +195,9 @@ const CustomerTable = ({
 
   const sortedFilteredCustomers = useMemo(() => {
     const query = searchTerm.trim().toLowerCase()
-    let filtered = customers.filter((cust) =>
-      cust.name?.toLowerCase().includes(query) || cust.email?.toLowerCase().includes(query),
+    let filtered = customers.filter(
+      (cust) =>
+        cust.name?.toLowerCase().includes(query) || cust.email?.toLowerCase().includes(query),
     )
 
     if (sortConfig.key) {
@@ -182,8 +241,8 @@ const CustomerTable = ({
                 leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} />}
                 onClick={handleNewCustomer}
                 minH="44px"
-                maxW={{ base: "180px", md: "none" }}
-                fontSize={{ base: "sm", md: "md" }}
+                maxW={{ base: '180px', md: 'none' }}
+                fontSize={{ base: 'sm', md: 'md' }}
               >
                 {t('nav.addCustomer')}
               </Button>
@@ -228,7 +287,11 @@ const CustomerTable = ({
 
         <StandardCard variant="outline">
           <CardBody>
-            <Stack direction={{ base: 'column', lg: 'row' }} spacing={4} align={{ base: 'stretch', lg: 'center' }}>
+            <Stack
+              direction={{ base: 'column', lg: 'row' }}
+              spacing={4}
+              align={{ base: 'stretch', lg: 'center' }}
+            >
               <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
@@ -261,8 +324,8 @@ const CustomerTable = ({
 
               <Box flex="1" textAlign={{ base: 'left', lg: 'right' }}>
                 <Text fontSize="sm" color={textGray500}>
-                  {t('customers.showing', 'Showing')} {filteredCount} {t('customers.of', 'of')} {total}{' '}
-                  {t('customers.customersLower', 'customers')}
+                  {t('customers.showing', 'Showing')} {filteredCount} {t('customers.of', 'of')}{' '}
+                  {total} {t('customers.customersLower', 'customers')}
                   {isContractor && contractorGroupName && (
                     <Text as="span" color="brand.500" ml={1}>
                       ({contractorGroupName})
@@ -297,14 +360,30 @@ const CustomerTable = ({
                       <Tbody>
                         {[1, 2, 3, 4, 5].map((i) => (
                           <Tr key={i}>
-                            <Td><Skeleton height="20px" width="60px" /></Td>
-                            <Td><Skeleton height="20px" /></Td>
-                            <Td><Skeleton height="20px" /></Td>
-                            <Td><Skeleton height="20px" width="80%" /></Td>
-                            <Td><Skeleton height="20px" width="90%" /></Td>
-                            <Td><Skeleton height="20px" width="40px" /></Td>
-                            <Td><Skeleton height="20px" width="40px" /></Td>
-                            <Td><Skeleton height="32px" width="80px" mx="auto" /></Td>
+                            <Td>
+                              <Skeleton height="20px" width="60px" />
+                            </Td>
+                            <Td>
+                              <Skeleton height="20px" />
+                            </Td>
+                            <Td>
+                              <Skeleton height="20px" />
+                            </Td>
+                            <Td>
+                              <Skeleton height="20px" width="80%" />
+                            </Td>
+                            <Td>
+                              <Skeleton height="20px" width="90%" />
+                            </Td>
+                            <Td>
+                              <Skeleton height="20px" width="40px" />
+                            </Td>
+                            <Td>
+                              <Skeleton height="20px" width="40px" />
+                            </Td>
+                            <Td>
+                              <Skeleton height="32px" width="80px" mx="auto" />
+                            </Td>
                           </Tr>
                         ))}
                       </Tbody>
@@ -418,13 +497,41 @@ const CustomerTable = ({
                                   {t('customers.main', 'Main')}
                                 </Badge>
                               </Td>
-                              <Td fontWeight="medium" isTruncated maxW={{ base: "150px", lg: "180px", xl: "220px", "2xl": "280px" }}>{cust.name || 'N/A'}</Td>
-                              <Td color={textGray600} isTruncated maxW={{ base: "150px", lg: "180px", xl: "220px", "2xl": "280px" }}>{cust.email || 'N/A'}</Td>
-                              <Td color={textGray600} isTruncated maxW={{ base: "120px", lg: "140px", xl: "160px" }}>{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Td>
-                              <Td color={textGray600} isTruncated maxW={{ base: "180px", lg: "220px", xl: "280px", "2xl": "320px" }}>{formatAddress(cust) || t('customers.noAddress', 'No address')}</Td>
+                              <Td
+                                fontWeight="medium"
+                                isTruncated
+                                maxW={{ base: '150px', lg: '180px', xl: '220px', '2xl': '280px' }}
+                              >
+                                {cust.name || 'N/A'}
+                              </Td>
+                              <Td
+                                color={textGray600}
+                                isTruncated
+                                maxW={{ base: '150px', lg: '180px', xl: '220px', '2xl': '280px' }}
+                              >
+                                {cust.email || 'N/A'}
+                              </Td>
+                              <Td
+                                color={textGray600}
+                                isTruncated
+                                maxW={{ base: '120px', lg: '140px', xl: '160px' }}
+                              >
+                                {cust.mobile ||
+                                  cust.homePhone ||
+                                  t('customers.noPhone', 'No phone')}
+                              </Td>
+                              <Td
+                                color={textGray600}
+                                isTruncated
+                                maxW={{ base: '180px', lg: '220px', xl: '280px', '2xl': '320px' }}
+                              >
+                                {formatAddress(cust) || t('customers.noAddress', 'No address')}
+                              </Td>
                               <Td>
                                 <Badge colorScheme="brand">
-                                  {t('customers.proposalsCount', { count: cust.proposalCount || 0 })}
+                                  {t('customers.proposalsCount', {
+                                    count: cust.proposalCount || 0,
+                                  })}
                                 </Badge>
                               </Td>
                               <Td>
@@ -435,7 +542,9 @@ const CustomerTable = ({
                               <Td>
                                 <HStack spacing={4} justify="center">
                                   <PermissionGate action="update" resource="customer" item={cust}>
-                                    <IconButton size="lg" aria-label={t('customers.editTooltip', 'Edit customer')}
+                                    <IconButton
+                                      size="lg"
+                                      aria-label={t('customers.editTooltip', 'Edit customer')}
                                       icon={<Icon as={Pencil} boxSize={ICON_BOX_MD} />}
                                       variant="outline"
                                       colorScheme="brand"
@@ -443,7 +552,9 @@ const CustomerTable = ({
                                     />
                                   </PermissionGate>
                                   <PermissionGate action="delete" resource="customer" item={cust}>
-                                    <IconButton size="lg" aria-label={t('customers.deleteTooltip', 'Delete customer')}
+                                    <IconButton
+                                      size="lg"
+                                      aria-label={t('customers.deleteTooltip', 'Delete customer')}
                                       icon={<Icon as={Trash} boxSize={ICON_BOX_MD} />}
                                       variant="outline"
                                       colorScheme="red"
@@ -467,7 +578,11 @@ const CustomerTable = ({
                 <StandardCard variant="outline">
                   <CardBody>
                     <Center flexDirection="column" gap={4}>
-                      <Icon as={Search} boxSize={10} color={useColorModeValue("gray.300","gray.600")} />
+                      <Icon
+                        as={Search}
+                        boxSize={10}
+                        color={useColorModeValue('gray.300', 'gray.600')}
+                      />
                       <Text>{t('customers.noResults')}</Text>
                       <Text fontSize="sm" color={textGray500}>
                         {t('customers.tryAdjusting')}
@@ -495,11 +610,15 @@ const CustomerTable = ({
                           </HStack>
                           <HStack spacing={4}>
                             <Icon as={Phone} boxSize={ICON_BOX_MD} />
-                            <Text>{cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}</Text>
+                            <Text>
+                              {cust.mobile || cust.homePhone || t('customers.noPhone', 'No phone')}
+                            </Text>
                           </HStack>
                           <HStack spacing={4}>
                             <Icon as={MapPin} boxSize={ICON_BOX_MD} />
-                            <Text>{formatAddress(cust) || t('customers.noAddress', 'No address')}</Text>
+                            <Text>
+                              {formatAddress(cust) || t('customers.noAddress', 'No address')}
+                            </Text>
                           </HStack>
                         </Stack>
                         <HStack spacing={4}>
@@ -522,7 +641,7 @@ const CustomerTable = ({
                               minH="44px"
                               minW="70px"
                               maxW="140px"
-                              fontSize={{ base: "xs", md: "sm" }}
+                              fontSize={{ base: 'xs', md: 'sm' }}
                             >
                               {t('common.edit')}
                             </Button>
@@ -538,7 +657,7 @@ const CustomerTable = ({
                               minH="44px"
                               minW="70px"
                               maxW="140px"
-                              fontSize={{ base: "xs", md: "sm" }}
+                              fontSize={{ base: 'xs', md: 'sm' }}
                             >
                               {t('common.delete')}
                             </Button>
@@ -566,13 +685,20 @@ const CustomerTable = ({
           </>
         )}
 
-        <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={handleCancelDelete} isCentered>
+        <AlertDialog
+          isOpen={isOpen}
+          leastDestructiveRef={cancelRef}
+          onClose={handleCancelDelete}
+          isCentered
+        >
           <AlertDialogOverlay>
             <AlertDialogContent>
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
                 {t('customers.confirmTitle', 'Are you sure?')}
               </AlertDialogHeader>
-              <AlertDialogBody>{t('customers.confirmText', 'This action cannot be undone!')}</AlertDialogBody>
+              <AlertDialogBody>
+                {t('customers.confirmText', 'This action cannot be undone!')}
+              </AlertDialogBody>
               <AlertDialogFooter>
                 <Button ref={cancelRef} onClick={handleCancelDelete}>
                   {t('customers.confirmNo', 'No, cancel!')}

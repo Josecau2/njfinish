@@ -1,8 +1,29 @@
-
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import { Alert, AlertIcon, Box, Button, CardBody, CardHeader, Container, Flex, FormControl, FormLabel, HStack, Icon, Input, Radio, RadioGroup, Select, Stack, Switch, Text, Textarea, useColorModeValue } from '@chakra-ui/react'
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  CardBody,
+  CardHeader,
+  Container,
+  Flex,
+  FormControl,
+  FormLabel,
+  HStack,
+  Icon,
+  Input,
+  Radio,
+  RadioGroup,
+  Select,
+  Stack,
+  Switch,
+  Text,
+  Textarea,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { CreditCard, Settings, Save } from 'lucide-react'
@@ -68,7 +89,10 @@ const PaymentConfiguration = () => {
         supportedCurrencies: Array.isArray(paymentConfig.supportedCurrencies)
           ? paymentConfig.supportedCurrencies
           : typeof paymentConfig.supportedCurrencies === 'string'
-            ? paymentConfig.supportedCurrencies.split(',').map((c) => c.trim().toUpperCase()).filter(Boolean)
+            ? paymentConfig.supportedCurrencies
+                .split(',')
+                .map((c) => c.trim().toUpperCase())
+                .filter(Boolean)
             : ['USD'],
         settings: paymentConfig.settings || {},
         cardPaymentsEnabled: Boolean(paymentConfig.cardPaymentsEnabled),
@@ -166,36 +190,41 @@ const PaymentConfiguration = () => {
   const showLegacyFields = formData.gatewayProvider !== 'stripe'
   const currencyInputValue = formData.supportedCurrencies.join(', ')
   const settingsTextareaValue =
-    typeof formData.settings === 'object' ? JSON.stringify(formData.settings, null, 2) : formData.settings
+    typeof formData.settings === 'object'
+      ? JSON.stringify(formData.settings, null, 2)
+      : formData.settings
   const previewBg = useColorModeValue('gray.50', 'gray.700')
   const labelColor = useColorModeValue('gray.700', 'gray.300')
 
   const previewDetails = useMemo(
-    () => [
-      {
-        label: t('paymentConfig.gateway.provider', 'Provider'),
-        value: formData.gatewayProvider,
-      },
-      {
-        label: t('paymentConfig.currencies.label', 'Currencies'),
-        value: currencyInputValue || 'USD',
-      },
-      formData.gatewayProvider === 'stripe'
-        ? {
-            label: t('paymentConfig.stripe.publishableKey', 'Publishable key'),
-            value: formData.stripePublishableKey || t('paymentConfig.preview.notSet', 'Not configured'),
-          }
-        : {
-            label: t('paymentConfig.gateway.url', 'Gateway URL'),
-            value: formData.gatewayUrl || t('paymentConfig.preview.notSet', 'Not configured'),
-          },
-      formData.gatewayProvider === 'stripe'
-        ? {
-            label: t('paymentConfig.stripe.cardStatus', 'Card payments enabled'),
-            value: formData.cardPaymentsEnabled ? t('common.yes', 'Yes') : t('common.no', 'No'),
-          }
-        : null,
-    ].filter(Boolean),
+    () =>
+      [
+        {
+          label: t('paymentConfig.gateway.provider', 'Provider'),
+          value: formData.gatewayProvider,
+        },
+        {
+          label: t('paymentConfig.currencies.label', 'Currencies'),
+          value: currencyInputValue || 'USD',
+        },
+        formData.gatewayProvider === 'stripe'
+          ? {
+              label: t('paymentConfig.stripe.publishableKey', 'Publishable key'),
+              value:
+                formData.stripePublishableKey ||
+                t('paymentConfig.preview.notSet', 'Not configured'),
+            }
+          : {
+              label: t('paymentConfig.gateway.url', 'Gateway URL'),
+              value: formData.gatewayUrl || t('paymentConfig.preview.notSet', 'Not configured'),
+            },
+        formData.gatewayProvider === 'stripe'
+          ? {
+              label: t('paymentConfig.stripe.cardStatus', 'Card payments enabled'),
+              value: formData.cardPaymentsEnabled ? t('common.yes', 'Yes') : t('common.no', 'No'),
+            }
+          : null,
+      ].filter(Boolean),
     [formData, currencyInputValue, t],
   )
 
@@ -214,8 +243,8 @@ const PaymentConfiguration = () => {
             isLoading={configLoading}
             isDisabled={configLoading || !isDirty}
             minH="44px"
-            maxW={{ base: "180px", md: "none" }}
-            fontSize={{ base: "sm", md: "md" }}
+            maxW={{ base: '180px', md: 'none' }}
+            fontSize={{ base: 'sm', md: 'md' }}
           >
             {configLoading
               ? t('paymentConfig.buttons.saving', 'Saving...')
@@ -268,19 +297,30 @@ const PaymentConfiguration = () => {
                   minH="44px"
                 />
                 <Text fontSize="xs" color={textGray500} mt={1}>
-                  {t('paymentConfig.currencies.help', 'Comma-separated list of currency codes (ISO 4217)')}
+                  {t(
+                    'paymentConfig.currencies.help',
+                    'Comma-separated list of currency codes (ISO 4217)',
+                  )}
                 </Text>
               </FormControl>
 
               {formData.gatewayProvider === 'stripe' && (
-                <Stack spacing={4} borderWidth="1px" borderColor={borderGray100} borderRadius="lg" p={4}>
+                <Stack
+                  spacing={4}
+                  borderWidth="1px"
+                  borderColor={borderGray100}
+                  borderRadius="lg"
+                  p={4}
+                >
                   <FormControl>
                     <FormLabel fontWeight="medium" color={labelColor}>
                       {t('paymentConfig.stripe.publishableKey', 'Publishable key')}
                     </FormLabel>
                     <Input
                       value={formData.stripePublishableKey}
-                      onChange={(event) => handleInputChange('stripePublishableKey', event.target.value)}
+                      onChange={(event) =>
+                        handleInputChange('stripePublishableKey', event.target.value)
+                      }
                       placeholder="pk_live_..."
                       minH="44px"
                     />
@@ -292,7 +332,9 @@ const PaymentConfiguration = () => {
                     </FormLabel>
                     <Switch
                       isChecked={formData.cardPaymentsEnabled}
-                      onChange={(event) => handleInputChange('cardPaymentsEnabled', event.target.checked)}
+                      onChange={(event) =>
+                        handleInputChange('cardPaymentsEnabled', event.target.checked)
+                      }
                       colorScheme="brand"
                     />
                   </FormControl>
@@ -306,10 +348,16 @@ const PaymentConfiguration = () => {
                       onChange={(value) => handleSecretActionChange('secretKeyAction', value)}
                     >
                       <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
-                        <Radio value={SECRET_ACTIONS.KEEP}>{t('paymentConfig.secret.keep', 'Keep current key')}</Radio>
-                        <Radio value={SECRET_ACTIONS.REPLACE}>{t('paymentConfig.secret.replace', 'Replace key')}</Radio>
+                        <Radio value={SECRET_ACTIONS.KEEP}>
+                          {t('paymentConfig.secret.keep', 'Keep current key')}
+                        </Radio>
+                        <Radio value={SECRET_ACTIONS.REPLACE}>
+                          {t('paymentConfig.secret.replace', 'Replace key')}
+                        </Radio>
                         {secretState.hasSecretKey && (
-                          <Radio value={SECRET_ACTIONS.CLEAR}>{t('paymentConfig.secret.clear', 'Remove key')}</Radio>
+                          <Radio value={SECRET_ACTIONS.CLEAR}>
+                            {t('paymentConfig.secret.clear', 'Remove key')}
+                          </Radio>
                         )}
                       </Stack>
                     </RadioGroup>
@@ -319,7 +367,9 @@ const PaymentConfiguration = () => {
                         type="password"
                         placeholder="sk_live_..."
                         value={secretState.secretKeyValue}
-                        onChange={(event) => handleSecretValueChange('secretKeyValue', event.target.value)}
+                        onChange={(event) =>
+                          handleSecretValueChange('secretKeyValue', event.target.value)
+                        }
                         minH="44px"
                       />
                     )}
@@ -334,10 +384,16 @@ const PaymentConfiguration = () => {
                       onChange={(value) => handleSecretActionChange('webhookSecretAction', value)}
                     >
                       <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
-                        <Radio value={SECRET_ACTIONS.KEEP}>{t('paymentConfig.secret.keep', 'Keep current key')}</Radio>
-                        <Radio value={SECRET_ACTIONS.REPLACE}>{t('paymentConfig.secret.replace', 'Replace key')}</Radio>
+                        <Radio value={SECRET_ACTIONS.KEEP}>
+                          {t('paymentConfig.secret.keep', 'Keep current key')}
+                        </Radio>
+                        <Radio value={SECRET_ACTIONS.REPLACE}>
+                          {t('paymentConfig.secret.replace', 'Replace key')}
+                        </Radio>
                         {secretState.hasWebhookSecret && (
-                          <Radio value={SECRET_ACTIONS.CLEAR}>{t('paymentConfig.secret.clear', 'Remove key')}</Radio>
+                          <Radio value={SECRET_ACTIONS.CLEAR}>
+                            {t('paymentConfig.secret.clear', 'Remove key')}
+                          </Radio>
                         )}
                       </Stack>
                     </RadioGroup>
@@ -347,7 +403,9 @@ const PaymentConfiguration = () => {
                         type="password"
                         placeholder="whsec_..."
                         value={secretState.webhookSecretValue}
-                        onChange={(event) => handleSecretValueChange('webhookSecretValue', event.target.value)}
+                        onChange={(event) =>
+                          handleSecretValueChange('webhookSecretValue', event.target.value)
+                        }
                         minH="44px"
                       />
                     )}
@@ -356,7 +414,13 @@ const PaymentConfiguration = () => {
               )}
 
               {showLegacyFields && (
-                <Stack spacing={4} borderWidth="1px" borderColor={borderGray100} borderRadius="lg" p={4}>
+                <Stack
+                  spacing={4}
+                  borderWidth="1px"
+                  borderColor={borderGray100}
+                  borderRadius="lg"
+                  p={4}
+                >
                   <FormControl>
                     <FormLabel fontWeight="medium" color={labelColor}>
                       {t('paymentConfig.gateway.url', 'Gateway URL')}
@@ -377,10 +441,16 @@ const PaymentConfiguration = () => {
                       rows={6}
                       value={formData.embedCode}
                       onChange={(event) => handleInputChange('embedCode', event.target.value)}
-                      placeholder={t('paymentConfig.embed.placeholder', "Paste your payment gateway's embed code here...")}
+                      placeholder={t(
+                        'paymentConfig.embed.placeholder',
+                        "Paste your payment gateway's embed code here...",
+                      )}
                     />
                     <Text fontSize="xs" color={textGray500} mt={1}>
-                      {t('paymentConfig.embed.help', 'Optional: HTML/JavaScript code to embed payment forms directly in your pages')}
+                      {t(
+                        'paymentConfig.embed.help',
+                        'Optional: HTML/JavaScript code to embed payment forms directly in your pages',
+                      )}
                     </Text>
                   </FormControl>
                 </Stack>
@@ -401,7 +471,10 @@ const PaymentConfiguration = () => {
 }`}
                 />
                 <Text fontSize="xs" color={textGray500} mt={1}>
-                  {t('paymentConfig.advanced.help', 'Additional configuration options in JSON format')}
+                  {t(
+                    'paymentConfig.advanced.help',
+                    'Additional configuration options in JSON format',
+                  )}
                 </Text>
               </FormControl>
             </Stack>
@@ -418,7 +491,14 @@ const PaymentConfiguration = () => {
             </HStack>
           </CardHeader>
           <CardBody>
-            <Stack spacing={4} bg={previewBg} borderRadius="lg" p={4} borderWidth="1px" borderColor={borderGray100}>
+            <Stack
+              spacing={4}
+              bg={previewBg}
+              borderRadius="lg"
+              p={4}
+              borderWidth="1px"
+              borderColor={borderGray100}
+            >
               {previewDetails.map((item) => (
                 <Flex key={item.label} justify="space-between" wrap="wrap" gap={4}>
                   <Text fontWeight="semibold" color={textGray600}>

@@ -4,7 +4,21 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Select, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
+import {
+  Badge,
+  Box,
+  Button,
+  CardBody,
+  Container,
+  Flex,
+  HStack,
+  Icon,
+  Select,
+  Spinner,
+  Stack,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import { Calendar, Filter, RefreshCw } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -23,11 +37,11 @@ const EVENT_TYPES = [
 ]
 
 const EVENT_COLORS = {
-  'Measurement Scheduled': "blue.500",
-  'Design Scheduled': "green.500",
-  'Follow Up 1': "orange.500",
-  'Follow Up 2': "red.500",
-  'Follow Up 3': "purple.500",
+  'Measurement Scheduled': 'blue.500',
+  'Design Scheduled': 'green.500',
+  'Follow Up 1': 'orange.500',
+  'Follow Up 2': 'red.500',
+  'Follow Up 3': 'purple.500',
 }
 
 const BADGE_SCHEMES = {
@@ -39,7 +53,6 @@ const BADGE_SCHEMES = {
 }
 
 const CalendarView = () => {
-
   // Color mode values
   const iconGray400 = useColorModeValue('gray.400', 'gray.500')
   const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
@@ -66,9 +79,9 @@ const CalendarView = () => {
         baseTitle: event.title,
         date: event.date,
         allDay: true,
-        backgroundColor: EVENT_COLORS[event.title] || "gray.500",
-        borderColor: EVENT_COLORS[event.title] || "gray.500",
-        textColor: "white",
+        backgroundColor: EVENT_COLORS[event.title] || 'gray.500',
+        borderColor: EVENT_COLORS[event.title] || 'gray.500',
+        textColor: 'white',
         extendedProps: {
           description: event.description || '',
           salesRep: event.salesRep || '',
@@ -106,8 +119,8 @@ const CalendarView = () => {
 
   const handleEventClick = (info) => {
     const proposalId = info.event.id
-    const noisyPath = `/${genNoise(6)}/${genNoise(8)}` +
-      buildEncodedPath('/quotes/edit/:id', { id: proposalId })
+    const noisyPath =
+      `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/quotes/edit/:id', { id: proposalId })
     navigate(noisyPath)
   }
 
@@ -145,7 +158,11 @@ const CalendarView = () => {
 
         <StandardCard>
           <CardBody>
-            <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }}>
+            <Flex
+              direction={{ base: 'column', md: 'row' }}
+              gap={4}
+              align={{ base: 'stretch', md: 'center' }}
+            >
               <HStack spacing={4} flex="1">
                 <Icon as={Filter} color={iconGray400} />
                 <Select value={eventType} onChange={handleFilterChange} maxW="240px">
@@ -164,8 +181,8 @@ const CalendarView = () => {
                 colorScheme="brand"
                 alignSelf={{ base: 'flex-start', md: 'initial' }}
                 minH="44px"
-                maxW={{ base: "140px", md: "none" }}
-                fontSize={{ base: "sm", md: "md" }}
+                maxW={{ base: '140px', md: 'none' }}
+                fontSize={{ base: 'sm', md: 'md' }}
               >
                 Refresh
               </Button>

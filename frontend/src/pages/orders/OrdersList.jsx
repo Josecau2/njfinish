@@ -57,10 +57,10 @@ const OrdersList = ({
   const hoverBg = useColorModeValue('gray.50', 'gray.700')
   const stickyBg = useColorModeValue('white', 'gray.800')
   const emptyIconColor = useColorModeValue('gray.400', 'gray.500')
-  const emptyTextColor = useColorModeValue("gray.500", "gray.400")
-  const iconColor = useColorModeValue("gray.400", "gray.500")
-  const textGray500 = useColorModeValue("gray.500", "gray.400")
-  const textGray600 = useColorModeValue("gray.600", "gray.400")
+  const emptyTextColor = useColorModeValue('gray.500', 'gray.400')
+  const iconColor = useColorModeValue('gray.400', 'gray.500')
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray600 = useColorModeValue('gray.600', 'gray.400')
 
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
@@ -451,9 +451,7 @@ const OrdersList = ({
       return (
         <div>
           <div>{contractor}</div>
-          <div style={{ fontSize: "12px" }}>
-            {endUser}
-          </div>
+          <div style={{ fontSize: '12px' }}>{endUser}</div>
         </div>
       )
     }
@@ -492,16 +490,19 @@ const OrdersList = ({
               <Icon as={Search} boxSize={ICON_BOX_MD} color={iconColor} />
             </InputLeftElement>
             <Input
-            id="orders-search"
-            name="ordersSearch"
-            type="search"
-            placeholder={t('orders.searchPlaceholder', 'Search by customer, order number, or description')}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            aria-label={t('orders.searchAria', 'Search orders by customer name')}
-            autoComplete="off"
-          />
-        </InputGroup>
+              id="orders-search"
+              name="ordersSearch"
+              type="search"
+              placeholder={t(
+                'orders.searchPlaceholder',
+                'Search by customer, order number, or description',
+              )}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              aria-label={t('orders.searchAria', 'Search orders by customer name')}
+              autoComplete="off"
+            />
+          </InputGroup>
         </Box>
         <Text fontSize="sm" color={textGray500} aria-live="polite" aria-atomic="true">
           {t('orders.showingCount', {
@@ -515,34 +516,34 @@ const OrdersList = ({
       <Box display={{ base: 'none', lg: 'block' }}>
         <TableContainer>
           <Table size="sm" variant="simple">
-          <Thead>
-            <Tr>
-              <Th position="sticky" left={0} bg={stickyBg} zIndex={1}>
-                {t('orders.headers.date', 'Date')}
-              </Th>
-              <Th>{t('orders.headers.orderNumber', 'Order #')}</Th>
-              <Th>{t('orders.headers.customer', 'Customer')}</Th>
-              <Th>{t('orders.headers.description', 'Description')}</Th>
-              <Th>{t('orders.headers.manufacturer', 'Manufacturer')}</Th>
-              <Th>{t('orders.headers.status', 'Status')}</Th>
-              <Th>{t('orders.headers.payment', 'Payment')}</Th>
-              <Th>{t('orders.headers.actions', 'Actions')}</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {paged.length === 0 ? (
+            <Thead>
               <Tr>
-                <Td colSpan={8} textAlign="center" py={5}>
-                  <VStack spacing={4}>
-                    <ShoppingCart size={48} color={emptyIconColor} />
-                    <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
-                    <Text fontSize="sm" color={emptyTextColor}>
-                      {t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}
-                    </Text>
-                  </VStack>
-                </Td>
+                <Th position="sticky" left={0} bg={stickyBg} zIndex={1}>
+                  {t('orders.headers.date', 'Date')}
+                </Th>
+                <Th>{t('orders.headers.orderNumber', 'Order #')}</Th>
+                <Th>{t('orders.headers.customer', 'Customer')}</Th>
+                <Th>{t('orders.headers.description', 'Description')}</Th>
+                <Th>{t('orders.headers.manufacturer', 'Manufacturer')}</Th>
+                <Th>{t('orders.headers.status', 'Status')}</Th>
+                <Th>{t('orders.headers.payment', 'Payment')}</Th>
+                <Th>{t('orders.headers.actions', 'Actions')}</Th>
               </Tr>
-            ) : (
+            </Thead>
+            <Tbody>
+              {paged.length === 0 ? (
+                <Tr>
+                  <Td colSpan={8} textAlign="center" py={5}>
+                    <VStack spacing={4}>
+                      <ShoppingCart size={48} color={emptyIconColor} />
+                      <Text fontSize="md">{t('orders.empty.title', 'No orders found')}</Text>
+                      <Text fontSize="sm" color={emptyTextColor}>
+                        {t('orders.empty.subtitle', 'Accepted & locked quotes will appear here')}
+                      </Text>
+                    </VStack>
+                  </Td>
+                </Tr>
+              ) : (
                 paged.map((item) => {
                   const paymentInfo = getPaymentStatus(item.id)
                   return (
@@ -552,80 +553,90 @@ const OrdersList = ({
                       _hover={{ bg: hoverBg }}
                       onClick={() => openDetails(item.id)}
                     >
-                    <Td position="sticky" left={0} bg={stickyBg} zIndex={1}>
-                      {new Date(
-                        item.accepted_at || item.date || item.createdAt,
-                      ).toLocaleDateString()}
-                    </Td>
-                    <Td>{getDisplayOrderNumber(item)}</Td>
-                    <Td isTruncated maxW="200px">{renderCustomerCell(item)}</Td>
-                    <Td color={textGray500} isTruncated maxW="250px">
-                      {(item.description || item?.proposal?.description || '').trim() ||
-                        t('common.na')}
-                    </Td>
-                    <Td isTruncated maxW="150px">{resolveManuName(item)}</Td>
-                    <Td>
-                      <Badge colorScheme={getStatusColorScheme(item.status || 'accepted')} borderRadius="full">
-                        {item.status || 'accepted'}
-                      </Badge>
-                    </Td>
-                    <Td>
-                      <VStack align="start" spacing={4}>
-                        <Badge colorScheme={getPaymentColorScheme(paymentInfo.status)} borderRadius="full">
-                          {paymentInfo.label}
+                      <Td position="sticky" left={0} bg={stickyBg} zIndex={1}>
+                        {new Date(
+                          item.accepted_at || item.date || item.createdAt,
+                        ).toLocaleDateString()}
+                      </Td>
+                      <Td>{getDisplayOrderNumber(item)}</Td>
+                      <Td isTruncated maxW="200px">
+                        {renderCustomerCell(item)}
+                      </Td>
+                      <Td color={textGray500} isTruncated maxW="250px">
+                        {(item.description || item?.proposal?.description || '').trim() ||
+                          t('common.na')}
+                      </Td>
+                      <Td isTruncated maxW="150px">
+                        {resolveManuName(item)}
+                      </Td>
+                      <Td>
+                        <Badge
+                          colorScheme={getStatusColorScheme(item.status || 'accepted')}
+                          borderRadius="full"
+                        >
+                          {item.status || 'accepted'}
                         </Badge>
-                        {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
-                          <Text fontSize="xs" color={textGray500}>
-                            {t('payments.appliedOn', 'Applied on')}{' '}
-                            {new Date(paymentInfo.paidAt).toLocaleDateString()}
-                          </Text>
-                        )}
-                      </VStack>
-                    </Td>
-                    <Td>
-                      <HStack spacing={4}>
-                        {paymentInfo.showButton && (
-                          <Button
-                            colorScheme="brand"
-                            size="sm"
-                            leftIcon={<CreditCard size={ICON_SIZE_MD} />}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleMakePayment(item.id)
-                            }}
-                            minH="44px"
-                            maxW="180px"
-                            fontSize={{ base: "xs", md: "sm" }}
+                      </Td>
+                      <Td>
+                        <VStack align="start" spacing={4}>
+                          <Badge
+                            colorScheme={getPaymentColorScheme(paymentInfo.status)}
+                            borderRadius="full"
                           >
-                            {t('orders.actions.makePayment', 'Make Payment')}
-                          </Button>
-                        )}
-                        {paymentInfo.status === 'paid' && (
-                          <Button
-                            colorScheme="green"
-                            size="sm"
-                            variant="outline"
-                            leftIcon={<Download size={ICON_SIZE_MD} />}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              const payment = getOrderPayment(item.id)
-                              handleDownloadReceipt(item, payment)
-                            }}
-                            minH="44px"
-                            maxW="200px"
-                            fontSize={{ base: "xs", md: "sm" }}
-                          >
-                            {t('orders.actions.downloadInvoice', 'Download Invoice')}
-                          </Button>
-                        )}
-                      </HStack>
-                    </Td>
+                            {paymentInfo.label}
+                          </Badge>
+                          {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
+                            <Text fontSize="xs" color={textGray500}>
+                              {t('payments.appliedOn', 'Applied on')}{' '}
+                              {new Date(paymentInfo.paidAt).toLocaleDateString()}
+                            </Text>
+                          )}
+                        </VStack>
+                      </Td>
+                      <Td>
+                        <HStack spacing={4}>
+                          {paymentInfo.showButton && (
+                            <Button
+                              colorScheme="brand"
+                              size="sm"
+                              leftIcon={<CreditCard size={ICON_SIZE_MD} />}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleMakePayment(item.id)
+                              }}
+                              minH="44px"
+                              maxW="180px"
+                              fontSize={{ base: 'xs', md: 'sm' }}
+                            >
+                              {t('orders.actions.makePayment', 'Make Payment')}
+                            </Button>
+                          )}
+                          {paymentInfo.status === 'paid' && (
+                            <Button
+                              colorScheme="green"
+                              size="sm"
+                              variant="outline"
+                              leftIcon={<Download size={ICON_SIZE_MD} />}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                const payment = getOrderPayment(item.id)
+                                handleDownloadReceipt(item, payment)
+                              }}
+                              minH="44px"
+                              maxW="200px"
+                              fontSize={{ base: 'xs', md: 'sm' }}
+                            >
+                              {t('orders.actions.downloadInvoice', 'Download Invoice')}
+                            </Button>
+                          )}
+                        </HStack>
+                      </Td>
                     </Tr>
                   )
                 })
               )}
-          </Tbody>
-        </Table>
+            </Tbody>
+          </Table>
         </TableContainer>
       </Box>
 
@@ -657,100 +668,107 @@ const OrdersList = ({
                   }
                 }}
               >
-                  <VStack align="stretch" spacing={4} h="full" justify="space-between">
-                    <Flex justify="space-between" align="center">
-                      <VStack align="start" spacing={4}>
-                        {isContractor ? (
-                          <Text fontWeight="semibold">{item.customer?.name || t('common.na')}</Text>
-                        ) : (
-                          <VStack align="start" spacing={0}>
-                            <Text fontWeight="semibold">
-                              {item?.Owner?.group?.name ||
-                                item?.ownerGroup?.name ||
-                                item?.Owner?.name ||
-                                t('common.na')}
-                            </Text>
-                            <Text fontSize="sm" color={textGray500}>
-                              {item?.customer?.name || t('common.na')}
-                            </Text>
-                          </VStack>
-                        )}
-                      </VStack>
-                      <VStack align="end" spacing={4}>
-                        <Badge colorScheme={getStatusColorScheme(item.status || 'accepted')} borderRadius="full">
-                          {item.status || 'accepted'}
-                        </Badge>
-                        <VStack align="end" spacing={0}>
-                          <Badge colorScheme={getPaymentColorScheme(paymentInfo.status)} borderRadius="full" size="sm">
-                            {paymentInfo.label}
-                          </Badge>
-                          {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
-                            <Text fontSize="xs" color={textGray500}>
-                              {t('payments.appliedOn', 'Applied on')}{' '}
-                              {new Date(paymentInfo.paidAt).toLocaleDateString()}
-                            </Text>
-                          )}
+                <VStack align="stretch" spacing={4} h="full" justify="space-between">
+                  <Flex justify="space-between" align="center">
+                    <VStack align="start" spacing={4}>
+                      {isContractor ? (
+                        <Text fontWeight="semibold">{item.customer?.name || t('common.na')}</Text>
+                      ) : (
+                        <VStack align="start" spacing={0}>
+                          <Text fontWeight="semibold">
+                            {item?.Owner?.group?.name ||
+                              item?.ownerGroup?.name ||
+                              item?.Owner?.name ||
+                              t('common.na')}
+                          </Text>
+                          <Text fontSize="sm" color={textGray500}>
+                            {item?.customer?.name || t('common.na')}
+                          </Text>
                         </VStack>
-                      </VStack>
-                    </Flex>
-                    <VStack align="stretch" spacing={4}>
-                      <Text fontSize="sm" color={textGray600}>
-                        {new Date(
-                          item.accepted_at || item.date || item.createdAt,
-                        ).toLocaleDateString()}
-                      </Text>
-                      <Text fontSize="sm" color={textGray600}>
-                        {t('orders.headers.manufacturer', 'Manufacturer')}: {resolveManuName(item)}
-                      </Text>
-                      <Text fontSize="sm" color={textGray600}>
-                        {t('orders.headers.orderNumber', 'Order #')}: {getDisplayOrderNumber(item)}
-                      </Text>
+                      )}
                     </VStack>
-                    <Text fontSize="sm" color={textGray500}>
-                      {(item.description || item?.proposal?.description || '').trim() ||
-                        t('common.na')}
+                    <VStack align="end" spacing={4}>
+                      <Badge
+                        colorScheme={getStatusColorScheme(item.status || 'accepted')}
+                        borderRadius="full"
+                      >
+                        {item.status || 'accepted'}
+                      </Badge>
+                      <VStack align="end" spacing={0}>
+                        <Badge
+                          colorScheme={getPaymentColorScheme(paymentInfo.status)}
+                          borderRadius="full"
+                          size="sm"
+                        >
+                          {paymentInfo.label}
+                        </Badge>
+                        {paymentInfo.status === 'paid' && paymentInfo.paidAt && (
+                          <Text fontSize="xs" color={textGray500}>
+                            {t('payments.appliedOn', 'Applied on')}{' '}
+                            {new Date(paymentInfo.paidAt).toLocaleDateString()}
+                          </Text>
+                        )}
+                      </VStack>
+                    </VStack>
+                  </Flex>
+                  <VStack align="stretch" spacing={4}>
+                    <Text fontSize="sm" color={textGray600}>
+                      {new Date(
+                        item.accepted_at || item.date || item.createdAt,
+                      ).toLocaleDateString()}
                     </Text>
-                    {(paymentInfo.showButton || paymentInfo.status === 'paid') && (
-                      <HStack spacing={4} flexWrap="wrap">
-                        {paymentInfo.showButton && (
-                          <Button
-                            colorScheme="brand"
-                            size="sm"
-                            leftIcon={<CreditCard size={ICON_SIZE_MD} />}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleMakePayment(item.id)
-                            }}
-                            minH="44px"
-                            maxW="180px"
-                            flex="1"
-                            fontSize={{ base: "xs", md: "sm" }}
-                          >
-                            {t('orders.actions.makePayment', 'Make Payment')}
-                          </Button>
-                        )}
-                        {paymentInfo.status === 'paid' && (
-                          <Button
-                            colorScheme="green"
-                            size="sm"
-                            variant="outline"
-                            leftIcon={<Download size={ICON_SIZE_MD} />}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              const payment = getOrderPayment(item.id)
-                              handleDownloadReceipt(item, payment)
-                            }}
-                            minH="44px"
-                            maxW="200px"
-                            flex="1"
-                            fontSize={{ base: "xs", md: "sm" }}
-                          >
-                            {t('orders.actions.downloadInvoice', 'Download Invoice')}
-                          </Button>
-                        )}
-                      </HStack>
-                    )}
+                    <Text fontSize="sm" color={textGray600}>
+                      {t('orders.headers.manufacturer', 'Manufacturer')}: {resolveManuName(item)}
+                    </Text>
+                    <Text fontSize="sm" color={textGray600}>
+                      {t('orders.headers.orderNumber', 'Order #')}: {getDisplayOrderNumber(item)}
+                    </Text>
                   </VStack>
+                  <Text fontSize="sm" color={textGray500}>
+                    {(item.description || item?.proposal?.description || '').trim() ||
+                      t('common.na')}
+                  </Text>
+                  {(paymentInfo.showButton || paymentInfo.status === 'paid') && (
+                    <HStack spacing={4} flexWrap="wrap">
+                      {paymentInfo.showButton && (
+                        <Button
+                          colorScheme="brand"
+                          size="sm"
+                          leftIcon={<CreditCard size={ICON_SIZE_MD} />}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleMakePayment(item.id)
+                          }}
+                          minH="44px"
+                          maxW="180px"
+                          flex="1"
+                          fontSize={{ base: 'xs', md: 'sm' }}
+                        >
+                          {t('orders.actions.makePayment', 'Make Payment')}
+                        </Button>
+                      )}
+                      {paymentInfo.status === 'paid' && (
+                        <Button
+                          colorScheme="green"
+                          size="sm"
+                          variant="outline"
+                          leftIcon={<Download size={ICON_SIZE_MD} />}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            const payment = getOrderPayment(item.id)
+                            handleDownloadReceipt(item, payment)
+                          }}
+                          minH="44px"
+                          maxW="200px"
+                          flex="1"
+                          fontSize={{ base: 'xs', md: 'sm' }}
+                        >
+                          {t('orders.actions.downloadInvoice', 'Download Invoice')}
+                        </Button>
+                      )}
+                    </HStack>
+                  )}
+                </VStack>
               </MobileListCard>
             )
           })

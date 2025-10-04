@@ -4,9 +4,38 @@ import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
 import { useDispatch, useSelector } from 'react-redux'
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Badge, Box, Button, CardBody, CardHeader, Container, Flex, Icon, Spinner, Stack, Tab, TabList, TabPanel, TabPanels, Tabs, Text, useColorModeValue } from '@chakra-ui/react'
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Badge,
+  Box,
+  Button,
+  CardBody,
+  CardHeader,
+  Container,
+  Flex,
+  Icon,
+  Spinner,
+  Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
-import { ArrowLeft, Users, BarChart3, BriefcaseBusiness, Users as UsersGroup, Settings } from 'lucide-react'
+import {
+  ArrowLeft,
+  Users,
+  BarChart3,
+  BriefcaseBusiness,
+  Users as UsersGroup,
+  Settings,
+} from 'lucide-react'
 import { fetchContractor } from '../../store/slices/contractorSlice'
 import OverviewTab from './ContractorDetail/OverviewTab'
 import ProposalsTab from './ContractorDetail/ProposalsTab'
@@ -15,10 +44,30 @@ import SettingsTab from './ContractorDetail/SettingsTab'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const tabConfig = [
-  { key: 'overview', labelKey: 'contractorsAdmin.detail.tabs.overview', icon: BarChart3, component: OverviewTab },
-  { key: 'proposals', labelKey: 'contractorsAdmin.detail.tabs.proposals', icon: BriefcaseBusiness, component: ProposalsTab },
-  { key: 'customers', labelKey: 'contractorsAdmin.detail.tabs.customers', icon: UsersGroup, component: CustomersTab },
-  { key: 'settings', labelKey: 'contractorsAdmin.detail.tabs.settings', icon: Settings, component: SettingsTab },
+  {
+    key: 'overview',
+    labelKey: 'contractorsAdmin.detail.tabs.overview',
+    icon: BarChart3,
+    component: OverviewTab,
+  },
+  {
+    key: 'proposals',
+    labelKey: 'contractorsAdmin.detail.tabs.proposals',
+    icon: BriefcaseBusiness,
+    component: ProposalsTab,
+  },
+  {
+    key: 'customers',
+    labelKey: 'contractorsAdmin.detail.tabs.customers',
+    icon: UsersGroup,
+    component: CustomersTab,
+  },
+  {
+    key: 'settings',
+    labelKey: 'contractorsAdmin.detail.tabs.settings',
+    icon: Settings,
+    component: SettingsTab,
+  },
 ]
 
 const ContractorDetail = () => {
@@ -28,13 +77,17 @@ const ContractorDetail = () => {
   const groupId = useMemo(() => decodeParam(rawGroupId), [rawGroupId])
   const dispatch = useDispatch()
 
-  const { selectedContractor: contractor, loading, error } = useSelector((state) => state.contractors)
+  const {
+    selectedContractor: contractor,
+    loading,
+    error,
+  } = useSelector((state) => state.contractors)
 
   // Color mode values - MUST be before useState
-  const spinnerColor = useColorModeValue("blue.500", "blue.300")
-  const iconBlue = useColorModeValue("blue.500", "blue.300")
-  const textGray500 = useColorModeValue("gray.500", "gray.400")
-  const borderGray = useColorModeValue("gray.100", "gray.700")
+  const spinnerColor = useColorModeValue('blue.500', 'blue.300')
+  const iconBlue = useColorModeValue('blue.500', 'blue.300')
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const borderGray = useColorModeValue('gray.100', 'gray.700')
 
   const [activeTabIndex, setActiveTabIndex] = useState(0)
 
@@ -66,7 +119,15 @@ const ContractorDetail = () => {
           <Box>
             <AlertTitle>{t('contractorsAdmin.detail.errorTitle')}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
-            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="brand" minH="44px" maxW={{ base: "220px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
+            <Button
+              mt={4}
+              leftIcon={<ArrowLeft size={ICON_SIZE_MD} />}
+              onClick={handleBack}
+              colorScheme="brand"
+              minH="44px"
+              maxW={{ base: '220px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
+            >
               {t('contractorsAdmin.detail.backToList')}
             </Button>
           </Box>
@@ -83,7 +144,15 @@ const ContractorDetail = () => {
           <Box>
             <AlertTitle>{t('contractorsAdmin.detail.notFoundTitle')}</AlertTitle>
             <AlertDescription>{t('contractorsAdmin.detail.notFoundText')}</AlertDescription>
-            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="brand" minH="44px" maxW={{ base: "220px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
+            <Button
+              mt={4}
+              leftIcon={<ArrowLeft size={ICON_SIZE_MD} />}
+              onClick={handleBack}
+              colorScheme="brand"
+              minH="44px"
+              maxW={{ base: '220px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
+            >
               {t('contractorsAdmin.detail.backToList')}
             </Button>
           </Box>
@@ -95,8 +164,20 @@ const ContractorDetail = () => {
   return (
     <PageContainer>
       <Stack spacing={6}>
-        <Flex align={{ base: 'flex-start', md: 'center' }} direction={{ base: 'column', md: 'row' }} gap={4}>
-          <Button onClick={handleBack} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} variant="outline" colorScheme="gray" minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
+        <Flex
+          align={{ base: 'flex-start', md: 'center' }}
+          direction={{ base: 'column', md: 'row' }}
+          gap={4}
+        >
+          <Button
+            onClick={handleBack}
+            leftIcon={<ArrowLeft size={ICON_SIZE_MD} />}
+            variant="outline"
+            colorScheme="gray"
+            minH="44px"
+            maxW={{ base: '140px', md: 'none' }}
+            fontSize={{ base: 'sm', md: 'md' }}
+          >
             {t('common.back')}
           </Button>
 

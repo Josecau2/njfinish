@@ -1,7 +1,46 @@
 import StandardCard from '../../components/StandardCard'
 
 import React, { useEffect, useMemo, useState } from 'react'
-import { Badge, Box, Button, CardBody, CardHeader, Container, Flex, FormControl, FormLabel, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, InputRightAddon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue } from '@chakra-ui/react'
+import {
+  Badge,
+  Box,
+  Button,
+  CardBody,
+  CardHeader,
+  Container,
+  Flex,
+  FormControl,
+  FormLabel,
+  HStack,
+  Icon,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  InputRightAddon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Textarea,
+  Th,
+  Thead,
+  Tr,
+  VStack,
+  useToast,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import { RefreshCw, Send, FileText, X, HelpCircle, Percent, Search } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -80,12 +119,12 @@ const LeadsPage = () => {
   const { t } = useTranslation()
 
   // Color mode values
-  const textGray600 = useColorModeValue("gray.600", "gray.400")
-  const textGray500 = useColorModeValue("gray.500", "gray.400")
-  const iconGray = useColorModeValue("gray.500", "gray.400")
-  const iconBlue = useColorModeValue("blue.500", "blue.300")
-  const bgGray50 = useColorModeValue("gray.50", "gray.800")
-  const borderGray100 = useColorModeValue("gray.100", "gray.700")
+  const textGray600 = useColorModeValue('gray.600', 'gray.400')
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const iconGray = useColorModeValue('gray.500', 'gray.400')
+  const iconBlue = useColorModeValue('blue.500', 'blue.300')
+  const bgGray50 = useColorModeValue('gray.50', 'gray.800')
+  const borderGray100 = useColorModeValue('gray.100', 'gray.700')
 
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
@@ -121,7 +160,7 @@ const LeadsPage = () => {
 
   const selectedLeadSubmittedAt = selectedLead ? formatSubmittedDate(selectedLead.createdAt) : null
   const selectedLeadStatusText = selectedLead
-    ? statusLabelMap[selectedLead.status] ?? statusLabelMap.unknown
+    ? (statusLabelMap[selectedLead.status] ?? statusLabelMap.unknown)
     : statusLabelMap.unknown
   const selectedLeadStatusBadge = selectedLead
     ? {
@@ -273,8 +312,8 @@ const LeadsPage = () => {
       onClick={() => fetchLeads({ status: statusFilter, search: searchTerm })}
       isDisabled={loading}
       minH="44px"
-      maxW={{ base: "140px", md: "none" }}
-      fontSize={{ base: "sm", md: "md" }}
+      maxW={{ base: '140px', md: 'none' }}
+      fontSize={{ base: 'sm', md: 'md' }}
     >
       {t('common.refresh')}
     </Button>
@@ -289,7 +328,7 @@ const LeadsPage = () => {
           icon={FileText}
           actions={[refreshButton]}
           maxW="full"
-          containerProps={{ px: { base: 4, md: 6, xl: 8, "2xl": 10 } }}
+          containerProps={{ px: { base: 4, md: 6, xl: 8, '2xl': 10 } }}
         />
 
         <StandardCard variant="outline">
@@ -299,7 +338,10 @@ const LeadsPage = () => {
                 <FormLabel fontSize="sm" color={textGray600}>
                   {t('leadsPage.filters.status.label')}
                 </FormLabel>
-                <Select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+                <Select
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                >
                   {statusOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
@@ -332,7 +374,9 @@ const LeadsPage = () => {
                 </FormLabel>
                 <Flex align="center" gap={4} color={textGray500}>
                   <Icon as={HelpCircle} boxSize={ICON_BOX_MD} aria-hidden="true" />
-                  <Text fontSize="sm">{t('leadsPage.helpText', 'Use filters to narrow down leads.')}</Text>
+                  <Text fontSize="sm">
+                    {t('leadsPage.helpText', 'Use filters to narrow down leads.')}
+                  </Text>
                 </Flex>
               </FormControl>
             </SimpleGrid>
@@ -349,13 +393,14 @@ const LeadsPage = () => {
                 <Spinner size="lg" color="brand.500" />
               </Flex>
             ) : filteredLeads.length === 0 ? (
-              <Text color={textGray500} py={6} px={6}>{t('leadsPage.table.noResults')}</Text>
+              <Text color={textGray500} py={6} px={6}>
+                {t('leadsPage.table.noResults')}
+              </Text>
             ) : (
               <>
                 {/* Desktop table view */}
                 <TableContainer display={{ base: 'none', xl: 'block' }}>
                   <Table variant="simple" size="md">
-
                     <Thead>
                       <Tr>
                         <Th>{t('leadsPage.table.columns.name')}</Th>
@@ -379,24 +424,12 @@ const LeadsPage = () => {
                           : '�'
                         return (
                           <Tr key={lead.id}>
-                            <Td>
-                              {displayName}
-                            </Td>
-                            <Td>
-                              {lead.email || '?'}
-                            </Td>
-                            <Td>
-                              {phone}
-                            </Td>
-                            <Td>
-                              {location}
-                            </Td>
-                            <Td>
-                              {company}
-                            </Td>
-                            <Td>
-                              {submittedAt}
-                            </Td>
+                            <Td>{displayName}</Td>
+                            <Td>{lead.email || '?'}</Td>
+                            <Td>{phone}</Td>
+                            <Td>{location}</Td>
+                            <Td>{company}</Td>
+                            <Td>{submittedAt}</Td>
                             <Td>
                               <Select
                                 size="sm"
@@ -415,11 +448,13 @@ const LeadsPage = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} aria-hidden="true" />}
+                                leftIcon={
+                                  <Icon as={FileText} boxSize={ICON_BOX_MD} aria-hidden="true" />
+                                }
                                 onClick={() => setSelectedLead(normalizeLead(lead))}
                                 minH="44px"
-                                maxW={{ base: "140px", md: "none" }}
-                                fontSize={{ base: "xs", md: "sm" }}
+                                maxW={{ base: '140px', md: 'none' }}
+                                fontSize={{ base: 'xs', md: 'sm' }}
                               >
                                 {t('leadsPage.table.actions.details')}
                               </Button>
@@ -432,7 +467,12 @@ const LeadsPage = () => {
                 </TableContainer>
 
                 {/* Mobile card view */}
-                <VStack spacing={4} display={{ base: 'flex', xl: 'none' }} px={{ base: 4, md: 6 }} py={{ base: 4, md: 6 }}>
+                <VStack
+                  spacing={4}
+                  display={{ base: 'flex', xl: 'none' }}
+                  px={{ base: 4, md: 6 }}
+                  py={{ base: 4, md: 6 }}
+                >
                   {filteredLeads.map((lead) => {
                     const displayName = getLeadFullName(lead) || lead.name || '�'
                     const phone = getLeadValue(lead, 'phone') || '�'
@@ -507,11 +547,13 @@ const LeadsPage = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} aria-hidden="true" />}
+                                leftIcon={
+                                  <Icon as={FileText} boxSize={ICON_BOX_MD} aria-hidden="true" />
+                                }
                                 onClick={() => setSelectedLead(normalizeLead(lead))}
                                 minH="44px"
-                                maxW={{ base: "140px", md: "none" }}
-                                fontSize={{ base: "xs", md: "sm" }}
+                                maxW={{ base: '140px', md: 'none' }}
+                                fontSize={{ base: 'xs', md: 'sm' }}
                               >
                                 {t('leadsPage.table.actions.details')}
                               </Button>
@@ -527,7 +569,12 @@ const LeadsPage = () => {
           </CardBody>
         </StandardCard>
 
-        <Modal isOpen={!!selectedLead} onClose={closeModal} size={{ base: "full", lg: "5xl" }} scrollBehavior="inside">
+        <Modal
+          isOpen={!!selectedLead}
+          onClose={closeModal}
+          size={{ base: 'full', lg: '5xl' }}
+          scrollBehavior="inside"
+        >
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>
@@ -542,11 +589,19 @@ const LeadsPage = () => {
                 </Box>
                 <HStack spacing={4}>
                   {selectedLeadStatusBadge && (
-                    <Badge colorScheme={selectedLeadStatusBadge.colorScheme} variant="subtle" px={3} py={1} borderRadius="full">
+                    <Badge
+                      colorScheme={selectedLeadStatusBadge.colorScheme}
+                      variant="subtle"
+                      px={3}
+                      py={1}
+                      borderRadius="full"
+                    >
                       {selectedLeadStatusBadge.text}
                     </Badge>
                   )}
-                  <IconButton size="lg" aria-label={t('common.close', 'Close')}
+                  <IconButton
+                    size="lg"
+                    aria-label={t('common.close', 'Close')}
                     icon={<Icon as={X} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                     variant="ghost"
                     onClick={closeModal}
@@ -579,7 +634,9 @@ const LeadsPage = () => {
                           </Text>
                           <Text fontWeight="medium">
                             {selectedLeadCity || selectedLeadState || selectedLeadZip
-                              ? [selectedLeadCity, selectedLeadState, selectedLeadZip].filter(Boolean).join(', ')
+                              ? [selectedLeadCity, selectedLeadState, selectedLeadZip]
+                                  .filter(Boolean)
+                                  .join(', ')
                               : t('common.na')}
                           </Text>
                         </Stack>
@@ -595,7 +652,13 @@ const LeadsPage = () => {
                       </HStack>
                     </CardHeader>
                     <CardBody pt={3}>
-                      <Box bg={bgGray50} borderRadius="md" borderLeftWidth="4px" borderColor="blue.500" p={4}>
+                      <Box
+                        bg={bgGray50}
+                        borderRadius="md"
+                        borderLeftWidth="4px"
+                        borderColor="blue.500"
+                        p={4}
+                      >
                         <Text fontSize="sm" lineHeight="1.6">
                           {selectedLead.message
                             ? selectedLead.message
@@ -613,10 +676,18 @@ const LeadsPage = () => {
                       </HStack>
                     </CardHeader>
                     <CardBody pt={3}>
-                      {Array.isArray(selectedLead.metadata?.notes) && selectedLead.metadata.notes.length > 0 ? (
+                      {Array.isArray(selectedLead.metadata?.notes) &&
+                      selectedLead.metadata.notes.length > 0 ? (
                         <Stack spacing={4}>
                           {selectedLead.metadata.notes.map((item, index) => (
-                            <Box key={index} borderBottomWidth={index === selectedLead.metadata.notes.length - 1 ? '0' : '1px'} borderColor={borderGray100} pb={3}>
+                            <Box
+                              key={index}
+                              borderBottomWidth={
+                                index === selectedLead.metadata.notes.length - 1 ? '0' : '1px'
+                              }
+                              borderColor={borderGray100}
+                              pb={3}
+                            >
                               <Flex justify="space-between" align="flex-start" mb={2}>
                                 <Text fontWeight="semibold">
                                   {item.byName || t('leadsPage.modal.notes.defaultAuthor')}
@@ -659,14 +730,18 @@ const LeadsPage = () => {
                         <Flex justify="flex-end">
                           <Button
                             colorScheme="brand"
-                            leftIcon={savingNote ? undefined : <Icon as={Send} boxSize={ICON_BOX_MD} aria-hidden="true" />}
+                            leftIcon={
+                              savingNote ? undefined : (
+                                <Icon as={Send} boxSize={ICON_BOX_MD} aria-hidden="true" />
+                              )
+                            }
                             onClick={handleNoteSubmit}
                             isLoading={savingNote}
                             loadingText={t('leadsPage.modal.addNote.saving', 'Saving...')}
                             isDisabled={!noteText.trim()}
                             minH="44px"
-                            maxW={{ base: "140px", md: "none" }}
-                            fontSize={{ base: "sm", md: "md" }}
+                            maxW={{ base: '140px', md: 'none' }}
+                            fontSize={{ base: 'sm', md: 'md' }}
                           >
                             {t('leadsPage.modal.addNote.submit')}
                           </Button>

@@ -4,7 +4,41 @@ import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
 import { useTranslation } from 'react-i18next'
-import { Alert, Badge, Box, Button, CardBody, Flex, FormControl, FormLabel, HStack, Icon, Input, Link, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text, VStack, useToast, useColorModeValue } from '@chakra-ui/react'
+import {
+  Alert,
+  Badge,
+  Box,
+  Button,
+  CardBody,
+  Flex,
+  FormControl,
+  FormLabel,
+  HStack,
+  Icon,
+  Input,
+  Link,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  SimpleGrid,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+  VStack,
+  useToast,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
 import { setSelectVersionNewEdit } from '../../store/slices/selectVersionNewEditSlice'
@@ -12,7 +46,20 @@ import { sendFormDataToBackend } from '../../queries/proposalQueries'
 // Removed Formik and Yup - using React Hook Form pattern
 // Removed react-select/creatable - using Chakra Select
 // Removed react-datepicker - using native HTML5 date inputs
-import { Copy, File, List, MoreHorizontal, Edit, Trash, Trash2, Calendar, Printer, Mail, FileText, CheckCircle } from 'lucide-react'
+import {
+  Copy,
+  File,
+  List,
+  MoreHorizontal,
+  Edit,
+  Trash,
+  Trash2,
+  Calendar,
+  Printer,
+  Mail,
+  FileText,
+  CheckCircle,
+} from 'lucide-react'
 // Removed react-icons - using lucide-react only
 // Removed Swal - using Chakra useToast
 import ItemSelectionContentEdit from '../../components/ItemSelectionContentEdit'
@@ -58,15 +105,15 @@ const EditProposal = ({
   const toast = useToast()
 
   // Dark mode colors - MUST be before any useState hooks
-  const borderColor = useColorModeValue("gray.200", "gray.600")
-  const textColor = useColorModeValue("gray.500", "gray.400")
-  const labelColor = useColorModeValue("gray.600", "gray.400")
-  const deleteColor = useColorModeValue("red.500", "red.300")
-  const pageBg = useColorModeValue("gray.50", "gray.900")
-  const badgeBgSelected = useColorModeValue("blue.600", "blue.500")
-  const badgeBgUnselected = useColorModeValue("blue.100", "blue.900")
-  const badgeColorSelected = useColorModeValue("white", "white")
-  const badgeColorUnselected = useColorModeValue("blue.600", "blue.200")
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const textColor = useColorModeValue('gray.500', 'gray.400')
+  const labelColor = useColorModeValue('gray.600', 'gray.400')
+  const deleteColor = useColorModeValue('red.500', 'red.300')
+  const pageBg = useColorModeValue('gray.50', 'gray.900')
+  const badgeBgSelected = useColorModeValue('blue.600', 'blue.500')
+  const badgeBgUnselected = useColorModeValue('blue.100', 'blue.900')
+  const badgeColorSelected = useColorModeValue('white', 'white')
+  const badgeColorUnselected = useColorModeValue('blue.600', 'blue.200')
 
   const normalizeManufacturersData = (data) => {
     if (!data) return []
@@ -100,7 +147,8 @@ const EditProposal = ({
   const hasSetInitialVersion = useRef(false)
 
   // Check if user is a contractor (should not see manufacturer version names)
-  const isContractor = scopedIsContractor ?? (loggedInUser?.group && loggedInUser.group.group_type === 'contractor')
+  const isContractor =
+    scopedIsContractor ?? (loggedInUser?.group && loggedInUser.group.group_type === 'contractor')
 
   const defaultFormData = {
     manufacturersData: [],
@@ -138,7 +186,10 @@ const EditProposal = ({
       setLoading(false)
       toast({
         title: t('proposals.errors.invalidIdTitle', 'Unable to open quote'),
-        description: t('proposals.errors.invalidIdDescription', 'The quote identifier is invalid or missing.'),
+        description: t(
+          'proposals.errors.invalidIdDescription',
+          'The quote identifier is invalid or missing.',
+        ),
         status: 'error',
       })
       return
@@ -148,7 +199,10 @@ const EditProposal = ({
       .get(`/api/quotes/proposalByID/${requestId}`)
       .then((res) => {
         const merged = { ...defaultFormData, ...(res.data || {}) }
-        const normalized = { ...merged, manufacturersData: normalizeManufacturersData(merged.manufacturersData) }
+        const normalized = {
+          ...merged,
+          manufacturersData: normalizeManufacturersData(merged.manufacturersData),
+        }
         setInitialData(normalized)
         setFormData(normalized)
         setLoading(false)
@@ -158,7 +212,10 @@ const EditProposal = ({
         setLoading(false)
         toast({
           title: t('proposals.errors.fetchFailedTitle', 'Failed to load quote'),
-          description: err?.response?.data?.message || err.message || t('proposals.errors.fetchFailedDescription', 'We could not load this quote.'),
+          description:
+            err?.response?.data?.message ||
+            err.message ||
+            t('proposals.errors.fetchFailedDescription', 'We could not load this quote.'),
           status: 'error',
         })
       })
@@ -296,9 +353,7 @@ const EditProposal = ({
   }
 
   const confirmDelete = () => {
-    const updatedManufacturersData = manufacturersData.filter(
-      (_, i) => i !== currentDeleteIndex,
-    )
+    const updatedManufacturersData = manufacturersData.filter((_, i) => i !== currentDeleteIndex)
     updateFormData({ manufacturersData: updatedManufacturersData })
 
     if (currentDeleteIndex === selectedVersionIndex) {
@@ -411,12 +466,13 @@ const EditProposal = ({
             isClosable: true,
           })
           setFormData(() => {
+            const merged = { ...defaultFormData, ...(response.data.data || finalData) }
 
-          const merged = { ...defaultFormData, ...(response.data.data || finalData) }
-
-          return { ...merged, manufacturersData: normalizeManufacturersData(merged.manufacturersData) }
-
-        })
+            return {
+              ...merged,
+              manufacturersData: normalizeManufacturersData(merged.manufacturersData),
+            }
+          })
         }
       } else {
         const apiMsg = response.data?.message
@@ -512,8 +568,8 @@ const EditProposal = ({
             leftIcon={<Printer />}
             onClick={() => setShowPrintModal(true)}
             minH="44px"
-            maxW={{ base: "180px", md: "none" }}
-            fontSize={{ base: "sm", md: "md" }}
+            maxW={{ base: '180px', md: 'none' }}
+            fontSize={{ base: 'sm', md: 'md' }}
           >
             {t('proposals.create.actions.print', 'Print Quote')}
           </Button>
@@ -524,8 +580,8 @@ const EditProposal = ({
                 leftIcon={<Mail />}
                 onClick={() => setShowEmailModal(true)}
                 minH="44px"
-                maxW={{ base: "180px", md: "none" }}
-                fontSize={{ base: "sm", md: "md" }}
+                maxW={{ base: '180px', md: 'none' }}
+                fontSize={{ base: 'sm', md: 'md' }}
               >
                 {t('proposals.create.actions.email', 'Email Quote')}
               </Button>
@@ -534,8 +590,8 @@ const EditProposal = ({
                 leftIcon={<FileText />}
                 onClick={() => setShowContractModal(true)}
                 minH="44px"
-                maxW={{ base: "180px", md: "none" }}
-                fontSize={{ base: "sm", md: "md" }}
+                maxW={{ base: '180px', md: 'none' }}
+                fontSize={{ base: 'sm', md: 'md' }}
               >
                 {t('proposals.create.actions.contract', 'Email Contract')}
               </Button>
@@ -544,12 +600,7 @@ const EditProposal = ({
         </HStack>
       </Box>
 
-      <PageContainer
-        maxW="100%"
-        className="dashboard-container"
-        bg={pageBg}
-        minH="100vh"
-      >
+      <PageContainer maxW="100%" className="dashboard-container" bg={pageBg} minH="100vh">
         <Box
           as="form"
           onSubmit={(e) => {
@@ -635,24 +686,32 @@ const EditProposal = ({
                 </FormControl>
                 <FormControl>
                   <FormLabel htmlFor="designDate">
-                      {t('common.designDate', 'Design Date')}
-                    </FormLabel>
+                    {t('common.designDate', 'Design Date')}
+                  </FormLabel>
                   <Input
                     type="date"
                     id="designDate"
-                    value={formData.designDate ? new Date(formData.designDate).toISOString().split('T')[0] : ''}
+                    value={
+                      formData.designDate
+                        ? new Date(formData.designDate).toISOString().split('T')[0]
+                        : ''
+                    }
                     onChange={(e) => updateFormData({ designDate: e.target.value })}
                     isDisabled={isFormDisabled}
                   />
                 </FormControl>
                 <FormControl>
                   <FormLabel htmlFor="measurementDate">
-                      {t('common.measurementDate', 'Measurement Date')}
-                    </FormLabel>
+                    {t('common.measurementDate', 'Measurement Date')}
+                  </FormLabel>
                   <Input
                     type="date"
                     id="measurementDate"
-                    value={formData.measurementDate ? new Date(formData.measurementDate).toISOString().split('T')[0] : ''}
+                    value={
+                      formData.measurementDate
+                        ? new Date(formData.measurementDate).toISOString().split('T')[0]
+                        : ''
+                    }
                     onChange={(e) => updateFormData({ measurementDate: e.target.value })}
                     isDisabled={isFormDisabled}
                   />
@@ -844,11 +903,11 @@ const EditProposal = ({
                   variant="outline"
                   colorScheme="gray"
                   type="submit"
-                  minW={{ base: "110px", md: "140px" }}
+                  minW={{ base: '110px', md: '140px' }}
                   maxW="200px"
                   minH="44px"
-                  flex={{ base: "1", md: "unset" }}
-                  fontSize={{ base: "sm", md: "md" }}
+                  flex={{ base: '1', md: 'unset' }}
+                  fontSize={{ base: 'sm', md: 'md' }}
                 >
                   {t('common.save', 'Save')}
                 </Button>
@@ -857,11 +916,11 @@ const EditProposal = ({
                     <Button
                       colorScheme="green"
                       onClick={handleAcceptOrder}
-                      minW={{ base: "110px", md: "140px" }}
+                      minW={{ base: '110px', md: '140px' }}
                       maxW="220px"
                       minH="44px"
-                      flex={{ base: "1", md: "unset" }}
-                      fontSize={{ base: "sm", md: "md" }}
+                      flex={{ base: '1', md: 'unset' }}
+                      fontSize={{ base: 'sm', md: 'md' }}
                     >
                       {t('proposals.actions.acceptAndOrder', 'Accept and Order')}
                     </Button>
@@ -869,11 +928,11 @@ const EditProposal = ({
                       variant="outline"
                       colorScheme="red"
                       onClick={handleRejectOrder}
-                      minW={{ base: "110px", md: "140px" }}
+                      minW={{ base: '110px', md: '140px' }}
                       maxW="220px"
                       minH="44px"
-                      flex={{ base: "1", md: "unset" }}
-                      fontSize={{ base: "sm", md: "md" }}
+                      flex={{ base: '1', md: 'unset' }}
+                      fontSize={{ base: 'sm', md: 'md' }}
                     >
                       {t('proposals.actions.rejectAndArchive', 'Reject and Archive')}
                     </Button>
@@ -898,7 +957,13 @@ const EditProposal = ({
       />
       <EmailContractModal show={showContractModal} onClose={() => setShowContractModal(false)} />
 
-      <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" isCentered>
+      <Modal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        size={{ base: 'full', md: 'md', lg: 'lg' }}
+        scrollBehavior="inside"
+        isCentered
+      >
         <ModalOverlay>
           <ModalContent>
             <ModalHeader>{t('common.editVersionName', 'Edit Version Name')}</ModalHeader>

@@ -1,7 +1,21 @@
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Alert, AlertIcon, Box, Button, CardBody, Code, Container, HStack, Heading, Icon, Text, VStack, useColorModeValue } from '@chakra-ui/react'
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  CardBody,
+  Code,
+  Container,
+  HStack,
+  Heading,
+  Icon,
+  Text,
+  VStack,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import PageHeader from '../../components/PageHeader'
@@ -38,15 +52,15 @@ const PaymentSuccess = () => {
               <Icon
                 as={CheckCircle}
                 boxSize={16}
-                color={useColorModeValue("green.500","green.300")}
+                color={useColorModeValue('green.500', 'green.300')}
                 aria-hidden="true"
               />
 
               <VStack spacing={4}>
-                <Heading as="h4" size="lg" color={useColorModeValue("gray.800","gray.200")}>
+                <Heading as="h4" size="lg" color={useColorModeValue('gray.800', 'gray.200')}>
                   {t('payment.completed.title', 'Payment Completed')}
                 </Heading>
-                <Text color={useColorModeValue("gray.600","gray.300")} fontSize="md">
+                <Text color={useColorModeValue('gray.600', 'gray.300')} fontSize="md">
                   {t('payment.completed.subtitle', 'This payment has already been processed')}
                 </Text>
               </VStack>
@@ -62,7 +76,8 @@ const PaymentSuccess = () => {
                   <AlertIcon />
                   <Box>
                     <Text fontSize="sm">
-                      {t('payment.transactionId', 'Transaction ID')}: <Code fontSize="sm">{transactionId}</Code>
+                      {t('payment.transactionId', 'Transaction ID')}:{' '}
+                      <Code fontSize="sm">{transactionId}</Code>
                     </Text>
                   </Box>
                 </Alert>
@@ -86,8 +101,8 @@ const PaymentSuccess = () => {
                   leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} />}
                   minH="44px"
                   size="lg"
-                  maxW={{ base: "140px", md: "none" }}
-                  fontSize={{ base: "sm", md: "md" }}
+                  maxW={{ base: '140px', md: 'none' }}
+                  fontSize={{ base: 'sm', md: 'md' }}
                 >
                   {t('common.goBack', 'Go Back')}
                 </Button>

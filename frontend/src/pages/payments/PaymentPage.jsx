@@ -1,9 +1,24 @@
-
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Alert, AlertIcon, Box, Button, CardBody, CardHeader, Container, Flex, HStack, Heading, Icon, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  CardBody,
+  CardHeader,
+  Container,
+  Flex,
+  HStack,
+  Heading,
+  Icon,
+  Spinner,
+  Stack,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { ArrowLeft, CreditCard } from 'lucide-react'
@@ -24,7 +39,13 @@ const formatCurrency = (amountCents = 0, currency = 'USD') => {
   }).format(value)
 }
 
-const StripeCheckoutForm = ({ paymentId, onPaymentComplete, onProcessingChange, onError, submitLabel }) => {
+const StripeCheckoutForm = ({
+  paymentId,
+  onPaymentComplete,
+  onProcessingChange,
+  onError,
+  submitLabel,
+}) => {
   const stripe = useStripe()
   const elements = useElements()
 
@@ -70,7 +91,12 @@ const StripeCheckoutForm = ({ paymentId, onPaymentComplete, onProcessingChange, 
     <Stack as="form" onSubmit={handleSubmit} spacing={4}>
       <PaymentElement options={{ layout: 'tabs' }} />
       <Flex justify="flex-end">
-        <Button type="submit" colorScheme="brand" isDisabled={!stripe || !elements || submitting} minH="44px">
+        <Button
+          type="submit"
+          colorScheme="brand"
+          isDisabled={!stripe || !elements || submitting}
+          minH="44px"
+        >
           {submitting && <Spinner size="sm" mr={2} />}
           {submitLabel}
         </Button>
@@ -157,7 +183,10 @@ const PaymentPage = () => {
       if (status === 'failed') {
         await Swal.fire({
           title: t('payment.failed.title', 'Payment failed'),
-          text: t('payment.failed.message', 'Stripe was unable to complete the payment. Please try again.'),
+          text: t(
+            'payment.failed.message',
+            'Stripe was unable to complete the payment. Please try again.',
+          ),
           icon: 'error',
         })
         return
@@ -256,9 +285,19 @@ const PaymentPage = () => {
           <CardBody textAlign="center" py={10}>
             <Alert status="warning" borderRadius="md" mb={6}>
               <AlertIcon />
-              {t('payment.unavailable.configuration', 'Please contact an administrator to enable Stripe payments.')}
+              {t(
+                'payment.unavailable.configuration',
+                'Please contact an administrator to enable Stripe payments.',
+              )}
             </Alert>
-            <Button colorScheme="brand" onClick={handleGoBack} minH="44px" maxW={{ base: "140px", md: "none" }} leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />} fontSize={{ base: "sm", md: "md" }}>
+            <Button
+              colorScheme="brand"
+              onClick={handleGoBack}
+              minH="44px"
+              maxW={{ base: '140px', md: 'none' }}
+              leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
+              fontSize={{ base: 'sm', md: 'md' }}
+            >
               {t('common.goBack', 'Go Back')}
             </Button>
           </CardBody>
@@ -267,9 +306,12 @@ const PaymentPage = () => {
     )
   }
 
-  const showPaymentForm = Boolean(stripePromise && options && clientSecret && canAttemptPayment && !isCompleted)
+  const showPaymentForm = Boolean(
+    stripePromise && options && clientSecret && canAttemptPayment && !isCompleted,
+  )
   const showUnavailableAlert = !canAttemptPayment && !isCompleted && !receiptUrl && !isFailed
-  const alertStatus = statusVariant === 'error' ? 'error' : statusVariant === 'success' ? 'success' : 'info'
+  const alertStatus =
+    statusVariant === 'error' ? 'error' : statusVariant === 'success' ? 'success' : 'info'
 
   return (
     <PageContainer className="payment-page">
@@ -323,8 +365,8 @@ const PaymentPage = () => {
                         onClick={handleRetryPayment}
                         isLoading={intentLoading}
                         minH="44px"
-                        maxW={{ base: "180px", md: "none" }}
-                        fontSize={{ base: "sm", md: "md" }}
+                        maxW={{ base: '180px', md: 'none' }}
+                        fontSize={{ base: 'sm', md: 'md' }}
                       >
                         {t('payment.retry', 'Retry Payment')}
                       </Button>
@@ -345,8 +387,8 @@ const PaymentPage = () => {
                     onClick={initializeIntent}
                     isLoading={intentLoading}
                     minH="44px"
-                    maxW={{ base: "180px", md: "none" }}
-                    fontSize={{ base: "sm", md: "md" }}
+                    maxW={{ base: '180px', md: 'none' }}
+                    fontSize={{ base: 'sm', md: 'md' }}
                   >
                     {t('payment.retry', 'Retry Payment')}
                   </Button>
@@ -357,9 +399,7 @@ const PaymentPage = () => {
                 <Alert status="success" borderRadius="md">
                   <AlertIcon />
                   <HStack spacing={4}>
-                    <Text>
-                      {t('payment.receipt.available', 'Receipt available')}:
-                    </Text>
+                    <Text>{t('payment.receipt.available', 'Receipt available')}:</Text>
                     <Button
                       as="a"
                       href={receiptUrl}
@@ -409,7 +449,13 @@ const PaymentPage = () => {
 
               <HStack justify="flex-end" spacing={4} wrap="wrap">
                 {isCompleted && (
-                  <Button colorScheme="brand" onClick={handleViewPayments} minH="44px" maxW={{ base: "180px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
+                  <Button
+                    colorScheme="brand"
+                    onClick={handleViewPayments}
+                    minH="44px"
+                    maxW={{ base: '180px', md: 'none' }}
+                    fontSize={{ base: 'sm', md: 'md' }}
+                  >
                     {t('payment.viewPayments', 'View Payments')}
                   </Button>
                 )}
@@ -418,9 +464,9 @@ const PaymentPage = () => {
                   variant="outline"
                   onClick={handleGoBack}
                   minH="44px"
-                  maxW={{ base: "140px", md: "none" }}
+                  maxW={{ base: '140px', md: 'none' }}
                   leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
-                  fontSize={{ base: "sm", md: "md" }}
+                  fontSize={{ base: 'sm', md: 'md' }}
                 >
                   {t('common.goBack', 'Go Back')}
                 </Button>

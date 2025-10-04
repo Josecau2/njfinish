@@ -4,9 +4,29 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
-import { Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
+import {
+  Badge,
+  Box,
+  Button,
+  CardBody,
+  Container,
+  Flex,
+  HStack,
+  Icon,
+  Spinner,
+  Stack,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
-import { ClipboardList, Settings as SettingsIcon, FileSignature, Printer, Mail, FileText } from 'lucide-react'
+import {
+  ClipboardList,
+  Settings as SettingsIcon,
+  FileSignature,
+  Printer,
+  Mail,
+  FileText,
+} from 'lucide-react'
 
 import CustomerInfoStep from './CreateProposal/CustomerInfo'
 import ManufacturerStep from './CreateProposal/ManufacturerSelect'
@@ -30,7 +50,12 @@ const stepDefinitions = (t) => [
   { number: 4, title: t('proposals.create.steps.4'), icon: Printer },
 ]
 
-const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
+const ProposalForm = ({
+  isContractor,
+  contractorGroupId,
+  contractorModules,
+  contractorGroupName,
+}) => {
   const location = useLocation()
   const { t } = useTranslation()
   const dispatch = useDispatch()
@@ -172,7 +197,10 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
       if (error.response?.status === 403) {
         Swal.fire(
           t('common.error', 'Error'),
-          t('settings.customization.ui.alerts.saveFailed', 'Failed to save customization. Please try again.'),
+          t(
+            'settings.customization.ui.alerts.saveFailed',
+            'Failed to save customization. Please try again.',
+          ),
           'error',
         )
       } else if (error.response?.status === 400) {
@@ -206,9 +234,9 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
           colorScheme="green"
           leftIcon={<Icon as={Printer} boxSize={ICON_BOX_MD} />}
           minH="44px"
-          maxW={{ base: "140px", md: "none" }}
+          maxW={{ base: '140px', md: 'none' }}
           onClick={() => setShowPrintModal(true)}
-          fontSize={{ base: "sm", md: "md" }}
+          fontSize={{ base: 'sm', md: 'md' }}
         >
           {t('proposals.create.actions.print')}
         </Button>
@@ -218,9 +246,9 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
               colorScheme="brand"
               leftIcon={<Icon as={Mail} boxSize={ICON_BOX_MD} />}
               minH="44px"
-              maxW={{ base: "140px", md: "none" }}
+              maxW={{ base: '140px', md: 'none' }}
               onClick={() => setShowEmailModal(true)}
-              fontSize={{ base: "sm", md: "md" }}
+              fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('proposals.create.actions.email')}
             </Button>
@@ -228,9 +256,9 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
               colorScheme="yellow"
               leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
               minH="44px"
-              maxW={{ base: "140px", md: "none" }}
+              maxW={{ base: '140px', md: 'none' }}
               onClick={() => setShowContractModal(true)}
-              fontSize={{ base: "sm", md: "md" }}
+              fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('proposals.create.actions.contract')}
             </Button>
@@ -316,10 +344,17 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
   const stepInactiveBg = useColorModeValue('white', 'gray.800')
   const stepInactiveColor = useColorModeValue('gray.600', 'gray.300')
   const stepBorderInactive = useColorModeValue('gray.300', 'gray.600')
-  const loadingTextColor = useColorModeValue("gray.500", "gray.400")
+  const loadingTextColor = useColorModeValue('gray.500', 'gray.400')
 
   const headerActions = [
-    <Badge key="mode" variant="subtle" colorScheme={isQuick ? 'purple' : 'gray'} px={3} py={1} borderRadius="md">
+    <Badge
+      key="mode"
+      variant="subtle"
+      colorScheme={isQuick ? 'purple' : 'gray'}
+      px={3}
+      py={1}
+      borderRadius="md"
+    >
       {isQuick ? t('proposals.create.quickMode') : t('proposals.create.standardMode')}
     </Badge>,
   ]
@@ -366,7 +401,10 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={Math.round(((currentStep - 1) / (TOTAL_STEPS - 1)) * 100)}
-                aria-label={t('proposals.create.stepOf', { current: currentStep, total: TOTAL_STEPS })}
+                aria-label={t('proposals.create.stepOf', {
+                  current: currentStep,
+                  total: TOTAL_STEPS,
+                })}
               />
               <Flex justify="space-between" position="relative" zIndex={3}>
                 {Array.from({ length: TOTAL_STEPS }, (_, index) => index + 1).map((step) => {

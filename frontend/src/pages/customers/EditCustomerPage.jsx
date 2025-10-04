@@ -3,7 +3,26 @@ import StandardCard from '../../components/StandardCard'
 import React, { useState, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../../utils/colorUtils'
-import { Box, Button, CardBody, Container, FormControl, FormErrorMessage, FormLabel, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stack, Text, Textarea, useColorModeValue } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  CardBody,
+  Container,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Select,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Text,
+  Textarea,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import PageHeader from '../../components/PageHeader'
 import { User, Mail, ArrowLeft, Save, Edit, Phone, Building2, MapPin } from 'lucide-react'
@@ -23,15 +42,15 @@ const FormSection = ({ title, icon, children }) => (
             w="40px"
             h="40px"
             borderRadius="full"
-            bg={useColorModeValue("blue.50", "blue.900")}
-            color={useColorModeValue("blue.600", "blue.300")}
+            bg={useColorModeValue('blue.50', 'blue.900')}
+            color={useColorModeValue('blue.600', 'blue.300')}
             display="flex"
             alignItems="center"
             justifyContent="center"
           >
             <Icon as={icon} boxSize={ICON_BOX_MD} aria-hidden="true" />
           </Box>
-          <Text fontWeight="semibold" color={useColorModeValue("gray.800", "gray.200")}>
+          <Text fontWeight="semibold" color={useColorModeValue('gray.800', 'gray.200')}>
             {title}
           </Text>
         </Stack>
@@ -56,13 +75,18 @@ const CustomFormInput = ({
   ...props
 }) => (
   <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
-    <FormLabel htmlFor={name} fontSize="sm" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
+    <FormLabel
+      htmlFor={name}
+      fontSize="sm"
+      fontWeight="medium"
+      color={useColorModeValue('gray.700', 'gray.300')}
+    >
       {label}
     </FormLabel>
     <InputGroup>
       {icon && (
         <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue('gray.500', 'gray.400')} />
         </InputLeftElement>
       )}
       <Input
@@ -97,13 +121,18 @@ const CustomFormSelect = ({
   ...props
 }) => (
   <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
-    <FormLabel htmlFor={name} fontSize="sm" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
+    <FormLabel
+      htmlFor={name}
+      fontSize="sm"
+      fontWeight="medium"
+      color={useColorModeValue('gray.700', 'gray.300')}
+    >
       {label}
     </FormLabel>
     <InputGroup>
       {icon && (
         <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
+          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue('gray.500', 'gray.400')} />
         </InputLeftElement>
       )}
       <Select
@@ -129,7 +158,7 @@ const EditCustomerPage = () => {
   const { t } = useTranslation()
   const customization = useSelector((state) => state.customization)
 
-  const headerBg = customization.headerBg || "purple.500"
+  const headerBg = customization.headerBg || 'purple.500'
   const textColor = getContrastColor(headerBg)
 
   const [formData, setFormData] = useState({
@@ -204,7 +233,16 @@ const EditCustomerPage = () => {
 
   const validateForm = () => {
     const errors = {}
-    const requiredFields = ['name', 'email', 'address', 'city', 'state', 'zipCode', 'mobile', 'leadSource']
+    const requiredFields = [
+      'name',
+      'email',
+      'address',
+      'city',
+      'state',
+      'zipCode',
+      'mobile',
+      'leadSource',
+    ]
     requiredFields.forEach((field) => {
       if (!formData[field]?.toString().trim()) {
         errors[field] = t('customers.form.validation.required')
@@ -260,8 +298,13 @@ const EditCustomerPage = () => {
       <PageContainer>
         <StandardCard variant="outline" borderRadius="xl" shadow="sm">
           <CardBody textAlign="center" py={10}>
-            <Spinner size="lg" color={useColorModeValue("blue.500", "blue.300")} thickness="4px" speed="0.7s" />
-            <Text mt={4} color={useColorModeValue("gray.500", "gray.400")}>
+            <Spinner
+              size="lg"
+              color={useColorModeValue('blue.500', 'blue.300')}
+              thickness="4px"
+              speed="0.7s"
+            />
+            <Text mt={4} color={useColorModeValue('gray.500', 'gray.400')}>
               {t('customers.loading')}
             </Text>
           </CardBody>
@@ -274,7 +317,10 @@ const EditCustomerPage = () => {
     <PageContainer className="edit-customer-page">
       <PageHeader
         title={t('customers.form.titles.edit')}
-        subtitle={t('customers.form.descriptions.edit', 'Update customer profile with detailed information')}
+        subtitle={t(
+          'customers.form.descriptions.edit',
+          'Update customer profile with detailed information',
+        )}
         icon={Edit}
         actions={[
           <Button
@@ -284,8 +330,8 @@ const EditCustomerPage = () => {
             leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
             onClick={() => navigate(-1)}
             minH="44px"
-            maxW={{ base: "140px", md: "none" }}
-            fontSize={{ base: "sm", md: "md" }}
+            maxW={{ base: '140px', md: 'none' }}
+            fontSize={{ base: 'sm', md: 'md' }}
           >
             {t('common.back')}
           </Button>,
@@ -465,7 +511,11 @@ const EditCustomerPage = () => {
               />
             </SimpleGrid>
             <FormControl mb={4}>
-              <FormLabel fontSize="sm" fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")}>
+              <FormLabel
+                fontSize="sm"
+                fontWeight="medium"
+                color={useColorModeValue('gray.700', 'gray.300')}
+              >
                 {t('customers.form.labels.notes')}
               </FormLabel>
               <Textarea
@@ -489,9 +539,9 @@ const EditCustomerPage = () => {
                   colorScheme="gray"
                   onClick={() => navigate('/customers')}
                   minH="44px"
-                  maxW={{ base: "140px", md: "none" }}
+                  maxW={{ base: '140px', md: 'none' }}
                   leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
-                  fontSize={{ base: "sm", md: "md" }}
+                  fontSize={{ base: 'sm', md: 'md' }}
                 >
                   {t('customers.form.actions.cancel')}
                 </Button>
@@ -499,13 +549,17 @@ const EditCustomerPage = () => {
                   type="submit"
                   colorScheme="brand"
                   minH="44px"
-                  maxW={{ base: "140px", md: "none" }}
+                  maxW={{ base: '140px', md: 'none' }}
                   isLoading={isSubmitting}
-                  leftIcon={!isSubmitting ? <Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" /> : undefined}
+                  leftIcon={
+                    !isSubmitting ? (
+                      <Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" />
+                    ) : undefined
+                  }
                   bg={headerBg}
                   _hover={{ opacity: 0.9 }}
                   color={textColor}
-                  fontSize={{ base: "sm", md: "md" }}
+                  fontSize={{ base: 'sm', md: 'md' }}
                 >
                   {isSubmitting
                     ? t('customers.form.actions.updating')

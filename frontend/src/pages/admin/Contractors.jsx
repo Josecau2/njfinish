@@ -4,9 +4,42 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { Alert, AlertIcon, Badge, Box, Button, CardBody, Container, Flex, HStack, Icon, Input, InputGroup, InputLeftElement, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react'
+import {
+  Alert,
+  AlertIcon,
+  Badge,
+  Box,
+  Button,
+  CardBody,
+  Container,
+  Flex,
+  HStack,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
-import { Search, Users, User, Layers, BriefcaseBusiness as Briefcase, BarChart3 as ChartBar } from 'lucide-react'
+import {
+  Search,
+  Users,
+  User,
+  Layers,
+  BriefcaseBusiness as Briefcase,
+  BarChart3 as ChartBar,
+} from 'lucide-react'
 
 import { buildEncodedPath, genNoise } from '../../utils/obfuscate'
 import { fetchContractors } from '../../store/slices/contractorSlice'
@@ -19,25 +52,30 @@ const Contractors = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
 
-  const { list: contractors, loading, error, pagination } = useSelector((state) => state.contractors)
+  const {
+    list: contractors,
+    loading,
+    error,
+    pagination,
+  } = useSelector((state) => state.contractors)
 
   // Color mode values
-  const textGray500 = useColorModeValue("gray.500", "gray.400")
-  const textGray400 = useColorModeValue("gray.400", "gray.500")
-  const spinnerColor = useColorModeValue("blue.500", "blue.300")
-  const iconGray = useColorModeValue("gray.400", "gray.500")
-  const bgBlue = useColorModeValue("blue.50", "blue.900")
-  const iconBlue = useColorModeValue("blue.600", "blue.300")
-  const textBlue700 = useColorModeValue("blue.700", "blue.300")
-  const textBlue800 = useColorModeValue("blue.800", "blue.200")
-  const bgTeal = useColorModeValue("teal.50", "teal.900")
-  const bgOrange = useColorModeValue("orange.50", "orange.900")
-  const bgGreen = useColorModeValue("green.50", "green.900")
-  const iconGreen = useColorModeValue("green.600", "green.300")
-  const textGreen700 = useColorModeValue("green.700", "green.300")
-  const textGreen800 = useColorModeValue("green.800", "green.200")
-  const iconGray300 = useColorModeValue("gray.300", "gray.600")
-  const borderGray = useColorModeValue("gray.100", "gray.700")
+  const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const textGray400 = useColorModeValue('gray.400', 'gray.500')
+  const spinnerColor = useColorModeValue('blue.500', 'blue.300')
+  const iconGray = useColorModeValue('gray.400', 'gray.500')
+  const bgBlue = useColorModeValue('blue.50', 'blue.900')
+  const iconBlue = useColorModeValue('blue.600', 'blue.300')
+  const textBlue700 = useColorModeValue('blue.700', 'blue.300')
+  const textBlue800 = useColorModeValue('blue.800', 'blue.200')
+  const bgTeal = useColorModeValue('teal.50', 'teal.900')
+  const bgOrange = useColorModeValue('orange.50', 'orange.900')
+  const bgGreen = useColorModeValue('green.50', 'green.900')
+  const iconGreen = useColorModeValue('green.600', 'green.300')
+  const textGreen700 = useColorModeValue('green.700', 'green.300')
+  const textGreen800 = useColorModeValue('green.800', 'green.200')
+  const iconGray300 = useColorModeValue('gray.300', 'gray.600')
+  const borderGray = useColorModeValue('gray.100', 'gray.700')
 
   const [searchTerm, setSearchTerm] = useState('')
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
@@ -58,7 +96,9 @@ const Contractors = () => {
   const handlePageChange = (page) => setCurrentPage(page)
 
   const handleView = (contractor) => {
-    const noisy = `/${genNoise(6)}/${genNoise(8)}` + buildEncodedPath('/admin/contractors/:id', { id: contractor.id })
+    const noisy =
+      `/${genNoise(6)}/${genNoise(8)}` +
+      buildEncodedPath('/admin/contractors/:id', { id: contractor.id })
     navigate(noisy)
   }
 
@@ -105,7 +145,13 @@ const Contractors = () => {
         </Badge>
       ))
 
-    return enabledModules.length > 0 ? enabledModules : <Text fontSize="xs" color={textGray500}>{t('contractorsAdmin.noModules')}</Text>
+    return enabledModules.length > 0 ? (
+      enabledModules
+    ) : (
+      <Text fontSize="xs" color={textGray500}>
+        {t('contractorsAdmin.noModules')}
+      </Text>
+    )
   }
 
   const formatDate = (dateString) => {
@@ -117,9 +163,18 @@ const Contractors = () => {
 
   const totalPages = pagination?.totalPages || 1
   const totalContractors = pagination?.total || sortedFilteredContractors.length
-  const totalUsers = sortedFilteredContractors.reduce((sum, contractor) => sum + (Number(contractor.user_count) || 0), 0)
-  const totalCustomers = sortedFilteredContractors.reduce((sum, contractor) => sum + (Number(contractor.customer_count) || 0), 0)
-  const totalProposals = sortedFilteredContractors.reduce((sum, contractor) => sum + (Number(contractor.proposal_count) || 0), 0)
+  const totalUsers = sortedFilteredContractors.reduce(
+    (sum, contractor) => sum + (Number(contractor.user_count) || 0),
+    0,
+  )
+  const totalCustomers = sortedFilteredContractors.reduce(
+    (sum, contractor) => sum + (Number(contractor.customer_count) || 0),
+    0,
+  )
+  const totalProposals = sortedFilteredContractors.reduce(
+    (sum, contractor) => sum + (Number(contractor.proposal_count) || 0),
+    0,
+  )
 
   if (loading && (!contractors || contractors.length === 0)) {
     return (
@@ -169,7 +224,12 @@ const Contractors = () => {
                   <HStack spacing={4} align="center">
                     <Icon as={Users} boxSize={ICON_BOX_MD} color={iconBlue} />
                     <Box>
-                      <Text fontSize="xs" color={textBlue700} textTransform="uppercase" fontWeight="semibold">
+                      <Text
+                        fontSize="xs"
+                        color={textBlue700}
+                        textTransform="uppercase"
+                        fontWeight="semibold"
+                      >
                         {t('contractorsAdmin.stats.totalContractors', 'Total Contractors')}
                       </Text>
                       <Text fontSize="lg" fontWeight="bold" color={textBlue800}>
@@ -182,7 +242,12 @@ const Contractors = () => {
                   <HStack spacing={4} align="center">
                     <Icon as={User} boxSize={ICON_BOX_MD} color="teal.600" />
                     <Box>
-                      <Text fontSize="xs" color="teal.700" textTransform="uppercase" fontWeight="semibold">
+                      <Text
+                        fontSize="xs"
+                        color="teal.700"
+                        textTransform="uppercase"
+                        fontWeight="semibold"
+                      >
                         {t('contractorsAdmin.table.users', 'Users')}
                       </Text>
                       <Text fontSize="lg" fontWeight="bold" color="teal.800">
@@ -195,7 +260,12 @@ const Contractors = () => {
                   <HStack spacing={4} align="center">
                     <Icon as={Layers} boxSize={ICON_BOX_MD} color="orange.600" />
                     <Box>
-                      <Text fontSize="xs" color="orange.700" textTransform="uppercase" fontWeight="semibold">
+                      <Text
+                        fontSize="xs"
+                        color="orange.700"
+                        textTransform="uppercase"
+                        fontWeight="semibold"
+                      >
                         {t('contractorsAdmin.table.customers', 'Customers')}
                       </Text>
                       <Text fontSize="lg" fontWeight="bold" color="orange.800">
@@ -208,7 +278,12 @@ const Contractors = () => {
                   <HStack spacing={4} align="center">
                     <Icon as={ChartBar} boxSize={ICON_BOX_MD} color={iconGreen} />
                     <Box>
-                      <Text fontSize="xs" color={textGreen700} textTransform="uppercase" fontWeight="semibold">
+                      <Text
+                        fontSize="xs"
+                        color={textGreen700}
+                        textTransform="uppercase"
+                        fontWeight="semibold"
+                      >
                         {t('contractorsAdmin.table.proposals', 'Proposals')}
                       </Text>
                       <Text fontSize="lg" fontWeight="bold" color={textGreen800}>
@@ -243,9 +318,14 @@ const Contractors = () => {
                       <Td colSpan={7} textAlign="center" py={10}>
                         <Stack spacing={4} align="center">
                           <Icon as={Search} boxSize={8} color={iconGray300} />
-                          <Text color={textGray500}>{t('contractorsAdmin.empty.title', 'No contractors found')}</Text>
+                          <Text color={textGray500}>
+                            {t('contractorsAdmin.empty.title', 'No contractors found')}
+                          </Text>
                           <Text fontSize="sm" color={textGray400}>
-                            {t('contractorsAdmin.empty.tryAdjusting', 'Try adjusting your filters.')}
+                            {t(
+                              'contractorsAdmin.empty.tryAdjusting',
+                              'Try adjusting your filters.',
+                            )}
                           </Text>
                         </Stack>
                       </Td>
@@ -275,11 +355,13 @@ const Contractors = () => {
                             size="sm"
                             variant="outline"
                             colorScheme="brand"
-                            leftIcon={<Icon as={ChartBar} boxSize={ICON_BOX_MD} aria-hidden="true" />}
+                            leftIcon={
+                              <Icon as={ChartBar} boxSize={ICON_BOX_MD} aria-hidden="true" />
+                            }
                             onClick={() => handleView(contractor)}
                             minH="44px"
-                            maxW={{ base: "180px", md: "none" }}
-                            fontSize={{ base: "xs", md: "sm" }}
+                            maxW={{ base: '180px', md: 'none' }}
+                            fontSize={{ base: 'xs', md: 'sm' }}
                           >
                             {t('contractorsAdmin.actions.viewDetails', 'View Details')}
                           </Button>
@@ -309,10 +391,12 @@ const Contractors = () => {
                             variant="outline"
                             colorScheme="brand"
                             onClick={() => handleView(contractor)}
-                            leftIcon={<Icon as={ChartBar} boxSize={ICON_BOX_MD} aria-hidden="true" />}
+                            leftIcon={
+                              <Icon as={ChartBar} boxSize={ICON_BOX_MD} aria-hidden="true" />
+                            }
                             minH="44px"
-                            maxW={{ base: "140px", md: "none" }}
-                            fontSize={{ base: "xs", md: "sm" }}
+                            maxW={{ base: '140px', md: 'none' }}
+                            fontSize={{ base: 'xs', md: 'sm' }}
                           >
                             {t('contractorsAdmin.actions.view', 'View')}
                           </Button>
@@ -352,7 +436,8 @@ const Contractors = () => {
                           </HStack>
                         </Stack>
                         <Text fontSize="xs" color={textGray500} textAlign="right">
-                          {t('contractorsAdmin.table.created', 'Created')}: {formatDate(contractor.created_at)}
+                          {t('contractorsAdmin.table.created', 'Created')}:{' '}
+                          {formatDate(contractor.created_at)}
                         </Text>
                       </Stack>
                     </CardBody>

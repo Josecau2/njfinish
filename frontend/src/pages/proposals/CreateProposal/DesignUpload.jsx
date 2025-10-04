@@ -1,7 +1,23 @@
-
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Box, Button, CardBody, Flex, Heading, Icon, Input, SimpleGrid, Spinner, Stack, Tab, TabList, Tabs, Text, useBreakpointValue, useColorModeValue } from '@chakra-ui/react'
+import {
+  Box,
+  Button,
+  CardBody,
+  Flex,
+  Heading,
+  Icon,
+  Input,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  Tab,
+  TabList,
+  Tabs,
+  Text,
+  useBreakpointValue,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { motion } from 'framer-motion'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
@@ -34,13 +50,13 @@ const DesignImportStep = ({
   const tabIndex = activeTab === 'import' ? 1 : 0
 
   // Dark mode colors - MUST be before useState
-  const headingColor = useColorModeValue("gray.800", "gray.200")
-  const textColor = useColorModeValue("gray.600", "gray.400")
-  const dropzoneBg = useColorModeValue("gray.50", "gray.800")
-  const iconColor = useColorModeValue("gray.400", "gray.500")
-  const textSecondary = useColorModeValue("gray.500", "gray.400")
-  const stickyBg = useColorModeValue("white", "gray.800")
-  const hoverBg = useColorModeValue("gray.100", "gray.700")
+  const headingColor = useColorModeValue('gray.800', 'gray.200')
+  const textColor = useColorModeValue('gray.600', 'gray.400')
+  const dropzoneBg = useColorModeValue('gray.50', 'gray.800')
+  const iconColor = useColorModeValue('gray.400', 'gray.500')
+  const textSecondary = useColorModeValue('gray.500', 'gray.400')
+  const stickyBg = useColorModeValue('white', 'gray.800')
+  const hoverBg = useColorModeValue('gray.100', 'gray.700')
 
   const handleTabSelect = (index) => {
     setActiveTab(index === 1 ? 'import' : 'manual')
@@ -65,7 +81,9 @@ const DesignImportStep = ({
     return stylesMeta.filter((style) => {
       const styleName = (style.style || '').toLowerCase()
       const variantMatch = Array.isArray(style.styleVariants)
-        ? style.styleVariants.some((variant) => (variant.shortName || '').toLowerCase().includes(query))
+        ? style.styleVariants.some((variant) =>
+            (variant.shortName || '').toLowerCase().includes(query),
+          )
         : false
       return styleName.includes(query) || variantMatch
     })
@@ -81,7 +99,9 @@ const DesignImportStep = ({
     const fetchStyles = async () => {
       try {
         setIsFetchingStyles(true)
-        const response = await axiosInstance.get(`/api/manufacturers/${selectedManufacturerId}/styles-meta`)
+        const response = await axiosInstance.get(
+          `/api/manufacturers/${selectedManufacturerId}/styles-meta`,
+        )
         if (response?.data?.styles && Array.isArray(response.data.styles)) {
           setStylesMeta(response.data.styles)
         } else if (Array.isArray(response?.data)) {
@@ -207,7 +227,12 @@ const DesignImportStep = ({
                   {t('proposals.create.design.noStylesFound', 'No styles found for this search.')}
                 </Text>
               ) : (
-                <SimpleGrid columns={{ base: 2, sm: 3, md: 4, lg: 5 }} spacing={6} w="full" justifyItems="center">
+                <SimpleGrid
+                  columns={{ base: 2, sm: 3, md: 4, lg: 5 }}
+                  spacing={6}
+                  w="full"
+                  justifyItems="center"
+                >
                   {filteredCollections.map((style) => (
                     <Box
                       key={style.id}
@@ -242,7 +267,9 @@ const DesignImportStep = ({
                             const fileName = style.styleVariants?.[0]?.image
                             if (fileName && !event.target.dataset.fallbackTried) {
                               event.target.dataset.fallbackTried = '1'
-                              event.target.src = buildUploadUrl(`/uploads/manufacturer_catalogs/${fileName}`)
+                              event.target.src = buildUploadUrl(
+                                `/uploads/manufacturer_catalogs/${fileName}`,
+                              )
                             } else {
                               event.target.src = '/images/nologo.png'
                             }
@@ -295,8 +322,8 @@ const DesignImportStep = ({
               whileTap={{ scale: 0.98 }}
               leftIcon={<Icon as={PenSquare} boxSize={ICON_BOX_MD} />}
               minH="44px"
-              maxW={{ base: "180px", md: "none" }}
-              fontSize={{ base: "sm", md: "md" }}
+              maxW={{ base: '180px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('proposals.create.design.tabs.manualEntry')}
             </MotionButton>
@@ -307,8 +334,8 @@ const DesignImportStep = ({
               whileTap={{ scale: 0.98 }}
               leftIcon={<Icon as={UploadCloud} boxSize={ICON_BOX_MD} />}
               minH="44px"
-              maxW={{ base: "180px", md: "none" }}
-              fontSize={{ base: "sm", md: "md" }}
+              maxW={{ base: '180px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('proposals.create.design.tabs.import2020')}
             </MotionButton>
