@@ -1,69 +1,176 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useMemo } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import workerSrc from 'react-pdf/dist/pdf.worker.entry.js?url'
-import { Box, Center, Spinner, Text, VStack, useColorModeValue } from '@chakra-ui/react'
+import { Box, Button, HStack } from '@chakra-ui/react'
+import { ChevronLeft, ChevronRight, X } from '@/icons-lucide'
 import { getFreshestToken } from '../../utils/authToken'
 
-pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
+// Configure pdf.js worker explicitly for Vite - FORCE override
+if (pdfjs?.GlobalWorkerOptions) {
+  pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
+}
 
-const MobilePdfViewer = ({ fileUrl }) => {
-
-  // Color mode values
-  const iconRed500 = useColorModeValue('red.500', 'red.300')
+const MobilePdfViewer = ({ fileUrl, onClose }) => {
   const [numPages, setNumPages] = useState(null)
+  const [pageNumber, setPageNumber] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
-  const token = getFreshestToken()
+
+  // Memoize file descriptor to prevent unnecessary reloads
+  const documentFile = useMemo(() => {
+    const token = getFreshestToken()
+    if (token) {
+      return {
+        url: fileUrl,
+        httpHeaders: { Authorization: `Bearer ${token}` },
+        withCredentials: false,
+      }
+    }
+    return { url: fileUrl }
+  }, [fileUrl])
 
   const onLoadSuccess = useCallback(({ numPages: nextNumPages }) => {
     setNumPages(nextNumPages)
     setIsLoading(false)
+    setError(null)
   }, [])
 
   const onLoadError = useCallback((err) => {
     console.error('PDF load error:', err)
-    setError(err?.message || 'Unable to load PDF.')
+    console.error('PDF URL:', fileUrl)
+    setError(`Failed to load PDF: ${err?.message || 'Unknown error'}`)
     setIsLoading(false)
+  }, [fileUrl])
+
+  const goToPrevPage = useCallback(() => {
+    setPageNumber((prev) => Math.max(1, prev - 1))
   }, [])
 
+  const goToNextPage = useCallback(() => {
+    setPageNumber((prev) => Math.min(numPages || 1, prev + 1))
+  }, [numPages])
+
   return (
-    <VStack spacing={4} align="stretch">
-      <Text fontWeight="semibold" textAlign="center">
-        PDF Preview
-      </Text>
-      <Box borderWidth="1px" borderRadius="md" overflow="hidden">
-        {isLoading && (
-          <Center py={12}>
-            <Spinner />
-          </Center>
-        )}
-        {error && (
-          <Center py={12}>
-            <Text fontSize="sm" color={iconRed500}>
-              {error}
-            </Text>
-          </Center>
-        )}
-        {!error && (
+    <Box
+      position="fixed"
+      top={0}
+      left={0}
+      right={0}
+      bottom={0}
+      bg="rgba(0, 0, 0, 0.95)"
+      display="flex"
+      flexDirection="column"
+      zIndex={10000}
+    >
+      {/* Mobile Header Controls */}
+      <HStack
+        justify="space-between"
+        align="center"
+        p={2}
+        bg="rgba(0, 0, 0, 0.9)"
+        borderBottom="1px solid"
+        borderColor="#333"
+        color="white"
+        fontSize="sm"
+      >
+        <HStack spacing={3}>
+          {numPages > 1 && (
+            <>
+              <Button
+                onClick={goToPrevPage}
+                isDisabled={pageNumber <= 1}
+                size="md"
+                colorScheme={pageNumber <= 1 ? 'gray' : 'blue'}
+                minW="44px"
+                h="44px"
+                aria-label="Previous page"
+              >
+                <ChevronLeft />
+              </Button>
+              <Box minW="60px" textAlign="center" fontWeight="medium">
+                {pageNumber} / {numPages}
+              </Box>
+              <Button
+                onClick={goToNextPage}
+                isDisabled={pageNumber >= numPages}
+                size="md"
+                colorScheme={pageNumber >= numPages ? 'gray' : 'blue'}
+                minW="44px"
+                h="44px"
+                aria-label="Next page"
+              >
+                <ChevronRight />
+              </Button>
+            </>
+          )}
+        </HStack>
+
+        <Button
+          onClick={onClose}
+          size="md"
+          colorScheme="red"
+          leftIcon={<X />}
+          minW="44px"
+          h="44px"
+          fontWeight="bold"
+        >
+          Close
+        </Button>
+      </HStack>
+
+      {/* PDF Content */}
+      <Box
+        flex={1}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        p={2}
+        overflow="auto"
+        bg="#2a2a2a"
+      >
+        <Box textAlign="center" maxW="100%">
+          {/* Force worker override right before Document render */}
+          {(() => {
+            if (pdfjs?.GlobalWorkerOptions) {
+              pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
+            }
+            return null
+          })()}
           <Document
-            file={{ url: fileUrl, httpHeaders: { Authorization: token ? `Bearer ${token}` : undefined } }}
-            loading={null}
+            file={documentFile}
             onLoadSuccess={onLoadSuccess}
             onLoadError={onLoadError}
-            error={null}
+            loading={
+              <Box color="white" p={5}>
+                Loading PDF...
+              </Box>
+            }
+            error={
+              <Box color="#dc3545" p={5}>
+                {error || 'Failed to load PDF document'}
+              </Box>
+            }
           >
-            {Array.from(new Array(numPages || 0), (_, index) => (
-              <Page
-                key={`page_${index + 1}`}
-                pageNumber={index + 1}
-                renderAnnotationLayer={false}
-                renderTextLayer={false}
-              />
-            ))}
+            <Page
+              pageNumber={pageNumber}
+              width={Math.min(window.innerWidth - 20, 800)}
+              renderTextLayer={false}
+              renderAnnotationLayer={false}
+              loading={
+                <Box color="white" p={5}>
+                  Loading page...
+                </Box>
+              }
+              error={
+                <Box color="#dc3545" p={5}>
+                  Failed to load page
+                </Box>
+              }
+            />
           </Document>
-        )}
+        </Box>
       </Box>
-    </VStack>
+    </Box>
   )
 }
 

@@ -22,6 +22,8 @@ import {
   ArrowRight,
   ChevronUp,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   MoreHorizontal,
   // status and visibility
   Eye,
@@ -68,6 +70,9 @@ import {
   // shapes
   Plus,
   Minus,
+  // zoom
+  ZoomIn,
+  ZoomOut,
   // additional arrows for sort aliases
   ArrowUpAZ,
   ArrowDownAZ,
@@ -95,6 +100,8 @@ export {
   ArrowRight,
   ChevronUp,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   MoreHorizontal,
   // status and visibility
   Eye,
@@ -141,6 +148,9 @@ export {
   // shapes
   Plus,
   Minus,
+  // zoom
+  ZoomIn,
+  ZoomOut,
   // also export the underlying sort icons
   ArrowUpAZ,
   ArrowDownAZ,

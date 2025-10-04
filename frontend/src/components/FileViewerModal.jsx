@@ -330,6 +330,7 @@ export default function FileViewerModal({
     )
   }
 
+  // PDF viewers use fullscreen overlay without modal wrapper (both desktop and mobile)
   if (modalVisible && detectedType === 'pdf' && inlineUrl) {
     return renderBody()
   }

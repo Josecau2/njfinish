@@ -2480,7 +2480,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               <FormControl>
                 <FormLabel>{t('resources.fields.ctaLabel', 'CTA Label')}</FormLabel>
                 <Input
-                  value={fileModal.form.ctaLabel}
+                  value={fileModal.form.ctaLabel || ''}
                   onChange={(e) =>
                     setFileModal((prev) => ({
                       ...prev,
@@ -2593,51 +2593,57 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     formData.append('file', fileModal.form.file)
                   }
 
-                  // Add thumbnail if present
-                  if (fileModal.form.pendingThumbnail) {
-                    formData.append('thumbnail', fileModal.form.pendingThumbnail)
-                  }
-
-                  // Add other fields
+                  // Do NOT send thumbnail in main payload - it's uploaded via dedicated endpoint
                   const payload = {
-                    ...fileModal.form,
-                    tags: normalizeTagsInput(fileModal.form.tags),
-                    visibleToGroupTypes: normalizeVisibilityInput(
-                      fileModal.form.visibleToGroupTypes,
-                    ),
+                    name: fileModal.form.name || '',
+                    description: fileModal.form.description || '',
+                    category_id: fileModal.form.categoryId || '',
+                    is_pinned: fileModal.form.isPinned ? 'true' : 'false',
+                    pinned_order: fileModal.form.pinnedOrder ? String(fileModal.form.pinnedOrder) : '0',
+                    tags: JSON.stringify(normalizeTagsInput(fileModal.form.tags)),
+                    cta_label: fileModal.form.ctaLabel || '',
+                    cta_url: fileModal.form.ctaUrl || '',
+                    status: fileModal.form.status || 'active',
+                    visible_to_group_types: JSON.stringify(fileModal.form.visibleToGroupTypes || ['admin']),
+                    visible_to_group_ids: JSON.stringify(normalizeVisibilityInput(fileModal.form.visibleToGroupIds)),
                   }
-                  delete payload.file
-                  delete payload.pendingThumbnail
-                  delete payload.pendingThumbnailPreview
 
                   Object.entries(payload).forEach(([key, value]) => {
-                    if (value !== null && value !== undefined) {
-                      formData.append(key, value)
-                    }
+                    formData.append(key, value)
                   })
+
+                  let savedFileId = fileModal.form.id
 
                   if (fileModal.isEdit) {
                     await axiosInstance.put(`${FILES_ENDPOINT}/${fileModal.form.id}`, formData, {
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data',
-                      },
+                      headers: { 'Content-Type': 'multipart/form-data' },
                     })
+                    showFeedback('success', t('resources.messages.fileUpdated', 'File updated successfully'))
                   } else {
-                    await axiosInstance.post(FILES_ENDPOINT, formData, {
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data',
-                      },
+                    const { data } = await axiosInstance.post(FILES_ENDPOINT, formData, {
+                      headers: { 'Content-Type': 'multipart/form-data' },
                     })
+                    savedFileId = data?.data?.id
+                    showFeedback('success', t('resources.messages.fileUploaded', 'File uploaded successfully'))
+                  }
+
+                  // If a pending thumbnail exists, upload it now via separate endpoint
+                  if (fileModal.form.pendingThumbnail && savedFileId) {
+                    try {
+                      const thumbnailFormData = new FormData()
+                      thumbnailFormData.append('thumbnail', fileModal.form.pendingThumbnail)
+                      await axiosInstance.post(`${FILES_ENDPOINT}/${savedFileId}/thumbnail`, thumbnailFormData, {
+                        headers: { 'Content-Type': 'multipart/form-data' },
+                      })
+                      showFeedback('success', t('resources.messages.thumbnailUploaded', 'Thumbnail uploaded successfully'))
+                    } catch (thumbnailError) {
+                      console.error('Error uploading file thumbnail:', thumbnailError)
+                      showFeedback('warning', t('resources.messages.thumbnailUploadFailed', 'Failed to upload thumbnail'))
+                    }
                   }
 
                   await fetchResources()
                   closeFileModal()
-                  showFeedback(
-                    'success',
-                    t('resources.messages.fileSaved', 'File saved successfully'),
-                  )
                 } catch (error) {
                   console.error('Error saving file:', error)
                   showFeedback(
