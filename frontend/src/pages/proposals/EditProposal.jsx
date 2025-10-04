@@ -600,7 +600,7 @@ const EditProposal = ({
         </HStack>
       </Box>
 
-      <PageContainer maxW="100%" className="dashboard-container" bg={pageBg} minH="100vh">
+      <PageContainer maxW="100%" bg={pageBg} minH="100vh">
         <Box
           as="form"
           onSubmit={(e) => {
