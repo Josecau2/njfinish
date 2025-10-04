@@ -91,6 +91,7 @@
     "saving": "Guardando...",
     "uploading": "Subiendo...",
     "toggleTheme": "Alternar modo de color",
+    "backToDashboard": "Volver al panel",
     "tableHeaders": {
       "number": "#"
     },
@@ -376,7 +377,17 @@
       "unpin": "Desfijar"
     },
     "closeSidebar": "Cerrar barra lateral",
-    "openSidebar": "Abrir barra lateral"
+    "openSidebar": "Abrir barra lateral",
+    "3dKitchen": "Cocina 3D",
+    "home": "Inicio"
+  },
+  "3dKitchen": {
+    "title": "Cocina 3D",
+    "comingSoon": {
+      "title": "Próximamente",
+      "description": "Nuestro diseñador de cocina 3D está actualmente en desarrollo. Esta poderosa herramienta le permitirá visualizar y personalizar diseños de cocina en un entorno 3D inmersivo.",
+      "features": "Las características incluirán renderizado 3D en tiempo real, personalización de gabinetes, selección de materiales y generación instantánea de propuestas."
+    }
   },
   "termsModal": {
     "title": "Términos y Condiciones",

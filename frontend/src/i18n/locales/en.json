@@ -91,6 +91,7 @@
     "egThreeToSevenDays": "e.g., 3-7 days",
     "continue": "Continue",
     "toggleTheme": "Toggle color mode",
+    "backToDashboard": "Back to Dashboard",
     "tableHeaders": {
       "number": "#"
     },
@@ -644,7 +645,17 @@
       "unpin": "Unpin"
     },
     "closeSidebar": "Close sidebar",
-    "openSidebar": "Open sidebar"
+    "openSidebar": "Open sidebar",
+    "3dKitchen": "3D Kitchen",
+    "home": "Home"
+  },
+  "3dKitchen": {
+    "title": "3D Kitchen",
+    "comingSoon": {
+      "title": "Coming Soon",
+      "description": "Our 3D Kitchen Designer is currently under development. This powerful tool will allow you to visualize and customize kitchen designs in an immersive 3D environment.",
+      "features": "Features will include real-time 3D rendering, cabinet customization, material selection, and instant proposal generation."
+    }
   },
   "termsModal": {
     "title": "Terms & Conditions",

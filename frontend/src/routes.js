@@ -91,6 +91,7 @@ const LeadsPage = React.lazy(() => import('./pages/admin/LeadsPage'))
 const NotificationsPage = React.lazy(() => import('./views/notifications/NotificationsPage'))
 const AdminProposalView = React.lazy(() => import('./views/proposals/AdminProposalView'))
 const ContactUs = React.lazy(() => import('./pages/contact/ContactUs'))
+const ComingSoon3DKitchen = React.lazy(() => import('./pages/3dkitchen/ComingSoon'))
 
 const routes = [
   { path: '/', name: 'Dashboard', element: Dashboard },
@@ -207,6 +208,9 @@ const routes = [
   // Resources
   { path: '/resources', name: 'Resources', element: Resources, permission: 'resources:read' },
   { path: '/contact', name: 'Contact Us', element: ContactUs },
+
+  // 3D Kitchen
+  { path: '/3d-kitchen', name: '3D Kitchen', element: ComingSoon3DKitchen },
 
   // Calendar
   { path: '/calender', name: 'Calender', element: Calender, module: 'calendar' },
