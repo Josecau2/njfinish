@@ -8,7 +8,6 @@ export default function EmbeddedPaymentForm({
   height = 780,
   allow = 'payment *; clipboard-write *',
   sandbox,
-  className = '',
 }) {
   const frameRef = useRef(null)
   const frameBg = useColorModeValue('white', 'gray.800')
@@ -31,7 +30,7 @@ export default function EmbeddedPaymentForm({
   }, [])
 
   return (
-    <Box className={className} maxW="900px" mx="auto">
+    <Box maxW="900px" mx="auto">
       <Box as="iframe"
         ref={frameRef}
         src={src}
