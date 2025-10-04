@@ -273,7 +273,6 @@ const LoginCustomizerPage = () => {
       bg={bgColor}
       minH="100vh"
       p={4}
-      className="main-div-custom-login"
     >
       <PageHeader
         title={t('settings.customization.login.headerTitle')}
@@ -936,7 +935,7 @@ const LoginCustomizerPage = () => {
         motionPreset="slideInBottom"
       >
         <ModalOverlay />
-        <ModalContent borderRadius="0" border="none" className="login-preview-modal">
+        <ModalContent borderRadius="0" border="none">
           <ModalHeader
             display="flex"
             justifyContent="space-between"
