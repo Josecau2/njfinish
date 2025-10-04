@@ -1,10 +1,9 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useState, useMemo, useRef } from 'react'
-import { Box, Button, CardBody, CardHeader, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Stack, Text, Icon, useColorModeValue } from '@chakra-ui/react'
+import { Box, Button, CardBody, CardHeader, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Stack, Text, Icon, useColorModeValue, useToast, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useDisclosure } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import { useNavigate, useParams } from 'react-router-dom'
 import { decodeParam } from '../../../utils/obfuscate'
-import Swal from 'sweetalert2'
 import ct from 'countries-and-timezones'
 import { formatDateTime, getCurrentDate } from '../../../utils/dateHelpers'
 import { fetchLocationById, updateLocation } from '../../../store/slices/locationSlice'
@@ -26,9 +25,12 @@ const INITIAL_FORM = {
 const EditLocation = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const toast = useToast()
   const { id: rawId } = useParams()
   const locationId = useMemo(() => decodeParam(rawId), [rawId])
   const dispatch = useDispatch()
+  const { isOpen: isCancelOpen, onOpen: onCancelOpen, onClose: onCancelClose } = useDisclosure()
+  const cancelRef = useRef()
 
   // Color mode values
   const borderGray600 = useColorModeValue('gray.600', 'gray.400')
@@ -76,12 +78,18 @@ const EditLocation = () => {
           }
         }
       } catch (error) {
-        Swal.fire(t('common.error'), t('settings.locations.edit.loadFailedOne'), 'error')
+        toast({
+          title: t('common.error'),
+          description: t('settings.locations.edit.loadFailedOne'),
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
       }
     }
 
     loadLocation()
-  }, [dispatch, locationId, t])
+  }, [dispatch, locationId, t, toast])
 
   useEffect(() => {
     if (!formData.timezone) return undefined
@@ -153,19 +161,23 @@ const EditLocation = () => {
     try {
       const response = await dispatch(updateLocation({ id: locationId, data: formData })).unwrap()
       if (response?.status === 200 || response?.success) {
-        Swal.fire(
-          t('settings.locations.alerts.updatedTitle'),
-          t('settings.locations.alerts.updatedText'),
-          'success',
-        )
+        toast({
+          title: t('settings.locations.alerts.updatedTitle'),
+          description: t('settings.locations.alerts.updatedText'),
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
         navigate('/settings/locations')
       }
     } catch (error) {
-      Swal.fire(
-        t('common.error'),
-        error?.message || t('settings.locations.alerts.genericError'),
-        'error',
-      )
+      toast({
+        title: t('common.error'),
+        description: error?.message || t('settings.locations.alerts.genericError'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } finally {
       setLoading(false)
     }
@@ -177,20 +189,12 @@ const EditLocation = () => {
       return
     }
 
-    Swal.fire({
-      title: t('common.confirm'),
-      text: t('settings.locations.alerts.leaveWarning'),
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: t('settings.locations.alerts.leaveAnyway'),
-      cancelButtonText: t('settings.locations.alerts.stayOnPage'),
-      confirmButtonColor: 'var(--chakra-colors-red-500)',
-      cancelButtoncolor: "gray.500",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate('/settings/locations')
-      }
-    })
+    onCancelOpen()
+  }
+
+  const confirmCancel = () => {
+    onCancelClose()
+    navigate('/settings/locations')
   }
 
   return (
@@ -345,6 +349,34 @@ const EditLocation = () => {
           </CardBody>
         </StandardCard>
       </Box>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog
+        isOpen={isCancelOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onCancelClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('common.confirm')}
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              {t('settings.locations.alerts.leaveWarning')}
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onCancelClose}>
+                {t('settings.locations.alerts.stayOnPage')}
+              </Button>
+              <Button colorScheme="red" onClick={confirmCancel} ml={3}>
+                {t('settings.locations.alerts.leaveAnyway')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </PageContainer>
   )
 }
