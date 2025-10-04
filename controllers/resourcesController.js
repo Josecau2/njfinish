@@ -1074,6 +1074,14 @@ async function getCategoryThumbnail(req, res) {
     const mime = guessImageMimeFromPath(absolutePath);
     res.setHeader('Content-Type', mime);
     res.setHeader('Content-Disposition', 'inline');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    // Add CORS headers to allow cross-origin image loading
+    const origin = req.headers.origin;
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     const stream = fs.createReadStream(absolutePath);
     stream.on('error', (e) => {
       console.error('Stream error while serving category thumbnail:', e);
@@ -1159,6 +1167,14 @@ async function getFileThumbnail(req, res) {
     const mime = guessImageMimeFromPath(absolutePath);
     res.setHeader('Content-Type', mime);
     res.setHeader('Content-Disposition', 'inline');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    // Add CORS headers to allow cross-origin image loading
+    const origin = req.headers.origin;
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     const stream = fs.createReadStream(absolutePath);
     stream.on('error', (e) => {
       console.error('Stream error while serving file thumbnail:', e);
