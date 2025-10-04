@@ -131,6 +131,14 @@ const CatalogTable = ({
   const modLabelColor = useColorModeValue("gray.600", "gray.400")
   const modContainerBg = useColorModeValue("gray.50", "gray.800")
   const cellTextColor = useColorModeValue("gray.500", "gray.400")
+  const dropdownBg = useColorModeValue("white", "gray.800")
+  const dropdownHoverBg = useColorModeValue("gray.100", "gray.700")
+  const textDanger = useColorModeValue("red.600", "red.400")
+  const textMuted = useColorModeValue("gray.500", "gray.400")
+  const modCategoryBg = useColorModeValue("gray.100", "gray.700")
+  const modItemBg = useColorModeValue("gray.50", "gray.800")
+  const modBorderColor = useColorModeValue("gray.300", "gray.600")
+  const settingsIconColor = useColorModeValue("blue.500", "blue.300")
 
   const [partQuery, setPartQuery] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -289,7 +297,7 @@ const CatalogTable = ({
   }
   return (
     <Box mt={5} mb={5}>
-      <Flex flexWrap="wrap" gap={3} align="center" justify="space-between" mb={4} className="catalog-controls-mobile">
+      <Flex flexWrap="wrap" gap={3} align="center" justify="space-between" mb={4}>
         <Box
           position="relative"
           flex="1"
@@ -316,7 +324,15 @@ const CatalogTable = ({
           </InputGroup>
           {showSuggestions && filteredOptions.length > 0 && (
             <Box
-              className="dropdown-menu show"
+              position="absolute"
+              top="100%"
+              left={0}
+              right={0}
+              zIndex={1000}
+              bg={dropdownBg}
+              borderRadius="md"
+              boxShadow="lg"
+              mt={1}
               w="full"
               maxH="260px"
               overflowY="auto"
@@ -324,10 +340,11 @@ const CatalogTable = ({
               {filteredOptions.map((item) => (
                 <Flex
                   key={item.id}
-                  className="dropdown-item-wrapper"
                   justify="space-between"
                   align="center"
                   p={1}
+                  _hover={{ bg: dropdownHoverBg }}
+                  cursor="pointer"
                 >
                   <Button
                     variant="ghost"
@@ -437,24 +454,21 @@ const CatalogTable = ({
                 maxW="520px"
                 mx="auto"
               >
-                <img
+                <Image
                   src={
                     selectedTypeInfo.image
                       ? `${api_url}/uploads/types/${selectedTypeInfo.image}`
                       : '/images/nologo.png'
                   }
                   alt={selectedTypeInfo.type}
-                  className="img-fluid"
-                  style={{
-                    maxWidth: '100%',
-                    height: 'auto',
-                    maxHeight: '455px',
-                    objectFit: 'contain',
-                    background: 'white',
-                    borderRadius: '6px',
-                    border: '1px solid',
-                    borderColor: 'var(--chakra-colors-gray-300)',
-                  }}
+                  maxW="100%"
+                  h="auto"
+                  maxH="455px"
+                  objectFit="contain"
+                  bg="white"
+                  borderRadius="6px"
+                  border="1px solid"
+                  borderColor={modalBorderColor}
                   onError={(e) => {
                     if (selectedTypeInfo.image && !e.target.dataset.fallbackTried) {
                       e.target.dataset.fallbackTried = '1'
@@ -583,27 +597,25 @@ const CatalogTable = ({
                     borderTop={idx === 0 ? "2px solid" : "none"}
                     borderTopColor={idx === 0 ? rowBorder : "transparent"}
                   >
-                    <Td style={{ width: '56px' }}>
-                      <span
-                        className="shadow-sm"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          minWidth: '36px',
-                          height: '28px',
-                          padding: '0 10px',
-                          borderRadius: '9999px',
-                          backgroundColor: headerBg,
-                          color: textColor,
-                          fontWeight: 700,
-                          fontSize: "16px",
-                          letterSpacing: '0.2px',
-                        }}
+                    <Td w="56px">
+                      <Flex
+                        display="inline-flex"
+                        align="center"
+                        justify="center"
+                        minW="36px"
+                        h="28px"
+                        px="10px"
+                        borderRadius="full"
+                        bg={headerBg}
+                        color={textColor}
+                        fontWeight={700}
+                        fontSize="16px"
+                        letterSpacing="0.2px"
+                        boxShadow="sm"
                         title={`Row ${idx + 1}`}
                       >
                         {idx + 1}
-                      </span>
+                      </Flex>
                     </Td>
                     <Td>
                       <Input
@@ -611,12 +623,14 @@ const CatalogTable = ({
                         min="1"
                         value={item.qty}
                         onChange={(e) => updateQty(idx, parseInt(e.target.value))}
-                        style={{ width: '70px', textAlign: 'center' }}
+                        w="70px"
+                        textAlign="center"
                       />
                     </Td>
 
                     <Td
-                      className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}
+                      color={isUnavailable ? textDanger : undefined}
+                      textDecoration={isUnavailable ? 'line-through' : undefined}
                     >
                       <Flex
                         align="center"
@@ -772,23 +786,25 @@ const CatalogTable = ({
                     )}
 
                     <Td
-                      className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}
+                      color={isUnavailable ? textDanger : undefined}
+                      textDecoration={isUnavailable ? 'line-through' : undefined}
                     >
                       {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
                     </Td>
 
                     <Td>
                       {assembled ? (
-                        <span>{formatPrice(assemblyFee)}</span>
+                        <Text as="span">{formatPrice(assemblyFee)}</Text>
                       ) : (
-                        <span className="text-muted">{formatPrice(0)}</span>
+                        <Text as="span" color={textMuted}>{formatPrice(0)}</Text>
                       )}
                     </Td>
 
                     <Td>{formatPrice(modsTotal)}</Td>
 
                     <Td
-                      className={isUnavailable ? 'text-danger text-decoration-line-through' : ''}
+                      color={isUnavailable ? textDanger : undefined}
+                      textDecoration={isUnavailable ? 'line-through' : undefined}
                     >
                       {formatPrice(total)}
                     </Td>
@@ -821,21 +837,19 @@ const CatalogTable = ({
                       const groupKeys = Object.keys(groups)
                       return (
                         <>
-                          <Tr className="modification-header">
+                          <Tr>
                             <Td
                               colSpan={10}
                               fontSize="sm"
-                              style={{
-                                backgroundColor: headerBg,
-                                color: textColor,
-                                padding: '8px 16px',
-                                paddingLeft: '56px',
-                                borderTop: `2px solid ${headerBg}`,
-                                borderLeft: `6px solid ${headerBg}`,
-                                borderTopLeftRadius: '6px',
-                                borderTopRightRadius: '6px',
-                                boxShadow: 'inset 0 0 0 1px var(--chakra-colors-blackAlpha-50)',
-                              }}
+                              bg={headerBg}
+                              color={textColor}
+                              p="8px 16px"
+                              pl="56px"
+                              borderTop={`2px solid ${headerBg}`}
+                              borderLeft={`6px solid ${headerBg}`}
+                              borderTopLeftRadius="6px"
+                              borderTopRightRadius="6px"
+                              boxShadow="inset 0 0 0 1px var(--chakra-colors-blackAlpha-50)"
                             >
                               <Icon
                                 as={Wrench}
@@ -849,8 +863,7 @@ const CatalogTable = ({
                           {groupKeys.map((gkey, gi) => (
                             <React.Fragment key={`modgrp-${idx}-${gkey}`}>
                               <Tr
-                                className="modification-category"
-                                style={{ backgroundColor: 'var(--chakra-colors-gray-100)' }}
+                                bg={modCategoryBg}
                               >
                                 <Td
                                   colSpan={10}
@@ -871,22 +884,19 @@ const CatalogTable = ({
                                 return (
                                   <React.Fragment key={`mod-${idx}-${gkey}-${modIdx}`}>
                                     <Tr
-                                      className="modification-item"
-                                      style={{
-                                        backgroundColor: 'var(--chakra-colors-gray-50)',
-                                        borderLeft: `6px solid ${headerBg}`,
-                                        fontSize: "14px",
-                                        borderBottom: isLastRow
-                                          ? `2px solid ${headerBg}`
-                                          : '1px solid var(--chakra-colors-gray-200)',
-                                      }}
+                                      bg={modItemBg}
+                                      borderLeft={`6px solid ${headerBg}`}
+                                      fontSize="14px"
+                                      borderBottom={isLastRow ? `2px solid ${headerBg}` : `1px solid`}
+                                      borderBottomColor={isLastRow ? undefined : modBorderColor}
                                     >
                                       <Td
-                                        style={{ paddingLeft: '88px', color: "gray.500" }}
+                                        pl="88px"
+                                        color={cellTextColor}
                                       >
                                         ↳
                                       </Td>
-                                      <Td style={{ fontWeight: '500' }}>
+                                      <Td fontWeight="500">
                                         {mod.qty}
                                       </Td>
                                       <Td colSpan={3} pl={2}>
@@ -1001,13 +1011,11 @@ const CatalogTable = ({
                                     </Tr>
                                     {isLastRow && (
                                       <Tr>
-                                        <Td colSpan={10} style={{ padding: 0 }}>
-                                          <div
-                                            style={{
-                                              height: '10px',
-                                              borderBottom: '1px dashed',
-                                              borderBottomColor: 'var(--chakra-colors-gray-400)',
-                                            }}
+                                        <Td colSpan={10} p={0}>
+                                          <Box
+                                            h="10px"
+                                            borderBottom="1px dashed"
+                                            borderBottomColor={borderGray400}
                                           />
                                         </Td>
                                       </Tr>
@@ -1030,7 +1038,7 @@ const CatalogTable = ({
 
       {/* Mobile Card View */}
       <Box display={{ base: 'block', lg: 'none' }}>
-      <div className="mobile-card-view mobile-only">
+      <VStack spacing={3} align="stretch">
         {displayItems.map((item, idx) => {
           const assembled = !!isAssembled
           const qty = Number(item.qty || 1)
@@ -1053,36 +1061,50 @@ const CatalogTable = ({
                 mb={3}
                 p={4}
               >
-                <div className="item-header">
-                  <div className="item-number">{idx + 1}</div>
-                  <div className="item-actions">
+                <Flex justify="space-between" align="center" mb={3}>
+                  <Flex
+                    align="center"
+                    justify="center"
+                    minW="36px"
+                    h="28px"
+                    px="10px"
+                    borderRadius="full"
+                    bg={headerBg}
+                    color={textColor}
+                    fontWeight={700}
+                    fontSize="16px"
+                    boxShadow="sm"
+                  >
+                    {idx + 1}
+                  </Flex>
+                  <HStack spacing={3}>
                     <Icon as={Settings}
                       cursor="pointer"
-                      color="var(--cui-primary)"
+                      color={settingsIconColor}
                       boxSize={4.5}
                       onClick={() => handleOpenModificationModal(idx, item.id)}
                     />
                     <Icon as={Trash}
                       cursor="pointer"
-                      color="var(--cui-danger)"
+                      color={textDanger}
                       boxSize={4.5}
                       onClick={() => handleDelete(idx)}
                     />
-                  </div>
+                  </HStack>
+                </Flex>
 
-                {/* close item-header */}
-                </div>
-
-                <div className="item-detail-row">
-                  <span className="item-label">{t('proposalColumns.item')}</span>
-                  <Flex align="center" gap={2} minW={0}>
+                <Flex justify="space-between" align="center" mb={2}>
+                  <Text fontWeight="600" color={labelColor} fontSize="sm">{t('proposalColumns.item')}</Text>
+                  <Flex align="center" gap={2} minW={0} flex="1" justify="flex-end">
                     <Text
-                      className={`item-value item-code ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}
+                      color={isUnavailable ? textDanger : undefined}
+                      textDecoration={isUnavailable ? 'line-through' : undefined}
                       whiteSpace="nowrap"
                       overflow="hidden"
                       textOverflow="ellipsis"
+                      fontSize="sm"
                     >
-                      <strong>{item.code}</strong>
+                      <Text as="strong">{item.code}</Text>
                       {item.description ? (
                         <Text as="span" color={descriptionColor} ml={1}>— {item.description}</Text>
                       ) : null}
@@ -1102,44 +1124,46 @@ const CatalogTable = ({
                       </Button>
                     )}
                   </Flex>
-                </div>
+                </Flex>
 
-                <div className="item-detail-row">
-                  <span className="item-label">{t('proposalColumns.qty')}</span>
-                  <input
+                <Flex justify="space-between" align="center" mb={2}>
+                  <Text fontWeight="600" color={labelColor} fontSize="sm">{t('proposalColumns.qty')}</Text>
+                  <Input
                     type="number"
                     min="1"
                     value={item.qty}
                     onChange={(e) => updateQty(idx, parseInt(e.target.value))}
-                    className="qty-input-mobile"
+                    w="80px"
+                    size="sm"
                   />
-                </div>
+                </Flex>
 
-                <div className="item-detail-row">
-                  <span className="item-label">{t('proposalColumns.price')}</span>
-                  <span
-                    className={`item-value ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}
+                <Flex justify="space-between" align="center" mb={2}>
+                  <Text fontWeight="600" color={labelColor} fontSize="sm">{t('proposalColumns.price')}</Text>
+                  <Text
+                    color={isUnavailable ? textDanger : undefined}
+                    textDecoration={isUnavailable ? 'line-through' : undefined}
+                    fontSize="sm"
                   >
                     {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
-                  </span>
-                </div>
+                  </Text>
+                </Flex>
 
                 {assembled && (
                   <>
                     {subTypeRequirements.requiresHinge && (
-                      <div
-                        className="item-detail-row"
-                        style={{
-                          backgroundColor:
-                            subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
-                            (!item.hingeSide || item.hingeSide === '-')
-                              ? 'var(--chakra-colors-red-50)'
-                              : 'transparent',
-                          padding: '0.5rem',
-                          borderRadius: '4px',
-                        }}
+                      <Box
+                        bg={
+                          subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
+                          (!item.hingeSide || item.hingeSide === '-')
+                            ? 'red.50'
+                            : 'transparent'
+                        }
+                        p={2}
+                        borderRadius="md"
+                        mb={2}
                       >
-                        <span className="item-label">{t('proposalColumns.hingeSide')}</span>
+                        <Text fontWeight="600" color={labelColor} fontSize="sm" mb={2}>{t('proposalColumns.hingeSide')}</Text>
                         {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                           (!item.hingeSide || item.hingeSide === '-') && (
                             <Text
@@ -1153,7 +1177,7 @@ const CatalogTable = ({
                               })}
                             </Text>
                           )}
-                        <Flex className="btn-group-mobile" gap={2}>
+                        <Flex gap={2}>
                           {hingeOptions.map((opt) => (
                             <Button
                               key={opt}
@@ -1169,23 +1193,22 @@ const CatalogTable = ({
                             </Button>
                           ))}
                         </Flex>
-                      </div>
+                      </Box>
                     )}
 
                     {subTypeRequirements.requiresExposed && (
-                      <div
-                        className="item-detail-row"
-                        style={{
-                          backgroundColor:
-                            subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
-                            (!item.exposedSide || item.exposedSide === '-')
-                              ? 'var(--chakra-colors-red-50)'
-                              : 'transparent',
-                          padding: '0.5rem',
-                          borderRadius: '4px',
-                        }}
+                      <Box
+                        bg={
+                          subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
+                          (!item.exposedSide || item.exposedSide === '-')
+                            ? 'red.50'
+                            : 'transparent'
+                        }
+                        p={2}
+                        borderRadius="md"
+                        mb={2}
                       >
-                        <span className="item-label">{t('proposalColumns.exposedSide')}</span>
+                        <Text fontWeight="600" color={labelColor} fontSize="sm" mb={2}>{t('proposalColumns.exposedSide')}</Text>
                         {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                           (!item.exposedSide || item.exposedSide === '-') && (
                             <Text
@@ -1199,7 +1222,7 @@ const CatalogTable = ({
                               })}
                             </Text>
                           )}
-                        <Flex className="btn-group-mobile" gap={2}>
+                        <Flex gap={2}>
                           {exposedOptions.map((opt) => (
                             <Button
                               key={opt}
@@ -1215,35 +1238,42 @@ const CatalogTable = ({
                             </Button>
                           ))}
                         </Flex>
-                      </div>
+                      </Box>
                     )}
 
-                    <div className="item-detail-row">
-                      <span className="item-label">{t('proposalColumns.assemblyCost')}</span>
-                      <span
-                        className={`item-value ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}
+                    <Flex justify="space-between" align="center" mb={2}>
+                      <Text fontWeight="600" color={labelColor} fontSize="sm">{t('proposalColumns.assemblyCost')}</Text>
+                      <Text
+                        color={isUnavailable ? textDanger : undefined}
+                        textDecoration={isUnavailable ? 'line-through' : undefined}
+                        fontSize="sm"
                       >
                         {formatPrice(assemblyFee)}
-                      </span>
-                    </div>
+                      </Text>
+                    </Flex>
                   </>
                 )}
 
                 {/* Modifications summary on mobile */}
-                <div className="item-detail-row">
-                  <span className="item-label">
+                <Flex justify="space-between" align="center" mb={2}>
+                  <Text fontWeight="600" color={labelColor} fontSize="sm">
                     {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
-                  </span>
-                  <span className="item-value">{formatPrice(modsTotal)}</span>
-                </div>
+                  </Text>
+                  <Text fontSize="sm">{formatPrice(modsTotal)}</Text>
+                </Flex>
 
-                <div
-                  className={`total-highlight ${isUnavailable ? 'text-danger text-decoration-line-through' : ''}`}
+                <Box
+                  mt={3}
+                  pt={3}
+                  borderTop="2px solid"
+                  borderTopColor={borderColor}
+                  color={isUnavailable ? textDanger : undefined}
+                  textDecoration={isUnavailable ? 'line-through' : undefined}
                 >
-                  <strong>
+                  <Text fontWeight="bold" fontSize="md">
                     {t('proposalColumns.total')}: {formatPrice(total)}
-                  </strong>
-                </div>
+                  </Text>
+                </Box>
 
               </Box>
 
@@ -1251,107 +1281,90 @@ const CatalogTable = ({
               {Array.isArray(item.modifications) &&
                 item.modifications.length > 0 &&
                 item.modifications.map((mod, modIdx) => (
-                  <div
+                  <Box
                     key={`mobile-mod-${idx}-${modIdx}`}
-                    style={{
-                      background: headerBg,
-                      color: textColor,
-                      border: `1px solid ${headerBg}`,
-                      borderRadius: '6px',
-                      padding: '0.75rem',
-                      marginTop: '0.75rem',
-                      marginBottom: '1.5rem',
-                      marginLeft: 'auto',
-                      marginRight: 'auto',
-                      maxWidth: '90%',
-                      position: 'relative',
-                      boxShadow: 'sm',
-                    }}
+                    bg={headerBg}
+                    color={textColor}
+                    border="1px solid"
+                    borderColor={headerBg}
+                    borderRadius="6px"
+                    p={3}
+                    mt={3}
+                    mb={6}
+                    mx="auto"
+                    maxW="90%"
+                    position="relative"
+                    boxShadow="sm"
                   >
                     {/* Item indicator badge */}
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: '-8px',
-                        left: '12px',
-                        background: textColor,
-                        color: headerBg,
-                        borderRadius: '50%',
-                        width: '24px',
-                        height: '24px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: "12px",
-                        fontWeight: 'bold',
-                        border: `2px solid ${headerBg}`,
-                      }}
+                    <Flex
+                      position="absolute"
+                      top="-8px"
+                      left="12px"
+                      bg={textColor}
+                      color={headerBg}
+                      borderRadius="full"
+                      w="24px"
+                      h="24px"
+                      align="center"
+                      justify="center"
+                      fontSize="12px"
+                      fontWeight="bold"
+                      border="2px solid"
+                      borderColor={headerBg}
                     >
                       {idx + 1}
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '0.5rem',
-                      }}
+                    </Flex>
+                    <Flex
+                      justify="space-between"
+                      align="center"
+                      mb={2}
                     >
-                      <span
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: '600',
-                          color: textColor,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.5px',
-                        }}
+                      <Text
+                        fontSize="12px"
+                        fontWeight="600"
+                        color={textColor}
+                        textTransform="uppercase"
+                        letterSpacing="0.5px"
                       >
                         {t('proposalDoc.modifications')}
-                      </span>
+                      </Text>
                       <Icon as={Trash}
-                        style={{ cursor: 'pointer', color: 'var(--cui-danger)' }}
+                        cursor="pointer"
+                        color={textDanger}
                         onClick={() => handleDeleteModification(idx, modIdx)}
                       />
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        fontSize: "14px",
-                        marginBottom: '0.25rem',
-                      }}
+                    </Flex>
+                    <Flex
+                      justify="space-between"
+                      fontSize="14px"
+                      mb={1}
                     >
-                      <span>{mod.name || t('proposalUI.mod.unnamed')}</span>
+                      <Text>{mod.name || t('proposalUI.mod.unnamed')}</Text>
                       {(() => {
                         const details = buildSelectedOptionsText(mod?.selectedOptions)
-                        return details ? <span style={{ opacity: 0.7 }}> — {details}</span> : null
+                        return details ? <Text opacity={0.7}> — {details}</Text> : null
                       })()}
-                      <span>{t('common.qty', 'Qty')}: {mod.qty}</span>
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        fontSize: "14px",
-                        marginBottom: '0',
-                      }}
+                      <Text>{t('common.qty', 'Qty')}: {mod.qty}</Text>
+                    </Flex>
+                    <Flex
+                      justify="space-between"
+                      fontSize="14px"
                     >
-                      <span>
+                      <Text>
                         {t('proposalColumns.price')}: {formatPrice(mod.price || 0)}
-                      </span>
-                      <span>
-                        <strong>
-                          {t('proposalColumns.total')}:{' '}
-                          {formatPrice((mod.price || 0) * (mod.qty || 1))}
-                        </strong>
-                      </span>
-                    </div>
-                  </div>
+                      </Text>
+                      <Text fontWeight="bold">
+                        {t('proposalColumns.total')}:{' '}
+                        {formatPrice((mod.price || 0) * (mod.qty || 1))}
+                      </Text>
+                    </Flex>
+                  </Box>
                 ))}
             </React.Fragment>
           )
         })}
-      </div>
+      </VStack>
       </Box>
     </Box>
   )
