@@ -32,6 +32,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const bgBlue50 = useColorModeValue('blue.50', 'blue.900')
   const iconRed500 = useColorModeValue('red.500', 'red.300')
   const colorOrange50 = useColorModeValue('orange.50', 'orange.900')
+  const textSecondary = useColorModeValue('gray.600', 'gray.400')
 
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
