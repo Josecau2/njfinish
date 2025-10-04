@@ -4891,11 +4891,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <ModalBody>
             {modificationView === 'cards' && (
               <Box>
-                {/* Main Action Buttons */}
-                <HStack spacing={3} mb={4} justify="center">
+                {/* Main Action Buttons - Responsive Grid */}
+                <SimpleGrid columns={{ base: 1, md: 3 }} spacing={3} mb={4}>
                   <Button
                     colorScheme="blue"
-                    size="lg"
+                    size={{ base: "md", md: "lg" }}
                     onClick={() => {
                       setEditingTemplateId(null)
                       setSelectedModificationCategory('')
@@ -4911,28 +4911,35 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       setModificationView('addNew')
                       setModificationStep(1)
                     }}
+                    width="100%"
                   >
                     {t('globalMods.ui.buttons.addModification', 'Add Modification')}
                   </Button>
-                  <Button colorScheme="blue" size="lg" onClick={() => setModificationView('gallery')}>
+                  <Button
+                    colorScheme="blue"
+                    size={{ base: "md", md: "lg" }}
+                    onClick={() => setModificationView('gallery')}
+                    width="100%"
+                  >
                     {t('globalMods.ui.buttons.gallery', 'Gallery')}
                   </Button>
                   <Button
                     colorScheme="green"
-                    size="lg"
+                    size={{ base: "md", md: "lg" }}
                     onClick={() => setShowAssignGlobalModsModal(true)}
+                    width="100%"
                   >
                     {t('globalMods.ui.buttons.assignModification', 'Assign Modification')}
                   </Button>
-                </HStack>
+                </SimpleGrid>
 
                 {/* Existing Modification Cards */}
                 <VStack spacing={4} align="stretch">
                   {manufacturerCategories.map((category) => (
                     <StandardCard key={category.id} h="full">
                       <Box p={4}>
-                        <HStack justify="space-between" mb={3}>
-                          <HStack spacing={2}>
+                        <Flex direction={{ base: "column", md: "row" }} justify="space-between" mb={3} gap={3}>
+                          <HStack spacing={2} flexWrap="wrap">
                             {category.image && (
                               <>
                                 <Image
@@ -4951,7 +4958,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   }}
                                 />
                                 <Badge
-                                  colorScheme="info"
+                                  colorScheme="blue"
                                   title={t(
                                     'globalMods.modal.gallery.categoryImageUploaded',
                                     'Category image uploaded',
@@ -4961,10 +4968,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 </Badge>
                               </>
                             )}
-                            <Text fontWeight="semibold" fontSize="lg">{category.name}</Text>
+                            <Text fontWeight="semibold" fontSize="lg" noOfLines={2}>{category.name}</Text>
                           </HStack>
-                          <HStack spacing={2}>
-                            <Badge colorScheme="gray">
+                          <Flex gap={2} flexShrink={0} flexWrap="wrap">
+                            <Badge colorScheme="gray" alignSelf="center">
                               {t('settings.manufacturers.catalogMapping.modManagement.modsCount', {
                                 count: category.templates?.length || 0,
                               })}
@@ -4983,8 +4990,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 })
                                 setShowEditCategoryModal(true)
                               }}
+                              leftIcon={<span>✏️</span>}
                             >
-                              ✏️ {t('common.edit')}
+                              <Text display={{ base: "none", sm: "inline" }}>{t('common.edit')}</Text>
                             </Button>
                             <Button
                               size="sm"
@@ -4995,23 +5003,26 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 setCategoryToDelete(category)
                                 setShowDeleteCategoryModal(true)
                               }}
+                              leftIcon={<span>🗑️</span>}
                             >
-                              🗑️ {t('common.delete')}
+                              <Text display={{ base: "none", sm: "inline" }}>{t('common.delete')}</Text>
                             </Button>
-                          </HStack>
-                        </HStack>
+                          </Flex>
+                        </Flex>
                         <VStack spacing={2} align="stretch">
                           {category.templates?.length ? (
                             category.templates.map((template) => (
-                              <HStack
+                              <Flex
                                 key={template.id}
                                 p={3}
                                 borderWidth="1px"
                                 borderRadius="md"
+                                direction={{ base: "column", md: "row" }}
                                 justify="space-between"
-                                align="center"
+                                align={{ base: "stretch", md: "center" }}
+                                gap={3}
                               >
-                                <HStack spacing={3}>
+                                <HStack spacing={3} flex="1" minW={0}>
                                   {template.sampleImage && (
                                     <Image
                                       src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
@@ -5027,18 +5038,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       onError={(event) => {
                                         event.currentTarget.src = '/images/nologo.png'
                                       }}
+                                      flexShrink={0}
                                     />
                                   )}
-                                  <VStack align="start" spacing={1}>
-                                    <HStack>
-                                      <Text fontWeight="semibold">{template.name}</Text>
+                                  <VStack align="start" spacing={1} flex="1" minW={0}>
+                                    <Flex gap={2} align="center" flexWrap="wrap">
+                                      <Text fontWeight="semibold" noOfLines={1}>{template.name}</Text>
                                       {template.defaultPrice && (
-                                        <Text color={borderGray600}>
-                                          - ${Number(template.defaultPrice).toFixed(2)}
+                                        <Text color={borderGray600} fontSize="sm" flexShrink={0}>
+                                          ${Number(template.defaultPrice).toFixed(2)}
                                         </Text>
                                       )}
-                                    </HStack>
-                                    <HStack spacing={2}>
+                                    </Flex>
+                                    <Flex gap={2} flexWrap="wrap">
                                       <Badge colorScheme={template.isReady ? 'green' : 'yellow'}>
                                         {template.isReady
                                           ? t(
@@ -5050,7 +5062,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       </Badge>
                                       {template.sampleImage && (
                                         <Badge
-                                          colorScheme="info"
+                                          colorScheme="blue"
                                           title={t(
                                             'settings.manufacturers.catalogMapping.gallery.tooltips.sampleUploaded',
                                           )}
@@ -5060,10 +5072,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                           )}
                                         </Badge>
                                       )}
-                                    </HStack>
+                                    </Flex>
                                   </VStack>
                                 </HStack>
-                                <HStack spacing={1}>
+                                <Flex gap={1} flexWrap="wrap" justify={{ base: "flex-start", md: "flex-end" }} flexShrink={0}>
                                   <Button
                                     size="sm"
                                     colorScheme="blue"
@@ -5142,8 +5154,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   >
                                     🎯
                                   </Button>
-                                </HStack>
-                              </HStack>
+                                </Flex>
+                              </Flex>
                             ))
                           ) : (
                             <Text color={iconGray500} py={4} textAlign="center">
