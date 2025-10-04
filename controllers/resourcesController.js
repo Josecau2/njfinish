@@ -1569,13 +1569,27 @@ async function downloadFile(req, res) {
         return res.status(416).end();
       }
       const chunkSize = end - start + 1;
-      res.writeHead(206, {
+      const headers = {
         'Content-Range': `bytes ${start}-${end}/${total}`,
         'Accept-Ranges': 'bytes',
         'Content-Length': chunkSize,
         'Content-Type': mimeType,
         'Content-Disposition': disposition,
-      });
+      };
+
+      // Add CORS headers for range requests
+      const origin = req.headers.origin;
+      if (origin) {
+        headers['Access-Control-Allow-Origin'] = origin;
+        headers['Vary'] = 'Origin';
+      }
+      headers['Access-Control-Allow-Credentials'] = 'true';
+
+      if (mode === 'inline' || mode === 'thumbnail') {
+        headers['Cache-Control'] = 'public, max-age=3600';
+      }
+
+      res.writeHead(206, headers);
       const stream = fs.createReadStream(absolutePath, { start, end });
       stream.on('error', (error) => {
         console.error('Stream error while serving range:', error);
@@ -1588,6 +1602,19 @@ async function downloadFile(req, res) {
     res.setHeader('Content-Type', mimeType);
     res.setHeader('Content-Disposition', disposition);
     res.setHeader('Accept-Ranges', 'bytes');
+
+    // Add CORS headers to allow cross-origin image/media loading
+    const origin = req.headers.origin;
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+    // Add cache control for better performance
+    if (mode === 'inline' || mode === 'thumbnail') {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+    }
 
     const stream = fs.createReadStream(absolutePath);
     stream.on('error', (error) => {
