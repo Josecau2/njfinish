@@ -8,6 +8,7 @@ import {
   Button,
   CardBody,
   CardHeader,
+  Collapse,
   Container,
   Flex,
   FormControl,
@@ -312,20 +313,6 @@ const PaymentConfiguration = () => {
                   borderRadius="lg"
                   p={4}
                 >
-                  <FormControl>
-                    <FormLabel fontWeight="medium" color={labelColor}>
-                      {t('paymentConfig.stripe.publishableKey', 'Publishable key')}
-                    </FormLabel>
-                    <Input
-                      value={formData.stripePublishableKey}
-                      onChange={(event) =>
-                        handleInputChange('stripePublishableKey', event.target.value)
-                      }
-                      placeholder="pk_live_..."
-                      minH="44px"
-                    />
-                  </FormControl>
-
                   <FormControl display="flex" alignItems="center" justifyContent="space-between">
                     <FormLabel fontWeight="medium" color={labelColor} mb={0}>
                       {t('paymentConfig.stripe.cardStatus', 'Enable card payments')}
@@ -339,77 +326,105 @@ const PaymentConfiguration = () => {
                     />
                   </FormControl>
 
-                  <FormControl>
-                    <FormLabel fontWeight="medium" color={labelColor}>
-                      {t('paymentConfig.stripe.secretAction', 'Secret key management')}
-                    </FormLabel>
-                    <RadioGroup
-                      value={secretState.secretKeyAction}
-                      onChange={(value) => handleSecretActionChange('secretKeyAction', value)}
-                    >
-                      <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
-                        <Radio value={SECRET_ACTIONS.KEEP}>
-                          {t('paymentConfig.secret.keep', 'Keep current key')}
-                        </Radio>
-                        <Radio value={SECRET_ACTIONS.REPLACE}>
-                          {t('paymentConfig.secret.replace', 'Replace key')}
-                        </Radio>
-                        {secretState.hasSecretKey && (
-                          <Radio value={SECRET_ACTIONS.CLEAR}>
-                            {t('paymentConfig.secret.clear', 'Remove key')}
-                          </Radio>
-                        )}
-                      </Stack>
-                    </RadioGroup>
-                    {secretState.secretKeyAction === SECRET_ACTIONS.REPLACE && (
-                      <Input
-                        mt={3}
-                        type="password"
-                        placeholder="sk_live_..."
-                        value={secretState.secretKeyValue}
-                        onChange={(event) =>
-                          handleSecretValueChange('secretKeyValue', event.target.value)
-                        }
-                        minH="44px"
-                      />
-                    )}
-                  </FormControl>
+                  <Collapse in={formData.cardPaymentsEnabled} animateOpacity>
+                    <Stack spacing={4}>
+                      <FormControl>
+                        <FormLabel fontWeight="medium" color={labelColor}>
+                          {t('paymentConfig.stripe.publishableKey', 'Publishable key')}
+                        </FormLabel>
+                        <Input
+                          value={formData.stripePublishableKey}
+                          onChange={(event) =>
+                            handleInputChange('stripePublishableKey', event.target.value)
+                          }
+                          placeholder="pk_live_..."
+                          minH="44px"
+                        />
+                      </FormControl>
 
-                  <FormControl>
-                    <FormLabel fontWeight="medium" color={labelColor}>
-                      {t('paymentConfig.stripe.webhookAction', 'Webhook secret management')}
-                    </FormLabel>
-                    <RadioGroup
-                      value={secretState.webhookSecretAction}
-                      onChange={(value) => handleSecretActionChange('webhookSecretAction', value)}
-                    >
-                      <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
-                        <Radio value={SECRET_ACTIONS.KEEP}>
-                          {t('paymentConfig.secret.keep', 'Keep current key')}
-                        </Radio>
-                        <Radio value={SECRET_ACTIONS.REPLACE}>
-                          {t('paymentConfig.secret.replace', 'Replace key')}
-                        </Radio>
-                        {secretState.hasWebhookSecret && (
-                          <Radio value={SECRET_ACTIONS.CLEAR}>
-                            {t('paymentConfig.secret.clear', 'Remove key')}
-                          </Radio>
-                        )}
-                      </Stack>
-                    </RadioGroup>
-                    {secretState.webhookSecretAction === SECRET_ACTIONS.REPLACE && (
-                      <Input
-                        mt={3}
-                        type="password"
-                        placeholder="whsec_..."
-                        value={secretState.webhookSecretValue}
-                        onChange={(event) =>
-                          handleSecretValueChange('webhookSecretValue', event.target.value)
-                        }
-                        minH="44px"
-                      />
-                    )}
-                  </FormControl>
+                      <FormControl>
+                        <FormLabel fontWeight="medium" color={labelColor}>
+                          {t('paymentConfig.stripe.secretAction', 'Secret key management')}
+                        </FormLabel>
+                        <RadioGroup
+                          value={secretState.secretKeyAction}
+                          onChange={(value) => handleSecretActionChange('secretKeyAction', value)}
+                        >
+                          <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
+                            <Radio value={SECRET_ACTIONS.KEEP}>
+                              {t('paymentConfig.secret.keep', 'Keep current key')}
+                            </Radio>
+                            <Radio value={SECRET_ACTIONS.REPLACE}>
+                              {t('paymentConfig.secret.replace', 'Replace key')}
+                            </Radio>
+                            {secretState.hasSecretKey && (
+                              <Radio value={SECRET_ACTIONS.CLEAR}>
+                                {t('paymentConfig.secret.clear', 'Remove key')}
+                              </Radio>
+                            )}
+                          </Stack>
+                        </RadioGroup>
+                        <Collapse in={secretState.secretKeyAction === SECRET_ACTIONS.REPLACE} animateOpacity>
+                          <Input
+                            mt={3}
+                            type="password"
+                            placeholder="sk_live_..."
+                            value={secretState.secretKeyValue}
+                            onChange={(event) =>
+                              handleSecretValueChange('secretKeyValue', event.target.value)
+                            }
+                            minH="44px"
+                          />
+                        </Collapse>
+                      </FormControl>
+
+                      <FormControl>
+                        <FormLabel fontWeight="medium" color={labelColor}>
+                          {t('paymentConfig.stripe.webhookAction', 'Webhook secret management')}
+                        </FormLabel>
+                        <RadioGroup
+                          value={secretState.webhookSecretAction}
+                          onChange={(value) => handleSecretActionChange('webhookSecretAction', value)}
+                        >
+                          <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
+                            <Radio value={SECRET_ACTIONS.KEEP}>
+                              {t('paymentConfig.secret.keep', 'Keep current key')}
+                            </Radio>
+                            <Radio value={SECRET_ACTIONS.REPLACE}>
+                              {t('paymentConfig.secret.replace', 'Replace key')}
+                            </Radio>
+                            {secretState.hasWebhookSecret && (
+                              <Radio value={SECRET_ACTIONS.CLEAR}>
+                                {t('paymentConfig.secret.clear', 'Remove key')}
+                              </Radio>
+                            )}
+                          </Stack>
+                        </RadioGroup>
+                        <Collapse in={secretState.webhookSecretAction === SECRET_ACTIONS.REPLACE} animateOpacity>
+                          <Input
+                            mt={3}
+                            type="password"
+                            placeholder="whsec_..."
+                            value={secretState.webhookSecretValue}
+                            onChange={(event) =>
+                              handleSecretValueChange('webhookSecretValue', event.target.value)
+                            }
+                            minH="44px"
+                          />
+                        </Collapse>
+                      </FormControl>
+
+                      <Alert status="info" borderRadius="md">
+                        <AlertIcon />
+                        <Text fontSize="sm">
+                          {t(
+                            'paymentConfig.stripe.securityNote',
+                            'Secrets are stored server-side. Choose "Replace" to update them, or "Remove" to clear the value.',
+                          )}
+                        </Text>
+                      </Alert>
+                    </Stack>
+                  </Collapse>
                 </Stack>
               )}
 
