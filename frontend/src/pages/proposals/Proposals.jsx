@@ -542,7 +542,9 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         <PermissionGate permission="proposals:create">
           <motion.div whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}>
             <Button variant="outline" onClick={handleCreateProposal}>
-              <Plus size={ICON_SIZE_MD} style={{ marginRight: 8 }} />
+              <Box as="span" mr={2}>
+                <Plus size={ICON_SIZE_MD} />
+              </Box>
               {t('proposals.new')}
             </Button>
           </motion.div>
@@ -795,12 +797,16 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                       <MenuList>
                         {(isAdmin(loggedInUser) || !item.is_locked) && (
                           <MenuItem onClick={() => handleDelete(item.id)}>
-                            <Trash2 size={ICON_SIZE_MD} style={{ marginRight: 8 }} />
+                            <Box as="span" mr={2}>
+                              <Trash2 size={ICON_SIZE_MD} />
+                            </Box>
                             {t('common.delete')}
                           </MenuItem>
                         )}
                         <MenuItem onClick={() => handleCreateShareLink(item)}>
-                          <SendIcon size={ICON_SIZE_MD} style={{ marginRight: 8 }} />
+                          <Box as="span" mr={2}>
+                            <SendIcon size={ICON_SIZE_MD} />
+                          </Box>
                           {t('proposals.actions.share')}
                         </MenuItem>
                       </MenuList>

@@ -983,16 +983,14 @@ const TypesTab = ({ manufacturer }) => {
                       />
                     </Td>
                     <Td>
-                      <img
+                      <Image
                         src={getImageSrc(type)}
                         alt={type.type}
-                        style={{
-                          width: '40px',
-                          height: '40px',
-                          objectFit: 'contain',
-                          backgroundColor: "gray.50",
-                          borderRadius: '4px',
-                        }}
+                        w="40px"
+                        h="40px"
+                        objectFit="contain"
+                        bg="gray.50"
+                        borderRadius="4px"
                         onError={handleImageError}
                       />
                     </Td>
@@ -1005,7 +1003,8 @@ const TypesTab = ({ manufacturer }) => {
                         colorScheme="brand"
                         aria-label={t('types.meta.editType', 'Edit Type')}
                         onClick={() => handleEditType(type)}
-                        style={{ minHeight: '44px', minWidth: '44px' }}
+                        minH="44px"
+                        minW="44px"
                       >
                         <Pencil size={ICON_SIZE_MD} aria-hidden="true" />
                       </Button>
@@ -1061,17 +1060,15 @@ const TypesTab = ({ manufacturer }) => {
                     borderRadius="md"
                     bg="gray.50"
                   >
-                    <img
+                    <Image
                       src={getImageSrc(selectedType)}
                       alt={selectedType.type}
-                      style={{
-                        maxWidth: '200px',
-                        maxHeight: '200px',
-                        objectFit: 'contain',
-                        border: '1px solid',
-                        borderColor: 'gray.200',
-                        borderRadius: '4px',
-                      }}
+                      maxW="200px"
+                      maxH="200px"
+                      objectFit="contain"
+                      borderWidth="1px"
+                      borderColor="gray.200"
+                      borderRadius="4px"
                       onError={handleImageError}
                     />
                   </Box>
@@ -1112,17 +1109,15 @@ const TypesTab = ({ manufacturer }) => {
                       borderRadius="md"
                       bg={bgGray50}
                     >
-                      <img
+                      <Image
                         src={URL.createObjectURL(selectedFile)}
                         alt="Preview"
-                        style={{
-                          maxWidth: '200px',
-                          maxHeight: '200px',
-                          objectFit: 'contain',
-                          border: '1px solid',
-                        borderColor: 'gray.200',
-                          borderRadius: '4px',
-                        }}
+                        maxW="200px"
+                        maxH="200px"
+                        objectFit="contain"
+                        borderWidth="1px"
+                        borderColor="gray.200"
+                        borderRadius="4px"
                       />
                     </Flex>
                   </Box>

@@ -181,15 +181,13 @@ const FileUploadCard = ({
         accept={accept}
         multiple={multiple}
         onChange={onChange}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          opacity: 0,
-          cursor: 'pointer',
-        }}
+        position="absolute"
+        top={0}
+        left={0}
+        w="100%"
+        h="100%"
+        opacity={0}
+        cursor="pointer"
       />
       {helpText && <Text fontSize="sm" color={textGray600} display="block">{helpText}</Text>}
       {selectedFiles && (
@@ -199,7 +197,9 @@ const FileUploadCard = ({
               <Text as="span" color={textRed500} fontSize="sm">{t('common.noFilesSelected')}</Text>
             ) : (
               <Flex color={textGreen600} fontSize="sm" align="center" justify="center">
-                <CloudUpload size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
+                <Box as="span" mr={1}>
+                  <CloudUpload size={ICON_SIZE_MD} />
+                </Box>
                 {selectedFiles.length} file(s) selected
               </Flex>
             )
@@ -405,7 +405,9 @@ const ManufacturerForm = () => {
 
     return (
       <Text fontSize="sm" color={textBlue500} mt={2} display="flex" alignItems="center">
-        <Info size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
+        <Box as="span" mr={1}>
+          <Info size={ICON_SIZE_MD} />
+        </Box>
         Example: If cabinet's MSRP is ${msrp.toFixed(2)} and you pay ${cost.toFixed(2)} to
         manufacturer, your multiplier would be {multiplier.toFixed(1)}
       </Text>
@@ -484,7 +486,9 @@ const ManufacturerForm = () => {
         <StandardCard border="none" boxShadow="sm" mb={4} borderLeft={`4px solid ${headerBg}`}>
           <CardBody py={3} px={4} bg={bgBlue50}>
             <HStack align="flex-start" spacing={4}>
-              <Info size={ICON_SIZE_MD} style={{ color: "blue.500", marginTop: '0.25rem' }} />
+              <Box as="span" color={textBlue500} mt={1}>
+                <Info size={ICON_SIZE_MD} />
+              </Box>
               <Text mb={0} color={textBlue600}>
                 <Text as="strong">{t('settings.manufacturers.create.infoTitle')}</Text>{' '}
                 {t('settings.manufacturers.create.infoText')}

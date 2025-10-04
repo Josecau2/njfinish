@@ -462,7 +462,7 @@ const ProposalForm = ({
             px={3}
             py={3}
             display={{ base: 'block', md: 'none' }}
-            style={{ backdropFilter: 'saturate(140%) blur(8px)' }}
+            backdropFilter="saturate(140%) blur(8px)"
           >
             <HStack spacing={4}>
               <Button

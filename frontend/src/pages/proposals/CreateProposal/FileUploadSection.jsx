@@ -343,12 +343,13 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                   </MotionButton>
                 </>
               )}
-              <input
+              <Box
+                as="input"
                 ref={fileInputRef}
                 type="file"
                 multiple
                 onChange={handleInputChange}
-                style={{ display: 'none' }}
+                display="none"
                 aria-label={t('files.inputAria', 'Select files to upload')}
               />
             </Stack>

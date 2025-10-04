@@ -65,15 +65,18 @@ const AppContent = () => {
                           module={route.module}
                           adminOnly={route.adminOnly}
                         >
-                          <motion.div
-                            style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}
+                          <Box
+                            as={motion.div}
+                            minH="100%"
+                            display="flex"
+                            flexDirection="column"
                             initial={initial}
                             animate={{ opacity: 1, y: 0 }}
                             exit={exit}
                             transition={transition}
                           >
                             <route.element />
-                          </motion.div>
+                          </Box>
                         </RouteGuard>
                       </PageErrorBoundary>
                     }

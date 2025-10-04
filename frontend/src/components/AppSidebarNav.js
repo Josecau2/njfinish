@@ -469,8 +469,15 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor, sideba
           <Text as="span" flex="1" minW="0" whiteSpace="nowrap" textAlign="left" lineHeight="1.4">
             {item.label}
           </Text>
-          <Box as="span" ml="auto" display="inline-flex" alignItems="center">
-            <ChevronDown size={ICON_SIZE_SM} style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+          <Box
+            as="span"
+            ml="auto"
+            display="inline-flex"
+            alignItems="center"
+            transform={open ? 'rotate(180deg)' : 'rotate(0deg)'}
+            transition="transform 0.2s ease"
+          >
+            <ChevronDown size={ICON_SIZE_SM} />
           </Box>
         </AppButton>
         <Box

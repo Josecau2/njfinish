@@ -462,10 +462,10 @@ const OrdersList = ({
         item?.Owner?.name || item?.ownerGroup?.name || item?.Owner?.group?.name || t('common.na')
       const endUser = getCustomerName()
       return (
-        <div>
-          <div>{contractor}</div>
-          <div style={{ fontSize: '12px' }}>{endUser}</div>
-        </div>
+        <Box>
+          <Text>{contractor}</Text>
+          <Text fontSize="12px">{endUser}</Text>
+        </Box>
       )
     }
     // Contractors just see their end-customer

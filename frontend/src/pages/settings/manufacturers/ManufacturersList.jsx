@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { useEffect, useMemo, useState } from 'react'
-import { Box, Button, CardBody, Container, Flex, Grid, GridItem, HStack, Icon, Input, InputGroup, InputLeftElement, Select, Spinner, Stack, Switch, Tag, TagLabel, Text, Tooltip, useColorModeValue } from '@chakra-ui/react'
+import { Box, Button, CardBody, Container, Flex, Grid, GridItem, HStack, Icon, Image, Input, InputGroup, InputLeftElement, Select, Spinner, Stack, Switch, Tag, TagLabel, Text, Tooltip, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import {
   Building2,
@@ -264,7 +264,7 @@ const ManufacturersList = () => {
                     overflow="hidden"
                     flexShrink={0}
                   >
-                    <img
+                    <Image
                       src={
                         manufacturer.image
                           ? buildUploadUrl(
@@ -273,7 +273,9 @@ const ManufacturersList = () => {
                           : '/images/nologo.png'
                       }
                       alt={manufacturer.name}
-                      style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                      maxW="100%"
+                      maxH="100%"
+                      objectFit="contain"
                     />
                   </Box>
 

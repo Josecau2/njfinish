@@ -629,18 +629,17 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 justifyContent="center"
                 p={4}
               >
-                <iframe
+                <Box
+                  as="iframe"
                   ref={previewIframeRef}
                   title="quote-preview-frame"
                   srcDoc={
                     previewHtml ||
                     '<html><body style="font-family:sans-serif;padding:2rem;">Loading...</body></html>'
                   }
-                  style={{
-                    width: BASE_PAGE_WIDTH_PX,
-                    minHeight: '1120px',
-                    border: 'none',
-                  }}
+                  w={BASE_PAGE_WIDTH_PX}
+                  minH="1120px"
+                  border="none"
                 />
               </Box>
             </Box>

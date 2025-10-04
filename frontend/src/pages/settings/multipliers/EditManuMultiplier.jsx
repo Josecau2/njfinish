@@ -85,7 +85,7 @@ const EditManuMultiplier = () => {
         onBackClick={() => navigate('/settings/multipliers')}
       />
 
-      <StandardCard style={{ maxWidth: '600px', margin: '20px auto' }}>
+      <StandardCard maxW="600px" mx="auto" my="20px">
         <CardHeader>{t('settings.multipliers.editManufacturer')}</CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit}>

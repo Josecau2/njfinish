@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
 import { checkSubTypeRequirements } from '../helpers/subTypeValidation'
-import { Badge, Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, TableContainer, Thead, Tbody, Tr, Th, Td, Text, Button, Flex, Box, VStack, HStack, useColorModeValue } from '@chakra-ui/react'
+import { Badge, Checkbox, Image, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, TableContainer, Thead, Tbody, Tr, Th, Td, Text, Button, Flex, Box, VStack, HStack, useColorModeValue } from '@chakra-ui/react'
 import { Copy, Settings, Trash, Wrench } from 'lucide-react'
 import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
@@ -139,6 +139,7 @@ const CatalogTable = ({
   const modItemBg = useColorModeValue("gray.50", "gray.800")
   const modBorderColor = useColorModeValue("gray.300", "gray.600")
   const settingsIconColor = useColorModeValue("blue.500", "blue.300")
+  const warningBgColor = useColorModeValue("red.50", "red.900")
 
   const [partQuery, setPartQuery] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -549,14 +550,18 @@ const CatalogTable = ({
               <Th>{t('proposalColumns.item')}</Th>
               {subTypeRequirements.requiresHinge && (
                 <Th
-                  style={{ backgroundcolor: "red.50", color: "red.600", fontWeight: 'bold' }}
+                  bg="red.50"
+                  color="red.600"
+                  fontWeight="bold"
                 >
                   {t('proposalColumns.hingeSide')}
                 </Th>
               )}
               {subTypeRequirements.requiresExposed && (
                 <Th
-                  style={{ backgroundcolor: "red.50", color: "red.600", fontWeight: 'bold' }}
+                  bg="red.50"
+                  color="red.600"
+                  fontWeight="bold"
                 >
                   {t('proposalColumns.exposedSide')}
                 </Th>
@@ -689,13 +694,12 @@ const CatalogTable = ({
 
                     {subTypeRequirements.requiresHinge && (
                       <Td
-                        style={{
-                          backgroundColor:
-                            subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
-                            (!item.hingeSide || item.hingeSide === '-')
-                              ? 'var(--chakra-colors-red-50)'
-                              : 'transparent',
-                        }}
+                        bg={
+                          subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
+                          (!item.hingeSide || item.hingeSide === '-')
+                            ? warningBgColor
+                            : 'transparent'
+                        }
                       >
                         {assembled ? (
                           <Box>
@@ -738,13 +742,12 @@ const CatalogTable = ({
 
                     {subTypeRequirements.requiresExposed && (
                       <Td
-                        style={{
-                          backgroundColor:
-                            subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
-                            (!item.exposedSide || item.exposedSide === '-')
-                              ? 'var(--chakra-colors-red-50)'
-                              : 'transparent',
-                        }}
+                        bg={
+                          subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
+                          (!item.exposedSide || item.exposedSide === '-')
+                            ? warningBgColor
+                            : 'transparent'
+                        }
                       >
                         {assembled ? (
                           <Box>
@@ -957,15 +960,13 @@ const CatalogTable = ({
                                                   {String(att.mimeType || '').startsWith(
                                                     'image/',
                                                   ) ? (
-                                                    <img
+                                                    <Image
                                                       src={att.url}
                                                       alt={att.name || 'img'}
-                                                      style={{
-                                                        width: 18,
-                                                        height: 18,
-                                                        objectFit: 'cover',
-                                                        borderRadius: 2,
-                                                      }}
+                                                      w="18px"
+                                                      h="18px"
+                                                      objectFit="cover"
+                                                      borderRadius="2px"
                                                     />
                                                   ) : null}
                                                   <Text

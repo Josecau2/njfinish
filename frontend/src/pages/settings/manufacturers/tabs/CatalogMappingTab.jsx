@@ -3785,14 +3785,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   src={styleForm.image ? `${api_url}/uploads/images/${styleForm.image}` : undefined}
                   alt={t('settings.manufacturers.catalogMapping.style.previewAlt', 'Style preview')}
                   fallbackSrc="/images/nologo.png"
-                  style={{
-                    maxWidth: '100%',
-                    maxHeight: '300px',
-                    borderRadius: '8px',
-                    boxShadow: 'var(--chakra-shadows-md)',
-                    display: 'block',
-                    margin: '0 auto',
-                  }}
+                  maxW="100%"
+                  maxH="300px"
+                  borderRadius="8px"
+                  boxShadow="md"
+                  display="block"
+                  mx="auto"
                   onError={(event) => {
                     if (styleForm.image && !event.currentTarget.dataset.fallbackTried) {
                       event.currentTarget.dataset.fallbackTried = '1'
@@ -4964,12 +4962,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   alt={category.name}
                                   width={24}
                                   height={24}
-                                  style={{
-                                    objectFit: 'cover',
-                                    borderRadius: 4,
-                                    border: '1px solid',
-                                    borderColor: 'gray.100',
-                                  }}
+                                  objectFit="cover"
+                                  borderRadius="4px"
+                                  borderWidth="1px"
+                                  borderColor="gray.100"
                                   onError={(event) => {
                                     event.currentTarget.src = '/images/nologo.png'
                                   }}
@@ -5046,12 +5042,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       alt={template.name}
                                       width={32}
                                       height={32}
-                                      style={{
-                                        objectFit: 'cover',
-                                        borderRadius: 4,
-                                        border: '1px solid',
-                                        borderColor: 'gray.100',
-                                      }}
+                                      objectFit="cover"
+                                      borderRadius="4px"
+                                      borderWidth="1px"
+                                      borderColor="gray.100"
                                       onError={(event) => {
                                         event.currentTarget.src = '/images/nologo.png'
                                       }}
@@ -5941,11 +5935,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       alt={t(
                                         'settings.manufacturers.catalogMapping.builder.sampleImage.alt',
                                       )}
-                                      style={{
-                                        maxHeight: '100%',
-                                        maxWidth: '100%',
-                                        objectFit: 'contain',
-                                      }}
+                                      maxH="100%"
+                                      maxW="100%"
+                                      objectFit="contain"
                                       onError={(event) => {
                                         event.currentTarget.src = '/images/nologo.png'
                                       }}
@@ -6163,12 +6155,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       alt={template.name}
                                       width={32}
                                       height={32}
-                                      style={{
-                                        objectFit: 'cover',
-                                        borderRadius: 4,
-                                        border: '1px solid',
-                                        borderColor: 'gray.100',
-                                      }}
+                                      objectFit="cover"
+                                      borderRadius="4px"
+                                      borderWidth="1px"
+                                      borderColor="gray.100"
                                       onError={(event) => {
                                         event.currentTarget.src = '/images/nologo.png'
                                       }}

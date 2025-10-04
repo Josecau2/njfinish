@@ -615,12 +615,13 @@ const PdfLayoutCustomization = () => {
                   <FormLabel>
                     {t('settings.customization.pdf.labels.companyLogo')}
                   </FormLabel>
-                  <input
+                  <Box
+                    as="input"
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     onChange={handleLogoUpload}
-                    style={{ display: 'none' }}
+                    display="none"
                   />
                   <Box
                     borderWidth="2px"

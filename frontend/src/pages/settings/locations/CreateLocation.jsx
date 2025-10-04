@@ -51,6 +51,13 @@ const LocationForm = () => {
   const timeIconColor = colorYellow700
   const readonlyInputBg = bgGray50
   const readonlyInputColor = borderGray600
+  const blueIconBg = useColorModeValue('blue.50', 'blue.900')
+  const blueIconColor = useColorModeValue('blue.500', 'blue.300')
+  const greenIconBg = useColorModeValue('green.50', 'green.900')
+  const greenIconColor = useColorModeValue('green.500', 'green.300')
+  const backButtonBg = 'whiteAlpha.200'
+  const backButtonBorder = 'whiteAlpha.300'
+  const cancelButtonColor = useColorModeValue('gray.500', 'gray.400')
 
   const [formData, setFormData] = useState(initialForm)
   const initialFormRef = useRef(initialForm)
@@ -181,7 +188,9 @@ const LocationForm = () => {
               bg="whiteAlpha.200"
               borderRadius="12px"
             >
-              <MapPin size={24} style={{ color: 'white' }} />
+              <Box as="span" color="white">
+                <MapPin size={24} />
+              </Box>
             </Flex>
             {t('settings.locations.create.title')}
           </Flex>
@@ -190,14 +199,12 @@ const LocationForm = () => {
         rightContent={
           <Button
             variant="ghost"
-           
             onClick={() => navigate('/settings/locations')}
-            style={{
-              borderRadius: '8px',
-              backgroundColor: 'rgba(255,255,255,0.2)',
-              border: '1px solid rgba(255,255,255,0.3)',
-              color: 'white',
-            }}
+            borderRadius="8px"
+            bg={backButtonBg}
+            borderWidth="1px"
+            borderColor={backButtonBorder}
+            color="white"
           >
             <ArrowLeft size={ICON_SIZE_MD} />
           </Button>
@@ -214,13 +221,11 @@ const LocationForm = () => {
                 <Flex
                   align="center"
                   justify="center"
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    backgroundColor: 'var(--chakra-colors-blue-50)',
-                    borderRadius: '8px',
-                    color: "blue.500",
-                  }}
+                  w="32px"
+                  h="32px"
+                  bg={blueIconBg}
+                  borderRadius="8px"
+                  color={blueIconColor}
                 >
                   <Home size={ICON_SIZE_MD} />
                 </Flex>
@@ -275,11 +280,11 @@ const LocationForm = () => {
                       onChange={handleChange}
                       isInvalid={!!errors.address}
                       placeholder={t('settings.locations.form.placeholders.address')}
-                      style={{
-                        border: '1px solid var(--chakra-colors-gray-200)',
-                        fontSize: "sm",
-                        padding: '12px 16px',
-                      }}
+                      borderWidth="1px"
+                      borderColor={borderGray200}
+                      fontSize="sm"
+                      px={4}
+                      py={3}
                     />
                   </InputGroup>
                   {errors.address && (
@@ -297,13 +302,11 @@ const LocationForm = () => {
                 <Flex
                   align="center"
                   justify="center"
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    backgroundColor: 'var(--chakra-colors-green-50)',
-                    borderRadius: '8px',
-                    color: "green.500",
-                  }}
+                  w="32px"
+                  h="32px"
+                  bg={greenIconBg}
+                  borderRadius="8px"
+                  color={greenIconColor}
                 >
                   <Mail size={ICON_SIZE_MD} />
                 </Flex>
@@ -331,11 +334,11 @@ const LocationForm = () => {
                       onChange={handleChange}
                       isInvalid={!!errors.website}
                       placeholder={t('settings.locations.form.placeholders.website')}
-                      style={{
-                        border: '1px solid var(--chakra-colors-gray-200)',
-                        fontSize: "sm",
-                        padding: '12px 16px',
-                      }}
+                      borderWidth="1px"
+                      borderColor={borderGray200}
+                      fontSize="sm"
+                      px={4}
+                      py={3}
                     />
                   </InputGroup>
                   {errors.website && (
@@ -365,11 +368,11 @@ const LocationForm = () => {
                       onChange={handleChange}
                       isInvalid={!!errors.email}
                       placeholder={t('settings.locations.form.placeholders.email')}
-                      style={{
-                        border: '1px solid var(--chakra-colors-gray-200)',
-                        fontSize: "sm",
-                        padding: '12px 16px',
-                      }}
+                      borderWidth="1px"
+                      borderColor={borderGray200}
+                      fontSize="sm"
+                      px={4}
+                      py={3}
                     />
                   </InputGroup>
                   {errors.email && (
@@ -402,11 +405,11 @@ const LocationForm = () => {
                       onChange={handleChange}
                       isInvalid={!!errors.phone}
                       placeholder={t('settings.locations.form.placeholders.phone')}
-                      style={{
-                        border: '1px solid var(--chakra-colors-gray-200)',
-                        fontSize: "sm",
-                        padding: '12px 16px',
-                      }}
+                      borderWidth="1px"
+                      borderColor={borderGray200}
+                      fontSize="sm"
+                      px={4}
+                      py={3}
                     />
                   </InputGroup>
                   {errors.phone && (
@@ -446,12 +449,12 @@ const LocationForm = () => {
                     value={formData.country}
                     onChange={handleChange}
                     isInvalid={!!errors.country}
-                    style={{
-                      border: '1px solid var(--chakra-colors-gray-200)',
-                      borderRadius: '8px',
-                      fontSize: "sm",
-                      padding: '12px 16px',
-                    }}
+                    borderWidth="1px"
+                    borderColor={borderGray200}
+                    borderRadius="8px"
+                    fontSize="sm"
+                    px={4}
+                    py={3}
                   >
                     <option value="">{t('settings.locations.form.select.country')}</option>
                     {countries.map((c) => (
@@ -546,12 +549,11 @@ const LocationForm = () => {
                 px={4}
                 py={2}
                 fontWeight="semibold"
-                style={{
-                  border: '1px solid var(--chakra-colors-gray-200)',
-                  borderRadius: '8px',
-                  color: "gray.500",
-                  minHeight: '44px',
-                }}
+                borderWidth="1px"
+                borderColor={borderGray200}
+                borderRadius="8px"
+                color={cancelButtonColor}
+                minH="44px"
                 aria-label={t('common.cancel')}
               >
                 <ArrowLeft size={ICON_SIZE_MD} />
@@ -569,10 +571,7 @@ const LocationForm = () => {
                 bgGradient={loading ? undefined : "linear(45deg, green.500, teal.400)"}
                 bg={loading ? "gray.500" : undefined}
                 boxShadow="0 2px 4px rgba(40, 167, 69, 0.2)"
-                style={{
-                  border: 'none',
-                  minHeight: '44px',
-                }}
+                border="none"
               >
                 {loading ? (
                   <>

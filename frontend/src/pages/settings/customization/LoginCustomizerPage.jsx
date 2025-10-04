@@ -381,17 +381,16 @@ const LoginCustomizerPage = () => {
                       </FormLabel>
                       <InputGroup>
                         <InputLeftElement w="60px">
-                          <input
+                          <Box
+                            as="input"
                             type="color"
                             value={settings.backgroundColor}
                             onChange={(e) => handleChange('backgroundColor', e.target.value)}
-                            style={{
-                              width: '40px',
-                              height: '30px',
-                              border: 'none',
-                              borderRadius: '4px',
-                              cursor: 'pointer'
-                            }}
+                            w="40px"
+                            h="30px"
+                            border="none"
+                            borderRadius="4px"
+                            cursor="pointer"
                           />
                         </InputLeftElement>
                         <Input
