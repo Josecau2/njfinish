@@ -233,26 +233,11 @@ const AppSidebar = () => {
       </Flex>
 
       {/* Sidebar Navigation - matches legacy navigation area */}
+      {/* SimpleBar inside AppSidebarNav handles scrolling, so we just need flex container */}
       <Box
         flex="1"
-        overflowY="auto"
-        overflowX="hidden"
+        minH="0"
         className="sidebar-nav"
-        css={{
-          '&::-webkit-scrollbar': {
-            width: '4px',
-          },
-          '&::-webkit-scrollbar-track': {
-            background: 'transparent',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'whiteAlpha.200',
-            borderRadius: '4px',
-          },
-          '&::-webkit-scrollbar-thumb:hover': {
-            background: 'whiteAlpha.300',
-          },
-        }}
       >
         <AppSidebarNav items={navItems} collapsed={collapsed} onNavigate={handleNavigate} fontColor={sidebarColor} sidebarBg={sidebarBg} />
       </Box>

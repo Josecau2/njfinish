@@ -1,0 +1,5063 @@
+{
+  "filesWithoutTranslation": [
+    {
+      "path": "pages\\auth\\SignupPage.jsx",
+      "hasTranslation": false,
+      "hardcodedStrings": 9,
+      "examples": [
+        "Sign Up",
+        "NJ Cabinets",
+        "Create your account to get started.",
+        "Already have an account?{' '}",
+        "Dealer Portal"
+      ]
+    },
+    {
+      "path": "components\\StyleMerger.jsx",
+      "hasTranslation": false,
+      "hardcodedStrings": 6,
+      "examples": [
+        "Merge",
+        "From",
+        "Into",
+        "Select styles to merge",
+        "Source style"
+      ]
+    },
+    {
+      "path": "components\\pdf\\DesktopPdfViewer.jsx",
+      "hasTranslation": false,
+      "hardcodedStrings": 5,
+      "examples": [
+        "Reset",
+        "Page",
+        "Loading PDF document...",
+        "Loading page...",
+        "Failed to load page"
+      ]
+    },
+    {
+      "path": "components\\NotificationBell.js",
+      "hasTranslation": false,
+      "hardcodedStrings": 3,
+      "examples": [
+        "Mark all read",
+        "Notifications",
+        "No new notifications"
+      ]
+    },
+    {
+      "path": "components\\DocsComponents.js",
+      "hasTranslation": false,
+      "hardcodedStrings": 2,
+      "examples": [
+        "Explore Documentation",
+        "Our Admin Panel is not simply a bundle of third-party pieces. It is the only open-source React\n          dashboard built on a professional, enterprise-grade UI component library. This example shows the\n          basic usage; for extended demos, detailed API docs, and customization guidance, visit the\n          documentation."
+      ]
+    },
+    {
+      "path": "components\\DocsIcons.js",
+      "hasTranslation": false,
+      "hardcodedStrings": 2,
+      "examples": [
+        "Explore Documentation",
+        "CoreUI Icons package ships with more than 1500 icons in multiple formats - SVG, PNG, and webfonts.\n        They are carefully designed for common actions and items so you can reuse them across your web or\n        mobile products. Visit the documentation to explore the full set."
+      ]
+    },
+    {
+      "path": "pages\\calender\\index.jsx",
+      "hasTranslation": false,
+      "hardcodedStrings": 1,
+      "examples": [
+        "No events found"
+      ]
+    },
+    {
+      "path": "components\\ErrorBoundary.jsx",
+      "hasTranslation": false,
+      "hardcodedStrings": 1,
+      "examples": [
+        "The application encountered an error. Please refresh to try again."
+      ]
+    },
+    {
+      "path": "components\\LanguageSwitcher.jsx",
+      "hasTranslation": false,
+      "hardcodedStrings": 1,
+      "examples": [
+        "Select language"
+      ]
+    },
+    {
+      "path": "components\\Loader.js",
+      "hasTranslation": false,
+      "hardcodedStrings": 1,
+      "examples": [
+        "Loading…"
+      ]
+    },
+    {
+      "path": "components\\PageErrorBoundary.jsx",
+      "hasTranslation": false,
+      "hardcodedStrings": 1,
+      "examples": [
+        "Something went wrong while loading this page."
+      ]
+    }
+  ],
+  "filesWithPartialTranslation": [
+    {
+      "path": "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 36,
+      "examples": [
+        "Assign",
+        "Select All ({currentItems.length} items)",
+        "Price",
+        "Type",
+        "Applying assembly cost..."
+      ]
+    },
+    {
+      "path": "pages\\settings\\manufacturers\\tabs\\TypesTab.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 13,
+      "examples": [
+        "Update {selectedItems.length} Types",
+        "Rename Type",
+        "Change Type Category",
+        "Edit the following fields for the selected {selectedItems.length} types. Leave fields\r\n                empty to keep existing values.",
+        "Note:"
+      ]
+    },
+    {
+      "path": "components\\LoginPreview.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 7,
+      "examples": [
+        "Forgot password?",
+        "Jane",
+        "Doe",
+        "City",
+        "Your business name"
+      ]
+    },
+    {
+      "path": "pages\\settings\\multipliers\\EditManuMultiplier.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 4,
+      "examples": [
+        "Save Changes",
+        "Enter manufacturer name",
+        "Enter manufacturer email",
+        "Enter multiplier"
+      ]
+    },
+    {
+      "path": "components\\EditManufacturerModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 2,
+      "examples": [
+        "Cancel editing manufacturer",
+        "Save manufacturer changes"
+      ]
+    },
+    {
+      "path": "components\\FileViewerModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 2,
+      "examples": [
+        "Close",
+        "Preview is not available for this file type."
+      ]
+    },
+    {
+      "path": "pages\\admin\\ContractorDetail\\CustomersTab.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 1,
+      "examples": [
+        "ID: {customer.id}"
+      ]
+    },
+    {
+      "path": "pages\\admin\\Contractors.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 1,
+      "examples": [
+        "ID: {contractor.id}"
+      ]
+    },
+    {
+      "path": "pages\\payments\\PaymentConfiguration.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 1,
+      "examples": [
+        "USD, EUR, CAD"
+      ]
+    },
+    {
+      "path": "pages\\proposals\\CreateProposal\\ProposalSummary.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 1,
+      "examples": [
+        "Back"
+      ]
+    },
+    {
+      "path": "pages\\proposals\\EditProposal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 1,
+      "examples": [
+        "Basic Information"
+      ]
+    },
+    {
+      "path": "pages\\settings\\manufacturers\\ManufacturersList.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 1,
+      "examples": [
+        "ID: {manufacturer.id}"
+      ]
+    },
+    {
+      "path": "pages\\settings\\manufacturers\\tabs\\EditManufacturerTab.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 1,
+      "examples": [
+        "Dear Manufacturer, Please find the attached order PDF..."
+      ]
+    },
+    {
+      "path": "pages\\settings\\usersGroup\\UserGroupList.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 1,
+      "examples": [
+        "ID: {group.id}"
+      ]
+    },
+    {
+      "path": "components\\ItemSelectionContent.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 1,
+      "examples": [
+        "No custom items added yet"
+      ]
+    },
+    {
+      "path": "components\\ItemSelectionContentEdit.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 1,
+      "examples": [
+        "No custom items added yet"
+      ]
+    },
+    {
+      "path": "components\\model\\EditManufacturerModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 1,
+      "examples": [
+        "Enabled"
+      ]
+    }
+  ],
+  "filesFullyTranslated": [
+    {
+      "path": "pages\\3dkitchen\\ComingSoon.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\admin\\ContractorDetail\\OverviewTab.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\admin\\ContractorDetail\\ProposalsTab.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\admin\\ContractorDetail\\SettingsTab.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\admin\\ContractorDetail.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\admin\\LeadsPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\auth\\ForgotPasswordPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\auth\\LoginPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\auth\\RequestAccessPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\auth\\ResetPasswordPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\contact\\ContactUs.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\contractor\\ContractorDashboard.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\contracts\\index.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\customers\\AddCustomerForm.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\customers\\CustomerForm.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\customers\\Customers.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\customers\\EditCustomerPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\dashboard\\Dashboard.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\orders\\AdminOrders.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\orders\\MyOrders.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\orders\\OrderDetails.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\orders\\OrdersList.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\payments\\PaymentCancel.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\payments\\PaymentPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\payments\\PaymentsList.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\payments\\PaymentSuccess.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\payments\\PaymentTest.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\profile\\index.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\proposals\\CreateProposal\\CustomerInfo.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\proposals\\CreateProposal\\DesignUpload.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\proposals\\CreateProposal\\FileUploadSection.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\proposals\\CreateProposal\\ManufacturerSelect.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\proposals\\CreateProposalForm.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\proposals\\Proposals.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\public\\PublicProposalPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\Resources\\index.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\customization\\CustomizationPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\customization\\LoginCustomizerPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\customization\\PdfLayoutCustomization.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\globalMods\\GlobalModsPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\locations\\CreateLocation.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\locations\\EditLocation.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\locations\\LocationList.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\manufacturers\\EditManufacturer.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\manufacturers\\ManufacturersForm.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\manufacturers\\tabs\\FilesHistoryTab.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\manufacturers\\tabs\\SettingsTab.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\manufacturers\\tabs\\StylePicturesTab.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\multipliers\\ManuMultipliers.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\taxes\\TaxesPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\terms\\TermsPage.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\users\\CreateUser.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\users\\EditUser.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\users\\UserList.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\usersGroup\\CreateUserGroup.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "pages\\settings\\usersGroup\\EditUserGroup.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\AppHeader.js",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\AppModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\AppSidebar.js",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\CatalogTable.js",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\CatalogTableEdit.js",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\common\\PaginationComponent.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\contact\\ContactInfoCard.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\contact\\ContactInfoEditor.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\contact\\MessageComposer.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\contact\\MessageHistory.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\contact\\ThreadView.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\ContentTile\\index.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\EditUsersModel.js",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\form\\CreatableCombobox.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\model\\EditGroupModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\model\\EmailContractModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\model\\ModificationBrowserModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\model\\ModificationModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\model\\ModificationModalEdit.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\model\\PrintPaymentReceiptModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\NeutralModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\PageHeader.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\PaginationControls.js",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\PaymentModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\pdf\\MobilePdfViewer.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\ProposalAcceptanceModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\showroom\\ShowroomModeToggle.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\StyleCarousel.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    },
+    {
+      "path": "components\\TermsModal.jsx",
+      "hasTranslation": true,
+      "hardcodedStrings": 0,
+      "examples": []
+    }
+  ],
+  "potentialHardcodedStrings": {
+    "pages\\admin\\ContractorDetail\\CustomersTab.jsx": [
+      "ID: {customer.id}"
+    ],
+    "pages\\admin\\Contractors.jsx": [
+      "ID: {contractor.id}"
+    ],
+    "pages\\auth\\SignupPage.jsx": [
+      "Sign Up",
+      "NJ Cabinets",
+      "Create your account to get started.",
+      "Already have an account?{' '}",
+      "Dealer Portal",
+      "Username",
+      "Email",
+      "Password",
+      "Enter your password"
+    ],
+    "pages\\calender\\index.jsx": [
+      "No events found"
+    ],
+    "pages\\payments\\PaymentConfiguration.jsx": [
+      "USD, EUR, CAD"
+    ],
+    "pages\\proposals\\CreateProposal\\ProposalSummary.jsx": [
+      "Back"
+    ],
+    "pages\\proposals\\EditProposal.jsx": [
+      "Basic Information"
+    ],
+    "pages\\settings\\manufacturers\\ManufacturersList.jsx": [
+      "ID: {manufacturer.id}"
+    ],
+    "pages\\settings\\manufacturers\\tabs\\CatalogMappingTab.jsx": [
+      "Assign",
+      "Select All ({currentItems.length} items)",
+      "Price",
+      "Type",
+      "Applying assembly cost...",
+      "Existing Assembly Costs for \"{selectedCatalogItem.code}\" (\r\n                    {selectedCatalogItem.type}):",
+      "Existing Assembly Costs by Type:",
+      "Are you sure you want to delete this catalog item?",
+      "Are you sure you want to delete",
+      "Loading backups...",
+      "Edit the following fields for the selected {selectedItems.length} catalog items.\r\n                Leave fields empty to keep existing values.",
+      "Rename the style for all items of this manufacturer. This will affect all catalog\r\n                items currently using this style.",
+      "Template",
+      "Scope",
+      "Override price",
+      "Target style",
+      "Target type",
+      "Add template to this item",
+      "Select target style:",
+      "Description",
+      "Current Style Name",
+      "New Style Name",
+      "Enter price (0 for no assembly cost)",
+      "Leave empty to keep existing",
+      "Enter new style name",
+      "Modification name *",
+      "Min height",
+      "Max height",
+      "Min width",
+      "Max width",
+      "Min depth",
+      "Max depth",
+      "L,R",
+      "Min qty",
+      "Max qty",
+      "Notes placeholder"
+    ],
+    "pages\\settings\\manufacturers\\tabs\\EditManufacturerTab.jsx": [
+      "Dear Manufacturer, Please find the attached order PDF..."
+    ],
+    "pages\\settings\\manufacturers\\tabs\\TypesTab.jsx": [
+      "Update {selectedItems.length} Types",
+      "Rename Type",
+      "Change Type Category",
+      "Edit the following fields for the selected {selectedItems.length} types. Leave fields\r\n                empty to keep existing values.",
+      "Note:",
+      "Rename the type for all items of this manufacturer. This will affect all catalog items\r\n                currently using this type.",
+      "Warning:",
+      "You can enter a new type category or select from existing ones.",
+      "Filter by style...",
+      "Filter by type...",
+      "Leave empty to keep existing",
+      "Enter new type name",
+      "Enter new type category..."
+    ],
+    "pages\\settings\\multipliers\\EditManuMultiplier.jsx": [
+      "Save Changes",
+      "Enter manufacturer name",
+      "Enter manufacturer email",
+      "Enter multiplier"
+    ],
+    "pages\\settings\\usersGroup\\UserGroupList.jsx": [
+      "ID: {group.id}"
+    ],
+    "components\\DocsComponents.js": [
+      "Explore Documentation",
+      "Our Admin Panel is not simply a bundle of third-party pieces. It is the only open-source React\n          dashboard built on a professional, enterprise-grade UI component library. This example shows the\n          basic usage; for extended demos, detailed API docs, and customization guidance, visit the\n          documentation."
+    ],
+    "components\\DocsIcons.js": [
+      "Explore Documentation",
+      "CoreUI Icons package ships with more than 1500 icons in multiple formats - SVG, PNG, and webfonts.\n        They are carefully designed for common actions and items so you can reuse them across your web or\n        mobile products. Visit the documentation to explore the full set."
+    ],
+    "components\\EditManufacturerModal.jsx": [
+      "Cancel editing manufacturer",
+      "Save manufacturer changes"
+    ],
+    "components\\ErrorBoundary.jsx": [
+      "The application encountered an error. Please refresh to try again."
+    ],
+    "components\\FileViewerModal.jsx": [
+      "Close",
+      "Preview is not available for this file type."
+    ],
+    "components\\ItemSelectionContent.jsx": [
+      "No custom items added yet"
+    ],
+    "components\\ItemSelectionContentEdit.jsx": [
+      "No custom items added yet"
+    ],
+    "components\\LanguageSwitcher.jsx": [
+      "Select language"
+    ],
+    "components\\Loader.js": [
+      "Loading…"
+    ],
+    "components\\LoginPreview.jsx": [
+      "Forgot password?",
+      "Jane",
+      "Doe",
+      "City",
+      "Your business name",
+      "Share a brief overview",
+      "Sign in (preview only)"
+    ],
+    "components\\model\\EditManufacturerModal.jsx": [
+      "Enabled"
+    ],
+    "components\\NotificationBell.js": [
+      "Mark all read",
+      "Notifications",
+      "No new notifications"
+    ],
+    "components\\PageErrorBoundary.jsx": [
+      "Something went wrong while loading this page."
+    ],
+    "components\\pdf\\DesktopPdfViewer.jsx": [
+      "Reset",
+      "Page",
+      "Loading PDF document...",
+      "Loading page...",
+      "Failed to load page"
+    ],
+    "components\\StyleMerger.jsx": [
+      "Merge",
+      "From",
+      "Into",
+      "Select styles to merge",
+      "Source style",
+      "Target style"
+    ]
+  },
+  "duplicateKeys": [
+    {
+      "key1": "common.next",
+      "key2": "common.ariaLabels.next",
+      "value": "Next"
+    },
+    {
+      "key1": "common.back",
+      "key2": "globalMods.modal.add.back",
+      "value": "Back"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "globalMods.modal.add.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "common.order",
+      "key2": "globalMods.modal.editCategory.orderPlaceholder",
+      "value": "Order"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "globalMods.modal.editCategory.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "common.save",
+      "key2": "globalMods.modal.editCategory.save",
+      "value": "Save"
+    },
+    {
+      "key1": "common.order",
+      "key2": "globalMods.modal.editCategory.orderLabel",
+      "value": "Order"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "globalMods.modal.editTemplate.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "globalMods.modal.assign.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "globalMods.modal.deleteCategory.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "globalMods.modal.add.title",
+      "key2": "globalMods.ui.buttons.addModification",
+      "value": "Add Modification"
+    },
+    {
+      "key1": "globalMods.modal.assign.title",
+      "key2": "globalMods.ui.buttons.assignModification",
+      "value": "Assign Modification"
+    },
+    {
+      "key1": "globalMods.modal.gallery.title",
+      "key2": "globalMods.ui.galleryHeader",
+      "value": "Modification Gallery"
+    },
+    {
+      "key1": "globalMods.modal.editCategory.nameLabel",
+      "key2": "globalMods.category.nameLabel",
+      "value": "Category Name"
+    },
+    {
+      "key1": "common.order",
+      "key2": "globalMods.category.orderLabel",
+      "value": "Order"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "globalMods.category.actionLabel",
+      "value": "Actions"
+    },
+    {
+      "key1": "globalMods.modal.editCategory.imageLabel",
+      "key2": "globalMods.category.imageLabel",
+      "value": "Category Image"
+    },
+    {
+      "key1": "globalMods.modal.add.createTemplate",
+      "key2": "globalMods.template.createHeader",
+      "value": "Create Template"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.priceLabel",
+      "key2": "globalMods.template.defaultPriceLabel",
+      "value": "Default Price"
+    },
+    {
+      "key1": "common.status",
+      "key2": "globalMods.template.statusLabel",
+      "value": "Status"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.sampleUploadLabel",
+      "key2": "globalMods.builder.sampleUpload.title",
+      "value": "Sample Image Upload"
+    },
+    {
+      "key1": "globalMods.modal.assign.scope.all",
+      "key2": "globalMods.assign.scope.all",
+      "value": "All items"
+    },
+    {
+      "key1": "common.style",
+      "key2": "globalMods.assign.scope.style",
+      "value": "Style"
+    },
+    {
+      "key1": "common.type",
+      "key2": "globalMods.assign.scope.type",
+      "value": "Type"
+    },
+    {
+      "key1": "common.all",
+      "key2": "globalMods.assign.target.all",
+      "value": "All"
+    },
+    {
+      "key1": "globalMods.modal.assign.assign",
+      "key2": "globalMods.assign.assignButton",
+      "value": "Assign"
+    },
+    {
+      "key1": "common.none",
+      "key2": "globalMods.assign.none",
+      "value": "None"
+    },
+    {
+      "key1": "common.template",
+      "key2": "globalMods.assign.table.template",
+      "value": "Template"
+    },
+    {
+      "key1": "common.scope",
+      "key2": "globalMods.assign.table.scope",
+      "value": "Scope"
+    },
+    {
+      "key1": "common.price",
+      "key2": "globalMods.assign.table.price",
+      "value": "Price"
+    },
+    {
+      "key1": "common.order",
+      "key2": "paymentReceipt.modal.order",
+      "value": "Order"
+    },
+    {
+      "key1": "common.status",
+      "key2": "paymentReceipt.modal.status",
+      "value": "Status"
+    },
+    {
+      "key1": "common.email",
+      "key2": "paymentReceipt.email",
+      "value": "Email"
+    },
+    {
+      "key1": "common.description",
+      "key2": "paymentReceipt.description",
+      "value": "Description"
+    },
+    {
+      "key1": "common.status",
+      "key2": "paymentReceipt.status",
+      "value": "Status"
+    },
+    {
+      "key1": "paymentReceipt.modal.paymentMethod",
+      "key2": "paymentReceipt.paymentMethod.label",
+      "value": "Payment Method"
+    },
+    {
+      "key1": "styles.create",
+      "key2": "styles.createHeader",
+      "value": "Add Style"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "types.ui.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "common.image",
+      "key2": "types.ui.image",
+      "value": "Image"
+    },
+    {
+      "key1": "common.type",
+      "key2": "types.ui.type",
+      "value": "Type"
+    },
+    {
+      "key1": "common.description",
+      "key2": "types.ui.description",
+      "value": "Description"
+    },
+    {
+      "key1": "noDescription",
+      "key2": "types.ui.noDescription",
+      "value": "No description"
+    },
+    {
+      "key1": "styles.selected",
+      "key2": "types.ui.selected",
+      "value": "Selected"
+    },
+    {
+      "key1": "common.description",
+      "key2": "types.create.description",
+      "value": "Description"
+    },
+    {
+      "key1": "types.ui.createType",
+      "key2": "types.create.createCta",
+      "value": "Create Type"
+    },
+    {
+      "key1": "common.type",
+      "key2": "types.meta.type",
+      "value": "Type"
+    },
+    {
+      "key1": "common.price",
+      "key2": "proposalUI.custom.price",
+      "value": "Price"
+    },
+    {
+      "key1": "common.tableHeaders.number",
+      "key2": "proposalUI.custom.table.index",
+      "value": "#"
+    },
+    {
+      "key1": "common.price",
+      "key2": "proposalUI.custom.table.price",
+      "value": "Price"
+    },
+    {
+      "key1": "proposalUI.custom.taxable",
+      "key2": "proposalUI.custom.table.taxable",
+      "value": "Taxable"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "proposalUI.custom.table.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "common.delete",
+      "key2": "proposalUI.custom.delete",
+      "value": "Delete"
+    },
+    {
+      "key1": "common.email",
+      "key2": "auth.email",
+      "value": "Email"
+    },
+    {
+      "key1": "auth.keepMeLoggedIn",
+      "key2": "auth.keepLoggedIn",
+      "value": "Keep me logged in"
+    },
+    {
+      "key1": "auth.emailPlaceholder",
+      "key2": "auth.placeholders.emailExample",
+      "value": "you@example.com"
+    },
+    {
+      "key1": "auth.passwordPlaceholder",
+      "key2": "auth.placeholders.password",
+      "value": "Enter your password"
+    },
+    {
+      "key1": "auth.requestAccess.title",
+      "key2": "auth.requestAccess.submit",
+      "value": "Request Access"
+    },
+    {
+      "key1": "auth.emailPlaceholder",
+      "key2": "auth.requestAccess.fields.emailPlaceholder",
+      "value": "you@example.com"
+    },
+    {
+      "key1": "auth.requestAccess.fields.stateLabel",
+      "key2": "auth.requestAccess.fields.statePlaceholder",
+      "value": "State"
+    },
+    {
+      "key1": "auth.requestAccess.fields.emailLabel",
+      "key2": "auth.forgotPassword.emailLabel",
+      "value": "Email address"
+    },
+    {
+      "key1": "auth.emailPlaceholder",
+      "key2": "auth.forgotPassword.emailPlaceholder",
+      "value": "you@example.com"
+    },
+    {
+      "key1": "auth.requestAccess.fields.phoneLabel",
+      "key2": "auth.phone",
+      "value": "Phone"
+    },
+    {
+      "key1": "auth.requestAccess.fields.cityLabel",
+      "key2": "auth.city",
+      "value": "City"
+    },
+    {
+      "key1": "auth.requestAccess.fields.stateLabel",
+      "key2": "auth.state",
+      "value": "State"
+    },
+    {
+      "key1": "auth.requestAccess.fields.zipPlaceholder",
+      "key2": "auth.zip",
+      "value": "ZIP"
+    },
+    {
+      "key1": "auth.requestAccess.fields.companyLabel",
+      "key2": "auth.company",
+      "value": "Company"
+    },
+    {
+      "key1": "auth.resetPassword.title",
+      "key2": "auth.resetPassword.submit",
+      "value": "Reset Password"
+    },
+    {
+      "key1": "nav.proposals",
+      "key2": "nav.quotes",
+      "value": "Quotes"
+    },
+    {
+      "key1": "nav.viewProposals",
+      "key2": "nav.viewQuotes",
+      "value": "View Quotes"
+    },
+    {
+      "key1": "nav.createProposal",
+      "key2": "nav.createQuote",
+      "value": "Create Quote"
+    },
+    {
+      "key1": "common.ariaLabels.closeSidebar",
+      "key2": "nav.closeSidebar",
+      "value": "Close sidebar"
+    },
+    {
+      "key1": "nav.3dKitchen",
+      "key2": "3dKitchen.title",
+      "value": "3D Kitchen"
+    },
+    {
+      "key1": "nav.terms",
+      "key2": "termsModal.title",
+      "value": "Terms & Conditions"
+    },
+    {
+      "key1": "common.all",
+      "key2": "modificationBrowser.breadcrumb.root",
+      "value": "All"
+    },
+    {
+      "key1": "common.back",
+      "key2": "modificationBrowser.buttons.back",
+      "value": "Back"
+    },
+    {
+      "key1": "common.close",
+      "key2": "modificationBrowser.buttons.close",
+      "value": "Close"
+    },
+    {
+      "key1": "common.search",
+      "key2": "modificationBrowser.search.placeholder",
+      "value": "Search"
+    },
+    {
+      "key1": "globalMods.template.status.ready",
+      "key2": "modificationBrowser.template.status.ready",
+      "value": "Ready"
+    },
+    {
+      "key1": "globalMods.template.status.draft",
+      "key2": "modificationBrowser.template.status.draft",
+      "value": "Draft"
+    },
+    {
+      "key1": "globalMods.assign.override",
+      "key2": "modificationBrowser.template.price.overrideLabel",
+      "value": "Override price"
+    },
+    {
+      "key1": "common.qty",
+      "key2": "modificationBrowser.qty.label",
+      "value": "Qty"
+    },
+    {
+      "key1": "modificationModal.type.existing",
+      "key2": "modificationModal.existing.selectLabel",
+      "value": "Select existing modification"
+    },
+    {
+      "key1": "common.qty",
+      "key2": "modificationModal.custom.qtyPlaceholder",
+      "value": "Qty"
+    },
+    {
+      "key1": "common.price",
+      "key2": "modificationModal.custom.pricePlaceholder",
+      "value": "Price"
+    },
+    {
+      "key1": "proposalUI.custom.taxable",
+      "key2": "modificationModal.custom.taxable",
+      "value": "Taxable"
+    },
+    {
+      "key1": "modificationModal.existing.notePlaceholder",
+      "key2": "modificationModal.custom.notePlaceholder",
+      "value": "Note (Optional)"
+    },
+    {
+      "key1": "modificationModal.existing.instructionsHelper",
+      "key2": "modificationModal.custom.instructionsHelper",
+      "value": "If needed, provide custom instructions for applying the modification"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "modificationModal.actions.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "common.save",
+      "key2": "modificationModal.actions.save",
+      "value": "Save"
+    },
+    {
+      "key1": "common.editManufacturer",
+      "key2": "editManufacturerModal.title",
+      "value": "Edit Manufacturer"
+    },
+    {
+      "key1": "common.name",
+      "key2": "editManufacturerModal.labels.name",
+      "value": "Name"
+    },
+    {
+      "key1": "common.email",
+      "key2": "editManufacturerModal.labels.email",
+      "value": "Email"
+    },
+    {
+      "key1": "common.multiplier",
+      "key2": "editManufacturerModal.labels.multiplier",
+      "value": "Multiplier"
+    },
+    {
+      "key1": "common.enterMultiplier",
+      "key2": "editManufacturerModal.placeholders.multiplier",
+      "value": "Enter multiplier"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "editManufacturerModal.actions.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.saveChanges",
+      "key2": "editManufacturerModal.actions.save",
+      "value": "Save Changes"
+    },
+    {
+      "key1": "common.date",
+      "key2": "orders.headers.date",
+      "value": "Date"
+    },
+    {
+      "key1": "paymentReceipt.customer",
+      "key2": "orders.headers.customer",
+      "value": "Customer"
+    },
+    {
+      "key1": "common.description",
+      "key2": "orders.headers.description",
+      "value": "Description"
+    },
+    {
+      "key1": "common.status",
+      "key2": "orders.headers.status",
+      "value": "Status"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "orders.headers.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "orders.headers.manufacturer",
+      "key2": "orders.common.manufacturer",
+      "value": "Manufacturer"
+    },
+    {
+      "key1": "paymentReceipt.orderDetails",
+      "key2": "orders.details.title",
+      "value": "Order Details"
+    },
+    {
+      "key1": "paymentReceipt.customer",
+      "key2": "orders.details.customerLabel",
+      "value": "Customer"
+    },
+    {
+      "key1": "common.order",
+      "key2": "orders.details.order",
+      "value": "Order"
+    },
+    {
+      "key1": "common.date",
+      "key2": "orders.details.date",
+      "value": "Date"
+    },
+    {
+      "key1": "common.status",
+      "key2": "orders.details.status",
+      "value": "Status"
+    },
+    {
+      "key1": "paymentReceipt.customer",
+      "key2": "orders.details.customer",
+      "value": "Customer"
+    },
+    {
+      "key1": "common.name",
+      "key2": "orders.details.name",
+      "value": "Name"
+    },
+    {
+      "key1": "common.email",
+      "key2": "orders.details.email",
+      "value": "Email"
+    },
+    {
+      "key1": "auth.requestAccess.fields.phoneLabel",
+      "key2": "orders.details.phone",
+      "value": "Phone"
+    },
+    {
+      "key1": "modificationBrowser.title",
+      "key2": "orders.details.modifications",
+      "value": "Modifications"
+    },
+    {
+      "key1": "common.qty",
+      "key2": "orders.details.qty",
+      "value": "Qty"
+    },
+    {
+      "key1": "nav.manufacturers",
+      "key2": "orders.details.manufacturers",
+      "value": "Manufacturers"
+    },
+    {
+      "key1": "nav.orders",
+      "key2": "orders.page.all.title",
+      "value": "Orders"
+    },
+    {
+      "key1": "nav.myOrders",
+      "key2": "orders.page.my.title",
+      "value": "My Orders"
+    },
+    {
+      "key1": "common.all",
+      "key2": "payments.status.all",
+      "value": "All"
+    },
+    {
+      "key1": "paymentReceipt.statusValues.failed",
+      "key2": "payments.status.failed",
+      "value": "Failed"
+    },
+    {
+      "key1": "common.date",
+      "key2": "payments.headers.date",
+      "value": "Date"
+    },
+    {
+      "key1": "paymentReceipt.customer",
+      "key2": "payments.headers.customer",
+      "value": "Customer"
+    },
+    {
+      "key1": "paymentReceipt.orderNumber",
+      "key2": "payments.headers.orderNumber",
+      "value": "Order #"
+    },
+    {
+      "key1": "paymentReceipt.amount",
+      "key2": "payments.headers.amount",
+      "value": "Amount"
+    },
+    {
+      "key1": "common.status",
+      "key2": "payments.headers.status",
+      "value": "Status"
+    },
+    {
+      "key1": "paymentReceipt.transactionId",
+      "key2": "payments.headers.transaction",
+      "value": "Transaction ID"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "payments.headers.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "orders.actions.makePayment",
+      "key2": "payments.actions.makePayment",
+      "value": "Make Payment"
+    },
+    {
+      "key1": "payments.create.title",
+      "key2": "payments.create.button",
+      "value": "Create Payment"
+    },
+    {
+      "key1": "paymentReceipt.modal.paymentMethod",
+      "key2": "payments.apply.methodLabel",
+      "value": "Payment Method"
+    },
+    {
+      "key1": "orders.actions.makePayment",
+      "key2": "payment.title",
+      "value": "Make Payment"
+    },
+    {
+      "key1": "paymentReceipt.paymentDetails",
+      "key2": "payment.details.title",
+      "value": "Payment Details"
+    },
+    {
+      "key1": "common.order",
+      "key2": "payment.order",
+      "value": "Order"
+    },
+    {
+      "key1": "common.name",
+      "key2": "payment.customer.name",
+      "value": "Name"
+    },
+    {
+      "key1": "paymentReceipt.orderDate",
+      "key2": "payment.customer.order",
+      "value": "Order Date"
+    },
+    {
+      "key1": "payment.unavailable.status",
+      "key2": "payment.unavailable.message",
+      "value": "This payment is not available for processing right now. Current status:"
+    },
+    {
+      "key1": "common.continue",
+      "key2": "payment.success.continue",
+      "value": "Continue"
+    },
+    {
+      "key1": "paymentReceipt.transactionId",
+      "key2": "payment.transactionId",
+      "value": "Transaction ID"
+    },
+    {
+      "key1": "paymentReceipt.transactionId",
+      "key2": "payment.test.transactionIdLabel",
+      "value": "Transaction ID"
+    },
+    {
+      "key1": "payments.create.orderIdLabel",
+      "key2": "payment.orderId",
+      "value": "Order ID"
+    },
+    {
+      "key1": "common.description",
+      "key2": "payment.description",
+      "value": "Description"
+    },
+    {
+      "key1": "paymentReceipt.paymentMethod.other",
+      "key2": "payment.other",
+      "value": "Other"
+    },
+    {
+      "key1": "nav.paymentConfig",
+      "key2": "paymentConfig.title",
+      "value": "Payment Configuration"
+    },
+    {
+      "key1": "payments.gateway.stripe",
+      "key2": "paymentConfig.providers.stripe",
+      "value": "Stripe"
+    },
+    {
+      "key1": "payment.paypal",
+      "key2": "paymentConfig.providers.paypal",
+      "value": "PayPal"
+    },
+    {
+      "key1": "paymentConfig.gateway.urlPlaceholder",
+      "key2": "paymentConfig.placeholders.gatewayUrl",
+      "value": "https://your-payment-gateway.com/checkout"
+    },
+    {
+      "key1": "paymentConfig.placeholders.currencies",
+      "key2": "paymentConfig.currencies.placeholder",
+      "value": "USD, EUR, CAD"
+    },
+    {
+      "key1": "nav.contactUs",
+      "key2": "contact.header",
+      "value": "Contact Us"
+    },
+    {
+      "key1": "nav.admin",
+      "key2": "contact.adminView",
+      "value": "Admin"
+    },
+    {
+      "key1": "common.email",
+      "key2": "contact.info.email",
+      "value": "Email"
+    },
+    {
+      "key1": "auth.requestAccess.fields.phoneLabel",
+      "key2": "contact.info.phone",
+      "value": "Phone"
+    },
+    {
+      "key1": "orders.details.address",
+      "key2": "contact.info.address",
+      "value": "Address"
+    },
+    {
+      "key1": "modificationBrowser.config.notes.label",
+      "key2": "contact.info.notes",
+      "value": "Notes"
+    },
+    {
+      "key1": "common.save",
+      "key2": "contact.editor.save",
+      "value": "Save"
+    },
+    {
+      "key1": "contact.info.title",
+      "key2": "contact.editor.contentSettings",
+      "value": "Contact Information"
+    },
+    {
+      "key1": "auth.requestAccess.fields.messageLabel",
+      "key2": "contact.compose.message",
+      "value": "Message"
+    },
+    {
+      "key1": "auth.forgotPassword.submitting",
+      "key2": "contact.compose.sending",
+      "value": "Sending..."
+    },
+    {
+      "key1": "nav.admin",
+      "key2": "contact.thread.admin",
+      "value": "Admin"
+    },
+    {
+      "key1": "contact.userView",
+      "key2": "contact.thread.user",
+      "value": "User"
+    },
+    {
+      "key1": "nav.customers",
+      "key2": "customers.header",
+      "value": "Customers"
+    },
+    {
+      "key1": "types.ui.tryAdjust",
+      "key2": "customers.tryAdjusting",
+      "value": "Try adjusting your search criteria"
+    },
+    {
+      "key1": "common.perPage",
+      "key2": "customers.perPage",
+      "value": "per page"
+    },
+    {
+      "key1": "common.name",
+      "key2": "customers.name",
+      "value": "Name"
+    },
+    {
+      "key1": "common.email",
+      "key2": "customers.email",
+      "value": "Email"
+    },
+    {
+      "key1": "nav.proposals",
+      "key2": "customers.proposalsHeader",
+      "value": "Quotes"
+    },
+    {
+      "key1": "nav.orders",
+      "key2": "customers.ordersHeader",
+      "value": "Orders"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "customers.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "common.confirm",
+      "key2": "customers.confirmTitle",
+      "value": "Are you sure?"
+    },
+    {
+      "key1": "payments.status.cancelled",
+      "key2": "customers.cancelled",
+      "value": "Cancelled"
+    },
+    {
+      "key1": "contact.info.title",
+      "key2": "customers.form.titles.contactInfo",
+      "value": "Contact Information"
+    },
+    {
+      "key1": "auth.requestAccess.fields.cityLabel",
+      "key2": "customers.form.labels.city",
+      "value": "City"
+    },
+    {
+      "key1": "auth.requestAccess.fields.stateLabel",
+      "key2": "customers.form.labels.state",
+      "value": "State"
+    },
+    {
+      "key1": "auth.requestAccess.fields.zipLabel",
+      "key2": "customers.form.labels.zipCode",
+      "value": "Zip Code"
+    },
+    {
+      "key1": "contact.info.companyName",
+      "key2": "customers.form.labels.companyName",
+      "value": "Company Name"
+    },
+    {
+      "key1": "modificationBrowser.config.notes.label",
+      "key2": "customers.form.labels.notes",
+      "value": "Notes"
+    },
+    {
+      "key1": "customers.form.placeholders.mobile",
+      "key2": "customers.form.placeholders.homePhone",
+      "value": "1234567890"
+    },
+    {
+      "key1": "auth.requestAccess.fields.companyLabel",
+      "key2": "customers.form.types.company",
+      "value": "Company"
+    },
+    {
+      "key1": "paymentReceipt.paymentMethod.other",
+      "key2": "customers.form.types.other",
+      "value": "Other"
+    },
+    {
+      "key1": "contact.info.website",
+      "key2": "customers.form.sources.website",
+      "value": "Website"
+    },
+    {
+      "key1": "paymentReceipt.paymentMethod.other",
+      "key2": "customers.form.sources.other",
+      "value": "Other"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "customers.form.actions.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "common.saving",
+      "key2": "customers.form.actions.saving",
+      "value": "Saving..."
+    },
+    {
+      "key1": "auth.resetPassword.submitting",
+      "key2": "customers.form.actions.updating",
+      "value": "Updating..."
+    },
+    {
+      "key1": "nav.proposals",
+      "key2": "proposals.header",
+      "value": "Quotes"
+    },
+    {
+      "key1": "dashboard.newProposal",
+      "key2": "proposals.new",
+      "value": "New Quote"
+    },
+    {
+      "key1": "dashboard.quickProposal",
+      "key2": "proposals.quick",
+      "value": "Quick Quote"
+    },
+    {
+      "key1": "common.date",
+      "key2": "proposals.headers.date",
+      "value": "Date"
+    },
+    {
+      "key1": "paymentReceipt.customer",
+      "key2": "proposals.headers.customer",
+      "value": "Customer"
+    },
+    {
+      "key1": "common.description",
+      "key2": "proposals.headers.description",
+      "value": "Description"
+    },
+    {
+      "key1": "common.status",
+      "key2": "proposals.headers.status",
+      "value": "Status"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "proposals.headers.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "common.description",
+      "key2": "proposals.labels.description",
+      "value": "Description"
+    },
+    {
+      "key1": "proposals.headers.designer",
+      "key2": "proposals.labels.designer",
+      "value": "Designer"
+    },
+    {
+      "key1": "common.all",
+      "key2": "proposals.tabs.all",
+      "value": "All"
+    },
+    {
+      "key1": "globalMods.template.status.draft",
+      "key2": "proposals.status.draft",
+      "value": "Draft"
+    },
+    {
+      "key1": "contact.compose.send",
+      "key2": "proposals.actions.send",
+      "value": "Send"
+    },
+    {
+      "key1": "termsModal.accept",
+      "key2": "proposals.actions.accept",
+      "value": "Accept"
+    },
+    {
+      "key1": "common.confirm",
+      "key2": "proposals.confirm.deleteTitle",
+      "value": "Are you sure?"
+    },
+    {
+      "key1": "customers.confirmYes",
+      "key2": "proposals.confirm.deleteConfirm",
+      "value": "Yes, delete it!"
+    },
+    {
+      "key1": "termsModal.accept",
+      "key2": "proposals.confirm.acceptConfirm",
+      "value": "Accept"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "proposals.confirm.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "common.warning",
+      "key2": "proposals.errors.alreadyLockedTitle",
+      "value": "Warning"
+    },
+    {
+      "key1": "payment.customer.title",
+      "key2": "proposals.create.steps.1",
+      "value": "Customer Information"
+    },
+    {
+      "key1": "proposals.headers.designer",
+      "key2": "proposals.create.fields.designer",
+      "value": "Designer"
+    },
+    {
+      "key1": "common.date",
+      "key2": "proposals.create.fields.date",
+      "value": "Date"
+    },
+    {
+      "key1": "proposals.headers.designer",
+      "key2": "proposals.create.customerInfo.designer",
+      "value": "Designer"
+    },
+    {
+      "key1": "common.description",
+      "key2": "proposals.create.customerInfo.description",
+      "value": "Description"
+    },
+    {
+      "key1": "common.description",
+      "key2": "proposals.create.customerInfo.descriptionPlaceholder",
+      "value": "Description"
+    },
+    {
+      "key1": "common.type",
+      "key2": "proposals.create.customerInfo.type",
+      "value": "Type"
+    },
+    {
+      "key1": "common.email",
+      "key2": "proposals.create.customerInfo.sources.email",
+      "value": "Email"
+    },
+    {
+      "key1": "orders.details.manufacturerDetails",
+      "key2": "proposals.create.manufacturer.title",
+      "value": "Manufacturer Details"
+    },
+    {
+      "key1": "common.editManufacturer",
+      "key2": "proposals.create.manufacturer.editTitle",
+      "value": "Edit Manufacturer"
+    },
+    {
+      "key1": "common.name",
+      "key2": "proposals.create.manufacturer.name",
+      "value": "Name"
+    },
+    {
+      "key1": "common.email",
+      "key2": "proposals.create.manufacturer.email",
+      "value": "Email"
+    },
+    {
+      "key1": "common.multiplier",
+      "key2": "proposals.create.manufacturer.multiplier",
+      "value": "Multiplier"
+    },
+    {
+      "key1": "orders.headers.manufacturer",
+      "key2": "proposals.create.manufacturer.labels.manufacturer",
+      "value": "Manufacturer"
+    },
+    {
+      "key1": "modificationBrowser.config.fileUpload.defaultTitle",
+      "key2": "proposals.create.files.title",
+      "value": "File Upload"
+    },
+    {
+      "key1": "orders.details.preview",
+      "key2": "proposals.create.files.preview",
+      "value": "Preview"
+    },
+    {
+      "key1": "common.editVersionName",
+      "key2": "proposals.create.summary.editVersionTitle",
+      "value": "Edit Version Name"
+    },
+    {
+      "key1": "common.areYouSureDelete",
+      "key2": "proposals.create.summary.confirmDeleteVersion",
+      "value": "Are you sure you want to delete this version?"
+    },
+    {
+      "key1": "proposals.status.accepted",
+      "key2": "publicQuote.acceptedBadge",
+      "value": "Accepted"
+    },
+    {
+      "key1": "common.description",
+      "key2": "publicQuote.description",
+      "value": "Description"
+    },
+    {
+      "key1": "orders.details.total",
+      "key2": "publicQuote.total",
+      "value": "Total"
+    },
+    {
+      "key1": "termsModal.accept",
+      "key2": "publicQuote.acceptButton.accept",
+      "value": "Accept"
+    },
+    {
+      "key1": "nav.notifications",
+      "key2": "notifications.header",
+      "value": "Notifications"
+    },
+    {
+      "key1": "common.all",
+      "key2": "notifications.filters.all",
+      "value": "All"
+    },
+    {
+      "key1": "proposals.status.accepted",
+      "key2": "adminQuote.labels.accepted",
+      "value": "Accepted"
+    },
+    {
+      "key1": "paymentReceipt.statusValues.pending",
+      "key2": "adminQuote.status.pending",
+      "value": "Pending"
+    },
+    {
+      "key1": "paymentReceipt.statusValues.completed",
+      "key2": "adminQuote.status.completed",
+      "value": "Completed"
+    },
+    {
+      "key1": "paymentReceipt.customer",
+      "key2": "adminQuote.ui.customer",
+      "value": "Customer"
+    },
+    {
+      "key1": "customers.form.labels.fullName",
+      "key2": "profile.fullName",
+      "value": "Full Name"
+    },
+    {
+      "key1": "auth.resetPassword.passwordLabel",
+      "key2": "profile.newPassword",
+      "value": "New Password"
+    },
+    {
+      "key1": "customers.location",
+      "key2": "profile.location",
+      "value": "Location"
+    },
+    {
+      "key1": "common.saving",
+      "key2": "profile.saving",
+      "value": "Saving..."
+    },
+    {
+      "key1": "paymentReceipt.errors.somethingWentWrong",
+      "key2": "profile.errorGeneric",
+      "value": "Something went wrong"
+    },
+    {
+      "key1": "customers.form.validation.nameRequired",
+      "key2": "profile.validation.nameRequired",
+      "value": "Name is required"
+    },
+    {
+      "key1": "common.itemsPerPage",
+      "key2": "pagination.itemsPerPage",
+      "value": "Items per page:"
+    },
+    {
+      "key1": "common.ariaLabels.previousPage",
+      "key2": "pagination.prevPageTitle",
+      "value": "Previous page"
+    },
+    {
+      "key1": "common.ariaLabels.nextPage",
+      "key2": "pagination.nextPageTitle",
+      "value": "Next page"
+    },
+    {
+      "key1": "proposalAcceptance.title",
+      "key2": "proposalAcceptance.acceptButton",
+      "value": "Accept Quote"
+    },
+    {
+      "key1": "publicQuote.acceptFailed",
+      "key2": "proposalAcceptance.errors.failedAccept",
+      "value": "Failed to accept quote"
+    },
+    {
+      "key1": "paymentReceipt.customer",
+      "key2": "proposalAcceptance.labels.customer",
+      "value": "Customer"
+    },
+    {
+      "key1": "orders.details.total",
+      "key2": "proposalAcceptance.labels.total",
+      "value": "Total"
+    },
+    {
+      "key1": "common.status",
+      "key2": "proposalAcceptance.labels.status",
+      "value": "Status"
+    },
+    {
+      "key1": "common.description",
+      "key2": "proposalAcceptance.labels.description",
+      "value": "Description"
+    },
+    {
+      "key1": "common.qty",
+      "key2": "proposalColumns.qty",
+      "value": "Qty"
+    },
+    {
+      "key1": "orders.details.item",
+      "key2": "proposalColumns.item",
+      "value": "Item"
+    },
+    {
+      "key1": "common.price",
+      "key2": "proposalColumns.price",
+      "value": "Price"
+    },
+    {
+      "key1": "orders.details.total",
+      "key2": "proposalColumns.total",
+      "value": "Total"
+    },
+    {
+      "key1": "orders.details.items",
+      "key2": "proposalColumns.items",
+      "value": "Items"
+    },
+    {
+      "key1": "contact.info.companyName",
+      "key2": "proposalDoc.fallbackCompanyName",
+      "value": "Company Name"
+    },
+    {
+      "key1": "common.description",
+      "key2": "proposalDoc.summary.description",
+      "value": "Description"
+    },
+    {
+      "key1": "common.date",
+      "key2": "proposalDoc.summary.date",
+      "value": "Date"
+    },
+    {
+      "key1": "proposalDoc.modifications",
+      "key2": "proposalDoc.priceSummary.modifications",
+      "value": "Modifications:"
+    },
+    {
+      "key1": "proposalUI.custom.table.itemName",
+      "key2": "proposalDoc.catalog.itemName",
+      "value": "Item Name"
+    },
+    {
+      "key1": "orders.details.unitPrice",
+      "key2": "proposalDoc.catalog.unitPrice",
+      "value": "Unit Price"
+    },
+    {
+      "key1": "orders.details.total",
+      "key2": "proposalDoc.catalog.total",
+      "value": "Total"
+    },
+    {
+      "key1": "common.code",
+      "key2": "proposalDoc.catalog.labels.code",
+      "value": "Code"
+    },
+    {
+      "key1": "common.name",
+      "key2": "proposalDoc.catalog.labels.name",
+      "value": "Name"
+    },
+    {
+      "key1": "common.description",
+      "key2": "proposalDoc.catalog.labels.description",
+      "value": "Description"
+    },
+    {
+      "key1": "common.optional",
+      "key2": "proposalDoc.catalog.placeholders.optional",
+      "value": "optional"
+    },
+    {
+      "key1": "common.enterPrice",
+      "key2": "proposalDoc.catalog.placeholders.assemblyPrice",
+      "value": "Enter price (0 for no assembly cost)"
+    },
+    {
+      "key1": "common.leaveEmptyKeepExisting",
+      "key2": "proposalDoc.catalog.placeholders.keepExisting",
+      "value": "Leave empty to keep existing"
+    },
+    {
+      "key1": "common.template",
+      "key2": "proposalDoc.catalog.fields.template",
+      "value": "Template"
+    },
+    {
+      "key1": "proposals.create.actions.email",
+      "key2": "proposalCommon.emailTitle",
+      "value": "Email Quote"
+    },
+    {
+      "key1": "auth.forgotPassword.submitting",
+      "key2": "proposalCommon.sending",
+      "value": "Sending..."
+    },
+    {
+      "key1": "proposals.create.actions.print",
+      "key2": "proposalCommon.printTitle",
+      "value": "Print Quote"
+    },
+    {
+      "key1": "orders.details.preview",
+      "key2": "proposalCommon.preview",
+      "value": "Preview"
+    },
+    {
+      "key1": "auth.emailRequired",
+      "key2": "proposalCommon.validation.emailRequired",
+      "value": "Email is required"
+    },
+    {
+      "key1": "proposals.searchPlaceholder",
+      "key2": "contracts.searchPlaceholder",
+      "value": "Search by customer name..."
+    },
+    {
+      "key1": "common.date",
+      "key2": "contracts.table.date",
+      "value": "Date"
+    },
+    {
+      "key1": "paymentReceipt.customer",
+      "key2": "contracts.table.customer",
+      "value": "Customer"
+    },
+    {
+      "key1": "common.description",
+      "key2": "contracts.table.description",
+      "value": "Description"
+    },
+    {
+      "key1": "proposals.headers.designer",
+      "key2": "contracts.table.designer",
+      "value": "Designer"
+    },
+    {
+      "key1": "common.status",
+      "key2": "contracts.table.status",
+      "value": "Status"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "contracts.table.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "globalMods.template.status.draft",
+      "key2": "contracts.status.draft",
+      "value": "Draft"
+    },
+    {
+      "key1": "proposals.status.measurementScheduled",
+      "key2": "contracts.status.measurementScheduled",
+      "value": "Measurement Scheduled"
+    },
+    {
+      "key1": "proposals.status.measurementDone",
+      "key2": "contracts.status.measurementDone",
+      "value": "Measurement done"
+    },
+    {
+      "key1": "proposals.status.designDone",
+      "key2": "contracts.status.designDone",
+      "value": "Design done"
+    },
+    {
+      "key1": "proposals.status.followUp1",
+      "key2": "contracts.status.followUp1",
+      "value": "Follow up 1"
+    },
+    {
+      "key1": "proposals.status.followUp2",
+      "key2": "contracts.status.followUp2",
+      "value": "Follow up 2"
+    },
+    {
+      "key1": "proposals.status.followUp3",
+      "key2": "contracts.status.followUp3",
+      "value": "Follow up 3"
+    },
+    {
+      "key1": "proposals.status.proposalAccepted",
+      "key2": "contracts.status.proposalAccepted",
+      "value": "Quote accepted"
+    },
+    {
+      "key1": "proposalColumns.no",
+      "key2": "contracts.pdf.columns.no",
+      "value": "No."
+    },
+    {
+      "key1": "common.qty",
+      "key2": "contracts.pdf.columns.qty",
+      "value": "Qty"
+    },
+    {
+      "key1": "orders.details.item",
+      "key2": "contracts.pdf.columns.item",
+      "value": "Item"
+    },
+    {
+      "key1": "proposalColumns.assembled",
+      "key2": "contracts.pdf.columns.assembled",
+      "value": "Assembled"
+    },
+    {
+      "key1": "proposalColumns.hingeSide",
+      "key2": "contracts.pdf.columns.hingeSide",
+      "value": "Hinge Side"
+    },
+    {
+      "key1": "proposalColumns.exposedSide",
+      "key2": "contracts.pdf.columns.exposedSide",
+      "value": "Exposed Side"
+    },
+    {
+      "key1": "common.price",
+      "key2": "contracts.pdf.columns.price",
+      "value": "Price"
+    },
+    {
+      "key1": "orders.details.assemblyFee",
+      "key2": "contracts.pdf.columns.assemblyFee",
+      "value": "Assembly Fee"
+    },
+    {
+      "key1": "orders.details.total",
+      "key2": "contracts.pdf.columns.total",
+      "value": "Total"
+    },
+    {
+      "key1": "orders.details.items",
+      "key2": "contracts.pdf.categories.items",
+      "value": "Items"
+    },
+    {
+      "key1": "proposalDoc.priceSummary.cabinets",
+      "key2": "contracts.pdf.summary.cabinetsParts",
+      "value": "Cabinets & Parts:"
+    },
+    {
+      "key1": "proposalDoc.priceSummary.assembly",
+      "key2": "contracts.pdf.summary.assemblyFee",
+      "value": "Assembly fee:"
+    },
+    {
+      "key1": "proposalDoc.modifications",
+      "key2": "contracts.pdf.summary.modifications",
+      "value": "Modifications:"
+    },
+    {
+      "key1": "proposalDoc.priceSummary.styleTotal",
+      "key2": "contracts.pdf.summary.styleTotal",
+      "value": "Style Total:"
+    },
+    {
+      "key1": "proposalDoc.priceSummary.total",
+      "key2": "contracts.pdf.summary.total",
+      "value": "Total:"
+    },
+    {
+      "key1": "proposalDoc.priceSummary.tax",
+      "key2": "contracts.pdf.summary.tax",
+      "value": "Tax:"
+    },
+    {
+      "key1": "proposalDoc.priceSummary.grandTotal",
+      "key2": "contracts.pdf.summary.grandTotal",
+      "value": "Grand Total:"
+    },
+    {
+      "key1": "nav.contractors",
+      "key2": "contractorsAdmin.header",
+      "value": "Contractors"
+    },
+    {
+      "key1": "customers.total",
+      "key2": "contractorsAdmin.stats.totalCustomers",
+      "value": "Total Customers"
+    },
+    {
+      "key1": "nav.users",
+      "key2": "contractorsAdmin.table.users",
+      "value": "Users"
+    },
+    {
+      "key1": "nav.customers",
+      "key2": "contractorsAdmin.table.customers",
+      "value": "Customers"
+    },
+    {
+      "key1": "nav.proposals",
+      "key2": "contractorsAdmin.table.proposals",
+      "value": "Quotes"
+    },
+    {
+      "key1": "adminQuote.labels.created",
+      "key2": "contractorsAdmin.table.created",
+      "value": "Created"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "contractorsAdmin.table.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "types.ui.tryAdjust",
+      "key2": "contractorsAdmin.empty.tryAdjusting",
+      "value": "Try adjusting your search criteria"
+    },
+    {
+      "key1": "nav.dashboard",
+      "key2": "contractorsAdmin.modules.dashboard",
+      "value": "Dashboard"
+    },
+    {
+      "key1": "nav.proposals",
+      "key2": "contractorsAdmin.modules.proposals",
+      "value": "Quotes"
+    },
+    {
+      "key1": "nav.customers",
+      "key2": "contractorsAdmin.modules.customers",
+      "value": "Customers"
+    },
+    {
+      "key1": "nav.resources",
+      "key2": "contractorsAdmin.modules.resources",
+      "value": "Resources"
+    },
+    {
+      "key1": "contracts.viewDetails",
+      "key2": "contractorsAdmin.actions.viewDetails",
+      "value": "View Details"
+    },
+    {
+      "key1": "nav.proposals",
+      "key2": "contractorsAdmin.detail.tabs.proposals",
+      "value": "Quotes"
+    },
+    {
+      "key1": "nav.customers",
+      "key2": "contractorsAdmin.detail.tabs.customers",
+      "value": "Customers"
+    },
+    {
+      "key1": "nav.settings",
+      "key2": "contractorsAdmin.detail.tabs.settings",
+      "value": "Settings"
+    },
+    {
+      "key1": "customers.form.titles.basicInfo",
+      "key2": "contractorsAdmin.detail.basicInfo.title",
+      "value": "Basic Information"
+    },
+    {
+      "key1": "contractorsAdmin.table.contractorName",
+      "key2": "contractorsAdmin.detail.basicInfo.contractorName",
+      "value": "Contractor Name"
+    },
+    {
+      "key1": "adminQuote.ui.createdDate",
+      "key2": "contractorsAdmin.detail.basicInfo.createdDate",
+      "value": "Created Date"
+    },
+    {
+      "key1": "editManufacturerModal.labels.enabled",
+      "key2": "contractorsAdmin.detail.enabled",
+      "value": "Enabled"
+    },
+    {
+      "key1": "contractorsAdmin.stats.totalUsers",
+      "key2": "contractorsAdmin.detail.activity.totalUsers",
+      "value": "Total Users"
+    },
+    {
+      "key1": "customers.total",
+      "key2": "contractorsAdmin.detail.activity.totalCustomers",
+      "value": "Total Customers"
+    },
+    {
+      "key1": "contractorsAdmin.stats.totalProposals",
+      "key2": "contractorsAdmin.detail.activity.totalProposals",
+      "value": "Total Quotes"
+    },
+    {
+      "key1": "customers.total",
+      "key2": "contractorsAdmin.detail.customers.stats.total",
+      "value": "Total Customers"
+    },
+    {
+      "key1": "customers.withEmail",
+      "key2": "contractorsAdmin.detail.customers.stats.withEmail",
+      "value": "With Email"
+    },
+    {
+      "key1": "auth.requestAccess.fields.phoneLabel",
+      "key2": "contractorsAdmin.detail.customers.table.phone",
+      "value": "Phone"
+    },
+    {
+      "key1": "orders.details.address",
+      "key2": "contractorsAdmin.detail.customers.table.address",
+      "value": "Address"
+    },
+    {
+      "key1": "adminQuote.labels.created",
+      "key2": "contractorsAdmin.detail.customers.table.created",
+      "value": "Created"
+    },
+    {
+      "key1": "common.status",
+      "key2": "contractorsAdmin.detail.customers.table.status",
+      "value": "Status"
+    },
+    {
+      "key1": "customers.noResults",
+      "key2": "contractorsAdmin.detail.customers.empty.title",
+      "value": "No customers found"
+    },
+    {
+      "key1": "customers.active",
+      "key2": "contractorsAdmin.detail.customers.active",
+      "value": "Active"
+    },
+    {
+      "key1": "proposals.empty.title",
+      "key2": "contractorsAdmin.detail.proposals.empty.title",
+      "value": "No quotes found"
+    },
+    {
+      "key1": "paymentReceipt.amount",
+      "key2": "contractorsAdmin.detail.proposals.table.amount",
+      "value": "Amount"
+    },
+    {
+      "key1": "adminQuote.ui.updatedDate",
+      "key2": "contractorsAdmin.detail.proposals.table.updated",
+      "value": "Last Updated"
+    },
+    {
+      "key1": "paymentReceipt.statusValues.pending",
+      "key2": "contractorsAdmin.detail.proposals.status.pending",
+      "value": "Pending"
+    },
+    {
+      "key1": "adminQuote.status.approved",
+      "key2": "contractorsAdmin.detail.proposals.status.approved",
+      "value": "Approved"
+    },
+    {
+      "key1": "adminQuote.status.in_progress",
+      "key2": "contractorsAdmin.detail.proposals.status.inProgress",
+      "value": "In Progress"
+    },
+    {
+      "key1": "paymentReceipt.statusValues.completed",
+      "key2": "contractorsAdmin.detail.proposals.status.completed",
+      "value": "Completed"
+    },
+    {
+      "key1": "proposalUI.group",
+      "key2": "contractorsAdmin.detail.proposals.modal.group",
+      "value": "Group"
+    },
+    {
+      "key1": "customers.form.titles.basicInfo",
+      "key2": "contractorsAdmin.detail.proposals.modal.basicInfo",
+      "value": "Basic Information"
+    },
+    {
+      "key1": "adminQuote.ui.proposalId",
+      "key2": "contractorsAdmin.detail.proposals.modal.proposalId",
+      "value": "Quote ID"
+    },
+    {
+      "key1": "adminQuote.ui.createdDate",
+      "key2": "contractorsAdmin.detail.proposals.modal.created",
+      "value": "Created Date"
+    },
+    {
+      "key1": "adminQuote.ui.updatedDate",
+      "key2": "contractorsAdmin.detail.proposals.modal.updated",
+      "value": "Last Updated"
+    },
+    {
+      "key1": "adminQuote.ui.sentDate",
+      "key2": "contractorsAdmin.detail.proposals.modal.sent",
+      "value": "Sent Date"
+    },
+    {
+      "key1": "adminQuote.ui.contractorGroup",
+      "key2": "contractorsAdmin.detail.proposals.modal.contractorGroup",
+      "value": "Contractor Group"
+    },
+    {
+      "key1": "adminQuote.ui.acceptedDate",
+      "key2": "contractorsAdmin.detail.proposals.modal.accepted",
+      "value": "Accepted Date"
+    },
+    {
+      "key1": "adminQuote.ui.statusTimeline",
+      "key2": "contractorsAdmin.detail.proposals.timeline.title",
+      "value": "Status Timeline"
+    },
+    {
+      "key1": "adminQuote.timeline.created",
+      "key2": "contractorsAdmin.detail.proposals.timeline.created",
+      "value": "Quote was created and added to the system"
+    },
+    {
+      "key1": "adminQuote.timeline.sent",
+      "key2": "contractorsAdmin.detail.proposals.timeline.sent",
+      "value": "Quote was sent to the customer for review"
+    },
+    {
+      "key1": "contractorsAdmin.detail.proposals.timeline.accepted",
+      "key2": "contractorsAdmin.detail.proposals.timeline.approved",
+      "value": "Quote has been accepted by the contractor"
+    },
+    {
+      "key1": "orders.details.tax",
+      "key2": "contractorsAdmin.detail.proposals.totals.tax",
+      "value": "Tax"
+    },
+    {
+      "key1": "orders.details.total",
+      "key2": "contractorsAdmin.detail.proposals.totals.total",
+      "value": "Total"
+    },
+    {
+      "key1": "contractorsAdmin.detail.settings.title",
+      "key2": "contractorsAdmin.detail.settings.raw.contractorSettings",
+      "value": "Contractor Settings"
+    },
+    {
+      "key1": "contractorsAdmin.detail.basicInfo.maxUsers",
+      "key2": "contractorsAdmin.detail.settings.summary.maxUsers",
+      "value": "Max Users"
+    },
+    {
+      "key1": "nav.uiCustomization",
+      "key2": "settings.customization.ui.headerTitle",
+      "value": "UI Customization"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.saveChanges",
+      "key2": "settings.customization.ui.buttons.saveChanges",
+      "value": "Save Changes"
+    },
+    {
+      "key1": "common.saving",
+      "key2": "settings.customization.ui.buttons.saving",
+      "value": "Saving..."
+    },
+    {
+      "key1": "orders.details.preview",
+      "key2": "settings.customization.ui.brandLogo.labels.preview",
+      "value": "Preview"
+    },
+    {
+      "key1": "customers.form.validation.required",
+      "key2": "settings.customization.users.form.validation.required",
+      "value": "This field is required"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.saveChanges",
+      "key2": "settings.customization.pdf.buttons.saveChanges",
+      "value": "Save Changes"
+    },
+    {
+      "key1": "common.saving",
+      "key2": "settings.customization.pdf.buttons.saving",
+      "value": "Saving..."
+    },
+    {
+      "key1": "settings.customization.ui.colorPalette.labels.headerText",
+      "key2": "settings.customization.pdf.labels.headerText",
+      "value": "Header Text"
+    },
+    {
+      "key1": "settings.customization.ui.colorPalette.labels.sidebarText",
+      "key2": "settings.customization.pdf.labels.textColor",
+      "value": "Text Color"
+    },
+    {
+      "key1": "proposalDoc.altCompanyLogo",
+      "key2": "settings.customization.pdf.labels.companyLogo",
+      "value": "Company Logo"
+    },
+    {
+      "key1": "settings.customization.ui.brandLogo.alt.logoPreview",
+      "key2": "settings.customization.pdf.labels.logoPreview",
+      "value": "Logo Preview"
+    },
+    {
+      "key1": "contact.info.companyName",
+      "key2": "settings.customization.pdf.labels.companyName",
+      "value": "Company Name"
+    },
+    {
+      "key1": "customers.form.labels.email",
+      "key2": "settings.customization.pdf.labels.email",
+      "value": "Email Address"
+    },
+    {
+      "key1": "contact.info.website",
+      "key2": "settings.customization.pdf.labels.website",
+      "value": "Website"
+    },
+    {
+      "key1": "settings.customization.ui.brandLogo.supportedTypes",
+      "key2": "settings.customization.pdf.supportedTypes",
+      "value": "JPG, PNG, SVG up to 5MB"
+    },
+    {
+      "key1": "orders.details.preview",
+      "key2": "settings.customization.login.buttons.preview",
+      "value": "Preview"
+    },
+    {
+      "key1": "common.saving",
+      "key2": "settings.customization.login.buttons.saving",
+      "value": "Saving..."
+    },
+    {
+      "key1": "settings.customization.ui.alerts.saveSuccess",
+      "key2": "settings.customization.login.alerts.saveSuccess",
+      "value": "Customization saved successfully!"
+    },
+    {
+      "key1": "settings.customization.pdf.labels.backgroundColor",
+      "key2": "settings.customization.login.form.backgroundColor",
+      "value": "Background Color"
+    },
+    {
+      "key1": "common.description",
+      "key2": "settings.customization.login.rightPanel.description",
+      "value": "Description"
+    },
+    {
+      "key1": "common.description",
+      "key2": "settings.customization.login.requestAccess.description",
+      "value": "Description"
+    },
+    {
+      "key1": "auth.emailPlaceholder",
+      "key2": "settings.customization.login.smtp.testPlaceholder",
+      "value": "you@example.com"
+    },
+    {
+      "key1": "settings.customization.login.smtp.testLabel",
+      "key2": "settings.customization.login.smtp.testButton",
+      "value": "Send test email"
+    },
+    {
+      "key1": "auth.forgotPassword.submitting",
+      "key2": "settings.customization.login.smtp.testing",
+      "value": "Sending..."
+    },
+    {
+      "key1": "nav.userManagement",
+      "key2": "settings.users.header",
+      "value": "User Management"
+    },
+    {
+      "key1": "contractorsAdmin.stats.totalUsers",
+      "key2": "settings.users.stats.totalUsers",
+      "value": "Total Users"
+    },
+    {
+      "key1": "common.name",
+      "key2": "settings.users.table.name",
+      "value": "Name"
+    },
+    {
+      "key1": "common.email",
+      "key2": "settings.users.table.email",
+      "value": "Email"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "settings.users.table.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "types.ui.tryAdjust",
+      "key2": "settings.users.empty.subtitle",
+      "value": "Try adjusting your search criteria"
+    },
+    {
+      "key1": "common.confirm",
+      "key2": "settings.users.confirm.title",
+      "value": "Are you sure?"
+    },
+    {
+      "key1": "payments.status.cancelled",
+      "key2": "settings.users.confirm.cancelledTitle",
+      "value": "Cancelled"
+    },
+    {
+      "key1": "auth.requestAccess.submitting",
+      "key2": "settings.users.create.submitting",
+      "value": "Submitting..."
+    },
+    {
+      "key1": "settings.users.edit.title",
+      "key2": "settings.users.edit.modalHeader",
+      "value": "Edit User"
+    },
+    {
+      "key1": "common.name",
+      "key2": "settings.users.fields.name",
+      "value": "Name"
+    },
+    {
+      "key1": "common.email",
+      "key2": "settings.users.fields.email",
+      "value": "Email"
+    },
+    {
+      "key1": "settings.users.table.group",
+      "key2": "settings.users.fields.userGroup",
+      "value": "User Group"
+    },
+    {
+      "key1": "customers.location",
+      "key2": "settings.users.fields.location",
+      "value": "Location"
+    },
+    {
+      "key1": "profile.confirmPassword",
+      "key2": "settings.users.fields.confirmPassword",
+      "value": "Confirm Password"
+    },
+    {
+      "key1": "proposals.create.customerInfo.salesRep",
+      "key2": "settings.users.fields.salesRep",
+      "value": "Sales Representative"
+    },
+    {
+      "key1": "customers.form.titles.basicInfo",
+      "key2": "settings.users.form.titles.basicInfo",
+      "value": "Basic Information"
+    },
+    {
+      "key1": "settings.customization.pdf.sections.companyInfo.title",
+      "key2": "settings.users.form.titles.companyInfo",
+      "value": "Company Information"
+    },
+    {
+      "key1": "customers.form.labels.fullName",
+      "key2": "settings.users.form.labels.fullName",
+      "value": "Full Name"
+    },
+    {
+      "key1": "customers.form.labels.email",
+      "key2": "settings.users.form.labels.email",
+      "value": "Email Address"
+    },
+    {
+      "key1": "auth.password",
+      "key2": "settings.users.form.labels.password",
+      "value": "Password"
+    },
+    {
+      "key1": "profile.confirmPassword",
+      "key2": "settings.users.form.labels.confirmPassword",
+      "value": "Confirm Password"
+    },
+    {
+      "key1": "settings.users.table.group",
+      "key2": "settings.users.form.labels.userGroup",
+      "value": "User Group"
+    },
+    {
+      "key1": "customers.location",
+      "key2": "settings.users.form.labels.location",
+      "value": "Location"
+    },
+    {
+      "key1": "proposals.create.customerInfo.salesRep",
+      "key2": "settings.users.form.labels.salesRep",
+      "value": "Sales Representative"
+    },
+    {
+      "key1": "customers.form.labels.address",
+      "key2": "settings.users.form.labels.streetAddress",
+      "value": "Street Address"
+    },
+    {
+      "key1": "auth.requestAccess.fields.cityLabel",
+      "key2": "settings.users.form.labels.city",
+      "value": "City"
+    },
+    {
+      "key1": "contact.info.companyName",
+      "key2": "settings.users.form.labels.companyName",
+      "value": "Company Name"
+    },
+    {
+      "key1": "customers.form.placeholders.street",
+      "key2": "settings.users.form.placeholders.streetAddress",
+      "value": "Enter street address"
+    },
+    {
+      "key1": "customers.form.placeholders.city",
+      "key2": "settings.users.form.placeholders.city",
+      "value": "Enter city"
+    },
+    {
+      "key1": "auth.requestAccess.fields.stateLabel",
+      "key2": "settings.users.form.placeholders.state",
+      "value": "State"
+    },
+    {
+      "key1": "auth.requestAccess.fields.stateLabel",
+      "key2": "settings.users.form.placeholders.companyState",
+      "value": "State"
+    },
+    {
+      "key1": "settings.users.form.placeholders.zipCode",
+      "key2": "settings.users.form.placeholders.companyZipCode",
+      "value": "ZIP Code"
+    },
+    {
+      "key1": "common.selectPlaceholders.selectGroup",
+      "key2": "settings.users.form.select.group",
+      "value": "-- Select Group --"
+    },
+    {
+      "key1": "customers.form.validation.nameRequired",
+      "key2": "settings.users.form.validation.nameRequired",
+      "value": "Name is required"
+    },
+    {
+      "key1": "auth.emailRequired",
+      "key2": "settings.users.form.validation.emailRequired",
+      "value": "Email is required"
+    },
+    {
+      "key1": "customers.form.validation.invalidEmail",
+      "key2": "settings.users.form.validation.invalidEmail",
+      "value": "Invalid email format"
+    },
+    {
+      "key1": "profile.validation.passwordMismatch",
+      "key2": "settings.users.form.validation.passwordMismatch",
+      "value": "Passwords do not match"
+    },
+    {
+      "key1": "profile.validation.locationRequired",
+      "key2": "settings.users.form.validation.locationRequired",
+      "value": "Location is required"
+    },
+    {
+      "key1": "customers.form.validation.required",
+      "key2": "settings.users.form.validation.required",
+      "value": "This field is required"
+    },
+    {
+      "key1": "paymentReceipt.errors.somethingWentWrong",
+      "key2": "settings.users.alerts.genericError",
+      "value": "Something went wrong"
+    },
+    {
+      "key1": "nav.userGroups",
+      "key2": "settings.userGroups.header",
+      "value": "User Groups"
+    },
+    {
+      "key1": "common.name",
+      "key2": "settings.userGroups.table.name",
+      "value": "Name"
+    },
+    {
+      "key1": "common.type",
+      "key2": "settings.userGroups.table.type",
+      "value": "Type"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "settings.userGroups.table.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "adminQuote.ui.contractorGroup",
+      "key2": "settings.userGroups.types.contractor",
+      "value": "Contractor Group"
+    },
+    {
+      "key1": "contractorsAdmin.detail.basicInfo.groupType",
+      "key2": "settings.userGroups.form.labels.type",
+      "value": "Group Type"
+    },
+    {
+      "key1": "settings.userGroups.actions.create",
+      "key2": "settings.userGroups.create.submit",
+      "value": "Create Group"
+    },
+    {
+      "key1": "creating",
+      "key2": "settings.userGroups.create.creating",
+      "value": "Creating..."
+    },
+    {
+      "key1": "auth.resetPassword.submitting",
+      "key2": "settings.userGroups.edit.updating",
+      "value": "Updating..."
+    },
+    {
+      "key1": "settings.users.form.alerts.leaveWarning",
+      "key2": "settings.userGroups.alerts.leaveWarning",
+      "value": "Changes you made will be lost if you leave now."
+    },
+    {
+      "key1": "settings.users.form.alerts.leaveAnyway",
+      "key2": "settings.userGroups.alerts.leaveAnyway",
+      "value": "Leave Anyway"
+    },
+    {
+      "key1": "settings.users.form.alerts.stayOnPage",
+      "key2": "settings.userGroups.alerts.stayOnPage",
+      "value": "Stay on Page"
+    },
+    {
+      "key1": "paymentReceipt.errors.somethingWentWrong",
+      "key2": "settings.userGroups.alerts.genericError",
+      "value": "Something went wrong"
+    },
+    {
+      "key1": "settings.userGroups.form.labels.name",
+      "key2": "settings.userGroups.multipliers.table.groupName",
+      "value": "Group Name"
+    },
+    {
+      "key1": "common.multiplier",
+      "key2": "settings.userGroups.multipliers.table.multiplier",
+      "value": "Multiplier"
+    },
+    {
+      "key1": "common.status",
+      "key2": "settings.userGroups.multipliers.table.status",
+      "value": "Status"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "settings.userGroups.multipliers.table.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "types.ui.tryAdjust",
+      "key2": "settings.userGroups.multipliers.empty.subtitle",
+      "value": "Try adjusting your search criteria"
+    },
+    {
+      "key1": "customers.active",
+      "key2": "settings.userGroups.multipliers.status.active",
+      "value": "Active"
+    },
+    {
+      "key1": "contractorsAdmin.detail.customers.inactive",
+      "key2": "settings.userGroups.multipliers.status.inactive",
+      "value": "Inactive"
+    },
+    {
+      "key1": "common.edit",
+      "key2": "settings.userGroups.multipliers.actions.edit",
+      "value": "Edit"
+    },
+    {
+      "key1": "common.name",
+      "key2": "settings.userGroups.multipliers.modal.labels.name",
+      "value": "Name"
+    },
+    {
+      "key1": "common.multiplier",
+      "key2": "settings.userGroups.multipliers.modal.labels.multiplier",
+      "value": "Multiplier"
+    },
+    {
+      "key1": "editManufacturerModal.labels.enabled",
+      "key2": "settings.userGroups.multipliers.modal.labels.enabled",
+      "value": "Enabled"
+    },
+    {
+      "key1": "common.enterMultiplier",
+      "key2": "settings.userGroups.multipliers.modal.placeholders.multiplier",
+      "value": "Enter multiplier"
+    },
+    {
+      "key1": "nav.locations",
+      "key2": "settings.locations.header",
+      "value": "Locations"
+    },
+    {
+      "key1": "settings.users.searchPlaceholder",
+      "key2": "settings.locations.searchPlaceholder",
+      "value": "Search by name or email..."
+    },
+    {
+      "key1": "orders.details.address",
+      "key2": "settings.locations.table.address",
+      "value": "Address"
+    },
+    {
+      "key1": "common.email",
+      "key2": "settings.locations.table.email",
+      "value": "Email"
+    },
+    {
+      "key1": "contact.info.website",
+      "key2": "settings.locations.table.website",
+      "value": "Website"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "settings.locations.table.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "settings.users.confirm.confirmYes",
+      "key2": "settings.locations.confirm.confirmYes",
+      "value": "Yes, delete it"
+    },
+    {
+      "key1": "customers.deleted",
+      "key2": "settings.locations.confirm.deletedTitle",
+      "value": "Deleted!"
+    },
+    {
+      "key1": "payments.status.cancelled",
+      "key2": "settings.locations.confirm.cancelledTitle",
+      "value": "Cancelled"
+    },
+    {
+      "key1": "customers.form.titles.basicInfo",
+      "key2": "settings.locations.form.titles.basicInfo",
+      "value": "Basic Information"
+    },
+    {
+      "key1": "contact.info.title",
+      "key2": "settings.locations.form.titles.contactInfo",
+      "value": "Contact Information"
+    },
+    {
+      "key1": "settings.locations.table.locationName",
+      "key2": "settings.locations.form.labels.locationName",
+      "value": "Location Name"
+    },
+    {
+      "key1": "orders.details.address",
+      "key2": "settings.locations.form.labels.address",
+      "value": "Address"
+    },
+    {
+      "key1": "contact.info.website",
+      "key2": "settings.locations.form.labels.website",
+      "value": "Website"
+    },
+    {
+      "key1": "common.email",
+      "key2": "settings.locations.form.labels.email",
+      "value": "Email"
+    },
+    {
+      "key1": "auth.requestAccess.fields.phoneLabel",
+      "key2": "settings.locations.form.labels.phone",
+      "value": "Phone"
+    },
+    {
+      "key1": "settings.users.form.labels.country",
+      "key2": "settings.locations.form.labels.country",
+      "value": "Country"
+    },
+    {
+      "key1": "contractorsAdmin.detail.settings.labels.timezone",
+      "key2": "settings.locations.form.labels.timezone",
+      "value": "Timezone"
+    },
+    {
+      "key1": "settings.customization.pdf.placeholders.phoneNumber",
+      "key2": "settings.locations.form.placeholders.phone",
+      "value": "+1 (555) 123-4567"
+    },
+    {
+      "key1": "auth.emailRequired",
+      "key2": "settings.locations.form.validation.emailRequired",
+      "value": "Email is required"
+    },
+    {
+      "key1": "proposalCommon.validation.invalidEmail",
+      "key2": "settings.locations.form.validation.invalidEmail",
+      "value": "Invalid email"
+    },
+    {
+      "key1": "common.saving",
+      "key2": "settings.locations.create.saving",
+      "value": "Saving..."
+    },
+    {
+      "key1": "settings.users.edit.update",
+      "key2": "settings.locations.edit.update",
+      "value": "Update"
+    },
+    {
+      "key1": "auth.resetPassword.submitting",
+      "key2": "settings.locations.edit.updating",
+      "value": "Updating..."
+    },
+    {
+      "key1": "settings.users.form.alerts.leaveWarning",
+      "key2": "settings.locations.alerts.leaveWarning",
+      "value": "Changes you made will be lost if you leave now."
+    },
+    {
+      "key1": "settings.users.form.alerts.leaveAnyway",
+      "key2": "settings.locations.alerts.leaveAnyway",
+      "value": "Leave Anyway"
+    },
+    {
+      "key1": "settings.users.form.alerts.stayOnPage",
+      "key2": "settings.locations.alerts.stayOnPage",
+      "value": "Stay on Page"
+    },
+    {
+      "key1": "paymentReceipt.errors.somethingWentWrong",
+      "key2": "settings.locations.alerts.genericError",
+      "value": "Something went wrong"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "settings.taxes.fields.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "settings.taxes.fields.default",
+      "key2": "settings.taxes.fields.defaultBadge",
+      "value": "Default"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "settings.taxes.new.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "nav.manufacturers",
+      "key2": "settings.manufacturers.header",
+      "value": "Manufacturers"
+    },
+    {
+      "key1": "common.search",
+      "key2": "settings.manufacturers.search",
+      "value": "Search"
+    },
+    {
+      "key1": "settings.users.searchPlaceholder",
+      "key2": "settings.manufacturers.searchPlaceholder",
+      "value": "Search by name or email..."
+    },
+    {
+      "key1": "common.order",
+      "key2": "settings.manufacturers.order",
+      "value": "Order"
+    },
+    {
+      "key1": "orders.details.id",
+      "key2": "settings.manufacturers.sort.id",
+      "value": "ID"
+    },
+    {
+      "key1": "common.name",
+      "key2": "settings.manufacturers.sort.name",
+      "value": "Name"
+    },
+    {
+      "key1": "common.email",
+      "key2": "settings.manufacturers.sort.email",
+      "value": "Email"
+    },
+    {
+      "key1": "orders.details.noManufacturers",
+      "key2": "settings.manufacturers.empty.title",
+      "value": "No manufacturers found"
+    },
+    {
+      "key1": "types.ui.tryAdjust",
+      "key2": "settings.manufacturers.empty.subtitleFiltered",
+      "value": "Try adjusting your search criteria"
+    },
+    {
+      "key1": "customers.active",
+      "key2": "settings.manufacturers.labels.active",
+      "value": "Active"
+    },
+    {
+      "key1": "contractorsAdmin.detail.customers.inactive",
+      "key2": "settings.manufacturers.labels.inactive",
+      "value": "Inactive"
+    },
+    {
+      "key1": "editManufacturerModal.labels.enabled",
+      "key2": "settings.manufacturers.labels.enabled",
+      "value": "Enabled"
+    },
+    {
+      "key1": "contractorsAdmin.detail.disabled",
+      "key2": "settings.manufacturers.labels.disabled",
+      "value": "Disabled"
+    },
+    {
+      "key1": "common.back",
+      "key2": "settings.manufacturers.create.back",
+      "value": "Back"
+    },
+    {
+      "key1": "auth.requestAccess.submitting",
+      "key2": "settings.manufacturers.create.submitting",
+      "value": "Submitting..."
+    },
+    {
+      "key1": "customers.form.titles.basicInfo",
+      "key2": "settings.manufacturers.sections.basicInfo",
+      "value": "Basic Information"
+    },
+    {
+      "key1": "auth.requestAccess.fields.phoneLabel",
+      "key2": "settings.manufacturers.fields.phone",
+      "value": "Phone"
+    },
+    {
+      "key1": "contact.info.website",
+      "key2": "settings.manufacturers.fields.website",
+      "value": "Website"
+    },
+    {
+      "key1": "orders.details.address",
+      "key2": "settings.manufacturers.fields.address",
+      "value": "Address"
+    },
+    {
+      "key1": "settings.customization.ui.brandLogo.labels.uploadLogo",
+      "key2": "settings.manufacturers.fields.uploadLogo",
+      "value": "Upload Logo"
+    },
+    {
+      "key1": "editManufacturerModal.placeholders.name",
+      "key2": "settings.manufacturers.placeholders.name",
+      "value": "Manufacturer name"
+    },
+    {
+      "key1": "editManufacturerModal.placeholders.email",
+      "key2": "settings.manufacturers.placeholders.email",
+      "value": "Manufacturer email"
+    },
+    {
+      "key1": "common.enterMultiplier",
+      "key2": "settings.manufacturers.placeholders.multiplier",
+      "value": "Enter multiplier"
+    },
+    {
+      "key1": "common.egSevenToFourteenDays",
+      "key2": "settings.manufacturers.placeholders.etaExample1",
+      "value": "e.g., 7-14 days"
+    },
+    {
+      "key1": "common.egThreeToSevenDays",
+      "key2": "settings.manufacturers.placeholders.etaExample2",
+      "value": "e.g., 3-7 days"
+    },
+    {
+      "key1": "common.enterManufacturerName",
+      "key2": "settings.manufacturers.placeholders.manufacturerName",
+      "value": "Enter manufacturer name"
+    },
+    {
+      "key1": "settings.customization.pdf.placeholders.phoneNumber",
+      "key2": "settings.manufacturers.placeholders.phone",
+      "value": "+1 (555) 123-4567"
+    },
+    {
+      "key1": "common.editManufacturer",
+      "key2": "settings.manufacturers.edit.title",
+      "value": "Edit Manufacturer"
+    },
+    {
+      "key1": "common.back",
+      "key2": "settings.manufacturers.edit.back",
+      "value": "Back"
+    },
+    {
+      "key1": "orders.details.deliveryFee",
+      "key2": "settings.manufacturers.edit.deliveryFee",
+      "value": "Delivery Fee"
+    },
+    {
+      "key1": "common.saving",
+      "key2": "settings.manufacturers.edit.saving",
+      "value": "Saving..."
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.saveChanges",
+      "key2": "settings.manufacturers.edit.saveChanges",
+      "value": "Save Changes"
+    },
+    {
+      "key1": "nav.settings",
+      "key2": "settings.manufacturers.tabs.settings",
+      "value": "Settings"
+    },
+    {
+      "key1": "globalMods.builder.descriptions.internal",
+      "key2": "settings.manufacturers.catalogMapping.builder.descriptions.internal",
+      "value": "Internal description"
+    },
+    {
+      "key1": "globalMods.builder.descriptions.customer",
+      "key2": "settings.manufacturers.catalogMapping.builder.descriptions.customer",
+      "value": "Customer description"
+    },
+    {
+      "key1": "globalMods.builder.descriptions.installer",
+      "key2": "settings.manufacturers.catalogMapping.builder.descriptions.installer",
+      "value": "Installer description"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.sampleAlt",
+      "key2": "settings.manufacturers.catalogMapping.builder.sampleImage.alt",
+      "value": "Sample"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.ready.label",
+      "key2": "settings.manufacturers.catalogMapping.builder.ready.markAsReady",
+      "value": "Mark as Ready (enables assignment options)"
+    },
+    {
+      "key1": "common.back",
+      "key2": "settings.manufacturers.catalogMapping.builder.buttons.back",
+      "value": "Back"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "settings.manufacturers.catalogMapping.builder.buttons.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.saveChanges",
+      "key2": "settings.manufacturers.catalogMapping.builder.buttons.saveChanges",
+      "value": "Save Changes"
+    },
+    {
+      "key1": "settings.locations.alerts.savedTitle",
+      "key2": "settings.manufacturers.catalogMapping.builder.toast.createSuccessTitle",
+      "value": "Success!"
+    },
+    {
+      "key1": "common.error",
+      "key2": "settings.manufacturers.catalogMapping.builder.toast.createFailedTitle",
+      "value": "Error"
+    },
+    {
+      "key1": "common.error",
+      "key2": "settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingTitle",
+      "value": "Error"
+    },
+    {
+      "key1": "globalMods.modal.gallery.title",
+      "key2": "settings.manufacturers.catalogMapping.gallery.title",
+      "value": "Modification Gallery"
+    },
+    {
+      "key1": "globalMods.template.status.ready",
+      "key2": "settings.manufacturers.catalogMapping.gallery.badges.ready",
+      "value": "Ready"
+    },
+    {
+      "key1": "globalMods.template.status.draft",
+      "key2": "settings.manufacturers.catalogMapping.gallery.badges.draft",
+      "value": "Draft"
+    },
+    {
+      "key1": "globalMods.modal.gallery.useAsBlueprint",
+      "key2": "settings.manufacturers.catalogMapping.gallery.tooltips.useAsBlueprint",
+      "value": "Use as Blueprint"
+    },
+    {
+      "key1": "globalMods.modal.gallery.emptyCategory",
+      "key2": "settings.manufacturers.catalogMapping.gallery.emptyCategory",
+      "value": "No templates in this category"
+    },
+    {
+      "key1": "noDescription",
+      "key2": "settings.manufacturers.catalogMapping.gallery.noDescription",
+      "value": "No description"
+    },
+    {
+      "key1": "common.allTypes",
+      "key2": "settings.manufacturers.catalogMapping.filters.allTypes",
+      "value": "All Types"
+    },
+    {
+      "key1": "common.allStyles",
+      "key2": "settings.manufacturers.catalogMapping.filters.allStyles",
+      "value": "All Styles"
+    },
+    {
+      "key1": "common.code",
+      "key2": "settings.manufacturers.catalogMapping.table.code",
+      "value": "Code"
+    },
+    {
+      "key1": "common.description",
+      "key2": "settings.manufacturers.catalogMapping.table.description",
+      "value": "Description"
+    },
+    {
+      "key1": "common.style",
+      "key2": "settings.manufacturers.catalogMapping.table.style",
+      "value": "Style"
+    },
+    {
+      "key1": "common.price",
+      "key2": "settings.manufacturers.catalogMapping.table.price",
+      "value": "Price"
+    },
+    {
+      "key1": "common.type",
+      "key2": "settings.manufacturers.catalogMapping.table.type",
+      "value": "Type"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "settings.manufacturers.catalogMapping.table.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "common.perPage",
+      "key2": "settings.manufacturers.catalogMapping.pagination.perPage",
+      "value": "per page"
+    },
+    {
+      "key1": "proposalColumns.assemblyCost",
+      "key2": "settings.manufacturers.catalogMapping.actions.assemblyCost",
+      "value": "Assembly Cost"
+    },
+    {
+      "key1": "modificationModal.title",
+      "key2": "settings.manufacturers.catalogMapping.actions.modification",
+      "value": "Modification"
+    },
+    {
+      "key1": "settings.manufacturers.catalogMapping.buttons.uploadCsv",
+      "key2": "settings.manufacturers.catalogMapping.file.uploadCta",
+      "value": "📁 Upload CSV"
+    },
+    {
+      "key1": "proposals.create.files.upload",
+      "key2": "settings.manufacturers.catalogMapping.file.uploadBtn",
+      "value": "Upload"
+    },
+    {
+      "key1": "settings.manufacturers.catalogMapping.buttons.addItem",
+      "key2": "settings.manufacturers.catalogMapping.manual.uploadCta",
+      "value": "➕ Add Item"
+    },
+    {
+      "key1": "settings.manufacturers.catalogMapping.pagination.itemsSelected",
+      "key2": "settings.manufacturers.catalogMapping.bulk.selected",
+      "value": "{{count}} item(s) selected"
+    },
+    {
+      "key1": "settings.manufacturers.catalogMapping.buttons.deleteSelected",
+      "key2": "settings.manufacturers.catalogMapping.bulk.deleteSelected",
+      "value": "🗑️ Delete Selected"
+    },
+    {
+      "key1": "settings.manufacturers.catalogMapping.bulk.deleting",
+      "key2": "settings.manufacturers.catalogMapping.deleteItem.deleting",
+      "value": "Deleting..."
+    },
+    {
+      "key1": "settings.manufacturers.catalogMapping.buttons.deleteStyle",
+      "key2": "settings.manufacturers.catalogMapping.deleteStyle.buttonText",
+      "value": "🗑️ Delete Style"
+    },
+    {
+      "key1": "common.code",
+      "key2": "settings.manufacturers.catalogMapping.fields.code",
+      "value": "Code"
+    },
+    {
+      "key1": "common.description",
+      "key2": "settings.manufacturers.catalogMapping.fields.description",
+      "value": "Description"
+    },
+    {
+      "key1": "common.price",
+      "key2": "settings.manufacturers.catalogMapping.fields.price",
+      "value": "Price"
+    },
+    {
+      "key1": "common.type",
+      "key2": "settings.manufacturers.catalogMapping.fields.type",
+      "value": "Type"
+    },
+    {
+      "key1": "settings.users.edit.update",
+      "key2": "settings.manufacturers.catalogMapping.edit.update",
+      "value": "Update"
+    },
+    {
+      "key1": "auth.resetPassword.submitting",
+      "key2": "settings.manufacturers.catalogMapping.edit.updating",
+      "value": "Updating..."
+    },
+    {
+      "key1": "styles.short",
+      "key2": "settings.manufacturers.catalogMapping.style.shortName",
+      "value": "Short Name"
+    },
+    {
+      "key1": "types.assign.uploadImage",
+      "key2": "settings.manufacturers.catalogMapping.style.uploadImage",
+      "value": "Upload Image"
+    },
+    {
+      "key1": "types.ui.currentImage",
+      "key2": "settings.manufacturers.catalogMapping.style.currentImage",
+      "value": "Current Image:"
+    },
+    {
+      "key1": "common.type",
+      "key2": "settings.manufacturers.catalogMapping.assembly.type",
+      "value": "Type"
+    },
+    {
+      "key1": "globalMods.modal.add.title",
+      "key2": "settings.manufacturers.catalogMapping.mod.modalTitle",
+      "value": "Add Modification"
+    },
+    {
+      "key1": "globalMods.template.nameLabel",
+      "key2": "settings.manufacturers.catalogMapping.mod.name",
+      "value": "Modification Name"
+    },
+    {
+      "key1": "modificationBrowser.config.notes.label",
+      "key2": "settings.manufacturers.catalogMapping.mod.notes",
+      "value": "Notes"
+    },
+    {
+      "key1": "customers.form.validation.required",
+      "key2": "settings.manufacturers.settings.users.form.validation.required",
+      "value": "This field is required"
+    },
+    {
+      "key1": "common.tableHeaders.number",
+      "key2": "settings.manufacturers.filesHistory.table.index",
+      "value": "#"
+    },
+    {
+      "key1": "proposals.create.files.download",
+      "key2": "settings.manufacturers.filesHistory.table.download",
+      "value": "Download"
+    },
+    {
+      "key1": "customers.form.validation.required",
+      "key2": "settings.manufacturers.users.form.validation.required",
+      "value": "This field is required"
+    },
+    {
+      "key1": "globalMods.modal.add.title",
+      "key2": "settings.globalMods.ui.buttons.addModification",
+      "value": "Add Modification"
+    },
+    {
+      "key1": "globalMods.modal.gallery.title",
+      "key2": "settings.globalMods.ui.buttons.gallery",
+      "value": "Modification Gallery"
+    },
+    {
+      "key1": "globalMods.modal.assign.title",
+      "key2": "settings.globalMods.ui.buttons.assignModification",
+      "value": "Assign Modification"
+    },
+    {
+      "key1": "globalMods.modal.editCategory.nameLabel",
+      "key2": "settings.globalMods.category.nameLabel",
+      "value": "Category Name"
+    },
+    {
+      "key1": "common.order",
+      "key2": "settings.globalMods.category.orderLabel",
+      "value": "Order"
+    },
+    {
+      "key1": "globalMods.category.addButton",
+      "key2": "settings.globalMods.category.addButton",
+      "value": "Add Category"
+    },
+    {
+      "key1": "globalMods.modal.editCategory.imageLabel",
+      "key2": "settings.globalMods.category.imageLabel",
+      "value": "Category Image"
+    },
+    {
+      "key1": "globalMods.category.deleteTooltip",
+      "key2": "settings.globalMods.category.deleteTooltip",
+      "value": "Delete category (with options for templates)"
+    },
+    {
+      "key1": "globalMods.template.blueprint",
+      "key2": "settings.globalMods.template.blueprint",
+      "value": "Blueprint"
+    },
+    {
+      "key1": "globalMods.template.editTooltip",
+      "key2": "settings.globalMods.template.editTooltip",
+      "value": "Edit template and upload sample image"
+    },
+    {
+      "key1": "globalMods.modal.add.createTemplate",
+      "key2": "settings.globalMods.template.createHeader",
+      "value": "Create Template"
+    },
+    {
+      "key1": "globalMods.template.requiredFields",
+      "key2": "settings.globalMods.template.requiredFields",
+      "value": "Required Fields"
+    },
+    {
+      "key1": "globalMods.template.nameLabel",
+      "key2": "settings.globalMods.template.nameLabel",
+      "value": "Modification Name"
+    },
+    {
+      "key1": "globalMods.template.namePlaceholder",
+      "key2": "settings.globalMods.template.namePlaceholder",
+      "value": "Enter modification name"
+    },
+    {
+      "key1": "globalMods.template.nameRequired",
+      "key2": "settings.globalMods.template.nameRequired",
+      "value": "Modification name is required"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.priceLabel",
+      "key2": "settings.globalMods.template.defaultPriceLabel",
+      "value": "Default Price"
+    },
+    {
+      "key1": "globalMods.template.defaultPricePlaceholder",
+      "key2": "settings.globalMods.template.defaultPricePlaceholder",
+      "value": "Enter default price"
+    },
+    {
+      "key1": "globalMods.template.defaultPriceRequired",
+      "key2": "settings.globalMods.template.defaultPriceRequired",
+      "value": "Default price is required"
+    },
+    {
+      "key1": "globalMods.template.categoryOptionalLabel",
+      "key2": "settings.globalMods.template.categoryOptionalLabel",
+      "value": "Category (Optional)"
+    },
+    {
+      "key1": "globalMods.template.noSubmenu",
+      "key2": "settings.globalMods.template.noSubmenu",
+      "value": "No submenu"
+    },
+    {
+      "key1": "common.status",
+      "key2": "settings.globalMods.template.statusLabel",
+      "value": "Status"
+    },
+    {
+      "key1": "globalMods.template.status.draft",
+      "key2": "settings.globalMods.template.status.draft",
+      "value": "Draft"
+    },
+    {
+      "key1": "globalMods.template.status.ready",
+      "key2": "settings.globalMods.template.status.ready",
+      "value": "Ready"
+    },
+    {
+      "key1": "globalMods.template.saveButton",
+      "key2": "settings.globalMods.template.saveButton",
+      "value": "Save Template"
+    },
+    {
+      "key1": "globalMods.builder.title",
+      "key2": "settings.globalMods.builder.title",
+      "value": "Guided fields"
+    },
+    {
+      "key1": "globalMods.builder.heightSlider",
+      "key2": "settings.globalMods.builder.heightSlider",
+      "value": "Height slider"
+    },
+    {
+      "key1": "globalMods.builder.widthSlider",
+      "key2": "settings.globalMods.builder.widthSlider",
+      "value": "Width slider"
+    },
+    {
+      "key1": "globalMods.builder.depthSlider",
+      "key2": "settings.globalMods.builder.depthSlider",
+      "value": "Depth slider"
+    },
+    {
+      "key1": "globalMods.builder.min",
+      "key2": "settings.globalMods.builder.min",
+      "value": "min"
+    },
+    {
+      "key1": "globalMods.builder.max",
+      "key2": "settings.globalMods.builder.max",
+      "value": "max"
+    },
+    {
+      "key1": "globalMods.builder.step",
+      "key2": "settings.globalMods.builder.step",
+      "value": "step"
+    },
+    {
+      "key1": "globalMods.builder.sideSelector.label",
+      "key2": "settings.globalMods.builder.sideSelector.label",
+      "value": "Side selector"
+    },
+    {
+      "key1": "globalMods.builder.sideSelector.placeholder",
+      "key2": "settings.globalMods.builder.sideSelector.placeholder",
+      "value": "Options comma separated e.g. L,R"
+    },
+    {
+      "key1": "globalMods.builder.quantityLimits.label",
+      "key2": "settings.globalMods.builder.quantityLimits.label",
+      "value": "Quantity limits"
+    },
+    {
+      "key1": "globalMods.builder.quantityLimits.minQty",
+      "key2": "settings.globalMods.builder.quantityLimits.minQty",
+      "value": "min qty"
+    },
+    {
+      "key1": "globalMods.builder.quantityLimits.maxQty",
+      "key2": "settings.globalMods.builder.quantityLimits.maxQty",
+      "value": "max qty"
+    },
+    {
+      "key1": "globalMods.builder.customerNotes.label",
+      "key2": "settings.globalMods.builder.customerNotes.label",
+      "value": "Customer notes"
+    },
+    {
+      "key1": "globalMods.builder.customerNotes.placeholder",
+      "key2": "settings.globalMods.builder.customerNotes.placeholder",
+      "value": "Notes placeholder"
+    },
+    {
+      "key1": "globalMods.builder.customerNotes.showInRed",
+      "key2": "settings.globalMods.builder.customerNotes.showInRed",
+      "value": "Show in red for customer"
+    },
+    {
+      "key1": "globalMods.builder.customerUpload.label",
+      "key2": "settings.globalMods.builder.customerUpload.label",
+      "value": "Customer file upload"
+    },
+    {
+      "key1": "globalMods.builder.customerUpload.titlePlaceholder",
+      "key2": "settings.globalMods.builder.customerUpload.titlePlaceholder",
+      "value": "Upload title/reason"
+    },
+    {
+      "key1": "globalMods.builder.customerUpload.required",
+      "key2": "settings.globalMods.builder.customerUpload.required",
+      "value": "Required"
+    },
+    {
+      "key1": "globalMods.builder.modSampleImage.label",
+      "key2": "settings.globalMods.builder.modSampleImage.label",
+      "value": "Modification sample image"
+    },
+    {
+      "key1": "globalMods.builder.descriptions.internal",
+      "key2": "settings.globalMods.builder.descriptions.internal",
+      "value": "Internal description"
+    },
+    {
+      "key1": "globalMods.builder.descriptions.customer",
+      "key2": "settings.globalMods.builder.descriptions.customer",
+      "value": "Customer description"
+    },
+    {
+      "key1": "globalMods.builder.descriptions.installer",
+      "key2": "settings.globalMods.builder.descriptions.installer",
+      "value": "Installer description"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.sampleUploadLabel",
+      "key2": "settings.globalMods.builder.sampleUpload.title",
+      "value": "Sample Image Upload"
+    },
+    {
+      "key1": "globalMods.builder.sampleUpload.uploadLabel",
+      "key2": "settings.globalMods.builder.sampleUpload.uploadLabel",
+      "value": "Upload Sample Image"
+    },
+    {
+      "key1": "globalMods.builder.sampleUpload.hint",
+      "key2": "settings.globalMods.builder.sampleUpload.hint",
+      "value": "Upload an image to show customers what this modification looks like"
+    },
+    {
+      "key1": "globalMods.builder.sampleUpload.previewAlt",
+      "key2": "settings.globalMods.builder.sampleUpload.previewAlt",
+      "value": "Sample preview"
+    },
+    {
+      "key1": "globalMods.builder.sampleUpload.uploaded",
+      "key2": "settings.globalMods.builder.sampleUpload.uploaded",
+      "value": "✓ Image uploaded: {{name}}"
+    },
+    {
+      "key1": "globalMods.builder.sampleUpload.none",
+      "key2": "settings.globalMods.builder.sampleUpload.none",
+      "value": "No sample image uploaded"
+    },
+    {
+      "key1": "globalMods.builder.fieldsConfig.placeholder",
+      "key2": "settings.globalMods.builder.fieldsConfig.placeholder",
+      "value": "Optional fields config (JSON): {\"sliders\": {\"width\": {\"min\": 1, \"max\": 60, \"step\": 1}}}"
+    },
+    {
+      "key1": "globalMods.builder.errors.invalidRangeStep",
+      "key2": "settings.globalMods.builder.errors.invalidRangeStep",
+      "value": "Invalid range or step"
+    },
+    {
+      "key1": "globalMods.builder.errors.invalidQtyRange",
+      "key2": "settings.globalMods.builder.errors.invalidQtyRange",
+      "value": "Invalid quantity range"
+    },
+    {
+      "key1": "globalMods.builder.errors.invalidJson",
+      "key2": "settings.globalMods.builder.errors.invalidJson",
+      "value": "fieldsConfig must be valid JSON"
+    },
+    {
+      "key1": "globalMods.assign.header",
+      "key2": "settings.globalMods.assign.header",
+      "value": "Assign Template"
+    },
+    {
+      "key1": "globalMods.assign.selectTemplate",
+      "key2": "settings.globalMods.assign.selectTemplate",
+      "value": "Select template"
+    },
+    {
+      "key1": "globalMods.assign.selectManufacturer",
+      "key2": "settings.globalMods.assign.selectManufacturer",
+      "value": "Select manufacturer"
+    },
+    {
+      "key1": "globalMods.modal.assign.scope.all",
+      "key2": "settings.globalMods.assign.scope.all",
+      "value": "All items"
+    },
+    {
+      "key1": "common.style",
+      "key2": "settings.globalMods.assign.scope.style",
+      "value": "Style"
+    },
+    {
+      "key1": "common.type",
+      "key2": "settings.globalMods.assign.scope.type",
+      "value": "Type"
+    },
+    {
+      "key1": "globalMods.assign.scope.item",
+      "key2": "settings.globalMods.assign.scope.item",
+      "value": "Single item"
+    },
+    {
+      "key1": "globalMods.assign.target.styleName",
+      "key2": "settings.globalMods.assign.target.styleName",
+      "value": "Target style (name)"
+    },
+    {
+      "key1": "globalMods.assign.target.typeName",
+      "key2": "settings.globalMods.assign.target.typeName",
+      "value": "Target type (name)"
+    },
+    {
+      "key1": "globalMods.assign.target.catalogItemId",
+      "key2": "settings.globalMods.assign.target.catalogItemId",
+      "value": "Catalog Item ID"
+    },
+    {
+      "key1": "common.all",
+      "key2": "settings.globalMods.assign.target.all",
+      "value": "All"
+    },
+    {
+      "key1": "globalMods.modal.assign.override",
+      "key2": "settings.globalMods.assign.override",
+      "value": "Override price (optional)"
+    },
+    {
+      "key1": "globalMods.modal.assign.assign",
+      "key2": "settings.globalMods.assign.assignButton",
+      "value": "Assign"
+    },
+    {
+      "key1": "common.template",
+      "key2": "settings.globalMods.assign.table.template",
+      "value": "Template"
+    },
+    {
+      "key1": "common.scope",
+      "key2": "settings.globalMods.assign.table.scope",
+      "value": "Scope"
+    },
+    {
+      "key1": "globalMods.assign.table.target",
+      "key2": "settings.globalMods.assign.table.target",
+      "value": "Target"
+    },
+    {
+      "key1": "common.price",
+      "key2": "settings.globalMods.assign.table.price",
+      "value": "Price"
+    },
+    {
+      "key1": "auth.requestAccess.description",
+      "key2": "settings.globalMods.assign.table.actions",
+      "value": ""
+    },
+    {
+      "key1": "globalMods.assign.table.remove",
+      "key2": "settings.globalMods.assign.table.remove",
+      "value": "Remove"
+    },
+    {
+      "key1": "globalMods.modal.add.title",
+      "key2": "settings.globalMods.modal.add.title",
+      "value": "Add Modification"
+    },
+    {
+      "key1": "globalMods.modal.add.step1Title",
+      "key2": "settings.globalMods.modal.add.step1Title",
+      "value": "Step 1: Select or Create Submenu"
+    },
+    {
+      "key1": "globalMods.modal.add.selectExisting",
+      "key2": "settings.globalMods.modal.add.selectExisting",
+      "value": "Select existing submenu..."
+    },
+    {
+      "key1": "globalMods.modal.add.createNew",
+      "key2": "settings.globalMods.modal.add.createNew",
+      "value": "Create new submenu"
+    },
+    {
+      "key1": "globalMods.modal.add.newSubmenuName",
+      "key2": "settings.globalMods.modal.add.newSubmenuName",
+      "value": "New submenu name"
+    },
+    {
+      "key1": "globalMods.modal.add.orderIndex",
+      "key2": "settings.globalMods.modal.add.orderIndex",
+      "value": "Order index"
+    },
+    {
+      "key1": "globalMods.modal.add.nextBuilder",
+      "key2": "settings.globalMods.modal.add.nextBuilder",
+      "value": "Next: Template Builder"
+    },
+    {
+      "key1": "globalMods.modal.add.step2Title",
+      "key2": "settings.globalMods.modal.add.step2Title",
+      "value": "Step 2: Template Builder"
+    },
+    {
+      "key1": "common.back",
+      "key2": "settings.globalMods.modal.add.back",
+      "value": "Back"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "settings.globalMods.modal.add.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "globalMods.modal.add.createTemplate",
+      "key2": "settings.globalMods.modal.add.createTemplate",
+      "value": "Create Template"
+    },
+    {
+      "key1": "globalMods.modal.editCategory.title",
+      "key2": "settings.globalMods.modal.editCategory.title",
+      "value": "Edit Category"
+    },
+    {
+      "key1": "globalMods.modal.editCategory.namePlaceholder",
+      "key2": "settings.globalMods.modal.editCategory.namePlaceholder",
+      "value": "Category name"
+    },
+    {
+      "key1": "common.order",
+      "key2": "settings.globalMods.modal.editCategory.orderPlaceholder",
+      "value": "Order"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "settings.globalMods.modal.editCategory.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "common.save",
+      "key2": "settings.globalMods.modal.editCategory.save",
+      "value": "Save"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.title",
+      "key2": "settings.globalMods.modal.editTemplate.title",
+      "value": "Edit Template"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.nameLabel",
+      "key2": "settings.globalMods.modal.editTemplate.nameLabel",
+      "value": "Template Name"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.priceLabel",
+      "key2": "settings.globalMods.modal.editTemplate.priceLabel",
+      "value": "Default Price"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.sampleUploadLabel",
+      "key2": "settings.globalMods.modal.editTemplate.sampleUploadLabel",
+      "value": "Sample Image Upload"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.sampleAlt",
+      "key2": "settings.globalMods.modal.editTemplate.sampleAlt",
+      "value": "Sample"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.ready.label",
+      "key2": "settings.globalMods.modal.editTemplate.ready.label",
+      "value": "Mark as Ready (enables assignment options)"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.ready.hint",
+      "key2": "settings.globalMods.modal.editTemplate.ready.hint",
+      "value": "Ready modifications can be assigned to manufacturers and used in quotes."
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "settings.globalMods.modal.editTemplate.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "globalMods.modal.editTemplate.saveChanges",
+      "key2": "settings.globalMods.modal.editTemplate.saveChanges",
+      "value": "Save Changes"
+    },
+    {
+      "key1": "globalMods.modal.gallery.title",
+      "key2": "settings.globalMods.modal.gallery.title",
+      "value": "Modification Gallery"
+    },
+    {
+      "key1": "globalMods.modal.gallery.categoryImageUploaded",
+      "key2": "settings.globalMods.modal.gallery.categoryImageUploaded",
+      "value": "Category image uploaded"
+    },
+    {
+      "key1": "globalMods.modal.gallery.useAsBlueprint",
+      "key2": "settings.globalMods.modal.gallery.useAsBlueprint",
+      "value": "Use as Blueprint"
+    },
+    {
+      "key1": "globalMods.modal.gallery.emptyCategory",
+      "key2": "settings.globalMods.modal.gallery.emptyCategory",
+      "value": "No templates in this category"
+    },
+    {
+      "key1": "globalMods.modal.assign.title",
+      "key2": "settings.globalMods.modal.assign.title",
+      "value": "Assign Modification"
+    },
+    {
+      "key1": "globalMods.modal.assign.selectManufacturer",
+      "key2": "settings.globalMods.modal.assign.selectManufacturer",
+      "value": "Select manufacturer..."
+    },
+    {
+      "key1": "globalMods.modal.assign.selectTemplate",
+      "key2": "settings.globalMods.modal.assign.selectTemplate",
+      "value": "Select template..."
+    },
+    {
+      "key1": "globalMods.modal.assign.scope.all",
+      "key2": "settings.globalMods.modal.assign.scope.all",
+      "value": "All items"
+    },
+    {
+      "key1": "globalMods.modal.assign.scope.style",
+      "key2": "settings.globalMods.modal.assign.scope.style",
+      "value": "Specific style"
+    },
+    {
+      "key1": "globalMods.modal.assign.scope.type",
+      "key2": "settings.globalMods.modal.assign.scope.type",
+      "value": "Specific type"
+    },
+    {
+      "key1": "globalMods.modal.assign.scope.item",
+      "key2": "settings.globalMods.modal.assign.scope.item",
+      "value": "Specific item"
+    },
+    {
+      "key1": "globalMods.modal.assign.styleName",
+      "key2": "settings.globalMods.modal.assign.styleName",
+      "value": "Style name"
+    },
+    {
+      "key1": "globalMods.modal.assign.typeName",
+      "key2": "settings.globalMods.modal.assign.typeName",
+      "value": "Type name"
+    },
+    {
+      "key1": "globalMods.modal.assign.catalogItemId",
+      "key2": "settings.globalMods.modal.assign.catalogItemId",
+      "value": "Catalog item ID"
+    },
+    {
+      "key1": "globalMods.modal.assign.override",
+      "key2": "settings.globalMods.modal.assign.override",
+      "value": "Override price (optional)"
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "settings.globalMods.modal.assign.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "globalMods.modal.assign.assign",
+      "key2": "settings.globalMods.modal.assign.assign",
+      "value": "Assign"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.title",
+      "key2": "settings.globalMods.modal.deleteCategory.title",
+      "value": "Delete Category: {{name}}"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.warning",
+      "key2": "settings.globalMods.modal.deleteCategory.warning",
+      "value": "⚠️ Warning:"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.aboutToDelete",
+      "key2": "settings.globalMods.modal.deleteCategory.aboutToDelete",
+      "value": "You are about to delete the category \"{{name}}\"."
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.contains",
+      "key2": "settings.globalMods.modal.deleteCategory.contains",
+      "value": "This category contains <strong>{{count}}</strong> modification(s). What would you like to do with them?"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.move.label",
+      "key2": "settings.globalMods.modal.deleteCategory.move.label",
+      "value": "Move modifications to another category"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.move.recommended",
+      "key2": "settings.globalMods.modal.deleteCategory.move.recommended",
+      "value": "(Recommended)"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.move.selectTarget",
+      "key2": "settings.globalMods.modal.deleteCategory.move.selectTarget",
+      "value": "Select target category..."
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.move.optionWithCount",
+      "key2": "settings.globalMods.modal.deleteCategory.move.optionWithCount",
+      "value": "{{name}} ({{count}} existing)"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.move.mustSelect",
+      "key2": "settings.globalMods.modal.deleteCategory.move.mustSelect",
+      "value": "You must select a target category to move the modifications."
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.withMods.label",
+      "key2": "settings.globalMods.modal.deleteCategory.withMods.label",
+      "value": "Delete category AND all modifications"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.withMods.permanent",
+      "key2": "settings.globalMods.modal.deleteCategory.withMods.permanent",
+      "value": "(Permanent)"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.withMods.danger",
+      "key2": "settings.globalMods.modal.deleteCategory.withMods.danger",
+      "value": "⚠️ This will permanently delete all {{count}} modification(s) in this category. This action cannot be undone."
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.emptySafe",
+      "key2": "settings.globalMods.modal.deleteCategory.emptySafe",
+      "value": "This category is empty and can be safely deleted."
+    },
+    {
+      "key1": "common.cancel",
+      "key2": "settings.globalMods.modal.deleteCategory.cancel",
+      "value": "Cancel"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.deleteOnly",
+      "key2": "settings.globalMods.modal.deleteCategory.deleteOnly",
+      "value": "Delete Category"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.deleteWithMods",
+      "key2": "settings.globalMods.modal.deleteCategory.deleteWithMods",
+      "value": "Delete Category & Modifications"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.deleteMoveMods",
+      "key2": "settings.globalMods.modal.deleteCategory.deleteMoveMods",
+      "value": "Delete Category & Move Modifications"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.toast.deleted",
+      "key2": "settings.globalMods.modal.deleteCategory.toast.deleted",
+      "value": "Category \"{{name}}\" deleted successfully"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.toast.deletedWithMods",
+      "key2": "settings.globalMods.modal.deleteCategory.toast.deletedWithMods",
+      "value": "Category \"{{name}}\" deleted with all modifications"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.toast.deletedMoved",
+      "key2": "settings.globalMods.modal.deleteCategory.toast.deletedMoved",
+      "value": "Category \"{{name}}\" deleted and modifications moved"
+    },
+    {
+      "key1": "globalMods.modal.deleteCategory.toast.deleteFailed",
+      "key2": "settings.globalMods.modal.deleteCategory.toast.deleteFailed",
+      "value": "Failed to delete category"
+    },
+    {
+      "key1": "demo.styleMerger.title",
+      "key2": "settings.demo.styleMerger.title",
+      "value": "Style Merger Demo"
+    },
+    {
+      "key1": "demo.styleMerger.subtitle",
+      "key2": "settings.demo.styleMerger.subtitle",
+      "value": "Visual-only demo of the style merger UI"
+    },
+    {
+      "key1": "demo.styleMerger.header",
+      "key2": "settings.demo.styleMerger.header",
+      "value": "Demo"
+    },
+    {
+      "key1": "demo.styleMerger.description",
+      "key2": "settings.demo.styleMerger.description",
+      "value": "This is a placeholder demo page. No business logic. Use it to validate responsive patterns, spacing, and a11y."
+    },
+    {
+      "key1": "payment.subtitle",
+      "key2": "settings.payment.subtitle",
+      "value": "Complete your payment securely"
+    },
+    {
+      "key1": "common.order",
+      "key2": "settings.payment.order",
+      "value": "Order"
+    },
+    {
+      "key1": "common.name",
+      "key2": "settings.payment.customer.name",
+      "value": "Name"
+    },
+    {
+      "key1": "payment.external.description",
+      "key2": "settings.payment.external.description",
+      "value": "You will be redirected to our secure payment gateway to complete your transaction."
+    },
+    {
+      "key1": "payment.external.redirecting",
+      "key2": "settings.payment.external.redirecting",
+      "value": "Redirecting to payment processor..."
+    },
+    {
+      "key1": "payment.external.newWindow",
+      "key2": "settings.payment.external.newWindow",
+      "value": "A new window will open"
+    },
+    {
+      "key1": "payment.external.instructions",
+      "key2": "settings.payment.external.instructions",
+      "value": "You will be redirected to our secure payment processor to complete the transaction."
+    },
+    {
+      "key1": "payment.embed.notConfigured",
+      "key2": "settings.payment.embed.notConfigured",
+      "value": "Embedded payment form is not configured. Please contact support."
+    },
+    {
+      "key1": "payment.embed.loading",
+      "key2": "settings.payment.embed.loading",
+      "value": "Loading payment form..."
+    },
+    {
+      "key1": "payment.embed.error",
+      "key2": "settings.payment.embed.error",
+      "value": "Error loading payment form"
+    },
+    {
+      "key1": "payment.gateway.notConfigured",
+      "key2": "settings.payment.gateway.notConfigured",
+      "value": "Payment gateway is not configured. Please contact support."
+    },
+    {
+      "key1": "payment.completed.subtitle",
+      "key2": "settings.payment.completed.subtitle",
+      "value": "This payment has already been processed"
+    },
+    {
+      "key1": "payment.completed.details",
+      "key2": "settings.payment.completed.details",
+      "value": "This payment was completed on"
+    },
+    {
+      "key1": "payment.unavailable.configuration",
+      "key2": "settings.payment.unavailable.configuration",
+      "value": "Please contact an administrator to enable Stripe payments."
+    },
+    {
+      "key1": "payment.unavailable.status",
+      "key2": "settings.payment.unavailable.status",
+      "value": "This payment is not available for processing right now. Current status:"
+    },
+    {
+      "key1": "payment.success.message",
+      "key2": "settings.payment.success.message",
+      "value": "Your payment has been processed successfully."
+    },
+    {
+      "key1": "payment.success.viewPayments",
+      "key2": "settings.payment.success.viewPayments",
+      "value": "View payments"
+    },
+    {
+      "key1": "payment.success.stay",
+      "key2": "settings.payment.success.stay",
+      "value": "Stay here"
+    },
+    {
+      "key1": "payment.success.backToOrders",
+      "key2": "settings.payment.success.backToOrders",
+      "value": "Back to orders"
+    },
+    {
+      "key1": "common.continue",
+      "key2": "settings.payment.success.continue",
+      "value": "Continue"
+    },
+    {
+      "key1": "payment.success.transactionId",
+      "key2": "settings.payment.success.transactionId",
+      "value": "Transaction ID: {{id}}"
+    },
+    {
+      "key1": "payment.error.generic",
+      "key2": "settings.payment.error.generic",
+      "value": "There was an error processing your payment. Please try again."
+    },
+    {
+      "key1": "payment.error.statusUpdate",
+      "key2": "settings.payment.error.statusUpdate",
+      "value": "Payment was successful but there was an error updating the status. Please contact support."
+    },
+    {
+      "key1": "payment.error.message",
+      "key2": "settings.payment.error.message",
+      "value": "There was a problem processing your payment."
+    },
+    {
+      "key1": "payment.error.retry",
+      "key2": "settings.payment.error.retry",
+      "value": "Retry"
+    },
+    {
+      "key1": "payment.error.contact",
+      "key2": "settings.payment.error.contact",
+      "value": "Contact support"
+    },
+    {
+      "key1": "payment.processing",
+      "key2": "settings.payment.processing",
+      "value": "Processing payment..."
+    },
+    {
+      "key1": "paymentReceipt.transactionId",
+      "key2": "settings.payment.transactionId",
+      "value": "Transaction ID"
+    },
+    {
+      "key1": "payment.test.dispatchSuccess",
+      "key2": "settings.payment.test.dispatchSuccess",
+      "value": "Dispatch paymentSuccess"
+    },
+    {
+      "key1": "payment.test.dispatchError",
+      "key2": "settings.payment.test.dispatchError",
+      "value": "Dispatch paymentError"
+    },
+    {
+      "key1": "payment.test.simulatedFailure",
+      "key2": "settings.payment.test.simulatedFailure",
+      "value": "Simulated failure"
+    },
+    {
+      "key1": "paymentReceipt.transactionId",
+      "key2": "settings.payment.test.transactionIdLabel",
+      "value": "Transaction ID"
+    },
+    {
+      "key1": "payment.formRegion",
+      "key2": "settings.payment.formRegion",
+      "value": "Payment form"
+    },
+    {
+      "key1": "payment.retry",
+      "key2": "settings.payment.retry",
+      "value": "Retry Payment"
+    },
+    {
+      "key1": "payment.confirm",
+      "key2": "settings.payment.confirm",
+      "value": "Confirm Payment"
+    },
+    {
+      "key1": "payment.viewPayments",
+      "key2": "settings.payment.viewPayments",
+      "value": "View Payments"
+    },
+    {
+      "key1": "payment.failed.title",
+      "key2": "settings.payment.failed.title",
+      "value": "Payment failed"
+    },
+    {
+      "key1": "payment.failed.message",
+      "key2": "settings.payment.failed.message",
+      "value": "Stripe was unable to complete the payment. Please try again."
+    },
+    {
+      "key1": "payment.status.completed",
+      "key2": "settings.payment.status.completed",
+      "value": "Payment completed successfully."
+    },
+    {
+      "key1": "payment.status.failed",
+      "key2": "settings.payment.status.failed",
+      "value": "Payment failed. Please try again."
+    },
+    {
+      "key1": "payment.status.pending",
+      "key2": "settings.payment.status.pending",
+      "value": "Awaiting confirmation..."
+    },
+    {
+      "key1": "payment.status.pendingTitle",
+      "key2": "settings.payment.status.pendingTitle",
+      "value": "Awaiting confirmation"
+    },
+    {
+      "key1": "payment.status.processing",
+      "key2": "settings.payment.status.processing",
+      "value": "Payment is processing. Please wait..."
+    },
+    {
+      "key1": "payment.receipt.available",
+      "key2": "settings.payment.receipt.available",
+      "value": "Receipt available"
+    },
+    {
+      "key1": "payment.receipt.view",
+      "key2": "settings.payment.receipt.view",
+      "value": "View Receipt"
+    },
+    {
+      "key1": "payment.orderDetails",
+      "key2": "settings.payment.orderDetails",
+      "value": "Order details"
+    },
+    {
+      "key1": "payments.create.orderIdLabel",
+      "key2": "settings.payment.orderId",
+      "value": "Order ID"
+    },
+    {
+      "key1": "payment.amount",
+      "key2": "settings.payment.amount",
+      "value": "Amount to pay"
+    },
+    {
+      "key1": "common.description",
+      "key2": "settings.payment.description",
+      "value": "Description"
+    },
+    {
+      "key1": "payment.paymentMethods",
+      "key2": "settings.payment.paymentMethods",
+      "value": "Payment methods"
+    },
+    {
+      "key1": "payment.creditCard",
+      "key2": "settings.payment.creditCard",
+      "value": "Credit card"
+    },
+    {
+      "key1": "payment.bankTransfer",
+      "key2": "settings.payment.bankTransfer",
+      "value": "Bank transfer"
+    },
+    {
+      "key1": "payment.paypal",
+      "key2": "settings.payment.paypal",
+      "value": "PayPal"
+    },
+    {
+      "key1": "paymentReceipt.paymentMethod.other",
+      "key2": "settings.payment.other",
+      "value": "Other"
+    },
+    {
+      "key1": "paymentReceipt.title",
+      "key2": "settings.paymentReceipt.title",
+      "value": "Payment Receipt"
+    },
+    {
+      "key1": "paymentReceipt.modal.title",
+      "key2": "settings.paymentReceipt.modal.title",
+      "value": "Print Payment Receipt"
+    },
+    {
+      "key1": "paymentReceipt.modal.confirmGenerate",
+      "key2": "settings.paymentReceipt.modal.confirmGenerate",
+      "value": "Generate a PDF receipt for payment #{{paymentId}}?"
+    },
+    {
+      "key1": "paymentReceipt.modal.paymentAmount",
+      "key2": "settings.paymentReceipt.modal.paymentAmount",
+      "value": "Payment Amount"
+    },
+    {
+      "key1": "common.order",
+      "key2": "settings.paymentReceipt.modal.order",
+      "value": "Order"
+    },
+    {
+      "key1": "common.status",
+      "key2": "settings.paymentReceipt.modal.status",
+      "value": "Status"
+    },
+    {
+      "key1": "paymentReceipt.modal.paymentMethod",
+      "key2": "settings.paymentReceipt.modal.paymentMethod",
+      "value": "Payment Method"
+    },
+    {
+      "key1": "paymentReceipt.modal.paidDate",
+      "key2": "settings.paymentReceipt.modal.paidDate",
+      "value": "Paid Date"
+    },
+    {
+      "key1": "paymentReceipt.modal.generating",
+      "key2": "settings.paymentReceipt.modal.generating",
+      "value": "Generating..."
+    },
+    {
+      "key1": "paymentReceipt.modal.downloadReceipt",
+      "key2": "settings.paymentReceipt.modal.downloadReceipt",
+      "value": "Download Receipt"
+    },
+    {
+      "key1": "paymentReceipt.receiptInformation",
+      "key2": "settings.paymentReceipt.receiptInformation",
+      "value": "Receipt Information"
+    },
+    {
+      "key1": "paymentReceipt.receiptNumber",
+      "key2": "settings.paymentReceipt.receiptNumber",
+      "value": "Receipt #"
+    },
+    {
+      "key1": "paymentReceipt.paymentDate",
+      "key2": "settings.paymentReceipt.paymentDate",
+      "value": "Payment Date"
+    },
+    {
+      "key1": "paymentReceipt.transactionId",
+      "key2": "settings.paymentReceipt.transactionId",
+      "value": "Transaction ID"
+    },
+    {
+      "key1": "paymentReceipt.orderInformation",
+      "key2": "settings.paymentReceipt.orderInformation",
+      "value": "Order Information"
+    },
+    {
+      "key1": "paymentReceipt.orderNumber",
+      "key2": "settings.paymentReceipt.orderNumber",
+      "value": "Order #"
+    },
+    {
+      "key1": "paymentReceipt.orderDate",
+      "key2": "settings.paymentReceipt.orderDate",
+      "value": "Order Date"
+    },
+    {
+      "key1": "paymentReceipt.customer",
+      "key2": "settings.paymentReceipt.customer",
+      "value": "Customer"
+    },
+    {
+      "key1": "common.email",
+      "key2": "settings.paymentReceipt.email",
+      "value": "Email"
+    },
+    {
+      "key1": "paymentReceipt.paymentDetails",
+      "key2": "settings.paymentReceipt.paymentDetails",
+      "value": "Payment Details"
+    },
+    {
+      "key1": "common.description",
+      "key2": "settings.paymentReceipt.description",
+      "value": "Description"
+    },
+    {
+      "key1": "common.status",
+      "key2": "settings.paymentReceipt.status",
+      "value": "Status"
+    },
+    {
+      "key1": "paymentReceipt.amount",
+      "key2": "settings.paymentReceipt.amount",
+      "value": "Amount"
+    },
+    {
+      "key1": "paymentReceipt.paymentForOrder",
+      "key2": "settings.paymentReceipt.paymentForOrder",
+      "value": "Payment for Order"
+    },
+    {
+      "key1": "paymentReceipt.totalPayment",
+      "key2": "settings.paymentReceipt.totalPayment",
+      "value": "Total Payment"
+    },
+    {
+      "key1": "paymentReceipt.orderDetails",
+      "key2": "settings.paymentReceipt.orderDetails",
+      "value": "Order Details"
+    },
+    {
+      "key1": "paymentReceipt.officialReceipt",
+      "key2": "settings.paymentReceipt.officialReceipt",
+      "value": "This is an official payment receipt from {{company}}."
+    },
+    {
+      "key1": "paymentReceipt.generatedOn",
+      "key2": "settings.paymentReceipt.generatedOn",
+      "value": "Generated on {{date}}"
+    },
+    {
+      "key1": "paymentReceipt.thankYou",
+      "key2": "settings.paymentReceipt.thankYou",
+      "value": "Thank you for your business!"
+    },
+    {
+      "key1": "paymentReceipt.modal.paymentMethod",
+      "key2": "settings.paymentReceipt.paymentMethod.label",
+      "value": "Payment Method"
+    },
+    {
+      "key1": "paymentReceipt.paymentMethod.notSpecified",
+      "key2": "settings.paymentReceipt.paymentMethod.notSpecified",
+      "value": "Not specified"
+    },
+    {
+      "key1": "paymentReceipt.paymentMethod.cash",
+      "key2": "settings.paymentReceipt.paymentMethod.cash",
+      "value": "Cash"
+    },
+    {
+      "key1": "paymentReceipt.paymentMethod.debitCard",
+      "key2": "settings.paymentReceipt.paymentMethod.debitCard",
+      "value": "Debit Card"
+    },
+    {
+      "key1": "paymentReceipt.paymentMethod.creditCard",
+      "key2": "settings.paymentReceipt.paymentMethod.creditCard",
+      "value": "Credit Card"
+    },
+    {
+      "key1": "paymentReceipt.paymentMethod.check",
+      "key2": "settings.paymentReceipt.paymentMethod.check",
+      "value": "Check"
+    },
+    {
+      "key1": "paymentReceipt.paymentMethod.other",
+      "key2": "settings.paymentReceipt.paymentMethod.other",
+      "value": "Other"
+    },
+    {
+      "key1": "paymentReceipt.errors.generateFailed",
+      "key2": "settings.paymentReceipt.errors.generateFailed",
+      "value": "Failed to generate payment receipt. Please try again."
+    },
+    {
+      "key1": "paymentReceipt.statusValues.completed",
+      "key2": "settings.paymentReceipt.statusValues.completed",
+      "value": "Completed"
+    },
+    {
+      "key1": "paymentReceipt.statusValues.pending",
+      "key2": "settings.paymentReceipt.statusValues.pending",
+      "value": "Pending"
+    },
+    {
+      "key1": "paymentReceipt.statusValues.failed",
+      "key2": "settings.paymentReceipt.statusValues.failed",
+      "value": "Failed"
+    },
+    {
+      "key1": "paymentReceipt.statusValues.refunded",
+      "key2": "settings.paymentReceipt.statusValues.refunded",
+      "value": "Refunded"
+    },
+    {
+      "key1": "paymentConfig.gateway.url",
+      "key2": "settings.paymentConfig.gateway.url",
+      "value": "Gateway URL"
+    },
+    {
+      "key1": "common.name",
+      "key2": "leadsPage.table.columns.name",
+      "value": "Name"
+    },
+    {
+      "key1": "common.email",
+      "key2": "leadsPage.table.columns.email",
+      "value": "Email"
+    },
+    {
+      "key1": "auth.requestAccess.fields.phoneLabel",
+      "key2": "leadsPage.table.columns.phone",
+      "value": "Phone"
+    },
+    {
+      "key1": "customers.location",
+      "key2": "leadsPage.table.columns.location",
+      "value": "Location"
+    },
+    {
+      "key1": "auth.requestAccess.fields.companyLabel",
+      "key2": "leadsPage.table.columns.company",
+      "value": "Company"
+    },
+    {
+      "key1": "common.status",
+      "key2": "leadsPage.table.columns.status",
+      "value": "Status"
+    },
+    {
+      "key1": "common.actions",
+      "key2": "leadsPage.table.columns.actions",
+      "value": "Actions"
+    },
+    {
+      "key1": "new",
+      "key2": "leadsPage.status.new",
+      "value": "New"
+    },
+    {
+      "key1": "contact.status.closed",
+      "key2": "leadsPage.status.closed",
+      "value": "Closed"
+    },
+    {
+      "key1": "customers.form.labels.fullName",
+      "key2": "leadsPage.modal.contact.fullName",
+      "value": "Full Name"
+    },
+    {
+      "key1": "auth.requestAccess.fields.firstNameLabel",
+      "key2": "leadsPage.modal.contact.firstName",
+      "value": "First Name"
+    },
+    {
+      "key1": "auth.requestAccess.fields.lastNameLabel",
+      "key2": "leadsPage.modal.contact.lastName",
+      "value": "Last Name"
+    },
+    {
+      "key1": "common.email",
+      "key2": "leadsPage.modal.contact.email",
+      "value": "Email"
+    },
+    {
+      "key1": "auth.requestAccess.fields.phoneLabel",
+      "key2": "leadsPage.modal.contact.phone",
+      "value": "Phone"
+    },
+    {
+      "key1": "auth.requestAccess.fields.cityLabel",
+      "key2": "leadsPage.modal.contact.city",
+      "value": "City"
+    },
+    {
+      "key1": "auth.requestAccess.fields.stateLabel",
+      "key2": "leadsPage.modal.contact.state",
+      "value": "State"
+    },
+    {
+      "key1": "auth.requestAccess.fields.zipLabel",
+      "key2": "leadsPage.modal.contact.zip",
+      "value": "Zip Code"
+    },
+    {
+      "key1": "auth.requestAccess.fields.companyLabel",
+      "key2": "leadsPage.modal.contact.company",
+      "value": "Company"
+    },
+    {
+      "key1": "common.status",
+      "key2": "leadsPage.modal.status.heading",
+      "value": "Status"
+    },
+    {
+      "key1": "auth.requestAccess.fields.messageLabel",
+      "key2": "leadsPage.modal.message.heading",
+      "value": "Message"
+    },
+    {
+      "key1": "nav.admin",
+      "key2": "leadsPage.modal.notes.defaultAuthor",
+      "value": "Admin"
+    },
+    {
+      "key1": "common.close",
+      "key2": "pdf.close",
+      "value": "Close"
+    },
+    {
+      "key1": "common.ariaLabels.previousPage",
+      "key2": "pdf.previousPage",
+      "value": "Previous page"
+    },
+    {
+      "key1": "common.ariaLabels.nextPage",
+      "key2": "pdf.nextPage",
+      "value": "Next page"
+    },
+    {
+      "key1": "nav.home",
+      "key2": "breadcrumb.home",
+      "value": "Home"
+    },
+    {
+      "key1": "proposals.create.files.download",
+      "key2": "fileViewer.actions.download",
+      "value": "Download"
+    }
+  ],
+  "statistics": {
+    "totalFiles": 167,
+    "filesWithTranslation": 102,
+    "filesWithoutTranslation": 65,
+    "potentialIssues": 107
+  }
+}

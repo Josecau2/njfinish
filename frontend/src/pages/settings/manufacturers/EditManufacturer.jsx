@@ -28,6 +28,12 @@ const EditManufacturer = () => {
 
   // Color mode values
   const borderGray200 = useColorModeValue('gray.200', 'gray.600')
+  const tabBorderColor = useColorModeValue('gray.200', 'gray.600')
+  const tabColor = useColorModeValue('brand.600', 'brand.300')
+  const tabHoverBorderColor = useColorModeValue('brand.400', 'brand.500')
+  const tabSelectedBg = useColorModeValue('brand.500', 'brand.600')
+  const tabSelectedBorderColor = useColorModeValue('brand.500', 'brand.600')
+  const tabSelectedColor = useColorModeValue('white', 'white')
 
   const [activeKey, setActiveKey] = useState(0)
   const manufacturer = useSelector((state) => state.manufacturers.selected)
@@ -90,18 +96,18 @@ const EditManufacturer = () => {
               paddingInline: '20px',
               paddingBlock: '12px',
               border: '1px solid',
-              borderColor: 'gray.200',
-              color: 'brand.600',
+              borderColor: tabBorderColor,
+              color: tabColor,
               transition: 'all 0.15s ease',
             },
-            '& button[role="tab"].chakra-tabs__tab--selected': {
-              backgroundColor: 'brand.500',
-              borderColor: 'brand.500',
-              color: 'white',
+            '& button[role="tab"][aria-selected="true"]': {
+              backgroundColor: tabSelectedBg,
+              borderColor: tabSelectedBorderColor,
+              color: tabSelectedColor,
               boxShadow: 'sm',
             },
-            '& button[role="tab"]:hover': {
-              borderColor: 'brand.400',
+            '& button[role="tab"]:hover:not([aria-selected="true"])': {
+              borderColor: tabHoverBorderColor,
               boxShadow: 'xs',
             },
           }}

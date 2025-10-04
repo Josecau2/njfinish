@@ -3259,8 +3259,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 Include drafts
               </Checkbox>
             </Flex>
-            <div className="row g-3">
-              <div>
+            <VStack spacing={3} align="stretch">
+              <FormControl>
                 <FormLabel>Template</FormLabel>
                 <Select
                   value={assignFormGM.templateId}
@@ -3279,8 +3279,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     </option>
                   ))}
                 </Select>
-              </div>
-              <div>
+              </FormControl>
+              <FormControl>
                 <FormLabel>Scope</FormLabel>
                 <Select
                   value={assignFormGM.scope}
@@ -3293,8 +3293,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <option value="type">Type</option>
                   <option value="item">Selected items</option>
                 </Select>
-              </div>
-              <div>
+              </FormControl>
+              <FormControl>
                 <FormLabel>Override price</FormLabel>
                 <Input
                   type="number"
@@ -3306,44 +3306,44 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   name="assign-override-price"
                   id="assign-override-price"
                 />
-              </div>
-            </div>
-            {assignFormGM.scope === 'style' && (
-              <div>
-                <FormLabel>Target style</FormLabel>
-                <Select
-                  value={assignFormGM.targetStyle}
-                  onChange={(event) =>
-                    setAssignFormGM((f) => ({ ...f, targetStyle: event.currentTarget.value }))
-                  }
-                >
-                  <option value="">Select style…</option>
-                  {sortedUniqueStyles.map((s, i) => (
-                    <option key={i} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-            )}
-            {assignFormGM.scope === 'type' && (
-              <div>
-                <FormLabel>Target type</FormLabel>
-                <Select
-                  value={assignFormGM.targetType}
-                  onChange={(event) =>
-                    setAssignFormGM((f) => ({ ...f, targetType: event.currentTarget.value }))
-                  }
-                >
-                  <option value="">Select type…</option>
-                  {uniqueTypes.map((t, i) => (
-                    <option key={i} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-            )}
+              </FormControl>
+              {assignFormGM.scope === 'style' && (
+                <FormControl>
+                  <FormLabel>Target style</FormLabel>
+                  <Select
+                    value={assignFormGM.targetStyle}
+                    onChange={(event) =>
+                      setAssignFormGM((f) => ({ ...f, targetStyle: event.currentTarget.value }))
+                    }
+                  >
+                    <option value="">Select style…</option>
+                    {sortedUniqueStyles.map((s, i) => (
+                      <option key={i} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+              {assignFormGM.scope === 'type' && (
+                <FormControl>
+                  <FormLabel>Target type</FormLabel>
+                  <Select
+                    value={assignFormGM.targetType}
+                    onChange={(event) =>
+                      setAssignFormGM((f) => ({ ...f, targetType: event.currentTarget.value }))
+                    }
+                  >
+                    <option value="">Select type…</option>
+                    {uniqueTypes.map((t, i) => (
+                      <option key={i} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            </VStack>
             {assignFormGM.scope === 'item' && (
               <Text mt={2} color={borderGray600} fontSize="sm">
                 {selectedItems.length} selected item(s) will receive this assignment.
@@ -3502,8 +3502,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </table>
             </Box>
             <hr />
-            <Box className="row g-3">
-              <div>
+            <VStack spacing={3} align="stretch">
+              <FormControl>
                 <FormLabel>Add template to this item</FormLabel>
                 <Select
                   value={assignFormGM.templateId}
@@ -3522,8 +3522,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     </option>
                   ))}
                 </Select>
-              </div>
-              <div>
+              </FormControl>
+              <FormControl>
                 <FormLabel>Override price</FormLabel>
                 <Input
                   type="number"
@@ -3535,7 +3535,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   name="item-assign-override-price"
                   id="item-assign-override-price"
                 />
-              </div>
+              </FormControl>
               <Flex align="flex-end">
                 <Button
                   colorScheme="blue"
@@ -3563,7 +3563,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   Add
                 </Button>
               </Flex>
-            </Box>
+            </VStack>
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="gray" onClick={() => setShowItemGlobalModsModal(false)}>
@@ -4709,8 +4709,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 Leave fields empty to keep existing values.
               </Text>
 
-              <Box className="row g-3">
-                <div>
+              <VStack spacing={3} align="stretch">
+                <FormControl>
                   <FormLabel>Style</FormLabel>
                   <Input
                     type="text"
@@ -4720,9 +4720,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     }
                     placeholder="Leave empty to keep existing"
                   />
-                </div>
+                </FormControl>
 
-                <div>
+                <FormControl>
                   <FormLabel>Type</FormLabel>
                   <Input
                     type="text"
@@ -4732,9 +4732,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     }
                     placeholder="Leave empty to keep existing"
                   />
-                </div>
+                </FormControl>
 
-                <div>
+                <FormControl>
                   <FormLabel>Description</FormLabel>
                   <Textarea
                     value={bulkEditForm.description}
@@ -4744,9 +4744,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     placeholder="Leave empty to keep existing"
                     rows={3}
                   />
-                </div>
+                </FormControl>
 
-                <div>
+                <FormControl>
                   <FormLabel>Price</FormLabel>
                   <Input
                     type="number"
@@ -4757,8 +4757,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     }
                     placeholder="Leave empty to keep existing"
                   />
-                </div>
-              </Box>
+                </FormControl>
+              </VStack>
 
               <Box mt={3} p={3} bg={bgGray50} borderRadius="md">
                 <Text fontSize="sm">
@@ -6336,8 +6336,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <ModalContent>
           <PageHeader title={t('globalMods.modal.editCategory.title', 'Edit Category')} />
           <ModalBody>
-            <div className="row g-3">
-              <div>
+            <VStack spacing={3} align="stretch">
+              <FormControl>
                 <FormLabel>
                   {t('globalMods.modal.editCategory.nameLabel', 'Category Name')}
                 </FormLabel>
@@ -6347,8 +6347,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     setEditCategory((c) => ({ ...c, name: event.currentTarget.value }))
                   }
                 />
-              </div>
-              <div>
+              </FormControl>
+              <FormControl>
                 <FormLabel>{t('globalMods.modal.editCategory.orderLabel', 'Order')}</FormLabel>
                 <Input
                   type="number"
@@ -6357,8 +6357,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     setEditCategory((c) => ({ ...c, orderIndex: event.currentTarget.value }))
                   }
                 />
-              </div>
-              <div>
+              </FormControl>
+              <FormControl>
                 <FormLabel>
                   {t('globalMods.modal.editCategory.imageLabel', 'Category Image')}
                 </FormLabel>
@@ -6394,8 +6394,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     />
                   </Box>
                 )}
-              </div>
-            </div>
+              </FormControl>
+            </VStack>
             <Flex gap={2} justify="flex-end" mt={3}>
               <Button colorScheme="gray" onClick={() => setShowEditCategoryModal(false)}>
                 {t('globalMods.modal.editCategory.cancel', 'Cancel')}
@@ -6522,15 +6522,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   {t('common.move', 'Move')} <strong>"{modificationToMove.name}"</strong>{' '}
                   {t('common.to', 'to')} {t('common.whichCategory', 'which category?')}
                 </p>
-                <div>
-                  <label>
+                <FormControl>
+                  <FormLabel>
                     {t(
                       'globalMods.modal.deleteCategory.move.selectTarget',
                       'Select destination category',
                     )}
-                  </label>
-                  <select
-                    className="form-select"
+                  </FormLabel>
+                  <Select
                     id="moveToCategory"
                     defaultValue={modificationToMove.categoryId || ''}
                   >
@@ -6551,8 +6550,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         </option>
                       ))}
                     </optgroup>
-                  </select>
-                </div>
+                  </Select>
+                </FormControl>
                 <Box p={3} bg={bgBlue50} borderRadius="md">
                   <Text fontSize="sm">
                     <strong>{t('common.note', 'Note')}:</strong>{' '}
@@ -6599,8 +6598,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             {/* Basic Information */}
             <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
               <h6>{t('common.basicInformation', 'Basic Information')}</h6>
-              <Box className="row g-3">
-                <div>
+              <VStack spacing={3} align="stretch">
+                <FormControl>
                   <FormLabel>{t('globalMods.modal.editTemplate.nameLabel', 'Name')}</FormLabel>
                   <Input
                     value={editTemplate.name}
@@ -6608,8 +6607,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       setEditTemplate((t) => ({ ...t, name: event.currentTarget.value }))
                     }
                   />
-                </div>
-                <div>
+                </FormControl>
+                <FormControl>
                   <FormLabel>
                     {t('globalMods.modal.editTemplate.priceLabel', 'Default Price')}{' '}
                     {editTemplate.saveAsBlueprint &&
@@ -6629,8 +6628,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         : t('globalMods.template.defaultPricePlaceholder', 'Enter default price')
                     }
                   />
-                </div>
-                <div>
+                </FormControl>
+                <FormControl>
                   <FormLabel>{t('globalMods.template.statusLabel', 'Status')}</FormLabel>
                   <Select
                     value={editTemplate.isReady ? 'ready' : 'draft'}
@@ -6644,8 +6643,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <option value="draft">{t('globalMods.template.status.draft', 'Draft')}</option>
                     <option value="ready">{t('globalMods.template.status.ready', 'Ready')}</option>
                   </Select>
-                </div>
-                <div>
+                </FormControl>
+                <FormControl>
                   <Flex align="center" mt={4}>
                     <input
 
@@ -6662,8 +6661,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       {t('common.showToBoth', 'shown to both')}
                     </Text>
                   </Flex>
-                </div>
-                <div>
+                </FormControl>
+                <FormControl>
                   <FormLabel>
                     {t('globalMods.modal.editTemplate.sampleUploadLabel', 'Sample Image')}
                   </FormLabel>
@@ -6699,8 +6698,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       />
                     </Box>
                   )}
-                </div>
-              </Box>
+                </FormControl>
+              </VStack>
             </Box>
 
             {/* Advanced Field Configuration */}

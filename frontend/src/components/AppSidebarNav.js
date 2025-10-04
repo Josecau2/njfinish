@@ -512,12 +512,13 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor, sideba
   }
 
   return (
-    <SimpleBar style={{ height: '100%' }}>
+    <SimpleBar style={{ maxHeight: '100%', height: '100%' }}>
       <Box
         as="ul"
         listStyleType="none"
         m={0}
         py={{ base: '0.25rem', lg: '0.5rem' }}
+        px={{ base: '0.5rem', lg: '0.75rem' }}
       >
         {items?.map((item) => renderItem(item))}
       </Box>

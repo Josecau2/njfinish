@@ -19,6 +19,8 @@ const SettingsTab = ({ manufacturer }) => {
   const textGray700 = useColorModeValue('gray.700', 'gray.200')
   const textRed500 = useColorModeValue('red.500', 'red.300')
   const iconGray = useColorModeValue('gray.400', 'gray.500')
+  const bgBlue50 = useColorModeValue('blue.50', 'blue.900')
+  const bgGreen50 = useColorModeValue('green.50', 'green.900')
 
   const [searchCode1, setSearchCode1] = useState('')
   const [page1, setPage1] = useState(1)
@@ -321,7 +323,7 @@ const SettingsTab = ({ manufacturer }) => {
               id="costMultiplierHelp"
               borderWidth="1px"
               borderColor="brand.500"
-              background="blue.50"
+              bg={bgBlue50}
               borderRadius="md"
               px={3}
               py={2}
@@ -437,7 +439,7 @@ const SettingsTab = ({ manufacturer }) => {
               id="customerMultiplierHelp"
               borderWidth="1px"
               borderColor="green.500"
-              background="green.50"
+              bg={bgGreen50}
               borderRadius="md"
               px={3}
               py={2}

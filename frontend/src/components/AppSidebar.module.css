@@ -50,11 +50,10 @@
 }
 
 .modernSidebarFooter {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 56px;
+  /* Changed from absolute to normal flow to prevent overlap with navigation */
+  /* Footer now sits at bottom naturally without overlapping scrollable content */
+  width: 100%;
+  min-height: 56px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
