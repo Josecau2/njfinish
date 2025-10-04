@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Box, Button, CardBody, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Icon, Input, InputGroup, InputLeftAddon, Select, SimpleGrid, Text, Textarea, useToast, VStack, useColorModeValue } from '@chakra-ui/react'
+import { Box, Button, CardBody, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Icon, Input, InputGroup, InputLeftAddon, Select, SimpleGrid, Text, Textarea, useToast, VStack, useColorModeValue, VisuallyHidden, Spinner } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import PageContainer from '../../components/PageContainer'
 import PageHeader from '../../components/PageHeader'
@@ -20,27 +20,33 @@ import { useTranslation } from 'react-i18next'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 // External component definitions to prevent re-rendering
-const FormSection = ({ title, icon, children, className = '' }) => (
-  <StandardCard className={`border-0 shadow-sm ${className}`} mb={4}>
-    <CardBody>
-      <HStack>
-        <Flex
-          align="center"
-          justify="center"
-          borderRadius="full"
-          w="40px"
-          h="40px"
-          bg={useColorModeValue("blue.50", "blue.900")}
-          color={useColorModeValue("blue.500", "blue.300")}
-        >
-          <Icon as={icon} boxSize={ICON_BOX_MD} />
-        </Flex>
-        <Text as="h6" mb={0} fontWeight="semibold" color={useColorModeValue("gray.700", "gray.300")}>{title}</Text>
-      </HStack>
-      {children}
-    </CardBody>
-  </StandardCard>
-)
+const FormSection = ({ title, icon, children }) => {
+  const iconBg = useColorModeValue("blue.50", "blue.900")
+  const iconColor = useColorModeValue("blue.500", "blue.300")
+  const titleColor = useColorModeValue("gray.700", "gray.300")
+
+  return (
+    <StandardCard borderWidth="0" boxShadow="sm" mb={4}>
+      <CardBody>
+        <HStack>
+          <Flex
+            align="center"
+            justify="center"
+            borderRadius="full"
+            w="40px"
+            h="40px"
+            bg={iconBg}
+            color={iconColor}
+          >
+            <Icon as={icon} boxSize={ICON_BOX_MD} />
+          </Flex>
+          <Text as="h6" mb={0} fontWeight="semibold" color={titleColor}>{title}</Text>
+        </HStack>
+        {children}
+      </CardBody>
+    </StandardCard>
+  )
+}
 
 const CustomFormInput = ({
   label,
@@ -54,61 +60,67 @@ const CustomFormInput = ({
   handleChange,
   inputRefs,
   ...props
-}) => (
-  <div>
-    <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
-      {label}
-      {required && <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>}
-    </FormLabel>
-    <InputGroup>
-      {icon && (
-        <InputLeftAddon
+}) => {
+  const labelColor = useColorModeValue("gray.700", "gray.300")
+  const requiredColor = useColorModeValue("red.500", "red.300")
+  const iconColor = useColorModeValue("gray.500", "gray.400")
+
+  return (
+    <Box>
+      <FormLabel htmlFor={name} fontWeight="medium" color={labelColor} mb={2}>
+        {label}
+        {required && <Text as="span" color={requiredColor} ml={1}>*</Text>}
+      </FormLabel>
+      <InputGroup>
+        {icon && (
+          <InputLeftAddon
+            style={{
+              background: 'linear-gradient(135deg, var(--chakra-colors-gray-50) 0%, var(--chakra-colors-gray-100) 100%)',
+              border: '1px solid var(--chakra-colors-gray-200)',
+              borderRight: 'none',
+            }}
+          >
+            <Icon as={icon} boxSize={ICON_BOX_MD} color={iconColor} />
+          </InputLeftAddon>
+        )}
+        <Input
+          id={name}
+          name={name}
+          type={type}
+          value={formData[name]}
+          onChange={handleChange}
+          isInvalid={!!validationErrors[name]}
+          ref={(el) => (inputRefs.current[name] = el)}
+          placeholder={placeholder}
           style={{
-            background: 'linear-gradient(135deg, var(--chakra-colors-gray-50) 0%, var(--chakra-colors-gray-100) 100%)',
-            border: '1px solid var(--chakra-colors-gray-200)',
-            borderRight: 'none',
+            border: `1px solid ${validationErrors[name] ? "red.500" : 'var(--chakra-colors-gray-200)'}`,
+            borderRadius: icon ? '0 10px 10px 0' : '10px',
+            fontSize: 'sm',
+            padding: '12px 16px',
+            transition: 'all 0.3s ease',
+            borderLeft: icon ? 'none' : '1px solid var(--chakra-colors-gray-200)',
           }}
-        >
-          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
-        </InputLeftAddon>
+          onFocus={(e) => {
+            if (!validationErrors[name]) {
+              e.target.style.borderColor = 'var(--chakra-colors-blue-500)'
+              e.target.style.boxShadow = 'var(--chakra-shadows-outline)'
+            }
+          }}
+          onBlur={(e) => {
+            if (!validationErrors[name]) {
+              e.target.style.borderColor = 'var(--chakra-colors-gray-200)'
+              e.target.style.boxShadow = 'none'
+            }
+          }}
+          {...props}
+        />
+      </InputGroup>
+      {validationErrors[name] && (
+        <FormErrorMessage>{validationErrors[name]}</FormErrorMessage>
       )}
-      <Input
-        id={name}
-        name={name}
-        type={type}
-        value={formData[name]}
-        onChange={handleChange}
-        isInvalid={!!validationErrors[name]}
-        ref={(el) => (inputRefs.current[name] = el)}
-        placeholder={placeholder}
-        style={{
-          border: `1px solid ${validationErrors[name] ? "red.500" : 'var(--chakra-colors-gray-200)'}`,
-          borderRadius: icon ? '0 10px 10px 0' : '10px',
-          fontSize: 'sm',
-          padding: '12px 16px',
-          transition: 'all 0.3s ease',
-          borderLeft: icon ? 'none' : '1px solid var(--chakra-colors-gray-200)',
-        }}
-        onFocus={(e) => {
-          if (!validationErrors[name]) {
-            e.target.style.borderColor = 'var(--chakra-colors-blue-500)'
-            e.target.style.boxShadow = 'var(--chakra-shadows-outline)'
-          }
-        }}
-        onBlur={(e) => {
-          if (!validationErrors[name]) {
-            e.target.style.borderColor = 'var(--chakra-colors-gray-200)'
-            e.target.style.boxShadow = 'none'
-          }
-        }}
-        {...props}
-      />
-    </InputGroup>
-    {validationErrors[name] && (
-      <FormErrorMessage>{validationErrors[name]}</FormErrorMessage>
-    )}
-  </div>
-)
+    </Box>
+  )
+}
 
 const CustomFormSelect = ({
   label,
@@ -121,67 +133,77 @@ const CustomFormSelect = ({
   handleChange,
   inputRefs,
   ...props
-}) => (
-  <div>
-    <FormLabel htmlFor={name} fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")} mb={2}>
-      {label}
-      {required && <Text as="span" color={useColorModeValue("red.500","red.300")} ml={1}>*</Text>}
-    </FormLabel>
-    <InputGroup>
-      {icon && (
-        <InputLeftAddon
+}) => {
+  const labelColor = useColorModeValue("gray.700", "gray.300")
+  const requiredColor = useColorModeValue("red.500", "red.300")
+  const iconColor = useColorModeValue("gray.500", "gray.400")
+
+  return (
+    <Box>
+      <FormLabel htmlFor={name} fontWeight="medium" color={labelColor} mb={2}>
+        {label}
+        {required && <Text as="span" color={requiredColor} ml={1}>*</Text>}
+      </FormLabel>
+      <InputGroup>
+        {icon && (
+          <InputLeftAddon
+            style={{
+              background: 'linear-gradient(135deg, var(--chakra-colors-gray-50) 0%, var(--chakra-colors-gray-100) 100%)',
+              border: '1px solid var(--chakra-colors-gray-200)',
+              borderRight: 'none',
+            }}
+          >
+            <Icon as={icon} boxSize={ICON_BOX_MD} color={iconColor} />
+          </InputLeftAddon>
+        )}
+        <Select
+          id={name}
+          name={name}
+          value={formData[name]}
+          onChange={handleChange}
+          isInvalid={!!validationErrors[name]}
+          ref={(el) => (inputRefs.current[name] = el)}
           style={{
-            background: 'linear-gradient(135deg, var(--chakra-colors-gray-50) 0%, var(--chakra-colors-gray-100) 100%)',
-            border: '1px solid var(--chakra-colors-gray-200)',
-            borderRight: 'none',
+            border: `1px solid ${validationErrors[name] ? "red.500" : 'var(--chakra-colors-gray-200)'}`,
+            borderRadius: icon ? '0 10px 10px 0' : '10px',
+            fontSize: 'sm',
+            padding: '12px 16px',
+            transition: 'all 0.3s ease',
+            borderLeft: icon ? 'none' : '1px solid var(--chakra-colors-gray-200)',
           }}
+          onFocus={(e) => {
+            if (!validationErrors[name]) {
+              e.target.style.borderColor = 'var(--chakra-colors-blue-500)'
+              e.target.style.boxShadow = 'var(--chakra-shadows-outline)'
+            }
+          }}
+          onBlur={(e) => {
+            if (!validationErrors[name]) {
+              e.target.style.borderColor = 'var(--chakra-colors-gray-200)'
+              e.target.style.boxShadow = 'none'
+            }
+          }}
+          {...props}
         >
-          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue("gray.500", "gray.400")} />
-        </InputLeftAddon>
+          {children}
+        </Select>
+      </InputGroup>
+      {validationErrors[name] && (
+        <FormErrorMessage>{validationErrors[name]}</FormErrorMessage>
       )}
-      <Select
-        id={name}
-        name={name}
-        value={formData[name]}
-        onChange={handleChange}
-        isInvalid={!!validationErrors[name]}
-        ref={(el) => (inputRefs.current[name] = el)}
-        style={{
-          border: `1px solid ${validationErrors[name] ? "red.500" : 'var(--chakra-colors-gray-200)'}`,
-          borderRadius: icon ? '0 10px 10px 0' : '10px',
-          fontSize: 'sm',
-          padding: '12px 16px',
-          transition: 'all 0.3s ease',
-          borderLeft: icon ? 'none' : '1px solid var(--chakra-colors-gray-200)',
-        }}
-        onFocus={(e) => {
-          if (!validationErrors[name]) {
-            e.target.style.borderColor = 'var(--chakra-colors-blue-500)'
-            e.target.style.boxShadow = 'var(--chakra-shadows-outline)'
-          }
-        }}
-        onBlur={(e) => {
-          if (!validationErrors[name]) {
-            e.target.style.borderColor = 'var(--chakra-colors-gray-200)'
-            e.target.style.boxShadow = 'none'
-          }
-        }}
-        {...props}
-      >
-        {children}
-      </Select>
-    </InputGroup>
-    {validationErrors[name] && (
-      <FormErrorMessage>{validationErrors[name]}</FormErrorMessage>
-    )}
-  </div>
-)
+    </Box>
+  )
+}
 
 const AddCustomerForm = () => {
   const { t } = useTranslation()
   const customization = useSelector((state) => state.customization)
   const headerBg = customization?.headerBg || "blue.600"
   const textColor = customization?.headerTextColor || "white"
+
+  // Color mode values
+  const bgBody = useColorModeValue('white', 'gray.800')
+  const noteLabelColor = useColorModeValue("gray.700", "gray.300")
 
   const [formData, setFormData] = useState({
     name: '',
@@ -298,10 +320,7 @@ const AddCustomerForm = () => {
   }
 
   return (
-    <PageContainer fluid p={2} m={2} className="add-new-customer bg-body" minH="100vh">
-      <style>{`
-        .add-new-customer .btn { min-height: 44px; }
-      `}</style>
+    <PageContainer fluid p={2} m={2} bg={bgBody} minH="100vh">
       {/* Header Section */}
       <PageHeader
         title={
@@ -323,7 +342,7 @@ const AddCustomerForm = () => {
         rightContent={
           <Button
             variant="outline" colorScheme="gray"
-            className="shadow-sm"
+            boxShadow="sm"
             px={4}
             fontWeight="semibold"
             onClick={() => navigate('/customers')}
@@ -593,8 +612,8 @@ const AddCustomerForm = () => {
             </Box>
           </SimpleGrid>
 
-          <div>
-            <FormLabel fontWeight="medium" color={useColorModeValue("gray.700", "gray.300")} mb={2}>{t('form.labels.notes')}</FormLabel>
+          <Box>
+            <FormLabel fontWeight="medium" color={noteLabelColor} mb={2}>{t('form.labels.notes')}</FormLabel>
             <Textarea
               id="note"
               name="note"
@@ -603,13 +622,13 @@ const AddCustomerForm = () => {
               onChange={(e) => handleNoteChange(e.target.value)}
               placeholder={t('form.placeholders.notes')}
             />
-          </div>
+          </Box>
         </FormSection>
 
         {/* Action Buttons */}
         <StandardCard>
           <CardBody>
-            <Flex gap={3} justify="flex-end" className="form-buttons">
+            <Flex gap={3} justify="flex-end">
               <Button
                 variant="outline" colorScheme="gray"
                 size="lg"
@@ -641,13 +660,7 @@ const AddCustomerForm = () => {
               >
                 {isSubmitting ? (
                   <>
-                    <div
-
-                      role="status"
-                      style={{ width: '16px', height: '16px' }}
-                    >
-                      <Text as="span" srOnly>{t('common.loading')}</Text>
-                    </div>
+                    <Spinner size="sm" mr={2} />
                     {t('form.actions.saving')}
                   </>
                 ) : (
