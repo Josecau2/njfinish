@@ -35,7 +35,6 @@ const AppContent = () => {
 
   return (
     <Box
-      className="modern-content"
       w="full"
       maxW={{ base: '100%', xl: '1180px', '2xl': '1320px' }}
       mx="auto"
