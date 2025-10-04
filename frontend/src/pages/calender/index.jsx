@@ -125,7 +125,7 @@ const CalendarView = () => {
   }
 
   const renderEventContent = (eventInfo) => (
-    <Box className="calendar-event" px={2} py={1} fontSize="xs">
+    <Box px={2} py={1} fontSize="xs">
       <Text fontWeight="semibold" noOfLines={1}>
         {eventInfo.event.extendedProps.eventType}
       </Text>
