@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { Alert, CardBody, Box, FormControl, Input, FormLabel, Flex, Button, SimpleGrid } from '@chakra-ui/react'
+import { Alert, CardBody, Box, FormControl, Input, FormLabel, Flex, Button, SimpleGrid, Icon, Stack } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import PageContainer from '../../components/PageContainer'
 import { ArrowLeft, CreditCard } from 'lucide-react'
@@ -24,10 +24,7 @@ const PaymentTest = () => {
   }
 
   return (
-    <PageContainer className="payment-test">
-      <style>{`
-        .payment-test .btn { min-height: 44px; }
-      `}</style>
+    <PageContainer>
       <PageHeader
         title={t('paymentConfig.test.button', 'Test Configuration')}
         subtitle={t('payment.subtitle', 'Complete your payment securely')}
@@ -37,26 +34,27 @@ const PaymentTest = () => {
         <Box maxW="container.md" mx="auto">
           <StandardCard>
             <CardBody>
-              <Alert status="info" aria-live="polite" role="status">
-                {t(
-                  'payment.embed.notConfigured',
-                  'Embedded payment form is not configured. Please contact support.',
-                )}
-              </Alert>
-              <FormControl>
-                <div>
+              <Stack spacing={4}>
+                <Alert status="info" aria-live="polite" role="status">
+                  {t(
+                    'payment.embed.notConfigured',
+                    'Embedded payment form is not configured. Please contact support.',
+                  )}
+                </Alert>
+                <FormControl>
                   <FormLabel htmlFor="txn">
                     {t('payment.test.transactionIdLabel', 'Transaction ID')}
                   </FormLabel>
-                  <Input id="txn" value={txn} onChange={(e) => setTxn(e.target.value)} />
-                </div>
-                <div className="d-flex gap-2 flex-wrap">
+                  <Input id="txn" value={txn} onChange={(e) => setTxn(e.target.value)} minH="44px" />
+                </FormControl>
+                <Flex gap={2} flexWrap="wrap">
                   <Button
                     colorScheme="green"
                     onClick={handleDispatchSuccess}
                     aria-label={t('payment.test.dispatchSuccess', 'Dispatch paymentSuccess')}
+                    minH="44px"
+                    leftIcon={<Icon as={CreditCard} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                   >
-                    <CreditCard size={ICON_SIZE_MD} />
                     {t('payment.test.dispatchSuccess', 'Dispatch paymentSuccess')}
                   </Button>
                   <Button
@@ -64,6 +62,7 @@ const PaymentTest = () => {
                     variant="outline"
                     onClick={handleDispatchError}
                     aria-label={t('payment.test.dispatchError', 'Dispatch paymentError')}
+                    minH="44px"
                   >
                     {t('payment.test.dispatchError', 'Dispatch paymentError')}
                   </Button>
@@ -72,12 +71,13 @@ const PaymentTest = () => {
                     variant="outline"
                     onClick={() => navigate(-1)}
                     aria-label={t('common.goBack', 'Go Back')}
+                    minH="44px"
+                    leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                   >
-                    <ArrowLeft size={ICON_SIZE_MD} />
                     {t('common.goBack', 'Go Back')}
                   </Button>
-                </div>
-              </FormControl>
+                </Flex>
+              </Stack>
             </CardBody>
           </StandardCard>
         </Box>
