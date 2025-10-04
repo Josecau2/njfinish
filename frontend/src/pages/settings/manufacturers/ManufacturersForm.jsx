@@ -479,7 +479,7 @@ const ManufacturerForm = () => {
         </Alert>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <Box as="form" onSubmit={handleSubmit}>
         {/* Information Notice */}
         <StandardCard border="none" boxShadow="sm" mb={4} borderLeft={`4px solid ${headerBg}`}>
           <CardBody py={3} px={4} bg={bgBlue50}>
@@ -823,7 +823,7 @@ const ManufacturerForm = () => {
             </Flex>
           </CardBody>
         </StandardCard>
-      </form>
+      </Box>
     </Container>
   )
 }
