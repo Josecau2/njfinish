@@ -733,7 +733,7 @@ const ManufacturerForm = () => {
               />
               {formData.costMultiplier && (
                 <Text fontSize="sm" color={textBlue500} mt={2} display="flex" alignItems="center">
-                  <Info size={ICON_SIZE_MD} style={{ marginRight: '0.25rem' }} />
+                  <Box as={Info} boxSize={ICON_SIZE_MD} mr={1} />
                   {t('settings.manufacturers.example.multiplier', {
                     msrp: (200.0).toFixed(2),
                     cost: (100.0).toFixed(2),
