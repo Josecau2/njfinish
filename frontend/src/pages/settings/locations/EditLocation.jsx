@@ -195,7 +195,7 @@ const EditLocation = () => {
 
   return (
     <PageContainer>
-      <form onSubmit={handleSubmit} noValidate>
+      <Box as="form" onSubmit={handleSubmit} noValidate>
         <StandardCard>
           <CardHeader>
             <Heading size="md">{t('settings.locations.edit.title', 'Edit Location')}</Heading>
@@ -344,7 +344,7 @@ const EditLocation = () => {
             </Stack>
           </CardBody>
         </StandardCard>
-      </form>
+      </Box>
     </PageContainer>
   )
 }
