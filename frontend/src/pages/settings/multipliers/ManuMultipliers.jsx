@@ -4,7 +4,7 @@ import PageContainer from '../../../components/PageContainer'
 import StandardCard from '../../../components/StandardCard'
 import { useDispatch, useSelector } from 'react-redux'
 import { Search, Settings, Users, User, Pencil } from 'lucide-react'
-import Swal from 'sweetalert2'
+import { useToast } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
 import EditGroupModal from '../../../components/model/EditGroupModal'
@@ -21,6 +21,7 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 const ManuMultipliers = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
+  const toast = useToast()
   const { list: usersGroup = [], allGroups = [] } = useSelector((state) => state.usersGroup || {})
   const { list: multiManufacturers = [] } = useSelector((state) => state.multiManufacturer || {})
   const customization = useSelector((state) => state.customization)
@@ -76,36 +77,22 @@ const ManuMultipliers = () => {
         .then(() => {
           dispatch(fetchMultiManufacturers())
           dispatch(fetchUserMultipliers())
-          Swal.fire({
-            toast: true,
-            position: 'top',
-            icon: 'success',
+          toast({
             title: t('settings.userGroups.multipliers.toast.updateSuccess'),
-            showConfirmButton: false,
-            timer: 1500,
-            width: '360px',
-            didOpen: (toast) => {
-              toast.style.padding = '8px 12px'
-              toast.style.fontSize = '14px'
-              toast.style.minHeight = 'auto'
-            },
+            status: 'success',
+            duration: 1500,
+            isClosable: true,
+            position: 'top',
           })
         })
         .catch((err) => {
           console.error('Toggle failed:', err)
-          Swal.fire({
-            toast: true,
-            position: 'top',
-            icon: 'error',
+          toast({
             title: t('settings.userGroups.multipliers.toast.updateFailed'),
-            showConfirmButton: false,
-            timer: 1500,
-            width: '330px',
-            didOpen: (toast) => {
-              toast.style.padding = '8px 12px'
-              toast.style.fontSize = '14px'
-              toast.style.minHeight = 'auto'
-            },
+            status: 'error',
+            duration: 1500,
+            isClosable: true,
+            position: 'top',
           })
         })
     } else {
@@ -114,36 +101,22 @@ const ManuMultipliers = () => {
         .then(() => {
           dispatch(fetchMultiManufacturers())
           dispatch(fetchUserMultipliers())
-          Swal.fire({
-            toast: true,
-            position: 'top',
-            icon: 'success',
+          toast({
             title: t('settings.userGroups.multipliers.toast.updateSuccess'),
-            showConfirmButton: false,
-            timer: 1500,
-            width: '360px',
-            didOpen: (toast) => {
-              toast.style.padding = '8px 12px'
-              toast.style.fontSize = '14px'
-              toast.style.minHeight = 'auto'
-            },
+            status: 'success',
+            duration: 1500,
+            isClosable: true,
+            position: 'top',
           })
         })
         .catch((err) => {
           console.error('Toggle failed:', err)
-          Swal.fire({
-            toast: true,
-            position: 'top',
-            icon: 'error',
+          toast({
             title: t('settings.userGroups.multipliers.toast.updateFailed'),
-            showConfirmButton: false,
-            timer: 1500,
-            width: '330px',
-            didOpen: (toast) => {
-              toast.style.padding = '8px 12px'
-              toast.style.fontSize = '14px'
-              toast.style.minHeight = 'auto'
-            },
+            status: 'error',
+            duration: 1500,
+            isClosable: true,
+            position: 'top',
           })
         })
     }
@@ -169,13 +142,25 @@ const ManuMultipliers = () => {
         .then((res) => {
           setShowModal(false)
           setSelectedGroup(null)
-          Swal.fire(t('common.success') + '!', res.message || t('settings.userGroups.multipliers.toast.updateSuccess'), 'success')
+          toast({
+            title: t('common.success'),
+            description: res.message || t('settings.userGroups.multipliers.toast.updateSuccess'),
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          })
           dispatch(fetchMultiManufacturers())
           dispatch(fetchUserMultipliers())
         })
         .catch((err) => {
           console.error('Create failed', err)
-          Swal.fire(t('common.error'), err.message || t('settings.userGroups.multipliers.toast.updateFailed'), 'error')
+          toast({
+            title: t('common.error'),
+            description: err.message || t('settings.userGroups.multipliers.toast.updateFailed'),
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          })
         })
     } else {
       dispatch(updateMultiManufacturer({ id: selectedGroup.id, data: updatedData }))
@@ -183,13 +168,25 @@ const ManuMultipliers = () => {
         .then((res) => {
           setShowModal(false)
           setSelectedGroup(null)
-          Swal.fire(t('common.success') + '!', res.message || t('settings.userGroups.multipliers.toast.updateSuccess'), 'success')
+          toast({
+            title: t('common.success'),
+            description: res.message || t('settings.userGroups.multipliers.toast.updateSuccess'),
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          })
           dispatch(fetchMultiManufacturers())
           dispatch(fetchUserMultipliers())
         })
         .catch((err) => {
           console.error('Update failed', err)
-          Swal.fire(t('common.error'), err.message || t('settings.userGroups.multipliers.toast.updateFailed'), 'error')
+          toast({
+            title: t('common.error'),
+            description: err.message || t('settings.userGroups.multipliers.toast.updateFailed'),
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          })
         })
     }
   }
