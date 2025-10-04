@@ -522,6 +522,15 @@ const Resources = ({ isContractor, contractorGroupName }) => {
     }
   }, [filters.medium, activeTab])
 
+  // Reverse tab sync - update medium when tab changes manually
+  useEffect(() => {
+    const tabToMediumMap = { 0: 'announcements', 1: 'links', 2: 'files' }
+    const expectedMedium = tabToMediumMap[activeTab]
+    if (expectedMedium && filters.medium !== expectedMedium && filters.medium !== 'all') {
+      setFilters((prev) => ({ ...prev, medium: expectedMedium }))
+    }
+  }, [activeTab, filters.medium])
+
   const categoriesForDisplay = useMemo(
     () => (isAdmin ? categoryReference : resourceData?.categories || []),
     [isAdmin, categoryReference, resourceData],
@@ -599,18 +608,18 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
   // Memoized resource counts for tabs
   const announcementsCount = useMemo(
-    () => (resourceData?.announcements || []).filter((item) => passesFilters(item, 'announcements')).length,
-    [resourceData, passesFilters]
+    () => (resourceData?.announcements || []).filter((item) => passesFiltersIgnoringMedium(item, 'announcements')).length,
+    [resourceData, passesFiltersIgnoringMedium]
   )
 
   const linksCount = useMemo(
-    () => (resourceData?.links || []).filter((item) => passesFilters(item, 'links')).length,
-    [resourceData, passesFilters]
+    () => (resourceData?.links || []).filter((item) => passesFiltersIgnoringMedium(item, 'links')).length,
+    [resourceData, passesFiltersIgnoringMedium]
   )
 
   const filesCount = useMemo(
-    () => (resourceData?.files || []).filter((item) => passesFilters(item, 'files')).length,
-    [resourceData, passesFilters]
+    () => (resourceData?.files || []).filter((item) => passesFiltersIgnoringMedium(item, 'files')).length,
+    [resourceData, passesFiltersIgnoringMedium]
   )
 
   const resourcesByCategory = useMemo(() => {
