@@ -24,13 +24,13 @@ import {
   Textarea,
   VStack,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { User, Mail, Save, ArrowLeft, Phone, MapPin } from 'lucide-react'
 import { createCustomer, updateCustomer, fetchCustomers } from '../../store/slices/customerSlice'
 import withContractorScope from '../../components/withContractorScope'
-import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 const CustomerForm = ({
@@ -45,6 +45,7 @@ const CustomerForm = ({
   const id = decodeParam(rawId)
   const isEditing = Boolean(id)
   const { t } = useTranslation()
+  const toast = useToast()
 
   // Color mode values - MUST be before useState
   const textColor = useColorModeValue('gray.800', 'gray.200')
@@ -96,7 +97,13 @@ const CustomerForm = ({
         })
       } else if (customers.length > 0) {
         // Customer not found, redirect back
-        Swal.fire(t('common.error'), t('customers.form.alerts.notFound'), 'error')
+        toast({
+          title: t('common.error'),
+          description: t('customers.form.alerts.notFound'),
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
         navigate('/customers')
       }
     }
@@ -162,16 +169,34 @@ const CustomerForm = ({
           }),
         ).unwrap()
 
-        Swal.fire(t('common.success'), t('customers.form.alerts.updatedText'), 'success')
+        toast({
+          title: t('common.success'),
+          description: t('customers.form.alerts.updatedText'),
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
       } else {
         await dispatch(createCustomer(formData)).unwrap()
-        Swal.fire(t('common.success'), t('customers.form.alerts.createdText'), 'success')
+        toast({
+          title: t('common.success'),
+          description: t('customers.form.alerts.createdText'),
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
       }
 
       navigate('/customers')
     } catch (error) {
       console.error('Form submission error:', error)
-      Swal.fire(t('common.error'), error.message || t('customers.form.alerts.saveFailed'), 'error')
+      toast({
+        title: t('common.error'),
+        description: error.message || t('customers.form.alerts.saveFailed'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     }
   }
 

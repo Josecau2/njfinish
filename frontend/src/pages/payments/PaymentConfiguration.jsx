@@ -24,12 +24,12 @@ import {
   Text,
   Textarea,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { CreditCard, Settings, Save } from 'lucide-react'
 
-import Swal from 'sweetalert2'
 import PageHeader from '../../components/PageHeader'
 import {
   fetchPaymentConfig,
@@ -47,6 +47,7 @@ const SECRET_ACTIONS = {
 const PaymentConfiguration = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
+  const toast = useToast()
   const { paymentConfig, configLoading, configError } = useSelector((state) => state.payments)
 
   const [formData, setFormData] = useState({
@@ -172,17 +173,21 @@ const PaymentConfiguration = () => {
         await dispatch(savePaymentConfig(payload)).unwrap()
       }
 
-      Swal.fire({
-        icon: 'success',
+      toast({
         title: t('paymentConfig.alerts.savedTitle', 'Configuration saved'),
-        text: t('paymentConfig.alerts.savedMessage', 'Payment configuration has been updated.'),
+        description: t('paymentConfig.alerts.savedMessage', 'Payment configuration has been updated.'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
       })
     } catch (err) {
       console.error('Failed to save configuration:', err)
-      Swal.fire({
-        icon: 'error',
+      toast({
         title: t('common.error', 'Error'),
-        text: err?.message || t('paymentConfig.alerts.saveFailed', 'Unable to save configuration.'),
+        description: err?.message || t('paymentConfig.alerts.saveFailed', 'Unable to save configuration.'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
       })
       setIsDirty(true)
     }

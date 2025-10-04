@@ -18,11 +18,11 @@ import {
   Stack,
   Text,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
 import { ArrowLeft, CreditCard } from 'lucide-react'
-import Swal from 'sweetalert2'
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 
@@ -109,6 +109,7 @@ const PaymentPage = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const toast = useToast()
   const { id } = useParams()
 
   // Color mode values - MUST be before useState
@@ -172,34 +173,40 @@ const PaymentPage = () => {
       const status = await pollForStatus()
 
       if (status === 'completed') {
-        await Swal.fire({
+        toast({
           title: t('payment.success.title', 'Payment successful'),
-          text: t('payment.success.message', 'Your payment has been processed successfully.'),
-          icon: 'success',
+          description: t('payment.success.message', 'Your payment has been processed successfully.'),
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
         })
         navigate('/payments')
         return
       }
 
       if (status === 'failed') {
-        await Swal.fire({
+        toast({
           title: t('payment.failed.title', 'Payment failed'),
-          text: t(
+          description: t(
             'payment.failed.message',
             'Stripe was unable to complete the payment. Please try again.',
           ),
-          icon: 'error',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
         })
         return
       }
 
-      await Swal.fire({
+      toast({
         title: t('payment.status.pendingTitle', 'Awaiting confirmation'),
-        text: t('payment.status.pending', 'Awaiting confirmation...'),
-        icon: 'info',
+        description: t('payment.status.pending', 'Awaiting confirmation...'),
+        status: 'info',
+        duration: 5000,
+        isClosable: true,
       })
     },
-    [pollForStatus, t, navigate],
+    [pollForStatus, t, navigate, toast],
   )
 
   const initializeIntent = useCallback(async () => {

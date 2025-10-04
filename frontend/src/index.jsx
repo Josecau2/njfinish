@@ -9,9 +9,8 @@ import './styles/reset.css'        // 1. Reset - box-sizing, overflow guards
 import './styles/utilities.css'    // 2. Utilities - spacing scale, helpers
 import './styles/fixes.css'         // 3. Fixes - overflow guards, iOS safe area
 import './styles/base.css'          // 4. Base - typography, accessibility
-import 'sweetalert2/dist/sweetalert2.min.css' // 5. SweetAlert2 - modal/alert styles
-import './main.css'                 // 6. Main - login, PDF, modals
-import './responsive.css'           // 7. Responsive - overrides (must be last)
+import './main.css'                 // 5. Main - login, PDF, modals
+import './responsive.css'           // 6. Responsive - overrides (must be last)
 import './i18n'
 
 import App from './App.jsx'

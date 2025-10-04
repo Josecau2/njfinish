@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
@@ -12,13 +12,18 @@ import {
 import { buildEncodedPath, genNoise } from '../../utils/obfuscate'
 import axiosInstance from '../../helpers/axiosInstance'
 import { hasPermission, isAdmin } from '../../helpers/permissions'
-import Swal from 'sweetalert2'
 import withContractorScope from '../../components/withContractorScope'
 import ProposalAcceptanceModal from '../../components/ProposalAcceptanceModal'
 import PermissionGate from '../../components/PermissionGate'
 import PaginationComponent from '../../components/common/PaginationComponent'
 import PageHeader from '../../components/PageHeader'
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
   Badge,
   Box,
   Button,
@@ -46,6 +51,8 @@ import {
   Tr,
   VStack,
   useColorModeValue,
+  useDisclosure,
+  useToast,
 } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
@@ -68,6 +75,12 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 const Proposals = ({ isContractor, contractorGroupId, contractorModules, contractorGroupName }) => {
   const { t } = useTranslation()
   const prefersReducedMotion = useReducedMotion()
+  const toast = useToast()
+  const { isOpen: isSendOpen, onOpen: onSendOpen, onClose: onSendClose } = useDisclosure()
+  const { isOpen: isRejectOpen, onOpen: onRejectOpen, onClose: onRejectClose } = useDisclosure()
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure()
+  const cancelRef = useRef()
+  const [pendingProposalId, setPendingProposalId] = useState(null)
 
   // Color mode values - MUST be before useState
   const cardBg = useColorModeValue('white', 'gray.800')
@@ -332,32 +345,38 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         accept: t('proposals.toast.successAccept'),
         reject: t('proposals.toast.successReject'),
       }
-      Swal.fire(
-        t('common.success') || 'Success',
-        successMap[action] || t('proposals.toast.successSend'),
-        'success',
-      )
+      toast({
+        title: t('common.success') || 'Success',
+        description: successMap[action] || t('proposals.toast.successSend'),
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
     } catch (error) {
       console.error('Status update error:', error)
-      Swal.fire(t('common.error'), error.message || t('proposals.toast.errorGeneric'), 'error')
+      toast({
+        title: t('common.error'),
+        description: error.message || t('proposals.toast.errorGeneric'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     }
   }
 
   const handleSendProposal = (proposalId) => {
     // Defense-in-depth: contractors should not trigger send
     if (isContractor) return
-    Swal.fire({
-      title: t('proposals.confirm.sendTitle'),
-      text: t('proposals.confirm.sendText'),
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: t('proposals.confirm.sendConfirm'),
-      cancelButtonText: t('proposals.confirm.cancel'),
-    }).then((result) => {
-      if (result.isConfirmed) {
-        handleStatusAction(proposalId, 'send', 'sent')
-      }
-    })
+    setPendingProposalId(proposalId)
+    onSendOpen()
+  }
+
+  const confirmSendProposal = () => {
+    if (pendingProposalId) {
+      handleStatusAction(pendingProposalId, 'send', 'sent')
+      setPendingProposalId(null)
+    }
+    onSendClose()
   }
 
   const handleAcceptProposal = (proposal) => {
@@ -373,49 +392,48 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   }
 
   const handleRejectProposal = (proposalId) => {
-    Swal.fire({
-      title: t('proposals.confirm.rejectTitle'),
-      text: t('proposals.confirm.rejectText'),
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: t('proposals.confirm.rejectConfirm'),
-      cancelButtonText: t('proposals.confirm.cancel'),
-    }).then((result) => {
-      if (result.isConfirmed) {
-        handleStatusAction(proposalId, 'reject', 'rejected')
-      }
-    })
+    setPendingProposalId(proposalId)
+    onRejectOpen()
+  }
+
+  const confirmRejectProposal = () => {
+    if (pendingProposalId) {
+      handleStatusAction(pendingProposalId, 'reject', 'rejected')
+      setPendingProposalId(null)
+    }
+    onRejectClose()
   }
 
   const handleDelete = (id) => {
-    Swal.fire({
-      title: t('proposals.confirm.deleteTitle'),
-      text: t('proposals.confirm.deleteText'),
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: 'var(--chakra-colors-red-500)',
-      cancelButtonColor: 'var(--chakra-colors-blue-500)',
-      confirmButtonText: t('proposals.confirm.deleteConfirm'),
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const user = JSON.parse(localStorage.getItem('user'))
-          const mutation = isAdmin(user) ? adminDeleteMutation : deleteProposalMutation
-          await mutation.mutateAsync(id)
-          Swal.fire(
-            t('common.deleted') || 'Deleted',
-            t('proposals.toast.deleted') || 'Your quote has been deleted.',
-            'success',
-          )
-        } catch (error) {
-          Swal.fire(
-            t('common.error'),
-            t('proposals.toast.deleteFailed') || 'Failed to delete the quote.',
-            'error',
-          )
-        }
+    setPendingProposalId(id)
+    onDeleteOpen()
+  }
+
+  const confirmDelete = async () => {
+    if (pendingProposalId) {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'))
+        const mutation = isAdmin(user) ? adminDeleteMutation : deleteProposalMutation
+        await mutation.mutateAsync(pendingProposalId)
+        toast({
+          title: t('common.deleted') || 'Deleted',
+          description: t('proposals.toast.deleted') || 'Your quote has been deleted.',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
+      } catch (error) {
+        toast({
+          title: t('common.error'),
+          description: t('proposals.toast.deleteFailed') || 'Failed to delete the quote.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
       }
-    })
+      setPendingProposalId(null)
+    }
+    onDeleteClose()
   }
 
   const handleCreateShareLink = async (proposal) => {
@@ -430,34 +448,37 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       const link = `${window.location.origin}/p/${encodeURIComponent(token)}`
       const expiryStr = expires_at ? new Date(expires_at).toLocaleString() : t('common.na')
 
-      await Swal.fire({
-        title: t('proposals.share.createdTitle'),
-        html: `
-          <div class="mb-2">${t('proposals.share.expires')} <b>${expiryStr}</b></div>
-          <input id="share-link" class="swal2-input" value="${link}" readonly />
-        `,
-        showCancelButton: true,
-        confirmButtonText: t('proposals.share.copy'),
-        didOpen: () => {
-          const el = document.getElementById('share-link')
-          if (el) {
-            el.focus()
-            el.select()
-          }
-        },
-        preConfirm: async () => {
-          try {
-            await navigator.clipboard.writeText(link)
-          } catch (e) {
-            /* ignore */
-          }
-        },
-      })
+      // Copy link to clipboard and show success toast
+      try {
+        await navigator.clipboard.writeText(link)
+        toast({
+          title: t('proposals.share.createdTitle'),
+          description: `${t('proposals.share.expires')} ${expiryStr}. Link copied to clipboard!`,
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        })
+      } catch (e) {
+        // Fallback if clipboard API fails
+        toast({
+          title: t('proposals.share.createdTitle'),
+          description: `${t('proposals.share.expires')} ${expiryStr}. Link: ${link}`,
+          status: 'success',
+          duration: 8000,
+          isClosable: true,
+        })
+      }
 
       // TanStack Query will automatically refresh the list after mutations
     } catch (err) {
       console.error('Create share link error:', err)
-      Swal.fire(t('common.error'), err.message || t('proposals.share.error'), 'error')
+      toast({
+        title: t('common.error'),
+        description: err.message || t('proposals.share.error'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     }
   }
 
@@ -819,6 +840,66 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
         onAcceptanceComplete={handleAcceptanceComplete}
         isContractor={isContractor}
       />
+
+      {/* Send Confirmation Dialog */}
+      <AlertDialog isOpen={isSendOpen} leastDestructiveRef={cancelRef} onClose={onSendClose}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('proposals.confirm.sendTitle')}
+            </AlertDialogHeader>
+            <AlertDialogBody>{t('proposals.confirm.sendText')}</AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onSendClose}>
+                {t('proposals.confirm.cancel')}
+              </Button>
+              <Button colorScheme="blue" onClick={confirmSendProposal} ml={3}>
+                {t('proposals.confirm.sendConfirm')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+
+      {/* Reject Confirmation Dialog */}
+      <AlertDialog isOpen={isRejectOpen} leastDestructiveRef={cancelRef} onClose={onRejectClose}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('proposals.confirm.rejectTitle')}
+            </AlertDialogHeader>
+            <AlertDialogBody>{t('proposals.confirm.rejectText')}</AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onRejectClose}>
+                {t('proposals.confirm.cancel')}
+              </Button>
+              <Button colorScheme="red" onClick={confirmRejectProposal} ml={3}>
+                {t('proposals.confirm.rejectConfirm')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={cancelRef} onClose={onDeleteClose}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('proposals.confirm.deleteTitle')}
+            </AlertDialogHeader>
+            <AlertDialogBody>{t('proposals.confirm.deleteText')}</AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onDeleteClose}>
+                {t('proposals.confirm.cancel')}
+              </Button>
+              <Button colorScheme="red" onClick={confirmDelete} ml={3}>
+                {t('proposals.confirm.deleteConfirm')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </PageContainer>
   )
 }

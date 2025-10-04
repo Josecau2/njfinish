@@ -4,7 +4,7 @@
 - 260 React files analysed across `frontend/src`
 - 85 files render exclusively with Chakra primitives (no raw tags or inline styles)
 - 58 files mix Chakra with raw HTML, inline styles, or CSS classes
-- 2 helper modules (`frontend/src/helpers/proposalPdfBuilder.js:199`, `frontend/src/helpers/pdfTemplateGenerator.js:369`) output handcrafted HTML for PDFs and are outside Chakra scope
+- 2 helper modules (`frontend/src/helpers/proposalPdfBuilder.js:199`, `frontend/src/helpers/pdfTemplateGenerator.js:369`) output handcrafted HTML for PDFs and are outside Chakra scope 
 - Remaining files are logic/helpers without rendered markup
 
 ## Global Non-Chakra Dependencies

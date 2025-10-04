@@ -25,6 +25,7 @@ import {
   InputLeftElement,
   Icon,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react'
 import { MobileListCard } from '../../components/StandardCard'
 import { Search, CreditCard, Download, ShoppingCart } from 'lucide-react'
@@ -36,7 +37,6 @@ import { fetchManufacturers, fetchManufacturerById } from '../../store/slices/ma
 import { fetchPayments } from '../../store/slices/paymentsSlice'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../helpers/axiosInstance'
-import Swal from 'sweetalert2'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const OrdersList = ({
@@ -48,6 +48,7 @@ const OrdersList = ({
 }) => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
+  const toast = useToast()
   const { items: orders, loading } = useSelector((s) => s.orders)
   const { list: manuList, byId: manuById } = useSelector((s) => s.manufacturers)
   const { payments } = useSelector((s) => s.payments)
@@ -366,7 +367,13 @@ const OrdersList = ({
         // Calculate payment amount from order total
         const amount = order.grand_total_cents ? order.grand_total_cents / 100 : 0
         if (amount <= 0) {
-          Swal.fire('Error', 'Cannot create payment: Order total is invalid', 'error')
+          toast({
+            title: 'Error',
+            description: 'Cannot create payment: Order total is invalid',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          })
           return
         }
 
@@ -387,7 +394,13 @@ const OrdersList = ({
         }
       } catch (error) {
         console.error('Failed to create payment for order:', error)
-        Swal.fire('Error', 'Failed to create payment. Please try again.', 'error')
+        toast({
+          title: 'Error',
+          description: 'Failed to create payment. Please try again.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
         // Fallback to payments list
         navigate('/payments')
       }

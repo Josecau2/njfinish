@@ -22,12 +22,12 @@ import {
   Text,
   Textarea,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import PageHeader from '../../components/PageHeader'
 import { User, Mail, ArrowLeft, Save, Edit, Phone, Building2, MapPin } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
-import Swal from 'sweetalert2'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
 import { useTranslation } from 'react-i18next'
@@ -173,6 +173,7 @@ const CustomFormSelect = ({
 const EditCustomerPage = () => {
   const { t } = useTranslation()
   const customization = useSelector((state) => state.customization)
+  const toast = useToast()
 
   const headerBg = customization.headerBg || 'purple.500'
   const textColor = getContrastColor(headerBg)
@@ -230,7 +231,13 @@ const EditCustomerPage = () => {
         })
       } catch (err) {
         console.error(err)
-        Swal.fire(t('common.error'), t('customers.form.alerts.notFound'), 'error')
+        toast({
+          title: t('common.error'),
+          description: t('customers.form.alerts.notFound'),
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
         navigate('/customers')
       } finally {
         setIsLoading(false)
@@ -294,20 +301,22 @@ const EditCustomerPage = () => {
     setIsSubmitting(true)
     try {
       await axiosInstance.put(`/api/customers/update/${customerId}`, formData)
-      Swal.fire({
-        icon: 'success',
+      toast({
         title: t('customers.form.alerts.updatedTitle'),
-        text: t('customers.form.alerts.updatedText'),
-        timer: 2000,
-        showConfirmButton: false,
+        description: t('customers.form.alerts.updatedText'),
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
       })
       navigate('/customers')
     } catch (err) {
       console.error(err)
-      Swal.fire({
-        icon: 'error',
+      toast({
         title: t('common.error'),
-        text: t('customers.form.alerts.updateFailed'),
+        description: t('customers.form.alerts.updateFailed'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
       })
     } finally {
       setIsSubmitting(false)

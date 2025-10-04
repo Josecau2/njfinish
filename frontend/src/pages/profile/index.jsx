@@ -1,10 +1,9 @@
 import StandardCard from '../../components/StandardCard'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Box, Button, CardBody, CardHeader, Flex, FormControl, FormErrorMessage, FormLabel, Input, Select, SimpleGrid, Spinner, useColorModeValue, Heading, Text } from '@chakra-ui/react'
+import { Box, Button, CardBody, CardHeader, Flex, FormControl, FormErrorMessage, FormLabel, Input, Select, SimpleGrid, Spinner, useColorModeValue, Heading, Text, useToast } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUserById, updateUser } from '../../store/slices/userSlice'
-import Swal from 'sweetalert2'
 import { fetchLocations } from '../../store/slices/locationSlice'
 import axiosInstance from '../../helpers/axiosInstance'
 import { getContrastColor } from '../../utils/colorUtils'
@@ -12,6 +11,7 @@ import { getContrastColor } from '../../utils/colorUtils'
 const ProfilePage = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
+  const toast = useToast()
   const loggedInUser = JSON.parse(localStorage.getItem('user'))
   const loggedInUserId = loggedInUser?.userId
   const isContractor = loggedInUser?.group?.group_type === 'contractor'
@@ -112,7 +112,13 @@ const ProfilePage = () => {
         if (formData.password && formData.password.trim() !== '') body.password = formData.password
         const res = await axiosInstance.put('/api/me', body)
         if (res?.data?.status === 200 || res?.status === 200) {
-          Swal.fire(t('common.success'), t('profile.updateSuccess'), 'success')
+          toast({
+            title: t('common.success'),
+            description: t('profile.updateSuccess'),
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          })
         } else {
           throw new Error(res?.data?.message || t('profile.updateFailed'))
         }
@@ -121,13 +127,25 @@ const ProfilePage = () => {
         delete payload.confirmPassword
         const response = await dispatch(updateUser({ id: loggedInUserId, data: payload }))
         if (response?.payload?.status === 200) {
-          Swal.fire(t('common.success'), t('profile.updateSuccess'), 'success')
+          toast({
+            title: t('common.success'),
+            description: t('profile.updateSuccess'),
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          })
         } else {
           throw new Error(response?.payload?.message || t('profile.updateFailed'))
         }
       }
     } catch (error) {
-      Swal.fire(t('common.error'), error.message || t('profile.errorGeneric'), 'error')
+      toast({
+        title: t('common.error'),
+        description: error.message || t('profile.errorGeneric'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     } finally {
       setSubmitting(false)
     }

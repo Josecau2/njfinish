@@ -2,7 +2,6 @@ import StandardCard from '../../components/StandardCard'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom'
-import Swal from 'sweetalert2'
 import { useTranslation } from 'react-i18next'
 import {
   Badge,
@@ -17,6 +16,7 @@ import {
   Stack,
   Text,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import {
@@ -60,6 +60,7 @@ const ProposalForm = ({
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const toast = useToast()
 
   const queryParams = new URLSearchParams(location.search)
   const isQuick = queryParams.get('quick') === 'yes'
@@ -178,42 +179,56 @@ const ProposalForm = ({
       const response = await sendFormDataToBackend(payload)
 
       if (response.data.success === true) {
-        Swal.fire(
-          t('common.success', 'Success'),
-          t('proposals.toast.successSend', 'Quote sent successfully'),
-          'success',
-        )
+        toast({
+          title: t('common.success', 'Success'),
+          description: t('proposals.toast.successSend', 'Quote sent successfully'),
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        })
         setIsFormDirty(false)
         navigate('/quotes')
       } else {
-        Swal.fire(
-          t('common.error', 'Error'),
-          response.data?.message ||
+        toast({
+          title: t('common.error', 'Error'),
+          description: response.data?.message ||
             t('proposals.errors.operationFailed', 'Operation failed. Please try again.'),
-          'error',
-        )
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
       }
     } catch (error) {
       if (error.response?.status === 403) {
-        Swal.fire(
-          t('common.error', 'Error'),
-          t(
+        toast({
+          title: t('common.error', 'Error'),
+          description: t(
             'settings.customization.ui.alerts.saveFailed',
             'Failed to save customization. Please try again.',
           ),
-          'error',
-        )
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
       } else if (error.response?.status === 400) {
         const message =
           error.response?.data?.message ||
           t('proposals.errors.operationFailed', 'Operation failed. Please try again.')
-        Swal.fire(t('common.error', 'Error'), message, 'error')
+        toast({
+          title: t('common.error', 'Error'),
+          description: message,
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
       } else {
-        Swal.fire(
-          t('common.error', 'Error'),
-          error.message || t('proposals.toast.errorGeneric', 'An error occurred'),
-          'error',
-        )
+        toast({
+          title: t('common.error', 'Error'),
+          description: error.message || t('proposals.toast.errorGeneric', 'An error occurred'),
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
       }
     }
   }
