@@ -1,4 +1,5 @@
 import React from 'react'
+import { Box } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
 import { getOptimalColors } from '../utils/colorUtils'
 
@@ -185,30 +186,118 @@ const buildWrapperStyles = (backgroundColor, optimalColors, colorSource) => `
 `
 
 const withDynamicContrast = (WrappedComponent, options = {}) => {
-  const { colorSource = 'headerBg', className = '', containerElement = 'div' } = options
+  const { colorSource = 'headerBg', containerElement = 'div' } = options
 
   const DynamicContrastComponent = (props) => {
     const customization = useSelector((state) => state.customization)
     const backgroundColor = customization[colorSource] || "white"
     const optimalColors = getOptimalColors(backgroundColor)
 
-    const containerProps = {
-      className: `dynamic-contrast-container ${className}`.trim(),
-      style: {
-        backgroundColor,
-        color: optimalColors.text,
-        ...props.style,
-      },
-    }
-
     const ContainerElement = containerElement
 
     return (
       <>
         <style>{buildContainerStyles(backgroundColor, optimalColors)}</style>
-        <ContainerElement {...containerProps}>
+        <Box
+          as={ContainerElement}
+          bg={backgroundColor}
+          color={optimalColors.text}
+          sx={{
+            '.btn-light': {
+              bg: `${optimalColors.button.light.bg} !important`,
+              borderColor: `${optimalColors.button.light.border} !important`,
+              color: `${optimalColors.button.light.color} !important`,
+              '&:hover': {
+                bg: `${optimalColors.button.light.hover.bg} !important`,
+                color: `${optimalColors.button.light.hover.color} !important`,
+              },
+            },
+            '.btn-primary': {
+              bg: `${optimalColors.button.primary.bg} !important`,
+              borderColor: `${optimalColors.button.primary.border} !important`,
+              color: `${optimalColors.button.primary.color} !important`,
+              '&:hover': {
+                bg: `${optimalColors.button.primary.hover.bg} !important`,
+                color: `${optimalColors.button.primary.hover.color} !important`,
+              },
+            },
+            '.btn-success': {
+              bg: `${optimalColors.button.success.bg} !important`,
+              borderColor: `${optimalColors.button.success.border} !important`,
+              color: `${optimalColors.button.success.color} !important`,
+              '&:hover': {
+                bg: `${optimalColors.button.success.hover.bg} !important`,
+                color: `${optimalColors.button.success.hover.color} !important`,
+              },
+            },
+            '.btn-warning': {
+              bg: `${optimalColors.button.warning.bg} !important`,
+              borderColor: `${optimalColors.button.warning.border} !important`,
+              color: `${optimalColors.button.warning.color} !important`,
+              '&:hover': {
+                bg: `${optimalColors.button.warning.hover.bg} !important`,
+                color: `${optimalColors.button.warning.hover.color} !important`,
+              },
+            },
+            '.btn-danger': {
+              bg: `${optimalColors.button.danger.bg} !important`,
+              borderColor: `${optimalColors.button.danger.border} !important`,
+              color: `${optimalColors.button.danger.color} !important`,
+              '&:hover': {
+                bg: `${optimalColors.button.danger.hover.bg} !important`,
+                color: `${optimalColors.button.danger.hover.color} !important`,
+              },
+            },
+            '.badge-light': {
+              bg: `${optimalColors.badge.light.bg} !important`,
+              color: `${optimalColors.badge.light.color} !important`,
+              border: `1px solid ${optimalColors.badge.light.border} !important`,
+            },
+            '.badge-info': {
+              bg: `${optimalColors.badge.info.bg} !important`,
+              color: `${optimalColors.badge.info.color} !important`,
+              border: `1px solid ${optimalColors.badge.info.border} !important`,
+            },
+            '.badge-secondary': {
+              bg: `${optimalColors.badge.secondary.bg} !important`,
+              color: `${optimalColors.badge.secondary.color} !important`,
+              border: `1px solid ${optimalColors.badge.secondary.border} !important`,
+            },
+            '.badge-warning': {
+              bg: `${optimalColors.badge.warning.bg} !important`,
+              color: `${optimalColors.badge.warning.color} !important`,
+              border: `1px solid ${optimalColors.badge.warning.border} !important`,
+            },
+            '.badge-success': {
+              bg: `${optimalColors.badge.success.bg} !important`,
+              color: `${optimalColors.badge.success.color} !important`,
+              border: `1px solid ${optimalColors.badge.success.border} !important`,
+            },
+            '.badge-danger': {
+              bg: `${optimalColors.badge.danger.bg} !important`,
+              color: `${optimalColors.badge.danger.color} !important`,
+              border: `1px solid ${optimalColors.badge.danger.border} !important`,
+            },
+            '.text-muted': {
+              color: `${optimalColors.subtitle} !important`,
+            },
+            '.border': {
+              borderColor: `${optimalColors.border} !important`,
+            },
+            '.vr': {
+              bg: `${optimalColors.separator} !important`,
+            },
+            'h1, h2, h3, h4, h5, h6': {
+              color: `${optimalColors.text} !important`,
+            },
+            '.cicon svg': {
+              color: `${optimalColors.text} !important`,
+            },
+            ...props.style,
+          }}
+        >
           <WrappedComponent {...props} dynamicColors={optimalColors} backgroundColor={backgroundColor} />
-        </ContainerElement>
+        </Box>
       </>
     )
   }
@@ -221,8 +310,6 @@ const withDynamicContrast = (WrappedComponent, options = {}) => {
 export const DynamicContrastWrapper = ({
   children,
   colorSource = 'headerBg',
-  className = '',
-  style = {},
   element: Element = 'div',
   ...props
 }) => {
@@ -233,17 +320,54 @@ export const DynamicContrastWrapper = ({
   return (
     <>
       <style>{buildWrapperStyles(backgroundColor, optimalColors, colorSource)}</style>
-      <Element
-        className={`dynamic-contrast-wrapper-${colorSource} ${className}`.trim()}
-        style={{
-          backgroundColor,
-          color: optimalColors.text,
-          ...style,
+      <Box
+        as={Element}
+        bg={backgroundColor}
+        color={optimalColors.text}
+        sx={{
+          '.btn-light': {
+            bg: `${optimalColors.button.light.bg} !important`,
+            borderColor: `${optimalColors.button.light.border} !important`,
+            color: `${optimalColors.button.light.color} !important`,
+            '&:hover': {
+              bg: `${optimalColors.button.light.hover.bg} !important`,
+              color: `${optimalColors.button.light.hover.color} !important`,
+            },
+          },
+          '.btn-primary': {
+            bg: `${optimalColors.button.primary.bg} !important`,
+            borderColor: `${optimalColors.button.primary.border} !important`,
+            color: `${optimalColors.button.primary.color} !important`,
+            '&:hover': {
+              bg: `${optimalColors.button.primary.hover.bg} !important`,
+              color: `${optimalColors.button.primary.hover.color} !important`,
+            },
+          },
+          '.btn-success': {
+            bg: `${optimalColors.button.success.bg} !important`,
+            borderColor: `${optimalColors.button.success.border} !important`,
+            color: `${optimalColors.button.success.color} !important`,
+            '&:hover': {
+              bg: `${optimalColors.button.success.hover.bg} !important`,
+              color: `${optimalColors.button.success.hover.color} !important`,
+            },
+          },
+          '.badge': {
+            bg: `${optimalColors.badge.light.bg} !important`,
+            color: `${optimalColors.badge.light.color} !important`,
+            border: `1px solid ${optimalColors.badge.light.border} !important`,
+          },
+          '.text-muted': {
+            color: `${optimalColors.subtitle} !important`,
+          },
+          'h1, h2, h3, h4, h5, h6': {
+            color: `${optimalColors.text} !important`,
+          },
         }}
         {...props}
       >
         {children}
-      </Element>
+      </Box>
     </>
   )
 }
