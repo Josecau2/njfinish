@@ -365,7 +365,7 @@ const ProposalForm = ({
   }
 
   return (
-    <PageContainer className="proposal-create">
+    <PageContainer>
       <Stack spacing={6}>
         <PageHeader
           title={currentStepInfo.title}
