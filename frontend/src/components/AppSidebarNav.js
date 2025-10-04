@@ -64,10 +64,10 @@ const calculateHoverColors = (bgColor) => {
   const rgb = parseColor(bgColor)
 
   if (!rgb) {
-    // Fallback to default values
+    // Fallback to default values - high contrast for dark backgrounds
     return {
-      normal: 'whiteAlpha.200',
-      active: 'whiteAlpha.300',
+      normal: 'whiteAlpha.400',
+      active: 'whiteAlpha.500',
     }
   }
 
@@ -75,16 +75,21 @@ const calculateHoverColors = (bgColor) => {
   const isDark = luminance < 0.5
 
   if (isDark) {
-    // Dark background - use lighter, more visible hover states
+    // Dark background - use significantly higher contrast
+    // Active item bg is whiteAlpha.200 (16%), so hover must be clearly visible above that
+    // whiteAlpha.400 = rgba(255,255,255,0.32) = 32% white - 2x the active bg
+    // whiteAlpha.500 = rgba(255,255,255,0.48) = 48% white - 3x the active bg
     return {
-      normal: 'whiteAlpha.200',
-      active: 'whiteAlpha.300',
+      normal: 'whiteAlpha.400',
+      active: 'whiteAlpha.500',
     }
   } else {
-    // Light background - use darker hover states
+    // Light background - use strong dark overlay for visibility
+    // blackAlpha.300 = rgba(0,0,0,0.24) = 24% black
+    // blackAlpha.400 = rgba(0,0,0,0.32) = 32% black
     return {
-      normal: 'blackAlpha.100',
-      active: 'blackAlpha.200',
+      normal: 'blackAlpha.300',
+      active: 'blackAlpha.400',
     }
   }
 }
