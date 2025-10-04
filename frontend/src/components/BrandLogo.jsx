@@ -1,29 +1,28 @@
 import React from 'react'
+import { Box, Image } from '@chakra-ui/react'
 import { getBrand } from '../brand/useBrand'
 
-const EMPTY_STYLE = { display: 'inline-block' }
-
-const BrandLogo = ({ className = '', size = 48, alt = '' }) => {
+const BrandLogo = ({ size = 48, alt = '' }) => {
   const brand = getBrand()
   const dataUri = brand?.logoDataURI || brand?.logo?.dataURI || ''
   const resolvedAlt = brand?.logoAlt || alt || ''
 
   if (!dataUri) {
     return (
-      <div
-        className={`brand-logo-img ${className}`.trim()}
-        style={{ ...EMPTY_STYLE, width: size, height: size }}
+      <Box
+        display="inline-block"
+        w={`${size}px`}
+        h={`${size}px`}
         aria-hidden="true"
       />
     )
   }
 
   return (
-    <img
-      className={`brand-logo-img ${className}`.trim()}
+    <Image
       src={dataUri}
-      width={size}
-      height={size}
+      w={`${size}px`}
+      h={`${size}px`}
       alt={resolvedAlt}
       decoding="sync"
       loading="eager"
