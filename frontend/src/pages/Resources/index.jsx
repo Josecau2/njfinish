@@ -1162,8 +1162,8 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   )}
 
                   <CardHeader pb={2}>
-                    <HStack justify="space-between" align="start">
-                      <HStack align="start" flex={1} minW={0}>
+                    <VStack align="stretch" spacing={2}>
+                      <HStack align="start" spacing={2}>
                         <Box
                           w={8}
                           h={8}
@@ -1177,7 +1177,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                         >
                           <Folder color={color} size={ICON_SIZE_MD} />
                         </Box>
-                        <VStack align="start" spacing={0} flex={1} minW={0}>
+                        <VStack align="start" spacing={0} flex={1}>
                           <Text fontWeight="bold" fontSize="sm">
                             {category.name}
                           </Text>
@@ -1193,14 +1193,14 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                         <HStack
                           opacity={0.7}
                           _groupHover={{ opacity: 1 }}
-                          flexShrink={0}
                           spacing={1}
                           display={{ base: 'none', lg: 'flex' }}
+                          pl={10}
                         >
                           <IconButton
-                            size={{ base: 'sm', md: 'md' }}
-                            minH={{ base: '36px', md: '44px' }}
-                            minW={{ base: '36px', md: '44px' }}
+                            size="sm"
+                            minH="36px"
+                            minW="36px"
                             variant="ghost"
                             icon={<Edit size={16} />}
                             aria-label={t('resources.actions.editCategory', 'Edit category')}
@@ -1210,9 +1210,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                             }}
                           />
                           <IconButton
-                            size={{ base: 'sm', md: 'md' }}
-                            minH={{ base: '36px', md: '44px' }}
-                            minW={{ base: '36px', md: '44px' }}
+                            size="sm"
+                            minH="36px"
+                            minW="36px"
                             variant="ghost"
                             colorScheme="green"
                             icon={<Plus size={16} />}
@@ -1223,9 +1223,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                             }}
                           />
                           <IconButton
-                            size={{ base: 'sm', md: 'md' }}
-                            minH={{ base: '36px', md: '44px' }}
-                            minW={{ base: '36px', md: '44px' }}
+                            size="sm"
+                            minH="36px"
+                            minW="36px"
                             variant="ghost"
                             colorScheme="red"
                             icon={<Trash size={16} />}
@@ -1238,7 +1238,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                           />
                         </HStack>
                       )}
-                    </HStack>
+                    </VStack>
                   </CardHeader>
 
                   <CardBody pt={0} flex={1} display="flex" flexDirection="column" overflow="visible">
