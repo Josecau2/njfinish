@@ -96,11 +96,9 @@ const AppHeader = () => {
           />
           {/* Separator */}
           <Box as="span" h="20px" w="1px" bg={`${headerTextColor}33`} mx={{ base: 0.5, md: 2 }} />
-          <Box display={{ base: 'none', sm: 'block' }}>
-            <LanguageSwitcher compact />
-          </Box>
-          {/* Separator (hidden on very small screens to avoid crowding) */}
-          <Box as="span" h="20px" w="1px" bg={`${headerTextColor}33`} mx={{ base: 0.5, md: 2 }} display={{ base: 'none', sm: 'block' }} />
+          <LanguageSwitcher compact />
+          {/* Separator */}
+          <Box as="span" h="20px" w="1px" bg={`${headerTextColor}33`} mx={{ base: 0.5, md: 2 }} />
           <NotificationBell />
           <Box as="span" h="20px" w="1px" bg={`${headerTextColor}33`} mx={{ base: 0.5, md: 2 }} display={{ base: 'none', sm: 'block' }} />
           <AppHeaderDropdown />

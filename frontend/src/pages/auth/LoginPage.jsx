@@ -11,6 +11,7 @@ import BrandLogo from '../../components/BrandLogo';
 import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand';
 import { installTokenEverywhere } from '../../utils/authToken';
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -152,7 +153,11 @@ const LoginPage = () => {
         justifyContent="center"
         bg={bgWhite}
         className="login-right-panel"
+        position="relative"
       >
+        <Box position="absolute" top={4} right={4}>
+          <LanguageSwitcher compact />
+        </Box>
         <Container maxW="md" py={8}>
           <VStack spacing={6} align="stretch">
             <Box textAlign="center">

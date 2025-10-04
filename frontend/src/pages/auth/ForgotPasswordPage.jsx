@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { getOptimalColors } from '../../utils/colorUtils'
 import BrandLogo from '../../components/BrandLogo'
 import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand'
+import LanguageSwitcher from '../../components/LanguageSwitcher'
 
 const EMPTY_FORM = {
   email: '',
@@ -102,7 +103,11 @@ const ForgotPasswordPage = () => {
         justifyContent="center"
         bg={bgWhite}
         className="login-right-panel"
+        position="relative"
       >
+        <Box position="absolute" top={4} right={4}>
+          <LanguageSwitcher compact />
+        </Box>
         <Container maxW="md" py={8}>
           <VStack spacing={6} align="stretch">
             <Box textAlign="center">

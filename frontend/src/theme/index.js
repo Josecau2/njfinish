@@ -996,8 +996,8 @@ export const createThemeWithBrand = (brandConfig = {}) => {
       global: globalStyles,
     },
     config: {
-      initialColorMode: 'light',
-      useSystemColorMode: false,
+      initialColorMode: 'system',
+      useSystemColorMode: true,
     },
   })
 }

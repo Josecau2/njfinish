@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { getOptimalColors } from '../../utils/colorUtils'
 import BrandLogo from '../../components/BrandLogo'
 import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand'
+import LanguageSwitcher from '../../components/LanguageSwitcher'
 
 
 const EMPTY_FORM = {
@@ -165,7 +166,11 @@ const RequestAccessPage = () => {
         bg={bgWhite}
         overflowY="auto"
         className="login-right-panel"
+        position="relative"
       >
+        <Box position="absolute" top={4} right={4} zIndex={10}>
+          <LanguageSwitcher compact />
+        </Box>
         <Container maxW="lg" py={8}>
           <VStack spacing={4} align="stretch">
             <Box textAlign="center">
