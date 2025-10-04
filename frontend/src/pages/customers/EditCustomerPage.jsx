@@ -33,32 +33,38 @@ import { decodeParam } from '../../utils/obfuscate'
 import { useTranslation } from 'react-i18next'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
-const FormSection = ({ title, icon, children }) => (
-  <StandardCard variant="outline" borderRadius="xl" shadow="sm">
-    <CardBody>
-      <Stack spacing={4}>
-        <Stack direction="row" align="center" spacing={4}>
-          <Box
-            w="40px"
-            h="40px"
-            borderRadius="full"
-            bg={useColorModeValue('blue.50', 'blue.900')}
-            color={useColorModeValue('blue.600', 'blue.300')}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Icon as={icon} boxSize={ICON_BOX_MD} aria-hidden="true" />
-          </Box>
-          <Text fontWeight="semibold" color={useColorModeValue('gray.800', 'gray.200')}>
-            {title}
-          </Text>
+const FormSection = ({ title, icon, children }) => {
+  const iconBg = useColorModeValue('blue.50', 'blue.900')
+  const iconColor = useColorModeValue('blue.600', 'blue.300')
+  const titleColor = useColorModeValue('gray.800', 'gray.200')
+
+  return (
+    <StandardCard variant="outline" borderRadius="xl" shadow="sm">
+      <CardBody>
+        <Stack spacing={4}>
+          <Stack direction="row" align="center" spacing={4}>
+            <Box
+              w="40px"
+              h="40px"
+              borderRadius="full"
+              bg={iconBg}
+              color={iconColor}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Icon as={icon} boxSize={ICON_BOX_MD} aria-hidden="true" />
+            </Box>
+            <Text fontWeight="semibold" color={titleColor}>
+              {title}
+            </Text>
+          </Stack>
+          {children}
         </Stack>
-        {children}
-      </Stack>
-    </CardBody>
-  </StandardCard>
-)
+      </CardBody>
+    </StandardCard>
+  )
+}
 
 const CustomFormInput = ({
   label,
@@ -73,39 +79,44 @@ const CustomFormInput = ({
   feedback,
   inputRef,
   ...props
-}) => (
-  <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
-    <FormLabel
-      htmlFor={name}
-      fontSize="sm"
-      fontWeight="medium"
-      color={useColorModeValue('gray.700', 'gray.300')}
-    >
-      {label}
-    </FormLabel>
-    <InputGroup>
-      {icon && (
-        <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue('gray.500', 'gray.400')} />
-        </InputLeftElement>
-      )}
-      <Input
-        id={name}
-        name={name}
-        type={type}
-        value={value}
-        onChange={onChange}
-        ref={inputRef}
-        placeholder={placeholder}
-        borderRadius="md"
+}) => {
+  const labelColor = useColorModeValue('gray.700', 'gray.300')
+  const iconColor = useColorModeValue('gray.500', 'gray.400')
+
+  return (
+    <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
+      <FormLabel
+        htmlFor={name}
         fontSize="sm"
-        minH="44px"
-        {...props}
-      />
-    </InputGroup>
-    {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
-  </FormControl>
-)
+        fontWeight="medium"
+        color={labelColor}
+      >
+        {label}
+      </FormLabel>
+      <InputGroup>
+        {icon && (
+          <InputLeftElement pointerEvents="none">
+            <Icon as={icon} boxSize={ICON_BOX_MD} color={iconColor} />
+          </InputLeftElement>
+        )}
+        <Input
+          id={name}
+          name={name}
+          type={type}
+          value={value}
+          onChange={onChange}
+          ref={inputRef}
+          placeholder={placeholder}
+          borderRadius="md"
+          fontSize="sm"
+          minH="44px"
+          {...props}
+        />
+      </InputGroup>
+      {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
+    </FormControl>
+  )
+}
 
 const CustomFormSelect = ({
   label,
@@ -119,40 +130,45 @@ const CustomFormSelect = ({
   inputRef,
   children,
   ...props
-}) => (
-  <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
-    <FormLabel
-      htmlFor={name}
-      fontSize="sm"
-      fontWeight="medium"
-      color={useColorModeValue('gray.700', 'gray.300')}
-    >
-      {label}
-    </FormLabel>
-    <InputGroup>
-      {icon && (
-        <InputLeftElement pointerEvents="none">
-          <Icon as={icon} boxSize={ICON_BOX_MD} color={useColorModeValue('gray.500', 'gray.400')} />
-        </InputLeftElement>
-      )}
-      <Select
-        id={name}
-        name={name}
-        value={value}
-        onChange={onChange}
-        ref={inputRef}
-        borderRadius="md"
+}) => {
+  const labelColor = useColorModeValue('gray.700', 'gray.300')
+  const iconColor = useColorModeValue('gray.500', 'gray.400')
+
+  return (
+    <FormControl isRequired={required} isInvalid={isInvalid} mb={4}>
+      <FormLabel
+        htmlFor={name}
         fontSize="sm"
-        minH="44px"
-        pl={icon ? 10 : 4}
-        {...props}
+        fontWeight="medium"
+        color={labelColor}
       >
-        {children}
-      </Select>
-    </InputGroup>
-    {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
-  </FormControl>
-)
+        {label}
+      </FormLabel>
+      <InputGroup>
+        {icon && (
+          <InputLeftElement pointerEvents="none">
+            <Icon as={icon} boxSize={ICON_BOX_MD} color={iconColor} />
+          </InputLeftElement>
+        )}
+        <Select
+          id={name}
+          name={name}
+          value={value}
+          onChange={onChange}
+          ref={inputRef}
+          borderRadius="md"
+          fontSize="sm"
+          minH="44px"
+          pl={icon ? 10 : 4}
+          {...props}
+        >
+          {children}
+        </Select>
+      </InputGroup>
+      {feedback && <FormErrorMessage>{feedback}</FormErrorMessage>}
+    </FormControl>
+  )
+}
 
 const EditCustomerPage = () => {
   const { t } = useTranslation()
@@ -160,6 +176,11 @@ const EditCustomerPage = () => {
 
   const headerBg = customization.headerBg || 'purple.500'
   const textColor = getContrastColor(headerBg)
+
+  // Color mode values
+  const spinnerColor = useColorModeValue('blue.500', 'blue.300')
+  const loadingTextColor = useColorModeValue('gray.500', 'gray.400')
+  const noteLabColor = useColorModeValue('gray.700', 'gray.300')
 
   const [formData, setFormData] = useState({
     name: '',
@@ -300,11 +321,11 @@ const EditCustomerPage = () => {
           <CardBody textAlign="center" py={10}>
             <Spinner
               size="lg"
-              color={useColorModeValue('blue.500', 'blue.300')}
+              color={spinnerColor}
               thickness="4px"
               speed="0.7s"
             />
-            <Text mt={4} color={useColorModeValue('gray.500', 'gray.400')}>
+            <Text mt={4} color={loadingTextColor}>
               {t('customers.loading')}
             </Text>
           </CardBody>
@@ -314,7 +335,7 @@ const EditCustomerPage = () => {
   }
 
   return (
-    <PageContainer className="edit-customer-page">
+    <PageContainer>
       <PageHeader
         title={t('customers.form.titles.edit')}
         subtitle={t(
@@ -514,7 +535,7 @@ const EditCustomerPage = () => {
               <FormLabel
                 fontSize="sm"
                 fontWeight="medium"
-                color={useColorModeValue('gray.700', 'gray.300')}
+                color={noteLabColor}
               >
                 {t('customers.form.labels.notes')}
               </FormLabel>
