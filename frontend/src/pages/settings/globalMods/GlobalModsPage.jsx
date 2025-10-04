@@ -425,7 +425,7 @@ const GlobalModsPage = () => {
   }
 
   return (
-    <div>
+    <Box>
       <style>{`
         /* Local, scoped mobile/a11y tweaks for Global Mods */
         .global-mods-actions { flex-wrap: wrap; gap: .5rem; }
@@ -471,8 +471,8 @@ const GlobalModsPage = () => {
           <StandardCard>
             <CardHeader>{t('globalMods.ui.galleryHeader')}</CardHeader>
             <CardBody>
-              {loading && <div>{t('common.loading')}</div>}
-              {error && <div>{error}</div>}
+              {loading && <Box>{t('common.loading')}</Box>}
+              {error && <Box>{error}</Box>}
               {/* Category Creation Section */}
               <StandardCard mb={3} borderColor="green.500" borderWidth="1px">
                 <CardHeader bg="green.500" color="white">
@@ -544,12 +544,12 @@ const GlobalModsPage = () => {
                               e.currentTarget.src = '/images/nologo.png'
                             }}
                           />
-                          <div>
+                          <Box>
                             <small>
                               {t('globalMods.category.imageReady')}
                             </small>
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
                       ) : (
                         <Box
                           bg="gray.50"
@@ -565,7 +565,7 @@ const GlobalModsPage = () => {
               </StandardCard>
 
               {gallery.map((cat) => (
-                <div key={cat.id}>
+                <Box key={cat.id}>
                   <Box as="h6" mb={2} display="flex" alignItems="center" gap={2}>
                     {cat.image && (
                       <Image
@@ -606,7 +606,7 @@ const GlobalModsPage = () => {
                         icon="🗑️"
                         type="button"
                       />
-                    </div>
+                    </Box>
                   </h6>
                   <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={3}>
                     {(cat.templates || []).map((tpl) => (
@@ -652,13 +652,13 @@ const GlobalModsPage = () => {
                             icon="✏️"
                             type="button"
                           />
-                        </div>
+                        </Box>
                         {/* close border container and column */}
                         </Box>
                       </Box>
                     ))}
                   </Box>
-                </div>
+                </Box>
               ))}
             </CardBody>
           </StandardCard>
@@ -824,7 +824,7 @@ const GlobalModsPage = () => {
                           <option value="0.25">0.25</option>
                           <option value="custom">Custom fractions</option>
                         </Select>
-                      </div>
+                      </Box>
                     )}
                   </Box>
                   <Box md={4}>
@@ -896,7 +896,7 @@ const GlobalModsPage = () => {
                           <option value="0.25">0.25</option>
                           <option value="custom">Custom fractions</option>
                         </Select>
-                      </div>
+                      </Box>
                     )}
                   </Box>
                   <Box md={4}>
@@ -968,7 +968,7 @@ const GlobalModsPage = () => {
                           <option value="0.25">0.25</option>
                           <option value="custom">Custom fractions</option>
                         </Select>
-                      </div>
+                      </Box>
                     )}
                   </Box>
                 </Flex>
@@ -1041,11 +1041,11 @@ const GlobalModsPage = () => {
                           }
                         />
                         {builderErrors.qtyRange && (
-                          <div>
+                          <Box>
                             {builderErrors.qtyRange}
-                          </div>
+                          </Box>
                         )}
-                      </div>
+                      </Box>
                     )}
                   </Box>
                 </Flex>
@@ -1063,7 +1063,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.notes.enabled && (
-                      <div>
+                      <Box>
                         <Input
                           placeholder={t('globalMods.builder.customerNotes.placeholder')}
                           value={guided.notes.placeholder}
@@ -1085,7 +1085,7 @@ const GlobalModsPage = () => {
                             }))
                           }
                         />
-                      </div>
+                      </Box>
                     )}
                   </Box>
                   <Box md={4}>
@@ -1100,7 +1100,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.customerUpload.enabled && (
-                      <div>
+                      <Box>
                         <Input
                           placeholder={t('globalMods.builder.customerUpload.titlePlaceholder')}
                           value={guided.customerUpload.title}
@@ -1122,7 +1122,7 @@ const GlobalModsPage = () => {
                             }))
                           }
                         />
-                      </div>
+                      </Box>
                     )}
                   </Box>
                   <Box md={4}>
@@ -1177,7 +1177,7 @@ const GlobalModsPage = () => {
                     />
                   </Box>
                 </Flex>
-              </div>
+              </Box>
 
               {/* Sample Image Upload Section */}
               <StandardCard mb={3} borderColor="cyan.500" borderWidth="1px">
@@ -1249,7 +1249,7 @@ const GlobalModsPage = () => {
                   setNewTemplate((n) => ({ ...n, fieldsConfigText: e.target.value }))
                 }
               />
-              <div>
+              <Box>
                 <Button
                   colorScheme="green"
                   onClick={createTemplate}
@@ -1261,7 +1261,7 @@ const GlobalModsPage = () => {
                 >
                   {t('globalMods.template.saveButton')}
                 </Button>
-              </div>
+              </Box>
             </CardBody>
           </StandardCard>
 
@@ -1356,7 +1356,7 @@ const GlobalModsPage = () => {
                 {t('globalMods.assign.assignButton')}
               </Button>
 
-              <div>
+              <Box>
                 <h6>{t('common.currentAssignments', 'Current Assignments')}</h6>
                 <TableContainer borderWidth="1px" borderColor={tableBorderColor} borderRadius="md" mt={2}>
                   <Table size="sm" variant="simple">
@@ -1407,7 +1407,7 @@ const GlobalModsPage = () => {
                   </Tbody>
                 </Table>
                 </TableContainer>
-              </div>
+              </Box>
             </CardBody>
           </StandardCard>
         </Box>
@@ -1422,7 +1422,7 @@ const GlobalModsPage = () => {
             </ModalHeader>
         <ModalBody>
           {createStep === 1 && (
-            <div>
+            <Box>
               <h6>{t('globalMods.modal.add.step1Title')}</h6>
               <Select
                 value={selectedSubmenu}
@@ -1438,7 +1438,7 @@ const GlobalModsPage = () => {
               </Select>
 
               {selectedSubmenu === 'new' && (
-                <div>
+                <Box>
                   <Input
                     placeholder={t('globalMods.modal.add.newSubmenuName')}
                     value={newCategory.name}
@@ -1461,7 +1461,7 @@ const GlobalModsPage = () => {
                     }}
 
                   />
-                </div>
+                </Box>
               )}
 
               <Flex mt={3} gap={2}>
@@ -1475,12 +1475,12 @@ const GlobalModsPage = () => {
                 >
                   {t('globalMods.modal.add.nextBuilder')}
                 </Button>
-              </div>
-            </div>
+              </Box>
+            </Box>
           )}
 
           {createStep === 2 && (
-            <div>
+            <Box>
               <h6>{t('globalMods.modal.add.step2Title')}</h6>
 
               {/* Required Fields Section */}
@@ -1605,7 +1605,7 @@ const GlobalModsPage = () => {
                           <option value="0.25">0.25</option>
                           <option value="custom">Custom fractions</option>
                         </Select>
-                      </div>
+                      </Box>
                     )}
                   </Box>
                   <Box md={4}>
@@ -1677,7 +1677,7 @@ const GlobalModsPage = () => {
                           <option value="0.25">0.25</option>
                           <option value="custom">Custom fractions</option>
                         </Select>
-                      </div>
+                      </Box>
                     )}
                   </Box>
                   <Box md={4}>
@@ -1749,7 +1749,7 @@ const GlobalModsPage = () => {
                           <option value="0.25">0.25</option>
                           <option value="custom">Custom fractions</option>
                         </Select>
-                      </div>
+                      </Box>
                     )}
                   </Box>
                 </Flex>
@@ -1822,11 +1822,11 @@ const GlobalModsPage = () => {
                           }
                         />
                         {builderErrors.qtyRange && (
-                          <div>
+                          <Box>
                             {builderErrors.qtyRange}
-                          </div>
+                          </Box>
                         )}
-                      </div>
+                      </Box>
                     )}
                   </Box>
                 </Flex>
@@ -1844,7 +1844,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.notes.enabled && (
-                      <div>
+                      <Box>
                         <Input
                           placeholder={t('globalMods.builder.customerNotes.placeholder')}
                           value={guided.notes.placeholder}
@@ -1866,7 +1866,7 @@ const GlobalModsPage = () => {
                             }))
                           }
                         />
-                      </div>
+                      </Box>
                     )}
                   </Box>
                   <Box md={4}>
@@ -1881,7 +1881,7 @@ const GlobalModsPage = () => {
                       }
                     />
                     {guided.customerUpload.enabled && (
-                      <div>
+                      <Box>
                         <Input
                           placeholder={t('globalMods.builder.customerUpload.titlePlaceholder')}
                           value={guided.customerUpload.title}
@@ -1903,7 +1903,7 @@ const GlobalModsPage = () => {
                             }))
                           }
                         />
-                      </div>
+                      </Box>
                     )}
                   </Box>
                   <Box md={4}>
@@ -1958,7 +1958,7 @@ const GlobalModsPage = () => {
                     />
                   </Box>
                 </Flex>
-              </div>
+              </Box>
 
               {/* Sample Image Upload Section */}
               <StandardCard mb={3} borderColor="cyan.500" borderWidth="1px">
@@ -2041,8 +2041,8 @@ const GlobalModsPage = () => {
                 >
                   {t('globalMods.modal.add.createTemplate')}
                 </Button>
-              </div>
-            </div>
+              </Box>
+            </Box>
           )}
         </ModalBody>
         </ModalContent>
@@ -2204,7 +2204,7 @@ const GlobalModsPage = () => {
                   <Box as="small" color="gray.500" display="block" mt={1}>
                     {t('globalMods.modal.editTemplate.ready.hint')}
                   </small>
-                </div>
+                </Box>
               </Box>
             </Flex>
           </ModalBody>
@@ -2234,11 +2234,11 @@ const GlobalModsPage = () => {
         <ModalContent>
           <ModalHeader>{t('globalMods.modal.gallery.title')}</ModalHeader>
           <ModalBody>
-          <div>
+          <Box>
             {gallery.map((category) => (
               <Box key={category.id} flex="1" minW="50%" mb={4}>
-                <div>
-                  <div>
+                <Box>
+                  <Box>
                     <h6>
                       {category.image && (
                         <>
@@ -2265,15 +2265,15 @@ const GlobalModsPage = () => {
                       )}
                       {category.name}
                     </h6>
-                  </div>
-                  <div>
+                  </Box>
+                  <Box>
                     {category.templates?.length ? (
                       category.templates.map((template) => (
-                        <div
+                        <Box
                           key={template.id}
 
                         >
-                          <div>
+                          <Box>
                             <strong>{template.name}</strong>
                             {template.defaultPrice && (
                               <span>
@@ -2289,7 +2289,7 @@ const GlobalModsPage = () => {
                                 ? t('globalMods.template.status.ready')
                                 : t('globalMods.template.status.draft')}
                             </Badge>
-                          </div>
+                          </Box>
                           <Button
                             size="sm"
                             colorScheme="brand"
@@ -2317,17 +2317,17 @@ const GlobalModsPage = () => {
                           >
                             {t('globalMods.modal.gallery.useAsBlueprint')}
                           </Button>
-                        </div>
+                        </Box>
                       ))
                     ) : (
                       <p>{t('globalMods.modal.gallery.emptyCategory')}</p>
                     )}
-                  </div>
+                  </Box>
                   {/* close column wrapper */}
-                </div>
-              </div>
+                </Box>
+              </Box>
             ))}
-          </div>
+          </Box>
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -2458,7 +2458,7 @@ const GlobalModsPage = () => {
             {t('globalMods.modal.deleteCategory.title', { name: deleteCategory.name })}
           </ModalHeader>
           <ModalBody>
-            <div>
+            <Box>
               <Box bg="orange.100" p={3} borderRadius="md">
                 <strong>
                   <Trans i18nKey="globalMods.modal.deleteCategory.warning">⚠️ Warning:</Trans>
@@ -2467,10 +2467,10 @@ const GlobalModsPage = () => {
                   i18nKey="globalMods.modal.deleteCategory.aboutToDelete"
                   values={{ name: deleteCategory.name }}
                 />
-              </div>
+              </Box>
 
               {deleteCategory.templateCount > 0 ? (
-                <div>
+                <Box>
                   <p>
                     <Trans
                       i18nKey="globalMods.modal.deleteCategory.contains"
@@ -2492,7 +2492,7 @@ const GlobalModsPage = () => {
                         <strong>{t('globalMods.modal.deleteCategory.move.label')}</strong>{' '}
                         {t('globalMods.modal.deleteCategory.move.recommended')}
                       </label>
-                    </div>
+                    </Box>
 
                     {deleteMode === 'move' && (
                       <Box mt={2} ml={4}>
@@ -2519,7 +2519,7 @@ const GlobalModsPage = () => {
                             {t('globalMods.modal.deleteCategory.move.mustSelect')}
                           </small>
                         )}
-                      </div>
+                      </Box>
                     )}
 
                     <Box>
@@ -2536,7 +2536,7 @@ const GlobalModsPage = () => {
                         </strong>{' '}
                         {t('globalMods.modal.deleteCategory.withMods.permanent')}
                       </label>
-                    </div>
+                    </Box>
 
                     {deleteMode === 'withMods' && (
                       <Box bg="red.100" p={3} borderRadius="md" mt={2} ml={4}>
@@ -2546,14 +2546,14 @@ const GlobalModsPage = () => {
                             values={{ count: deleteCategory.templateCount }}
                           />
                         </small>
-                      </div>
+                      </Box>
                     )}
-                  </div>
-                </div>
+                  </Box>
+                </Box>
               ) : (
                 <p>{t('globalMods.modal.deleteCategory.emptySafe')}</p>
               )}
-            </div>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="gray" onClick={() => setShowDeleteCategoryModal(false)}>
@@ -2573,7 +2573,7 @@ const GlobalModsPage = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </Box>
   )
 }
 

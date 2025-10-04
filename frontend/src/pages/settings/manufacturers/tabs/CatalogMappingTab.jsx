@@ -2180,7 +2180,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   }
 
   return (
-    <div>
+    <Box>
       <style>
         {`
           .form-check-input:not(:checked) {
@@ -2560,7 +2560,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       {subType.description && (
                         <Text fontSize="sm" color={borderGray600}>{subType.description}</Text>
                       )}
-                      <div>
+                      <Box>
                         {subType.requires_hinge_side && (
                           <Badge colorScheme="blue">
                             {t('settings.manufacturers.catalogMapping.subTypes.requiresHinge')}
@@ -2571,8 +2571,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             {t('settings.manufacturers.catalogMapping.subTypes.requiresExposed')}
                           </Badge>
                         )}
-                      </div>
-                      <div>
+                      </Box>
+                      <Box>
                         <Button
                           colorScheme="blue"
                           size="sm"
@@ -2611,7 +2611,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         >
                           {t('common.delete')}
                         </Button>
-                      </div>
+                      </Box>
                     </CardBody>
                   </StandardCard>
                 </Box>
@@ -2749,14 +2749,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         {styleFilter && (
           <Box mb={3} p={3} border="1px solid" borderColor={iconGray300} borderRadius="md" bg={bgGray50}>
             <Flex flexDir={{ base: "column", sm: "row" }} justify="space-between" align={{ base: "start", sm: "center" }} gap={2}>
-              <div>
+              <Box>
                 <strong>Managing Style: "{styleFilter}"</strong>
                 <br />
                 <small>
                   {catalogData.filter((item) => item.style === styleFilter).length} items with this
                   style
                 </small>
-              </div>
+              </Box>
               <Flex gap={2} flexShrink={0}>
                 <Button
                   colorScheme="blue"
@@ -3349,7 +3349,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </Text>
             )}
             <hr />
-            <div>
+            <Box>
               <h6>Existing assignments</h6>
               {assignLoading ? (
                 <Flex justify="center" py={4}>
@@ -3410,7 +3410,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   </Table>
                 </TableContainer>
               )}
-            </div>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="gray" onClick={() => setShowAssignGlobalModsModal(false)}>
@@ -3777,7 +3777,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 })}
               </Text>
             ) : styleForm.image ? (
-              <div>
+              <Box>
                 <p>
                   <strong>{t('settings.manufacturers.catalogMapping.style.currentImage')}</strong>
                 </p>
@@ -3800,7 +3800,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     }
                   }}
                 />
-              </div>
+              </Box>
             ) : null}
           </ModalBody>
 
@@ -4386,7 +4386,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             })}
           />
           <ModalBody>
-            <div>
+            <Box>
               <p>
                 You are about to delete the style "<strong>{styleToDelete}</strong>". This will
                 affect{' '}
@@ -4469,7 +4469,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   )}
                 </Text>
               </Box>
-            </div>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -5192,11 +5192,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
 
             {modificationView === 'addNew' && (
-              <div>
+              <Box>
                 {modificationStep === 1 && (
-                  <div>
+                  <Box>
                     <h5>{t('globalMods.modal.add.step1Title')}</h5>
-                    <div>
+                    <Box>
                       <Select
                         value={selectedModificationCategory}
                         onChange={(event) =>
@@ -5212,13 +5212,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         ))}
                         <option value="new">{t('globalMods.modal.add.createNew')}</option>
                       </Select>
-                    </div>
+                    </Box>
 
                     {selectedModificationCategory === 'new' && (
                       <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
                         <h6>{t('globalMods.modal.add.createNew')}</h6>
-                        <div>
-                          <div>
+                        <Box>
+                          <Box>
                             <Input
                               placeholder={t('globalMods.modal.add.newSubmenuName')}
                               value={newCategory.name}
@@ -5226,8 +5226,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 setNewCategory((n) => ({ ...n, name: event.currentTarget.value }))
                               }
                             />
-                          </div>
-                          <div>
+                          </Box>
+                          <Box>
                             <Input
                               type="number"
                               placeholder={t('globalMods.modal.add.orderIndex')}
@@ -5239,12 +5239,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 }))
                               }
                             />
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
                       </Box>
                     )}
 
-                    <div>
+                    <Box>
                       <Button colorScheme="gray" onClick={() => setModificationView('cards')}>
                         Back to Overview
                       </Button>
@@ -5258,19 +5258,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       >
                         Next: Template Builder
                       </Button>
-                    </div>
-                  </div>
+                    </Box>
+                  </Box>
                 )}
 
                 {modificationStep === 2 && (
-                  <div>
+                  <Box>
                     <h5>Step 2: Build Modification Template</h5>
 
                     {/* Default Required Fields */}
                     <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
                       <h6>Required Fields</h6>
-                      <div>
-                        <div>
+                      <Box>
+                        <Box>
                           <Input
                             placeholder="Modification name *"
                             value={newTemplate.name}
@@ -5278,8 +5278,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               setNewTemplate((n) => ({ ...n, name: event.currentTarget.value }))
                             }
                           />
-                        </div>
-                        <div>
+                        </Box>
+                        <Box>
                           <Input
                             type="number"
                             placeholder={
@@ -5296,8 +5296,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             }
                             disabled={newTemplate.saveAsBlueprint}
                           />
-                        </div>
-                      </div>
+                        </Box>
+                      </Box>
                     </Box>
 
                     {/* Optional Field Builder */}
@@ -5306,9 +5306,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                       {/* Slider Controls */}
                       <Box mb={3}>
-                        <div>
-                          <div>
-                            <div>
+                        <Box>
+                          <Box>
+                            <Box>
                               <Checkbox
                                 label="Height Slider"
                                 isChecked={guidedBuilder.sliders.height.enabled}
@@ -5325,10 +5325,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   }))
                                 }
                               />
-                            </div>
+                            </Box>
                             {guidedBuilder.sliders.height.enabled && (
-                              <div>
-                                <div>
+                              <Box>
+                                <Box>
                                   <Input
                                     type="number"
                                     placeholder="Min height"
@@ -5346,8 +5346,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
-                                <div>
+                                </Box>
+                                <Box>
                                   <Input
                                     type="number"
                                     placeholder="Max height"
@@ -5365,7 +5365,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
+                                </Box>
                                 <Select
                                   value={
                                     guidedBuilder.sliders.height.useCustomIncrements
@@ -5397,14 +5397,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     Custom fractions (1/8, 1/4, 3/8, etc.)
                                   </option>
                                 </Select>
-                              </div>
+                              </Box>
                             )}
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
 
-                        <div>
-                          <div>
-                            <div>
+                        <Box>
+                          <Box>
+                            <Box>
                               <Checkbox
                                 label="Width Slider"
                                 isChecked={guidedBuilder.sliders.width.enabled}
@@ -5421,10 +5421,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   }))
                                 }
                               />
-                            </div>
+                            </Box>
                             {guidedBuilder.sliders.width.enabled && (
-                              <div>
-                                <div>
+                              <Box>
+                                <Box>
                                   <Input
                                     type="number"
                                     placeholder="Min width"
@@ -5442,8 +5442,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
-                                <div>
+                                </Box>
+                                <Box>
                                   <Input
                                     type="number"
                                     placeholder="Max width"
@@ -5461,7 +5461,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
+                                </Box>
                                 <Select
                                   value={
                                     guidedBuilder.sliders.width.useCustomIncrements
@@ -5493,14 +5493,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     Custom fractions (1/8, 1/4, 3/8, etc.)
                                   </option>
                                 </Select>
-                              </div>
+                              </Box>
                             )}
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
 
-                        <div>
-                          <div>
-                            <div>
+                        <Box>
+                          <Box>
+                            <Box>
                               <Checkbox
                                 label="Depth Slider"
                                 isChecked={guidedBuilder.sliders.depth.enabled}
@@ -5517,10 +5517,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   }))
                                 }
                               />
-                            </div>
+                            </Box>
                             {guidedBuilder.sliders.depth.enabled && (
-                              <div>
-                                <div>
+                              <Box>
+                                <Box>
                                   <Input
                                     type="number"
                                     placeholder="Min depth"
@@ -5538,8 +5538,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
-                                <div>
+                                </Box>
+                                <Box>
                                   <Input
                                     type="number"
                                     placeholder="Max depth"
@@ -5557,7 +5557,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
+                                </Box>
                                 <Select
                                   value={
                                     guidedBuilder.sliders.depth.useCustomIncrements
@@ -5589,17 +5589,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     Custom fractions (1/8, 1/4, 3/8, etc.)
                                   </option>
                                 </Select>
-                              </div>
+                              </Box>
                             )}
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
                       </Box>
 
                       {/* Additional Controls */}
                       <Box mb={3}>
-                        <div>
-                          <div>
-                            <div>
+                        <Box>
+                          <Box>
+                            <Box>
                               <Checkbox
                                 label="Side Selector"
                                 isChecked={guidedBuilder.sideSelector.enabled}
@@ -5613,9 +5613,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   }))
                                 }
                               />
-                            </div>
+                            </Box>
                             {guidedBuilder.sideSelector.enabled && (
-                              <div>
+                              <Box>
                                 <small>
                                   Limited to Left/Right options
                                 </small>
@@ -5636,14 +5636,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   }
                                   disabled
                                 />
-                              </div>
+                              </Box>
                             )}
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
 
-                        <div>
-                          <div>
-                            <div>
+                        <Box>
+                          <Box>
+                            <Box>
                               <Checkbox
                                 label="Quantity Limits"
                                 isChecked={guidedBuilder.qtyRange.enabled}
@@ -5657,10 +5657,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   }))
                                 }
                               />
-                            </div>
+                            </Box>
                             {guidedBuilder.qtyRange.enabled && (
-                              <div>
-                                <div>
+                              <Box>
+                                <Box>
                                   <Input
                                     type="number"
                                     placeholder="Min qty"
@@ -5672,7 +5672,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
+                                </Box>
                                 <Input
                                   type="number"
                                   placeholder="Max qty"
@@ -5684,14 +5684,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     }))
                                   }
                                 />
-                              </div>
+                              </Box>
                             )}
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
 
-                        <div>
-                          <div>
-                            <div>
+                        <Box>
+                          <Box>
+                            <Box>
                               <Checkbox
                                 label="Customer Notes"
                                 isChecked={guidedBuilder.notes.enabled}
@@ -5702,10 +5702,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   }))
                                 }
                               />
-                            </div>
+                            </Box>
                             {guidedBuilder.notes.enabled && (
-                              <div>
-                                <div>
+                              <Box>
+                                <Box>
                                   <Input
                                     placeholder="Notes placeholder"
                                     value={guidedBuilder.notes.placeholder}
@@ -5719,7 +5719,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
+                                </Box>
                                 <Checkbox
                                   label="Show in red for customer warning"
                                   isChecked={guidedBuilder.notes.showInRed}
@@ -5730,14 +5730,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     }))
                                   }
                                 />
-                              </div>
+                              </Box>
                             )}
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
 
-                        <div>
-                          <div>
-                            <div>
+                        <Box>
+                          <Box>
+                            <Box>
                               <Checkbox
                                 label="Customer Upload"
                                 isChecked={guidedBuilder.customerUpload.enabled}
@@ -5751,10 +5751,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   }))
                                 }
                               />
-                            </div>
+                            </Box>
                             {guidedBuilder.customerUpload.enabled && (
-                              <div>
-                                <div>
+                              <Box>
+                                <Box>
                                   <Input
                                     placeholder={t(
                                       'settings.manufacturers.catalogMapping.builder.uploadTitlePh',
@@ -5770,7 +5770,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
+                                </Box>
                                 <Checkbox
                                   isChecked={guidedBuilder.customerUpload.required}
                                   onChange={(event) =>
@@ -5787,26 +5787,26 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     'settings.manufacturers.catalogMapping.builder.requiredUpload',
                                   )}
                                 </Checkbox>
-                              </div>
+                              </Box>
                             )}
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
                       </Box>
 
                       {/* Description and Sample Image */}
                       <Box mb={3}>
-                        <div>
-                          <div>
-                            <div>
+                        <Box>
+                          <Box>
+                            <Box>
                               <h6>
                                 {t(
                                   'settings.manufacturers.catalogMapping.builder.descriptions.header',
                                 )}
                               </h6>
-                            </div>
-                            <div>
-                              <div>
-                                <div>
+                            </Box>
+                            <Box>
+                              <Box>
+                                <Box>
                                   <Input
                                     placeholder={t(
                                       'settings.manufacturers.catalogMapping.builder.descriptions.internal',
@@ -5822,8 +5822,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
-                                <div>
+                                </Box>
+                                <Box>
                                   <Input
                                     placeholder={t(
                                       'settings.manufacturers.catalogMapping.builder.descriptions.customer',
@@ -5839,8 +5839,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
-                                <div>
+                                </Box>
+                                <Box>
                                   <Input
                                     placeholder={t(
                                       'settings.manufacturers.catalogMapping.builder.descriptions.installer',
@@ -5856,9 +5856,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }))
                                     }
                                   />
-                                </div>
-                              </div>
-                              <div>
+                                </Box>
+                              </Box>
+                              <Box>
                                 <Checkbox
                                   isChecked={guidedBuilder.descriptions.both}
                                   onChange={(event) =>
@@ -5875,13 +5875,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     'settings.manufacturers.catalogMapping.builder.descriptions.showBoth',
                                   )}
                                 </Checkbox>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <div>
-                            <div>
+                              </Box>
+                            </Box>
+                          </Box>
+                        </Box>
+                        <Box>
+                          <Box>
+                            <Box>
                               <Checkbox
                                 isChecked={guidedBuilder.modSampleImage.enabled}
                                 onChange={(event) =>
@@ -5898,10 +5898,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   'settings.manufacturers.catalogMapping.builder.sampleImage.label',
                                 )}
                               </Checkbox>
-                            </div>
+                            </Box>
                             {guidedBuilder.modSampleImage.enabled && (
-                              <div>
-                                <div>
+                              <Box>
+                                <Box>
                                   <FormLabel>
                                     {t(
                                       'settings.manufacturers.catalogMapping.builder.sampleImage.upload',
@@ -5917,7 +5917,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                         setNewTemplate((n) => ({ ...n, sampleImage: fname }))
                                     }}
                                   />
-                                </div>
+                                </Box>
                                 {newTemplate.sampleImage && (
                                   <Box
                                     p={2}
@@ -5944,10 +5944,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     />
                                   </Box>
                                 )}
-                              </div>
+                              </Box>
                             )}
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
                       </Box>
 
                       {/* Ready Checkbox */}
@@ -5979,7 +5979,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </Box>
                     </Box>
 
-                    <div>
+                    <Box>
                       <Button colorScheme="gray" onClick={() => setModificationStep(1)}>
                         {t('settings.manufacturers.catalogMapping.builder.buttons.back')}
                       </Button>
@@ -6103,14 +6103,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           )}
                         </Button>
                       )}
-                    </div>
-                  </div>
+                    </Box>
+                  </Box>
                 )}
-              </div>
+              </Box>
             )}
 
             {modificationView === 'gallery' && (
-              <div>
+              <Box>
                 <Flex justify="space-between" align="center" mb={3}>
                   <h5>{t('settings.manufacturers.catalogMapping.gallery.title')}</h5>
                   <Button colorScheme="gray" onClick={() => setModificationView('cards')}>
@@ -6121,10 +6121,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
                   {globalGallery.map((category) => (
                     <Box key={category.id}>
-                      <div>
-                        <div>
+                      <Box>
+                        <Box>
                           <h6>{category.name}</h6>
-                          <div>
+                          <Box>
                             <Button
                               size="sm"
                               colorScheme="red"
@@ -6139,16 +6139,16 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             >
                               {t('settings.manufacturers.catalogMapping.gallery.actions.delete')}
                             </Button>
-                          </div>
-                        </div>
-                        <div>
+                          </Box>
+                        </Box>
+                        <Box>
                           {category.templates?.length ? (
                             category.templates.map((template) => (
-                              <div
+                              <Box
                                 key={template.id}
 
                               >
-                                <div>
+                                <Box>
                                   {template.sampleImage && (
                                     <Image
                                       src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
@@ -6164,7 +6164,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       }}
                                     />
                                   )}
-                                  <div>
+                                  <Box>
                                     <strong>{template.name}</strong>
                                     {template.defaultPrice && (
                                       <span>
@@ -6172,7 +6172,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                         - ${Number(template.defaultPrice).toFixed(2)}
                                       </span>
                                     )}
-                                    <div>
+                                    <Box>
                                       <Badge color={template.isReady ? 'success' : 'warning'}>
                                         {template.isReady
                                           ? t(
@@ -6194,16 +6194,16 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                           )}
                                         </Badge>
                                       )}
-                                    </div>
-                                    <div>
+                                    </Box>
+                                    <Box>
                                       {template.fieldsConfig?.descriptions?.customer ||
                                         t(
                                           'settings.manufacturers.catalogMapping.gallery.noDescription',
                                         )}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div>
+                                    </Box>
+                                  </Box>
+                                </Box>
+                                <Box>
                                   <Button
                                     size="sm"
                                     color="outline-primary"
@@ -6309,20 +6309,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   >
                                     🎯
                                   </Button>
-                                </div>
-                              </div>
+                                </Box>
+                              </Box>
                             ))
                           ) : (
                             <p>
                               {t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}
                             </p>
                           )}
-                        </div>
-                      </div>
+                        </Box>
+                      </Box>
                     </Box>
                   ))}
                 </Box>
-              </div>
+              </Box>
             )}
           </ModalBody>
           <ModalFooter>
@@ -6453,8 +6453,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     {t('globalMods.modal.deleteCategory.contains', {
                       count: categoryToDelete.templates.length,
                     })}
-                    <div>
-                      <div>
+                    <Box>
+                      <Box>
                         <input
 
                           type="radio"
@@ -6466,8 +6466,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         <label htmlFor="deleteCancel">
                           {t('globalMods.modal.deleteCategory.cancel')}
                         </label>
-                      </div>
-                      <div>
+                      </Box>
+                      <Box>
                         <input
 
                           type="radio"
@@ -6478,8 +6478,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         <label htmlFor="deleteWithMods">
                           {t('globalMods.modal.deleteCategory.deleteWithMods')}
                         </label>
-                      </div>
-                    </div>
+                      </Box>
+                    </Box>
                   </Box>
                 )}
               </>
@@ -6719,9 +6719,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
               {/* Slider Controls */}
               <Box mb={3}>
-                <div>
-                  <div>
-                    <div>
+                <Box>
+                  <Box>
+                    <Box>
                       <Checkbox
                         isChecked={editGuidedBuilder.sliders.height.enabled}
                         onChange={(event) =>
@@ -6736,11 +6736,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       >
                         {t('globalMods.builder.heightSlider', 'Height Slider')}
                       </Checkbox>
-                    </div>
+                    </Box>
                     {editGuidedBuilder.sliders.height.enabled && (
-                      <div>
-                        <div>
-                          <div>
+                      <Box>
+                        <Box>
+                          <Box>
                             <Input
                               placeholder={t('globalMods.builder.min', 'Min')}
                               type="number"
@@ -6758,8 +6758,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 }))
                               }
                             />
-                          </div>
-                          <div>
+                          </Box>
+                          <Box>
                             <Input
                               placeholder={t('globalMods.builder.max', 'Max')}
                               type="number"
@@ -6777,15 +6777,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 }))
                               }
                             />
-                          </div>
-                        </div>
-                      </div>
+                          </Box>
+                        </Box>
+                      </Box>
                     )}
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <div>
+                  </Box>
+                </Box>
+                <Box>
+                  <Box>
+                    <Box>
                       <Checkbox
                         isChecked={editGuidedBuilder.sliders.width.enabled}
                         onChange={(event) =>
@@ -6800,11 +6800,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       >
                         {t('globalMods.builder.widthSlider', 'Width Slider')}
                       </Checkbox>
-                    </div>
+                    </Box>
                     {editGuidedBuilder.sliders.width.enabled && (
-                      <div>
-                        <div>
-                          <div>
+                      <Box>
+                        <Box>
+                          <Box>
                             <Input
                               placeholder={t('globalMods.builder.min', 'Min')}
                               type="number"
@@ -6822,8 +6822,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 }))
                               }
                             />
-                          </div>
-                          <div>
+                          </Box>
+                          <Box>
                             <Input
                               placeholder={t('globalMods.builder.max', 'Max')}
                               type="number"
@@ -6841,15 +6841,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 }))
                               }
                             />
-                          </div>
-                        </div>
-                      </div>
+                          </Box>
+                        </Box>
+                      </Box>
                     )}
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <div>
+                  </Box>
+                </Box>
+                <Box>
+                  <Box>
+                    <Box>
                       <Checkbox
                         isChecked={editGuidedBuilder.sliders.depth.enabled}
                         onChange={(event) =>
@@ -6864,11 +6864,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       >
                         {t('globalMods.builder.depthSlider', 'Depth Slider')}
                       </Checkbox>
-                    </div>
+                    </Box>
                     {editGuidedBuilder.sliders.depth.enabled && (
-                      <div>
-                        <div>
-                          <div>
+                      <Box>
+                        <Box>
+                          <Box>
                             <Input
                               placeholder={t('globalMods.builder.min', 'Min')}
                               type="number"
@@ -6886,8 +6886,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 }))
                               }
                             />
-                          </div>
-                          <div>
+                          </Box>
+                          <Box>
                             <Input
                               placeholder={t('globalMods.builder.max', 'Max')}
                               type="number"
@@ -6905,19 +6905,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 }))
                               }
                             />
-                          </div>
-                        </div>
-                      </div>
+                          </Box>
+                        </Box>
+                      </Box>
                     )}
-                  </div>
-                </div>
+                  </Box>
+                </Box>
               </Box>
 
               {/* Additional Controls */}
               <Box mb={3}>
-                <div>
-                  <div>
-                    <div>
+                <Box>
+                  <Box>
+                    <Box>
                       <Checkbox
                         isChecked={editGuidedBuilder.sideSelector.enabled}
                         onChange={(event) =>
@@ -6932,9 +6932,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       >
                         {t('globalMods.builder.sideSelector.label', 'Side Selector')}
                       </Checkbox>
-                    </div>
+                    </Box>
                     {editGuidedBuilder.sideSelector.enabled && (
-                      <div>
+                      <Box>
                         <Input
                           placeholder={t(
                             'globalMods.builder.sideSelector.placeholder',
@@ -6958,13 +6958,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             }))
                           }
                         />
-                      </div>
+                      </Box>
                     )}
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <div>
+                  </Box>
+                </Box>
+                <Box>
+                  <Box>
+                    <Box>
                       <Checkbox
                         isChecked={editGuidedBuilder.qtyRange.enabled}
                         onChange={(event) =>
@@ -6976,11 +6976,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       >
                         {t('globalMods.builder.quantityLimits.label', 'Quantity Range')}
                       </Checkbox>
-                    </div>
+                    </Box>
                     {editGuidedBuilder.qtyRange.enabled && (
-                      <div>
-                        <div>
-                          <div>
+                      <Box>
+                        <Box>
+                          <Box>
                             <Input
                               placeholder={t('globalMods.builder.quantityLimits.minQty', 'Min qty')}
                               type="number"
@@ -6995,8 +6995,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 }))
                               }
                             />
-                          </div>
-                          <div>
+                          </Box>
+                          <Box>
                             <Input
                               placeholder={t('globalMods.builder.quantityLimits.maxQty', 'Max qty')}
                               type="number"
@@ -7011,19 +7011,19 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 }))
                               }
                             />
-                          </div>
-                        </div>
-                      </div>
+                          </Box>
+                        </Box>
+                      </Box>
                     )}
-                  </div>
-                </div>
+                  </Box>
+                </Box>
               </Box>
 
               {/* Notes and Upload Controls */}
               <Box mb={3}>
-                <div>
-                  <div>
-                    <div>
+                <Box>
+                  <Box>
+                    <Box>
                       <Checkbox
                         isChecked={editGuidedBuilder.notes.enabled}
                         onChange={(event) =>
@@ -7035,9 +7035,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       >
                         {t('globalMods.builder.customerNotes.label', 'Customer Notes Field')}
                       </Checkbox>
-                    </div>
+                    </Box>
                     {editGuidedBuilder.notes.enabled && (
-                      <div>
+                      <Box>
                         <Input
                           placeholder={t(
                             'globalMods.builder.customerNotes.placeholder',
@@ -7063,13 +7063,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         >
                           {t('globalMods.builder.customerNotes.showInRed', 'Show in red')}
                         </Checkbox>
-                      </div>
+                      </Box>
                     )}
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <div>
+                  </Box>
+                </Box>
+                <Box>
+                  <Box>
+                    <Box>
                       <Checkbox
                         isChecked={editGuidedBuilder.customerUpload.enabled}
                         onChange={(event) =>
@@ -7084,9 +7084,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       >
                         {t('globalMods.builder.customerUpload.label', 'Customer File Upload')}
                       </Checkbox>
-                    </div>
+                    </Box>
                     {editGuidedBuilder.customerUpload.enabled && (
-                      <div>
+                      <Box>
                         <Input
                           placeholder={t(
                             'globalMods.builder.customerUpload.titlePlaceholder',
@@ -7118,20 +7118,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         >
                           {t('globalMods.builder.customerUpload.required', 'Required')}
                         </Checkbox>
-                      </div>
+                      </Box>
                     )}
-                  </div>
-                </div>
+                  </Box>
+                </Box>
               </Box>
 
               {/* Descriptions */}
-              <div>
-                <div>
+              <Box>
+                <Box>
                   <h6>{t('globalMods.builder.title', 'Guided Builder')}</h6>
-                </div>
-                <div>
-                  <div>
-                    <div>
+                </Box>
+                <Box>
+                  <Box>
+                    <Box>
                       <Input
                         placeholder={t(
                           'globalMods.builder.descriptions.internal',
@@ -7148,8 +7148,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           }))
                         }
                       />
-                    </div>
-                    <div>
+                    </Box>
+                    <Box>
                       <Input
                         placeholder={t(
                           'globalMods.builder.descriptions.customer',
@@ -7166,8 +7166,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           }))
                         }
                       />
-                    </div>
-                    <div>
+                    </Box>
+                    <Box>
                       <Input
                         placeholder={t(
                           'globalMods.builder.descriptions.installer',
@@ -7184,10 +7184,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           }))
                         }
                       />
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    </Box>
+                  </Box>
+                </Box>
+              </Box>
             </Box>
 
             <Flex gap={2} justify="flex-end" mt={3}>
@@ -7248,7 +7248,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         />
         <ModalBody>
           <Box>
-            <div>
+            <Box>
               <FormLabel>{t('common.name', 'Name')} *</FormLabel>
               <Input
                 value={subTypeForm.name}
@@ -7260,8 +7260,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   'e.g., Single Door Cabinets',
                 )}
               />
-            </div>
-            <div>
+            </Box>
+            <Box>
               <FormLabel>{t('common.description')}</FormLabel>
               <Textarea
                 rows={3}
@@ -7274,8 +7274,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   'Optional description for this sub-type',
                 )}
               />
-            </div>
-            <div>
+            </Box>
+            <Box>
               <Checkbox
                 id="requiresHingeSide"
                 isChecked={subTypeForm.requires_hinge_side}
@@ -7291,8 +7291,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <small>
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresHingeHelp')}
               </small>
-            </div>
-            <div>
+            </Box>
+            <Box>
               <Checkbox
                 id="requiresExposedSide"
                 isChecked={subTypeForm.requires_exposed_side}
@@ -7308,7 +7308,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <small>
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresExposedHelp')}
               </small>
-            </div>
+            </Box>
           </Box>
         </ModalBody>
         <ModalFooter>
@@ -7358,7 +7358,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           borderWidth="0"
         />
         <ModalBody>
-          <div>
+          <Box>
             <FormLabel>
               {t(
                 'settings.manufacturers.catalogMapping.subTypes.assignModal.selectLabel',
@@ -7371,7 +7371,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 items: selectedCatalogItem.length,
               })}
             </Text>
-          </div>
+          </Box>
 
           <Box maxH="400px">
             <Table>
@@ -7473,7 +7473,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           </Button>
         </ModalFooter>
       </Modal>
-    </div>
+    </Box>
   )
 }
 
