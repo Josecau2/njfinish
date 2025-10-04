@@ -14,16 +14,19 @@ import {
   CardBody,
   CardHeader,
   Center,
+  Checkbox,
   Container,
   Divider,
   Flex,
   FormControl,
+  FormHelperText,
   FormLabel,
   Grid,
   GridItem,
   HStack,
   Heading,
   Icon,
+  IconButton,
   Image,
   Input,
   InputGroup,
@@ -38,6 +41,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Progress,
   Select,
   SimpleGrid,
   Spinner,
@@ -294,13 +298,18 @@ const Resources = ({ isContractor, contractorGroupName }) => {
   const customization = useSelector((state) => state.customization)
   const toast = useToast()
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
   const [actionLoading, setActionLoading] = useState(false)
   const [scaffoldLoading, setScaffoldLoading] = useState(false)
   const [resourceData, setResourceData] = useState(null)
   const [categoryReference, setCategoryReference] = useState([])
+  const [searchInput, setSearchInput] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [filters, setFilters] = useState({ search: '', categoryId: 'all', medium: 'all' })
   const [activeTab, setActiveTab] = useState(0)
   const [fileDownloadPermissions, setFileDownloadPermissions] = useState({})
+  const [deleteLoading, setDeleteLoading] = useState({})
+  const [uploadProgress, setUploadProgress] = useState({})
   const [categoryModal, setCategoryModal] = useState({
     visible: false,
     isEdit: false,
@@ -458,6 +467,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
   const fetchResources = useCallback(async () => {
     try {
       setLoading(true)
+      setLoadError(null)
       const response = await axiosInstance.get(API_ROOT, {
         params: { includeInactive: isAdmin },
       })
@@ -469,6 +479,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
         t('resources.messages.loadFailed', 'Failed to load resources')
       showFeedback('error', message)
       setResourceData(null)
+      setLoadError(message)
     } finally {
       setLoading(false)
     }
@@ -492,6 +503,24 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       fetchCategories()
     }
   }, [fetchResources, fetchCategories, isAdmin])
+
+  // Debounced search effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchInput)
+      setFilters((prev) => ({ ...prev, search: searchInput }))
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchInput])
+
+  // Tab sync effect
+  useEffect(() => {
+    const mediumMap = { announcements: 0, links: 1, files: 2 }
+    const tabIndex = mediumMap[filters.medium]
+    if (tabIndex !== undefined && tabIndex !== activeTab) {
+      setActiveTab(tabIndex)
+    }
+  }, [filters.medium, activeTab])
 
   const categoriesForDisplay = useMemo(
     () => (isAdmin ? categoryReference : resourceData?.categories || []),
@@ -566,6 +595,22 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       return haystack.some((value) => value && value.toLowerCase().includes(normalizedSearch))
     },
     [normalizedSearch, passesCategory],
+  )
+
+  // Memoized resource counts for tabs
+  const announcementsCount = useMemo(
+    () => (resourceData?.announcements || []).filter((item) => passesFilters(item, 'announcements')).length,
+    [resourceData, passesFilters]
+  )
+
+  const linksCount = useMemo(
+    () => (resourceData?.links || []).filter((item) => passesFilters(item, 'links')).length,
+    [resourceData, passesFilters]
+  )
+
+  const filesCount = useMemo(
+    () => (resourceData?.files || []).filter((item) => passesFilters(item, 'files')).length,
+    [resourceData, passesFilters]
   )
 
   const resourcesByCategory = useMemo(() => {
@@ -932,6 +977,25 @@ const Resources = ({ isContractor, contractorGroupName }) => {
     )
   }
 
+  if (loadError) {
+    return (
+      <PageContainer>
+        <Center h="400px">
+          <VStack spacing={4}>
+            <Alert status="error" borderRadius="md" maxW="500px">
+              <VStack spacing={2} align="stretch" w="full">
+                <Text fontWeight="medium">{loadError}</Text>
+              </VStack>
+            </Alert>
+            <Button colorScheme="blue" onClick={fetchResources} minH="44px" minW="44px">
+              {t('common.retry', 'Retry')}
+            </Button>
+          </VStack>
+        </Center>
+      </PageContainer>
+    )
+  }
+
   // Main render - simplified category tiles + resources list
   return (
     <PageContainer>
@@ -949,16 +1013,17 @@ const Resources = ({ isContractor, contractorGroupName }) => {
         <StandardCard bg={cardBg}>
           <CardBody>
             <HStack spacing={4}>
-              <InputGroup flex={1}>
+              <InputGroup flex={1} role="search">
                 <InputLeftElement>
                   <Search color={searchIconColor} size={ICON_SIZE_MD} />
                 </InputLeftElement>
                 <Input
                   placeholder={t('resources.search.placeholder', 'Search resources...')}
-                  value={filters.search}
-                  onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                   name="resources-search"
                   id="resources-search"
+                  aria-label={t('resources.search.label', 'Search resources')}
                 />
               </InputGroup>
 
@@ -1054,8 +1119,6 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     }))
                   }
                   minH="380px"
-                  maxH="380px"
-                  overflow="hidden"
                   display="flex"
                   flexDirection="column"
                 >
@@ -1112,44 +1175,42 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
                       {isAdmin && (
                         <HStack opacity={0.7} _groupHover={{ opacity: 1 }} flexShrink={0}>
-                          <Button
-                            minH="28px"
-                            size="sm"
+                          <IconButton
+                            minH="44px"
+                            minW="44px"
                             variant="ghost"
-                            p={1}
+                            icon={<Edit size={16} />}
+                            aria-label={t('resources.actions.editCategory', 'Edit category')}
                             onClick={(e) => {
                               e.stopPropagation()
                               openCategoryModal(category)
                             }}
-                          >
-                            <Edit size={14} />
-                          </Button>
-                          <Button
-                            minH="28px"
-                            size="sm"
+                          />
+                          <IconButton
+                            minH="44px"
+                            minW="44px"
                             variant="ghost"
-                            p={1}
                             colorScheme="green"
+                            icon={<Plus size={16} />}
+                            aria-label={t('resources.actions.addSubcategory', 'Add subcategory')}
                             onClick={(e) => {
                               e.stopPropagation()
                               openCategoryModal(null, category.id)
                             }}
-                          >
-                            <Plus size={14} />
-                          </Button>
-                          <Button
-                            minH="28px"
-                            size="sm"
+                          />
+                          <IconButton
+                            minH="44px"
+                            minW="44px"
                             variant="ghost"
-                            p={1}
                             colorScheme="red"
+                            icon={<Trash size={16} />}
+                            aria-label={t('resources.actions.deleteCategory', 'Delete category')}
+                            isLoading={deleteLoading[`category-${category.id}`]}
                             onClick={(e) => {
                               e.stopPropagation()
                               handleDeleteCategory(category)
                             }}
-                          >
-                            <Trash size={14} />
-                          </Button>
+                          />
                         </HStack>
                       )}
                     </HStack>
@@ -1165,6 +1226,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                         lineHeight="1.3"
                         maxH="2.6rem"
                         overflow="hidden"
+                        title={category.description}
                       >
                         {category.description}
                       </Text>
@@ -1204,7 +1266,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     </HStack>
 
                     {preview.length > 0 ? (
-                      <Box flex={1} minH="100px" maxH="120px" overflow="hidden">
+                      <Box flex={1} minH="100px" maxH="120px">
                         <Text
                           color={textMuted}
                           textTransform="uppercase"
@@ -1216,7 +1278,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                           {t('resources.labels.preview', 'Preview')}
                         </Text>
                         <VStack spacing={1} align="stretch" maxH="90px" overflowY="auto">
-                          {preview.slice(0, 2).map(({ type, item }, idx) => {
+                          {preview.slice(0, 3).map(({ type, item }, idx) => {
                             const IconComponent =
                               type === 'announcement'
                                 ? Video
@@ -1225,7 +1287,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                   : Download
                             const label = item.title || item.name || item.url || ''
                             const handleClick = (e) => {
-                              e.stopPropagation()
+                              if (e) e.stopPropagation()
                               if (type === 'link') handleOpenLink(item)
                               if (type === 'file') handleDownloadFile(item)
                               if (type === 'announcement')
@@ -1234,6 +1296,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                   medium: 'announcements',
                                   categoryId: String(category.id),
                                 }))
+                            }
+                            const handleKeyDown = (e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault()
+                                handleClick()
+                              }
                             }
                             return (
                               <HStack
@@ -1245,11 +1313,16 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                 transition="background 0.2s"
                                 _hover={{ bg: previewHoverBg }}
                                 onClick={handleClick}
+                                onKeyDown={handleKeyDown}
+                                tabIndex={0}
+                                role="button"
                                 spacing={2}
                               >
-                                <IconComponent
-                                  size={12}
-                                  style={{ flexShrink: 0, color: textMuted }}
+                                <Icon
+                                  as={IconComponent}
+                                  boxSize={3}
+                                  flexShrink={0}
+                                  color={textMuted}
                                 />
                                 <Text
                                   fontSize="0.8rem"
@@ -1275,9 +1348,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                         alignItems="center"
                         py={3}
                       >
-                        <Folder
-                          size={24}
-                          style={{ opacity: 0.3, color: textMuted, marginBottom: 8 }}
+                        <Icon
+                          as={Folder}
+                          boxSize={6}
+                          opacity={0.5}
+                          color={textMuted}
+                          mb={2}
                         />
                         <Text fontSize="0.75rem" color={textMuted}>
                           {t('resources.messages.noContent', 'No content available')}
@@ -1334,29 +1410,13 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             <Tabs index={activeTab} onChange={setActiveTab} variant="enclosed" colorScheme="brand">
               <TabList>
                 <Tab>
-                  {t('resources.types.announcements', 'Announcements')} (
-                  {
-                    (resourceData?.announcements || []).filter((item) =>
-                      passesFilters(item, 'announcements'),
-                    ).length
-                  }
-                  )
+                  {t('resources.types.announcements', 'Announcements')} ({announcementsCount})
                 </Tab>
                 <Tab>
-                  {t('resources.types.links', 'Links')} (
-                  {
-                    (resourceData?.links || []).filter((item) => passesFilters(item, 'links'))
-                      .length
-                  }
-                  )
+                  {t('resources.types.links', 'Links')} ({linksCount})
                 </Tab>
                 <Tab>
-                  {t('resources.types.files', 'Files')} (
-                  {
-                    (resourceData?.files || []).filter((item) => passesFilters(item, 'files'))
-                      .length
-                  }
-                  )
+                  {t('resources.types.files', 'Files')} ({filesCount})
                 </Tab>
               </TabList>
 
@@ -1391,8 +1451,8 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                   </Text>
                                 )}
                                 {announcement.isPinned && (
-                                  <Badge colorScheme="yellow">
-                                    <Pin size={12} style={{ marginRight: 4 }} />
+                                  <Badge colorScheme="yellow" display="flex" alignItems="center" gap={1}>
+                                    <Icon as={Pin} boxSize={3} />
                                     {t('resources.labels.pinned', 'Pinned')}
                                   </Badge>
                                 )}
@@ -1400,18 +1460,24 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
                               {isAdmin && (
                                 <HStack>
-                                  <Button
+                                  <IconButton
                                     size="sm"
                                     variant="ghost"
                                     minH="44px"
+                                    minW="44px"
+                                    icon={<Edit size={ICON_SIZE_MD} />}
+                                    aria-label={t('resources.actions.editAnnouncement', 'Edit announcement')}
                                     onClick={() => openAnnouncementModal(announcement)}
-                                  >
-                                    <Edit size={ICON_SIZE_MD} />
-                                  </Button>
-                                  <Button
+                                  />
+                                  <IconButton
                                     size="sm"
                                     variant="ghost"
                                     colorScheme="red"
+                                    minH="44px"
+                                    minW="44px"
+                                    icon={<Trash size={ICON_SIZE_MD} />}
+                                    aria-label={t('resources.actions.deleteAnnouncement', 'Delete announcement')}
+                                    isLoading={deleteLoading[`announcement-${announcement.id}`]}
                                     onClick={async () => {
                                       if (
                                         !confirm(
@@ -1423,6 +1489,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                       )
                                         return
                                       try {
+                                        setDeleteLoading((prev) => ({ ...prev, [`announcement-${announcement.id}`]: true }))
                                         const token = getFreshestToken()
                                         await axiosInstance.delete(
                                           `${ANNOUNCEMENTS_ENDPOINT}/${announcement.id}`,
@@ -1447,11 +1514,11 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                             'Failed to delete announcement',
                                           ),
                                         )
+                                      } finally {
+                                        setDeleteLoading((prev) => ({ ...prev, [`announcement-${announcement.id}`]: false }))
                                       }
                                     }}
-                                  >
-                                    <Trash size={ICON_SIZE_MD} />
-                                  </Button>
+                                  />
                                 </HStack>
                               )}
                             </HStack>
@@ -1497,8 +1564,10 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                   isExternal
                                   color={linkColor}
                                   fontWeight="bold"
+                                  minH="44px"
+                                  display="inline-flex"
+                                  alignItems="center"
                                 >
-                                  minH="44px" py={2}
                                   {link.title}
                                 </Link>
                                 {link.description && (
@@ -1509,8 +1578,8 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                 <HStack>
                                   <Badge>{link.type}</Badge>
                                   {link.isPinned && (
-                                    <Badge colorScheme="yellow">
-                                      <Pin size={12} style={{ marginRight: 4 }} />
+                                    <Badge colorScheme="yellow" display="flex" alignItems="center" gap={1}>
+                                      <Icon as={Pin} boxSize={3} />
                                       {t('resources.labels.pinned', 'Pinned')}
                                     </Badge>
                                   )}
@@ -1519,18 +1588,24 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
                               {isAdmin && (
                                 <HStack>
-                                  <Button
+                                  <IconButton
                                     size="sm"
                                     variant="ghost"
                                     minH="44px"
+                                    minW="44px"
+                                    icon={<Edit size={ICON_SIZE_MD} />}
+                                    aria-label={t('resources.actions.editLink', 'Edit link')}
                                     onClick={() => openLinkModal(link)}
-                                  >
-                                    <Edit size={ICON_SIZE_MD} />
-                                  </Button>
-                                  <Button
+                                  />
+                                  <IconButton
                                     size="sm"
                                     variant="ghost"
                                     colorScheme="red"
+                                    minH="44px"
+                                    minW="44px"
+                                    icon={<Trash size={ICON_SIZE_MD} />}
+                                    aria-label={t('resources.actions.deleteLink', 'Delete link')}
+                                    isLoading={deleteLoading[`link-${link.id}`]}
                                     onClick={async () => {
                                       if (
                                         !confirm(
@@ -1542,6 +1617,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                       )
                                         return
                                       try {
+                                        setDeleteLoading((prev) => ({ ...prev, [`link-${link.id}`]: true }))
                                         const token = getFreshestToken()
                                         await axiosInstance.delete(`${LINKS_ENDPOINT}/${link.id}`, {
                                           headers: { Authorization: `Bearer ${token}` },
@@ -1560,11 +1636,11 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                             'Failed to delete link',
                                           ),
                                         )
+                                      } finally {
+                                        setDeleteLoading((prev) => ({ ...prev, [`link-${link.id}`]: false }))
                                       }
                                     }}
-                                  >
-                                    <Trash size={ICON_SIZE_MD} />
-                                  </Button>
+                                  />
                                 </HStack>
                               )}
                             </HStack>
@@ -1610,13 +1686,15 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                               <HStack justify="space-between">
                                 <HStack flex={1}>
                                   {thumbUrl && (
-                                    <Image
-                                      src={thumbUrl}
-                                      alt={file.name}
-                                      boxSize="60px"
-                                      objectFit="cover"
-                                      rounded="md"
-                                    />
+                                    <AspectRatio ratio={1} w="60px">
+                                      <Image
+                                        src={thumbUrl}
+                                        alt={file.name}
+                                        objectFit="cover"
+                                        rounded="md"
+                                        maxW="100%"
+                                      />
+                                    </AspectRatio>
                                   )}
                                   <VStack align="start" flex={1}>
                                     <Text fontWeight="bold">{file.name}</Text>
@@ -1628,8 +1706,8 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                     <HStack>
                                       <Badge>{fileKind}</Badge>
                                       {file.isPinned && (
-                                        <Badge colorScheme="yellow">
-                                          <Pin size={12} style={{ marginRight: 4 }} />
+                                        <Badge colorScheme="yellow" display="flex" alignItems="center" gap={1}>
+                                          <Icon as={Pin} boxSize={3} />
                                           {t('resources.labels.pinned', 'Pinned')}
                                         </Badge>
                                       )}
@@ -1638,39 +1716,49 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                 </HStack>
 
                                 <HStack>
-                                  <Button
+                                  <IconButton
                                     size="sm"
                                     variant="ghost"
+                                    minH="44px"
+                                    minW="44px"
+                                    icon={<Eye size={ICON_SIZE_MD} />}
+                                    aria-label={t('resources.actions.viewFile', 'View file')}
                                     onClick={() => setViewerModal({ visible: true, file })}
-                                  >
-                                    <Eye size={ICON_SIZE_MD} />
-                                  </Button>
+                                  />
                                   {canDownload && (
-                                    <Button
+                                    <IconButton
                                       size="sm"
                                       variant="ghost"
+                                      minH="44px"
+                                      minW="44px"
+                                      icon={<Download size={ICON_SIZE_MD} />}
+                                      aria-label={t('resources.actions.downloadFile', 'Download file')}
                                       onClick={() => {
                                         const url = resolveFileUrl(file)
                                         if (url) window.open(url, '_blank')
                                       }}
-                                    >
-                                      <Download size={ICON_SIZE_MD} />
-                                    </Button>
+                                    />
                                   )}
                                   {isAdmin && (
                                     <>
-                                      <Button
+                                      <IconButton
                                         size="sm"
                                         variant="ghost"
                                         minH="44px"
+                                        minW="44px"
+                                        icon={<Edit size={ICON_SIZE_MD} />}
+                                        aria-label={t('resources.actions.editFile', 'Edit file')}
                                         onClick={() => openFileModal(file)}
-                                      >
-                                        <Edit size={ICON_SIZE_MD} />
-                                      </Button>
-                                      <Button
+                                      />
+                                      <IconButton
                                         size="sm"
                                         variant="ghost"
                                         colorScheme="red"
+                                        minH="44px"
+                                        minW="44px"
+                                        icon={<Trash size={ICON_SIZE_MD} />}
+                                        aria-label={t('resources.actions.deleteFile', 'Delete file')}
+                                        isLoading={deleteLoading[`file-${file.id}`]}
                                         onClick={async () => {
                                           if (
                                             !confirm(
@@ -1682,6 +1770,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                           )
                                             return
                                           try {
+                                            setDeleteLoading((prev) => ({ ...prev, [`file-${file.id}`]: true }))
                                             const token = getFreshestToken()
                                             await axiosInstance.delete(
                                               `${FILES_ENDPOINT}/${file.id}`,
@@ -1703,11 +1792,11 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                                 'Failed to delete file',
                                               ),
                                             )
+                                          } finally {
+                                            setDeleteLoading((prev) => ({ ...prev, [`file-${file.id}`]: false }))
                                           }
                                         }}
-                                      >
-                                        <Trash size={ICON_SIZE_MD} />
-                                      </Button>
+                                      />
                                     </>
                                   )}
                                 </HStack>
@@ -1735,7 +1824,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       <Modal
         isOpen={categoryModal.visible}
         onClose={closeCategoryModal}
-        size={{ base: 'full', lg: 'lg' }}
+        size={{ base: 'full', md: 'lg', lg: 'xl' }}
         scrollBehavior="inside"
       >
         <ModalOverlay />
@@ -1789,7 +1878,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   <option value="">{t('resources.options.noParent', 'No Parent')}</option>
                   {parentCategoryOptions.map(({ id, name, level }) => (
                     <option key={id} value={id}>
-                      {'  '.repeat(level)}
+                      {'\u00A0\u00A0'.repeat(level)}
                       {name}
                     </option>
                   ))}
@@ -1798,16 +1887,31 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
               <FormControl>
                 <FormLabel>{t('resources.fields.color', 'Color')}</FormLabel>
-                <Input
-                  type="color"
-                  value={categoryModal.form.color}
-                  onChange={(e) =>
-                    setCategoryModal((prev) => ({
-                      ...prev,
-                      form: { ...prev.form, color: e.target.value },
-                    }))
-                  }
-                />
+                <HStack spacing={2}>
+                  <Input
+                    type="color"
+                    value={categoryModal.form.color}
+                    onChange={(e) =>
+                      setCategoryModal((prev) => ({
+                        ...prev,
+                        form: { ...prev.form, color: e.target.value },
+                      }))
+                    }
+                    w="80px"
+                  />
+                  <Input
+                    type="text"
+                    value={categoryModal.form.color}
+                    onChange={(e) =>
+                      setCategoryModal((prev) => ({
+                        ...prev,
+                        form: { ...prev.form, color: e.target.value },
+                      }))
+                    }
+                    placeholder="#000000"
+                    flex={1}
+                  />
+                </HStack>
               </FormControl>
 
               <FormControl>
@@ -1852,15 +1956,16 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 />
                 {categoryModal.form.pendingThumbnailPreview && (
                   <Box mt={2}>
-                    <Image
-                      src={categoryModal.form.pendingThumbnailPreview}
-                      alt="Thumbnail preview"
-                      maxH="160px"
-                      objectFit="cover"
-                      rounded="md"
-                      border="1px solid"
-                      borderColor="gray.200"
-                    />
+                    <AspectRatio ratio={16 / 9} maxW="300px">
+                      <Image
+                        src={categoryModal.form.pendingThumbnailPreview}
+                        alt="Thumbnail preview"
+                        objectFit="cover"
+                        rounded="md"
+                        border="1px solid"
+                        borderColor="gray.200"
+                      />
+                    </AspectRatio>
                     <Text fontSize="sm" color="gray.500" mt={1}>
                       {t('resources.fields.pendingUpload', 'Will be uploaded when saved')}
                     </Text>
@@ -1954,7 +2059,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       <Modal
         isOpen={linkModal.visible}
         onClose={closeLinkModal}
-        size={{ base: 'full', lg: 'lg' }}
+        size={{ base: 'full', md: 'lg', lg: 'xl' }}
         scrollBehavior="inside"
       >
         <ModalOverlay />
@@ -2041,7 +2146,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   <option value="">{t('resources.options.noCategory', 'No Category')}</option>
                   {flattenedCategories.map(({ id, name, level }) => (
                     <option key={id} value={id}>
-                      {'  '.repeat(level)}
+                      {'\u00A0\u00A0'.repeat(level)}
                       {name}
                     </option>
                   ))}
@@ -2074,6 +2179,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   }
                   placeholder="tag1, tag2"
                 />
+                <FormHelperText>{t('resources.fields.tagsHelp', 'Comma-separated tags')}</FormHelperText>
               </FormControl>
 
               <FormControl>
@@ -2153,27 +2259,23 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.visibility', 'Visibility')}</FormLabel>
                 <VStack align="start" spacing={2}>
                   {GROUP_VISIBILITY_OPTIONS.map((option) => (
-                    <label
+                    <Checkbox
                       key={option}
-                      style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                      isChecked={linkModal.form.visibleToGroupTypes.includes(option)}
+                      onChange={(e) => {
+                        setLinkModal((prev) => ({
+                          ...prev,
+                          form: {
+                            ...prev.form,
+                            visibleToGroupTypes: e.target.checked
+                              ? [...prev.form.visibleToGroupTypes, option]
+                              : prev.form.visibleToGroupTypes.filter((v) => v !== option),
+                          },
+                        }))
+                      }}
                     >
-                      <input
-                        type="checkbox"
-                        checked={linkModal.form.visibleToGroupTypes.includes(option)}
-                        onChange={(e) => {
-                          setLinkModal((prev) => ({
-                            ...prev,
-                            form: {
-                              ...prev.form,
-                              visibleToGroupTypes: e.target.checked
-                                ? [...prev.form.visibleToGroupTypes, option]
-                                : prev.form.visibleToGroupTypes.filter((v) => v !== option),
-                            },
-                          }))
-                        }}
-                      />
                       {t(`resources.visibility.${option}`, option)}
-                    </label>
+                    </Checkbox>
                   ))}
                 </VStack>
               </FormControl>
@@ -2235,7 +2337,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       <Modal
         isOpen={fileModal.visible}
         onClose={closeFileModal}
-        size={{ base: 'full', lg: 'lg' }}
+        size={{ base: 'full', md: 'lg', lg: 'xl' }}
         scrollBehavior="inside"
       >
         <ModalOverlay />
@@ -2302,7 +2404,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   <option value="">{t('resources.options.noCategory', 'No Category')}</option>
                   {flattenedCategories.map(({ id, name, level }) => (
                     <option key={id} value={id}>
-                      {'  '.repeat(level)}
+                      {'\u00A0\u00A0'.repeat(level)}
                       {name}
                     </option>
                   ))}
@@ -2331,15 +2433,16 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 />
                 {fileModal.form.pendingThumbnailPreview && (
                   <Box mt={2}>
-                    <Image
-                      src={fileModal.form.pendingThumbnailPreview}
-                      alt="Thumbnail preview"
-                      maxH="160px"
-                      objectFit="cover"
-                      rounded="md"
-                      border="1px solid"
-                      borderColor="gray.200"
-                    />
+                    <AspectRatio ratio={16 / 9} maxW="300px">
+                      <Image
+                        src={fileModal.form.pendingThumbnailPreview}
+                        alt="Thumbnail preview"
+                        objectFit="cover"
+                        rounded="md"
+                        border="1px solid"
+                        borderColor="gray.200"
+                      />
+                    </AspectRatio>
                     <Text fontSize="sm" color="gray.500" mt={1}>
                       {t('resources.fields.pendingUpload', 'Will be uploaded when saved')}
                     </Text>
@@ -2359,6 +2462,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   }
                   placeholder="tag1, tag2"
                 />
+                <FormHelperText>{t('resources.fields.tagsHelp', 'Comma-separated tags')}</FormHelperText>
               </FormControl>
 
               <FormControl>
@@ -2438,27 +2542,23 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.visibility', 'Visibility')}</FormLabel>
                 <VStack align="start" spacing={2}>
                   {GROUP_VISIBILITY_OPTIONS.map((option) => (
-                    <label
+                    <Checkbox
                       key={option}
-                      style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                      isChecked={fileModal.form.visibleToGroupTypes.includes(option)}
+                      onChange={(e) => {
+                        setFileModal((prev) => ({
+                          ...prev,
+                          form: {
+                            ...prev.form,
+                            visibleToGroupTypes: e.target.checked
+                              ? [...prev.form.visibleToGroupTypes, option]
+                              : prev.form.visibleToGroupTypes.filter((v) => v !== option),
+                          },
+                        }))
+                      }}
                     >
-                      <input
-                        type="checkbox"
-                        checked={fileModal.form.visibleToGroupTypes.includes(option)}
-                        onChange={(e) => {
-                          setFileModal((prev) => ({
-                            ...prev,
-                            form: {
-                              ...prev.form,
-                              visibleToGroupTypes: e.target.checked
-                                ? [...prev.form.visibleToGroupTypes, option]
-                                : prev.form.visibleToGroupTypes.filter((v) => v !== option),
-                            },
-                          }))
-                        }}
-                      />
                       {t(`resources.visibility.${option}`, option)}
-                    </label>
+                    </Checkbox>
                   ))}
                 </VStack>
               </FormControl>
@@ -2548,7 +2648,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       <Modal
         isOpen={announcementModal.visible}
         onClose={closeAnnouncementModal}
-        size={{ base: 'full', lg: 'lg' }}
+        size={{ base: 'full', md: 'lg', lg: 'xl' }}
         scrollBehavior="inside"
       >
         <ModalOverlay />
@@ -2616,7 +2716,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   <option value="">{t('resources.options.noCategory', 'No Category')}</option>
                   {flattenedCategories.map(({ id, name, level }) => (
                     <option key={id} value={id}>
-                      {'  '.repeat(level)}
+                      {'\u00A0\u00A0'.repeat(level)}
                       {name}
                     </option>
                   ))}
@@ -2652,6 +2752,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     }))
                   }
                 />
+                <FormHelperText>{t('resources.fields.dateTimeHelp', 'Times are in UTC timezone. Browser support varies.')}</FormHelperText>
               </FormControl>
 
               <FormControl>
@@ -2666,6 +2767,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     }))
                   }
                 />
+                <FormHelperText>{t('resources.fields.dateTimeHelp', 'Times are in UTC timezone. Browser support varies.')}</FormHelperText>
               </FormControl>
 
               <FormControl>
@@ -2728,27 +2830,23 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <FormLabel>{t('resources.fields.visibility', 'Visibility')}</FormLabel>
                 <VStack align="start" spacing={2}>
                   {GROUP_VISIBILITY_OPTIONS.map((option) => (
-                    <label
+                    <Checkbox
                       key={option}
-                      style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={announcementModal.form.visibleToGroupTypes.includes(option)}
-                        onChange={(e) => {
-                          setAnnouncementModal((prev) => ({
-                            ...prev,
-                            form: {
-                              ...prev.form,
-                              visibleToGroupTypes: e.target.checked
-                                ? [...prev.form.visibleToGroupTypes, option]
-                                : prev.form.visibleToGroupTypes.filter((v) => v !== option),
-                            },
+                      isChecked={announcementModal.form.visibleToGroupTypes.includes(option)}
+                      onChange={(e) => {
+                        setAnnouncementModal((prev) => ({
+                          ...prev,
+                          form: {
+                            ...prev.form,
+                            visibleToGroupTypes: e.target.checked
+                              ? [...prev.form.visibleToGroupTypes, option]
+                              : prev.form.visibleToGroupTypes.filter((v) => v !== option),
+                          },
                           }))
                         }}
-                      />
-                      {t(`resources.visibility.${option}`, option)}
-                    </label>
+                      >
+                        {t(`resources.visibility.${option}`, option)}
+                      </Checkbox>
                   ))}
                 </VStack>
               </FormControl>
