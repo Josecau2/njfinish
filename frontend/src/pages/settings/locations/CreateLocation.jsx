@@ -223,7 +223,7 @@ const LocationForm = () => {
       {/* Form Section */}
       <StandardCard>
         <CardBody>
-          <form onSubmit={handleSubmit}>
+          <Box as="form" onSubmit={handleSubmit}>
             {/* Basic Information Section */}
             <Box>
               <Heading as="h5" size="md" mb={3} fontWeight="semibold" color={borderGray700} display="flex" alignItems="center" gap={2}>
@@ -603,7 +603,7 @@ const LocationForm = () => {
                 )}
               </Button>
             </Flex>
-          </form>
+          </Box>
         </CardBody>
       </StandardCard>
     </PageContainer>
