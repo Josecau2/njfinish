@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import PageHeader from '../../../../components/PageHeader'
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormControl, FormLabel, HStack, Icon, Image, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Spinner, Table, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue } from '@chakra-ui/react'
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormControl, FormLabel, HStack, Icon, Image, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Table, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue } from '@chakra-ui/react'
 // Use lucide icons (React components) only via centralized module
 import { Plus, ChevronDown, ChevronUp, RefreshCw, Sparkles, Upload, Wrench } from '@/icons-lucide'
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice'
@@ -2234,50 +2234,52 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         `}
       </style>
 
-      {/* Page Header with Mobile-Optimized Layout */}
-      <PageHeader
-        title={t('settings.manufacturers.catalogMapping.title')}
-        mobileLayout="compact"
-        rightContent={
-          <HStack spacing={4} flexWrap="wrap" className="catalog-actions">
-            <Button
-              bg={headerBg}
-              color={textColor}
-              borderColor={headerBg}
-              _hover={{ bg: headerBg, opacity: 0.9 }}
-              size="sm"
-              onClick={() => setFileModalVisible(true)}
-              aria-label={t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}
-              leftIcon={<Icon as={Upload} boxSize={ICON_BOX_MD} />}
-              minH="44px"
-            >
-              <Text display={{ base: 'none', sm: 'inline' }}>
-                {t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}
-              </Text>
-              <Text display={{ base: 'inline', sm: 'none' }}>CSV</Text>
-            </Button>
-            <Button
-              bg={headerBg}
-              color={textColor}
-              borderColor={headerBg}
-              _hover={{ bg: headerBg, opacity: 0.9 }}
-              size="sm"
-              onClick={() => setManualModalVisible(true)}
-              aria-label={t('settings.manufacturers.catalogMapping.buttons.addItem')}
-              leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} />}
-              minH="44px"
-            >
-              <Text display={{ base: 'none', sm: 'inline' }}>
-                {t('settings.manufacturers.catalogMapping.buttons.addItem')}
-              </Text>
-              <Text display={{ base: 'inline', sm: 'none' }}>
-                {t('settings.manufacturers.catalogMapping.buttons.addShort', 'Add')}
-              </Text>
-            </Button>
-            <Button
-              colorScheme="brand"
-              size="sm"
-              onClick={() => setShowMainModificationModal(true)}
+      {/* Page Header with Action Buttons Below */}
+      <VStack align="stretch" spacing={4} mb={6}>
+        <PageHeader
+          title={t('settings.manufacturers.catalogMapping.title')}
+        />
+
+        {/* Action Buttons Row */}
+        <Flex gap={3} flexWrap="wrap" className="catalog-actions">
+          <Button
+            bg={headerBg}
+            color={textColor}
+            borderColor={headerBg}
+            _hover={{ bg: headerBg, opacity: 0.9 }}
+            size="sm"
+            onClick={() => setFileModalVisible(true)}
+            aria-label={t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}
+            leftIcon={<Icon as={Upload} boxSize={ICON_BOX_MD} />}
+            minH="44px"
+          >
+            <Text display={{ base: 'none', sm: 'inline' }}>
+              {t('settings.manufacturers.catalogMapping.buttons.uploadCsv')}
+            </Text>
+            <Text display={{ base: 'inline', sm: 'none' }}>CSV</Text>
+          </Button>
+          <Button
+            bg={headerBg}
+            color={textColor}
+            borderColor={headerBg}
+            _hover={{ bg: headerBg, opacity: 0.9 }}
+            size="sm"
+            onClick={() => setManualModalVisible(true)}
+            aria-label={t('settings.manufacturers.catalogMapping.buttons.addItem')}
+            leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} />}
+            minH="44px"
+          >
+            <Text display={{ base: 'none', sm: 'inline' }}>
+              {t('settings.manufacturers.catalogMapping.buttons.addItem')}
+            </Text>
+            <Text display={{ base: 'inline', sm: 'none' }}>
+              {t('settings.manufacturers.catalogMapping.buttons.addShort', 'Add')}
+            </Text>
+          </Button>
+          <Button
+            colorScheme="brand"
+            size="sm"
+            onClick={() => setShowMainModificationModal(true)}
               title={t('settings.manufacturers.catalogMapping.actions.modificationManagementTitle')}
               aria-label={t(
                 'settings.manufacturers.catalogMapping.actions.modificationManagementTitle',
@@ -2355,9 +2357,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 {t('settings.manufacturers.catalogMapping.rollback.short', 'Undo')}
               </Text>
             </Button>
-          </HStack>
-        }
-      />
+        </Flex>
+      </VStack>
 
       <style>{`
         .catalog-actions {
@@ -2620,13 +2621,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </StandardCard>
 
       {/* Mobile-Optimized Filters and Pagination */}
-      <Box className="row" gap={2} mb={3}>
-        {/* Items per page - Full width on mobile */}
-        <div className="col-12 col-sm-6 col-lg-auto">
-          <div>
-            <select
-              className="form-select form-select-sm"
-              style={{ width: 'auto', minWidth: '60px' }}
+      <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={3} mb={4}>
+        {/* Items per page */}
+        <FormControl>
+          <HStack spacing={2}>
+            <Select
+              size="sm"
               value={itemsPerPage}
               aria-label={t(
                 'settings.manufacturers.catalogMapping.pagination.itemsPerPage',
@@ -2641,31 +2641,32 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               }}
               name="items-per-page"
               id="catalog-items-per-page"
+              w="auto"
+              minW="60px"
             >
               {[10, 25, 50, 100, 200].map((num) => (
                 <option key={num} value={num}>
                   {num}
                 </option>
               ))}
-            </select>
-            <Text as="span" color={borderGray600} fontSize="sm" display={{ base: "none", sm: "inline" }}>
+            </Select>
+            <Text color={borderGray600} fontSize="sm" display={{ base: "none", sm: "inline" }}>
               {t('settings.manufacturers.catalogMapping.pagination.perPage')}
             </Text>
-            <Text as="span" color={borderGray600} fontSize="sm" display={{ base: "inline", sm: "none" }}>per page</Text>
-          </div>
-        </div>
+            <Text color={borderGray600} fontSize="sm" display={{ base: "inline", sm: "none" }}>per page</Text>
+          </HStack>
+        </FormControl>
 
         {/* Search Filter - Prominent on mobile */}
-        <div className="col-12 col-sm-12 col-lg-4 order-first order-lg-3">
-          <div>
-            <input
+        <FormControl gridColumn={{ base: "1", lg: "2 / 3" }}>
+          <Box position="relative">
+            <Input
+              size="sm"
               aria-label={t('settings.manufacturers.catalogMapping.search', 'Search styles')}
-              type="text"
-              className="form-control form-control-sm"
               placeholder="🔍 Search styles..."
               value={searchFilter}
               onChange={(event) => setSearchFilter(event.currentTarget.value)}
-              style={{ paddingRight: searchFilter ? '35px' : '12px' }}
+              pr={searchFilter ? "35px" : "12px"}
               name="catalog-search"
               id="catalog-search"
             />
@@ -2674,8 +2675,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 size="sm"
                 variant="link"
                 position="absolute"
-                top={0}
-                right={0}
+                top="50%"
+                transform="translateY(-50%)"
+                right={2}
                 p={1}
                 aria-label={t('common.clearSearch', 'Clear search')}
                 onClick={() => setSearchFilter('')}
@@ -2686,13 +2688,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 ×
               </Button>
             )}
-          </div>
-        </div>
+          </Box>
+        </FormControl>
 
         {/* Type Filter */}
-        <div className="col-6 col-sm-6 col-lg-auto">
-          <select
-            className="form-select form-select-sm"
+        <FormControl>
+          <Select
+            size="sm"
             aria-label={t('settings.manufacturers.catalogMapping.filters.type', 'Filter by type')}
             value={typeFilter}
             onChange={(event) => {
@@ -2708,13 +2710,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 {type}
               </option>
             ))}
-          </select>
-        </div>
+          </Select>
+        </FormControl>
 
         {/* Style Filter */}
-        <div className="col-6 col-sm-6 col-lg-auto">
-          <select
-            className="form-select form-select-sm"
+        <FormControl>
+          <Select
+            size="sm"
             aria-label={t('settings.manufacturers.catalogMapping.filters.style', 'Filter by style')}
             value={styleFilter}
             onChange={(event) => {
@@ -2730,9 +2732,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 {style}
               </option>
             ))}
-          </select>
-        </div>
-      </Box>
+          </Select>
+        </FormControl>
+      </SimpleGrid>
 
       <>
         {/* Debug info - remove this later */}
