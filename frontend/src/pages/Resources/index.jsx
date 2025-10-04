@@ -1191,10 +1191,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
                       {isAdmin && (
                         <HStack
-                          opacity={0.7}
+                          opacity={{ base: 1, lg: 0.7 }}
                           _groupHover={{ opacity: 1 }}
                           spacing={1}
-                          display={{ base: 'none', lg: 'flex' }}
                           pl={10}
                         >
                           <IconButton
