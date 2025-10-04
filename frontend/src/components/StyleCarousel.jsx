@@ -16,9 +16,11 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 const ITEM_WIDTH = 148
 const SCROLL_AMOUNT = ITEM_WIDTH * 2
 
-const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', className = '' }) => {
+const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles' }) => {
   const { t } = useTranslation()
   const scrollerRef = useRef(null)
+  const emptyStateColor = useColorModeValue('gray.500', 'gray.400')
+  const itemBg = useColorModeValue('gray.100', 'gray.700')
 
   const scrollBy = (distance) => {
     const node = scrollerRef.current
@@ -33,7 +35,7 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
   }
 
   return (
-    <VStack align="stretch" spacing={4} className={className}>
+    <VStack align="stretch" spacing={4}>
       <HStack justify="space-between" align="center">
         <Text fontWeight="semibold">{title}</Text>
         <HStack spacing={4}>
@@ -65,7 +67,7 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
         aria-label={title}
       >
         {items.length === 0 && (
-          <Box px={3} py={2} color={useColorModeValue("gray.500","gray.400")} fontSize="sm">
+          <Box px={3} py={2} color={emptyStateColor} fontSize="sm">
             No styles
           </Box>
         )}
@@ -99,7 +101,7 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
                   <Box
                     borderRadius="md"
                     overflow="hidden"
-                    bg={useColorModeValue("gray.100","gray.700")}
+                    bg={itemBg}
                     h="96px"
                     display="flex"
                     alignItems="center"
