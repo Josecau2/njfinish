@@ -1037,7 +1037,6 @@ const TypesTab = ({ manufacturer }) => {
           setSelectedFile(null)
         }}
         size="xl"
-        className="no-gradient-modal"
       >
         <ModalOverlay />
         <ModalContent>
@@ -1054,9 +1053,13 @@ const TypesTab = ({ manufacturer }) => {
                 {/* Current Image Preview */}
                 <div>
                   <h6>{t('types.meta.currentImage', 'Current Image')}:</h6>
-                  <div
-                    className="d-flex justify-content-center p-3 border rounded"
-                    style={{ backgroundColor: "gray.50" }}
+                  <Box
+                    display="flex"
+                    justifyContent="center"
+                    p={3}
+                    borderWidth="1px"
+                    borderRadius="md"
+                    bg="gray.50"
                   >
                     <img
                       src={getImageSrc(selectedType)}
@@ -1071,7 +1074,7 @@ const TypesTab = ({ manufacturer }) => {
                       }}
                       onError={handleImageError}
                     />
-                  </div>
+                  </Box>
                 </div>
 
                 {/* File Upload */}
