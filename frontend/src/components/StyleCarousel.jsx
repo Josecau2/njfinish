@@ -1,4 +1,5 @@
 import React, { useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Box,
   HStack,
@@ -16,6 +17,7 @@ const ITEM_WIDTH = 148
 const SCROLL_AMOUNT = ITEM_WIDTH * 2
 
 const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', className = '' }) => {
+  const { t } = useTranslation()
   const scrollerRef = useRef(null)
 
   const scrollBy = (distance) => {
@@ -38,7 +40,7 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
           <IconButton
             minW="44px"
             minH="44px"
-            aria-label="Scroll left"
+            aria-label={t('common.ariaLabels.scrollLeft', 'Scroll left')}
             icon={<ChevronLeft size={ICON_SIZE_MD} />}
             variant="ghost"
             onClick={() => scrollBy(-SCROLL_AMOUNT)}
@@ -46,7 +48,7 @@ const StyleCarousel = ({ items = [], selectedId, onSelect, title = 'Styles', cla
           <IconButton
             minW="44px"
             minH="44px"
-            aria-label="Scroll right"
+            aria-label={t('common.ariaLabels.scrollRight', 'Scroll right')}
             icon={<ChevronRight size={ICON_SIZE_MD} />}
             variant="ghost"
             onClick={() => scrollBy(SCROLL_AMOUNT)}

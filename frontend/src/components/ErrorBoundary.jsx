@@ -32,7 +32,7 @@ class ErrorBoundary extends Component {
             </Text>
           )}
           <Button onClick={() => window.location.reload()} colorScheme="brand">
-            Refresh Page
+            {t('errors.actions.refreshPage', 'Refresh Page')}
           </Button>
         </Box>
       );

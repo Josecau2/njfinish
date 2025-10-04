@@ -219,7 +219,7 @@ const AppSidebar = () => {
           )}
         </Flex>
         {!isDesktop && (
-          <IconButton size="lg" aria-label="Close sidebar"
+          <IconButton size="lg" aria-label={t('common.ariaLabels.closeSidebar', 'Close sidebar')}
             icon={<Icon as={X} boxSize={ICON_BOX_MD} />}
             variant="ghost"
             color={pinButtonColor}

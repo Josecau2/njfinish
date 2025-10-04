@@ -19,8 +19,10 @@ import {
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchLocations } from '../store/slices/locationSlice'
+import { useTranslation } from 'react-i18next'
 
 const EditUserModal = ({ visible, onClose, user }) => {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const toast = useToast()
   const { list: locations } = useSelector((state) => state.locations)
@@ -88,12 +90,12 @@ const EditUserModal = ({ visible, onClose, user }) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Edit User</ModalHeader>
-        <ModalCloseButton aria-label="Close modal" />
+        <ModalHeader>{t('users.edit.modalHeader', 'Edit User')}</ModalHeader>
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>
           <VStack spacing={4} align="stretch">
             <FormControl isRequired>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t('users.fields.name', 'Name')}</FormLabel>
               <Input
                 name="name"
                 value={formData.name}
@@ -103,7 +105,7 @@ const EditUserModal = ({ visible, onClose, user }) => {
             </FormControl>
 
             <FormControl isRequired>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('users.fields.email', 'Email')}</FormLabel>
               <Input
                 name="email"
                 type="email"
@@ -114,14 +116,14 @@ const EditUserModal = ({ visible, onClose, user }) => {
             </FormControl>
 
             <FormControl isRequired>
-              <FormLabel>User Group</FormLabel>
+              <FormLabel>{t('users.fields.userGroup', 'User Group')}</FormLabel>
               <Select
                 name="userGroup"
                 value={formData.userGroup}
                 onChange={handleChange}
                 minH="44px"
               >
-                <option value="">-- Select Group --</option>
+                <option value="">{t('common.selectPlaceholders.selectGroup', '-- Select Group --')}</option>
                 <option value="User">User</option>
                 <option value="Admin">Admin</option>
                 <option value="Contractor">Contractor</option>
@@ -129,14 +131,14 @@ const EditUserModal = ({ visible, onClose, user }) => {
             </FormControl>
 
             <FormControl>
-              <FormLabel>Location</FormLabel>
+              <FormLabel>{t('users.fields.location', 'Location')}</FormLabel>
               <Select
                 name="locationId"
                 value={formData.locationId}
                 onChange={handleChange}
                 minH="44px"
               >
-                <option value="">Select location</option>
+                <option value="">{t('common.selectPlaceholders.selectLocation', 'Select location')}</option>
                 {locations.map((location) => (
                   <option key={location.id} value={location.id}>
                     {location.locationName}
@@ -146,7 +148,7 @@ const EditUserModal = ({ visible, onClose, user }) => {
             </FormControl>
 
             <FormControl>
-              <FormLabel>Password (leave blank to keep current)</FormLabel>
+              <FormLabel>{t('users.fields.passwordHint', 'Password (leave blank to keep current)')}</FormLabel>
               <Input
                 name="password"
                 type="password"
@@ -157,7 +159,7 @@ const EditUserModal = ({ visible, onClose, user }) => {
             </FormControl>
 
             <FormControl>
-              <FormLabel>Confirm Password</FormLabel>
+              <FormLabel>{t('users.fields.confirmPassword', 'Confirm Password')}</FormLabel>
               <Input
                 name="confirmPassword"
                 type="password"
@@ -168,7 +170,7 @@ const EditUserModal = ({ visible, onClose, user }) => {
             </FormControl>
 
             <FormControl display="flex" alignItems="center">
-              <FormLabel mb="0">Sales Representative</FormLabel>
+              <FormLabel mb="0">{t('users.fields.salesRep', 'Sales Representative')}</FormLabel>
               <Switch
                 name="isSalesRep"
                 isChecked={formData.isSalesRep}
@@ -184,17 +186,17 @@ const EditUserModal = ({ visible, onClose, user }) => {
               colorScheme="gray"
               onClick={onClose}
               minH="44px"
-              aria-label="Cancel editing user"
+              aria-label={t('users.actions.cancelEdit', 'Cancel editing user')}
             >
-              Cancel
+              {t('common.cancel', 'Cancel')}
             </Button>
             <Button
               colorScheme="brand"
               onClick={handleSubmit}
               minH="44px"
-              aria-label="Save user changes"
+              aria-label={t('users.actions.saveChanges', 'Save user changes')}
             >
-              Save Changes
+              {t('users.actions.saveChanges', 'Save Changes')}
             </Button>
           </HStack>
         </ModalFooter>

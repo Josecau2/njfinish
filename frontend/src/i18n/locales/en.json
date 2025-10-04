@@ -90,7 +90,27 @@
     "egSevenToFourteenDays": "e.g., 7-14 days",
     "egThreeToSevenDays": "e.g., 3-7 days",
     "continue": "Continue",
-    "toggleTheme": "Toggle color mode"
+    "toggleTheme": "Toggle color mode",
+    "tableHeaders": {
+      "number": "#"
+    },
+    "ariaLabels": {
+      "closeModal": "Close modal",
+      "closeSidebar": "Close sidebar",
+      "moreOptions": "More options",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "scrollLeft": "Scroll left",
+      "scrollRight": "Scroll right",
+      "pagination": "Pagination",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "selectPlaceholders": {
+      "selectGroup": "-- Select Group --",
+      "selectLocation": "Select location"
+    },
+    "qty": "Qty"
   },
   "globalMods": {
     "title": "Global Modifications",
@@ -500,6 +520,11 @@
     "enterCredentials": "Enter your email and password to sign in!",
     "emailPlaceholder": "you@example.com",
     "passwordPlaceholder": "Enter your password",
+    "placeholders": {
+      "usernameExample": "john_doe",
+      "emailExample": "you@example.com",
+      "password": "Enter your password"
+    },
     "loginFailed": "Login failed. Please check your credentials.",
     "sessionExpired": "Your session expired. Please sign in again.",
     "loginRequired": "Please sign in to continue.",
@@ -1000,6 +1025,13 @@
       "paypal": "PayPal",
       "square": "Square",
       "custom": "Custom"
+    },
+    "placeholders": {
+      "currencies": "USD, EUR, CAD",
+      "stripePublicKey": "pk_live_...",
+      "stripeSecretKey": "sk_live_...",
+      "stripeWebhook": "whsec_...",
+      "gatewayUrl": "https://your-payment-gateway.com/checkout"
     },
     "currencies": {
       "label": "Supported Currencies",
@@ -1600,12 +1632,20 @@
         "email": "Email Quote",
         "contract": "Email Contract"
       },
+      "fields": {
+        "designer": "Designer",
+        "date": "Date"
+      },
+      "placeholders": {
+        "externalSignerEmail": "email@example.com"
+      },
       "customerInfo": {
         "title": "Customer Details",
         "customerName": "Customer Name",
         "customerNamePlaceholder": "Select or type a name",
         "customerEmail": "Customer Email",
         "designer": "Designer",
+        "designerPlaceholder": "Select a designer",
         "description": "Description",
         "descriptionPlaceholder": "Description",
         "schedule": "Schedule",
@@ -1883,7 +1923,35 @@
       "itemName": "Item Name",
       "quantity": "Quantity",
       "unitPrice": "Unit Price",
-      "total": "Total"
+      "total": "Total",
+      "labels": {
+        "code": "Code",
+        "name": "Name",
+        "short": "Short",
+        "description": "Description"
+      },
+      "placeholders": {
+        "searchStyles": "🔍 Search styles...",
+        "optional": "optional",
+        "assemblyPrice": "Enter price (0 for no assembly cost)",
+        "keepExisting": "Leave empty to keep existing",
+        "newStyleName": "Enter new style name",
+        "modificationName": "Modification name *",
+        "minHeight": "Min height",
+        "maxHeight": "Max height",
+        "minWidth": "Min width",
+        "maxWidth": "Max width",
+        "minDepth": "Min depth",
+        "maxDepth": "Max depth",
+        "sides": "L,R"
+      },
+      "navigation": {
+        "previousStyles": "Previous styles",
+        "nextStyles": "Next styles"
+      },
+      "fields": {
+        "template": "Template"
+      }
     }
   },
   "proposalCommon": {
@@ -2439,7 +2507,21 @@
       },
       "edit": {
         "title": "Edit User",
-        "update": "Update"
+        "update": "Update",
+        "modalHeader": "Edit User"
+      },
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "userGroup": "User Group",
+        "location": "Location",
+        "passwordHint": "Password (leave blank to keep current)",
+        "confirmPassword": "Confirm Password",
+        "salesRep": "Sales Representative"
+      },
+      "actions": {
+        "cancelEdit": "Cancel editing user",
+        "saveChanges": "Save user changes"
       },
       "form": {
         "titles": {
@@ -2860,6 +2942,11 @@
         "chooseCatalogFiles": "Choose Catalog Files"
       },
       "placeholders": {
+        "name": "Manufacturer name",
+        "email": "Manufacturer email",
+        "multiplier": "Enter multiplier",
+        "etaExample1": "e.g., 7-14 days",
+        "etaExample2": "e.g., 3-7 days",
         "manufacturerName": "Enter manufacturer name",
         "orderEmail": "orders@manufacturer.com",
         "phone": "+1 (555) 123-4567",
@@ -2867,6 +2954,10 @@
         "address": "Enter complete address",
         "costMultiplier": "2.0",
         "instructions": "Enter any special instructions or notes for this manufacturer..."
+      },
+      "actions": {
+        "cancelEdit": "Cancel editing manufacturer",
+        "saveChanges": "Save manufacturer changes"
       },
       "help": {
         "logo": "Upload a logo or image representing the manufacturer (JPG, PNG, GIF)",
@@ -3773,5 +3864,50 @@
   },
   "breadcrumb": {
     "home": "Home"
+  },
+  "fileViewer": {
+    "errors": {
+      "previewUnavailable": "Preview unavailable. Try downloading the file.",
+      "pdfUnavailable": "PDF preview unavailable. Try downloading the file."
+    },
+    "actions": {
+      "download": "Download"
+    }
+  },
+  "files": {
+    "actions": {
+      "download": "Download file",
+      "edit": "Edit file",
+      "delete": "Delete file"
+    }
+  },
+  "form": {
+    "actions": {
+      "clearSelection": "Clear selection",
+      "toggleOptions": "Toggle options"
+    }
+  },
+  "errors": {
+    "actions": {
+      "refreshPage": "Refresh Page"
+    }
+  },
+  "showroom": {
+    "placeholders": {
+      "defaultMultiplier": "1.00"
+    }
+  },
+  "resources": {
+    "placeholders": {
+      "colorCode": "#000000",
+      "url": "https://example.com",
+      "urlPrefix": "https://",
+      "tags": "tag1, tag2"
+    }
+  },
+  "customization": {
+    "placeholders": {
+      "colorExample": "black"
+    }
   }
 }

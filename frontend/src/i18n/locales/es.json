@@ -90,7 +90,27 @@
     "items": "elementos",
     "saving": "Guardando...",
     "uploading": "Subiendo...",
-    "toggleTheme": "Alternar modo de color"
+    "toggleTheme": "Alternar modo de color",
+    "tableHeaders": {
+      "number": "#"
+    },
+    "ariaLabels": {
+      "closeModal": "Cerrar modal",
+      "closeSidebar": "Cerrar barra lateral",
+      "moreOptions": "Más opciones",
+      "previousPage": "Página anterior",
+      "nextPage": "Página siguiente",
+      "scrollLeft": "Desplazar a la izquierda",
+      "scrollRight": "Desplazar a la derecha",
+      "pagination": "Paginación",
+      "previous": "Anterior",
+      "next": "Siguiente"
+    },
+    "selectPlaceholders": {
+      "selectGroup": "-- Seleccione Grupo --",
+      "selectLocation": "Seleccionar ubicación"
+    },
+    "qty": "Cant"
   },
   "creating": "Creando...",
   "noDescription": "Sin descripción",
@@ -232,6 +252,11 @@
     "enterCredentials": "¡Ingrese su correo y contraseña para iniciar sesión!",
     "emailPlaceholder": "tú@ejemplo.com",
     "passwordPlaceholder": "Ingrese su contraseña",
+    "placeholders": {
+      "usernameExample": "juan_pérez",
+      "emailExample": "tú@ejemplo.com",
+      "password": "Ingrese su contraseña"
+    },
     "loginFailed": "No se pudo iniciar sesión. Verifique sus credenciales.",
     "sessionExpired": "Tu sesión expiró. Vuelve a iniciar sesión.",
     "loginRequired": "Por favor inicia sesión para continuar.",
@@ -1088,7 +1113,16 @@
       "share": "Crear enlace para compartir",
       "view": "Ver cotización",
       "edit": "Editar cotización",
-      "delete": "Eliminar cotización"
+      "delete": "Eliminar cotización",
+      "email": "Enviar cotización por correo",
+      "contract": "Enviar contrato"
+    },
+    "fields": {
+      "designer": "Diseñador",
+      "date": "Fecha"
+    },
+    "placeholders": {
+      "externalSignerEmail": "correo@ejemplo.com"
     },
     "confirm": {
       "sendTitle": "¿Enviar cotización?",
@@ -1168,6 +1202,7 @@
         "customerNamePlaceholder": "Seleccione o escriba un nombre",
         "customerEmail": "Correo del cliente",
         "designer": "Diseñador",
+        "designerPlaceholder": "Seleccione un diseñador",
         "description": "Descripción",
         "descriptionPlaceholder": "Descripción",
         "schedule": "Cronograma",
@@ -1655,7 +1690,35 @@
       "itemName": "Nombre del artículo",
       "quantity": "Cantidad",
       "unitPrice": "Precio unitario",
-      "total": "Total"
+      "total": "Total",
+      "labels": {
+        "code": "Código",
+        "name": "Nombre",
+        "short": "Corto",
+        "description": "Descripción"
+      },
+      "placeholders": {
+        "searchStyles": "🔍 Buscar estilos...",
+        "optional": "opcional",
+        "assemblyPrice": "Ingrese el precio (0 para sin costo de ensamblaje)",
+        "keepExisting": "Dejar vacío para mantener el existente",
+        "newStyleName": "Ingrese el nombre del nuevo estilo",
+        "modificationName": "Nombre de modificación *",
+        "minHeight": "Altura mínima",
+        "maxHeight": "Altura máxima",
+        "minWidth": "Ancho mínimo",
+        "maxWidth": "Ancho máximo",
+        "minDepth": "Profundidad mínima",
+        "maxDepth": "Profundidad máxima",
+        "sides": "I,D"
+      },
+      "navigation": {
+        "previousStyles": "Estilos anteriores",
+        "nextStyles": "Estilos siguientes"
+      },
+      "fields": {
+        "template": "Plantilla"
+      }
     }
   },
   "proposalCommon": {
@@ -2211,7 +2274,21 @@
       },
       "edit": {
         "title": "Editar usuario",
-        "update": "Actualizar"
+        "update": "Actualizar",
+        "modalHeader": "Editar Usuario"
+      },
+      "fields": {
+        "name": "Nombre",
+        "email": "Correo Electrónico",
+        "userGroup": "Grupo de Usuarios",
+        "location": "Ubicación",
+        "passwordHint": "Contraseña (dejar en blanco para mantener la actual)",
+        "confirmPassword": "Confirmar Contraseña",
+        "salesRep": "Representante de Ventas"
+      },
+      "actions": {
+        "cancelEdit": "Cancelar edición de usuario",
+        "saveChanges": "Guardar cambios de usuario"
       },
       "form": {
         "titles": {
@@ -2632,6 +2709,11 @@
         "chooseCatalogFiles": "Elegir archivos de catálogo"
       },
       "placeholders": {
+        "name": "Nombre del fabricante",
+        "email": "Correo del fabricante",
+        "multiplier": "Ingrese el multiplicador",
+        "etaExample1": "ej., 7-14 días",
+        "etaExample2": "ej., 3-7 días",
         "manufacturerName": "Ingrese el nombre del fabricante",
         "orderEmail": "orders@manufacturer.com",
         "phone": "+1 (555) 123-4567",
@@ -2639,6 +2721,10 @@
         "address": "Ingrese la dirección completa",
         "costMultiplier": "2.0",
         "instructions": "Ingrese instrucciones o notas especiales para este fabricante..."
+      },
+      "actions": {
+        "cancelEdit": "Cancelar edición de fabricante",
+        "saveChanges": "Guardar cambios de fabricante"
       },
       "help": {
         "logo": "Suba un logo o imagen (JPG, PNG, GIF)",
@@ -3592,6 +3678,13 @@
       "paypal": "PayPal",
       "square": "Square"
     },
+    "placeholders": {
+      "currencies": "USD, EUR, CAD",
+      "stripePublicKey": "pk_live_...",
+      "stripeSecretKey": "sk_live_...",
+      "stripeWebhook": "whsec_...",
+      "gatewayUrl": "https://tu-proveedor-de-pagos.com/checkout"
+    },
     "currencies": {
       "label": "Monedas soportadas",
       "placeholder": "USD, EUR, CAD",
@@ -3777,5 +3870,50 @@
   },
   "breadcrumb": {
     "home": "Inicio"
+  },
+  "fileViewer": {
+    "errors": {
+      "previewUnavailable": "Vista previa no disponible. Intente descargar el archivo.",
+      "pdfUnavailable": "Vista previa de PDF no disponible. Intente descargar el archivo."
+    },
+    "actions": {
+      "download": "Descargar"
+    }
+  },
+  "files": {
+    "actions": {
+      "download": "Descargar archivo",
+      "edit": "Editar archivo",
+      "delete": "Eliminar archivo"
+    }
+  },
+  "form": {
+    "actions": {
+      "clearSelection": "Limpiar selección",
+      "toggleOptions": "Alternar opciones"
+    }
+  },
+  "errors": {
+    "actions": {
+      "refreshPage": "Actualizar página"
+    }
+  },
+  "showroom": {
+    "placeholders": {
+      "defaultMultiplier": "1.00"
+    }
+  },
+  "resources": {
+    "placeholders": {
+      "colorCode": "#000000",
+      "url": "https://ejemplo.com",
+      "urlPrefix": "https://",
+      "tags": "etiqueta1, etiqueta2"
+    }
+  },
+  "customization": {
+    "placeholders": {
+      "colorExample": "negro"
+    }
   }
 }

@@ -422,7 +422,7 @@ const CatalogTable = ({
               onClose={() => setShowTypeModal(false)}
             />
           </ModalHeader>
-          <ModalCloseButton aria-label="Close modal" />
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
           <ModalBody p={{ base: 3, md: 4 }}>
           {selectedTypeInfo ? (
             <Flex flexDir={{ base: "column", md: "row" }} gap={4}>
@@ -472,24 +472,24 @@ const CatalogTable = ({
                 </Flex>
                 {selectedTypeInfo.code && (
                   <Box mb={2} borderBottom="1px solid" borderColor={borderColor} pb={2}>
-                    <Text as="span" color={labelColor} fontWeight="medium">Code:</Text>{' '}
+                    <Text as="span" color={labelColor} fontWeight="medium">{t('catalog.labels.code', 'Code')}:</Text>{' '}
                     <strong>{selectedTypeInfo.code}</strong>
                   </Box>
                 )}
                 {selectedTypeInfo.name && (
                   <Box mb={2} borderBottom="1px solid" borderColor={borderColor} pb={2}>
-                    <Text as="span" color={labelColor} fontWeight="medium">Name:</Text>{' '}
+                    <Text as="span" color={labelColor} fontWeight="medium">{t('catalog.labels.name', 'Name')}:</Text>{' '}
                     <strong>{selectedTypeInfo.name}</strong>
                   </Box>
                 )}
                 {selectedTypeInfo.shortName && (
                   <Box mb={3} borderBottom="1px solid" borderColor={borderColor} pb={2}>
-                    <Text as="span" color={labelColor} fontWeight="medium">Short:</Text>{' '}
+                    <Text as="span" color={labelColor} fontWeight="medium">{t('catalog.labels.short', 'Short')}:</Text>{' '}
                     <strong>{selectedTypeInfo.shortName}</strong>
                   </Box>
                 )}
                 <Box mt={3}>
-                  <Text as="strong" color={labelColor} display="block" mb={2}>Description:</Text>
+                  <Text as="strong" color={labelColor} display="block" mb={2}>{t('catalog.labels.description', 'Description')}:</Text>
                   <Text whiteSpace="pre-wrap" lineHeight="1.6" fontSize="md">
                     {selectedTypeInfo.longDescription ||
                       selectedTypeInfo.description ||
@@ -1326,7 +1326,7 @@ const CatalogTable = ({
                         const details = buildSelectedOptionsText(mod?.selectedOptions)
                         return details ? <span style={{ opacity: 0.7 }}> — {details}</span> : null
                       })()}
-                      <span>Qty: {mod.qty}</span>
+                      <span>{t('common.qty', 'Qty')}: {mod.qty}</span>
                     </div>
                     <div
                       style={{

@@ -1636,7 +1636,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                                                 colorScheme="gray"
                                                                                                 onClick={prevSlide}
                                                                                                 isDisabled={!canGoPrev()}
-                                                                                                aria-label="Previous styles"
+                                                                                                aria-label={t('catalog.navigation.previousStyles', 'Previous styles')}
                                                                                                 minH="44px"
                                                                                                 minW="44px"
                                                                                         />
@@ -1647,7 +1647,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                                                 colorScheme="gray"
                                                                                                 onClick={nextSlide}
                                                                                                 isDisabled={!canGoNext()}
-                                                                                                aria-label="Next styles"
+                                                                                                aria-label={t('catalog.navigation.nextStyles', 'Next styles')}
                                                                                                 minH="44px"
                                                                                                 minW="44px"
                                                                                         />

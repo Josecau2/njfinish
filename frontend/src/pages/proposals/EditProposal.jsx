@@ -675,7 +675,7 @@ const EditProposal = ({
               </Text>
               <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
                 <FormControl>
-                  <FormLabel htmlFor="date">Date</FormLabel>
+                  <FormLabel htmlFor="date">{t('proposals.fields.date', 'Date')}</FormLabel>
                   <Input
                     type="date"
                     id="date"

@@ -79,7 +79,7 @@ const ModificationModalEdit = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t('modificationModal.title', 'Modification')}</ModalHeader>
-        <ModalCloseButton aria-label="Close modal" />
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>
           <Stack spacing={6}>
             <FormControl>

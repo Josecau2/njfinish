@@ -136,7 +136,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t('showroom.modal.titleExact', 'Showroom Mode Configuration')}</ModalHeader>
-        <ModalCloseButton aria-label="Close modal" />
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>
           <Alert status="info" borderRadius="md" mb={4}>
             <AlertIcon />

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState, Suspense, lazy } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Alert,
   AlertDescription,
@@ -49,6 +50,7 @@ export default function FileViewerModal({
   title,
   size = 'xl',
 }) {
+  const { t } = useTranslation()
 
   // Color mode values
   const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
@@ -170,7 +172,7 @@ export default function FileViewerModal({
         <Alert status="warning" borderRadius="md">
           <HStack spacing={4} align="center">
             <Icon as={Link2Off} boxSize={ICON_BOX_MD} />
-            <Text>Preview unavailable. Try downloading the file.</Text>
+            <Text>{t('fileViewer.errors.previewUnavailable', 'Preview unavailable. Try downloading the file.')}</Text>
           </HStack>
         </Alert>
       )
@@ -221,7 +223,7 @@ export default function FileViewerModal({
           <Alert status="warning" borderRadius="md">
             <HStack spacing={4} align="center">
               <Icon as={Link2Off} boxSize={ICON_BOX_MD} />
-              <Text>PDF preview unavailable. Try downloading the file.</Text>
+              <Text>{t('fileViewer.errors.pdfUnavailable', 'PDF preview unavailable. Try downloading the file.')}</Text>
             </HStack>
           </Alert>
         )

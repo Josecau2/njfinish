@@ -288,7 +288,7 @@ const CatalogTableEdit = ({
               onClose={() => setShowTypeModal(false)}
             />
           </ModalHeader>
-          <ModalCloseButton aria-label="Close modal" />
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
           <ModalBody p={{ base: 3, md: 4 }}>
           {selectedTypeInfo ? (
             <Flex flexDir={{ base: "column", md: "row" }} gap={4}>
@@ -338,24 +338,24 @@ const CatalogTableEdit = ({
                 </Flex>
                 {selectedTypeInfo.code && (
                   <Box mb={2} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
-                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">Code:</Text>{' '}
+                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">{t('catalog.labels.code', 'Code')}:</Text>{' '}
                     <strong>{selectedTypeInfo.code}</strong>
                   </Box>
                 )}
                 {selectedTypeInfo.name && (
                   <Box mb={2} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
-                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">Name:</Text>{' '}
+                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">{t('catalog.labels.name', 'Name')}:</Text>{' '}
                     <strong>{selectedTypeInfo.name}</strong>
                   </Box>
                 )}
                 {selectedTypeInfo.shortName && (
                   <Box mb={3} borderBottom="1px solid" borderColor={useColorModeValue("gray.200", "gray.600")} pb={2}>
-                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">Short:</Text>{' '}
+                    <Text as="span" color={useColorModeValue("gray.600", "gray.400")} fontWeight="medium">{t('catalog.labels.short', 'Short')}:</Text>{' '}
                     <strong>{selectedTypeInfo.shortName}</strong>
                   </Box>
                 )}
                 <Box mt={3}>
-                  <Text as="strong" color={useColorModeValue("gray.600", "gray.400")} display="block" mb={2}>Description:</Text>
+                  <Text as="strong" color={useColorModeValue("gray.600", "gray.400")} display="block" mb={2}>{t('catalog.labels.description', 'Description')}:</Text>
                   <Text whiteSpace="pre-wrap" lineHeight="1.6" fontSize="md">
                     {selectedTypeInfo.longDescription ||
                       selectedTypeInfo.description ||
@@ -1288,7 +1288,7 @@ const CatalogTableEdit = ({
                         const details = buildSelectedOptionsText(mod?.selectedOptions)
                         return details ? <span style={{ opacity: 0.7 }}> — {details}</span> : null
                       })()}
-                      <span>Qty: {mod.qty}</span>
+                      <span>{t('common.qty', 'Qty')}: {mod.qty}</span>
                     </div>
                     <div
                       style={{

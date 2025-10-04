@@ -219,7 +219,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{t('paymentReceipt.modal.title', 'Payment receipt')}</ModalHeader>
-        <ModalCloseButton aria-label="Close modal" isDisabled={isLoading} />
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} isDisabled={isLoading} />
         <ModalBody>
           <Stack spacing={6}>
             <PageHeader

@@ -383,7 +383,7 @@ const ItemSelectionStep = ({
           <Box className="form-section">
             <SimpleGrid columns={{ base: 1, md: 6 }} spacing={4}>
               <FormControl isInvalid={!!errors.designer}>
-                <FormLabel htmlFor="designer">Designer *</FormLabel>
+                <FormLabel htmlFor="designer">{t('proposals.fields.designer', 'Designer')} *</FormLabel>
                 <Controller
                   name="designer"
                   control={control}
@@ -542,7 +542,7 @@ const ItemSelectionStep = ({
                             size="sm"
                             color={isSelected ? 'blue.200' : 'blue.700'}
                             _hover={{ bg: isSelected ? 'blue.700' : 'blue.50' }}
-                            aria-label="More options"
+                            aria-label={t('common.ariaLabels.moreOptions', 'More options')}
                           />
                           <MenuList
                             minW="120px"

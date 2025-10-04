@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Modal,
   ModalOverlay,
@@ -20,6 +21,7 @@ const AppModal = ({
   scrollBehavior = 'inside',
   ...props
 }) => {
+  const { t } = useTranslation()
   const overlayBg = useColorModeValue('blackAlpha.600', 'blackAlpha.600')
   const borderColor = useColorModeValue('border', 'gray.600')
 
@@ -39,7 +41,7 @@ const AppModal = ({
             {title}
           </ModalHeader>
         )}
-        <ModalCloseButton aria-label="Close modal" />
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>
           {children}
         </ModalBody>

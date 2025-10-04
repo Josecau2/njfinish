@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { Badge, Box, Button, CardBody, HStack, Text, VStack, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../StandardCard'
 import { motion } from 'framer-motion'
@@ -26,6 +27,7 @@ export default function ContentTile({
   onEdit,
   onDelete,
 }) {
+  const { t } = useTranslation()
   const isImage = String(type).toLowerCase() === 'image'
   const badgeColorScheme = isImage ? 'blue' : 'gray'
 
@@ -64,7 +66,7 @@ export default function ContentTile({
                   height="44px"
                   minW="44px"
                   p={2}
-                  aria-label="Download file"
+                  aria-label={t('files.actions.download', 'Download file')}
                   whileTap={{ scale: 0.98 }}
                   onClick={(e) => {
                     e.stopPropagation()
@@ -81,7 +83,7 @@ export default function ContentTile({
                   height="44px"
                   minW="44px"
                   p={2}
-                  aria-label="Edit file"
+                  aria-label={t('files.actions.edit', 'Edit file')}
                   whileTap={{ scale: 0.98 }}
                   onClick={(e) => {
                     e.stopPropagation()
@@ -98,7 +100,7 @@ export default function ContentTile({
                   height="44px"
                   minW="44px"
                   p={2}
-                  aria-label="Delete file"
+                  aria-label={t('files.actions.delete', 'Delete file')}
                   whileTap={{ scale: 0.98 }}
                   onClick={(e) => {
                     e.stopPropagation()

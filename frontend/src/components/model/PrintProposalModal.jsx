@@ -365,7 +365,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
               {t('proposalCommon.printTitle')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton aria-label="Close modal" />
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
           <ModalBody>
             <Stack spacing={6}>
               <Box borderWidth="1px" borderRadius="lg" p={4}>
@@ -615,7 +615,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
               {t('proposalCommon.previewTitle', 'Quote Preview')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton aria-label="Close modal" />
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
           <ModalBody p={0}>
             <Box px={previewPadding} py={4} bg={previewContainerBg}>
               <Box

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Modal,
   ModalOverlay,
@@ -19,6 +20,7 @@ export default function NeutralModal({
   children,
   className = '',
 }) {
+  const { t } = useTranslation()
   const customization = useSelector((state) => state.customization) || {}
 
   const getContrastColor = (backgroundColor) => {
@@ -65,7 +67,7 @@ export default function NeutralModal({
         >
           {title}
         </ModalHeader>
-        <ModalCloseButton color={headerTextColor} aria-label="Close modal" />
+        <ModalCloseButton color={headerTextColor} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>{children}</ModalBody>
         {footer ? <ModalFooter>{footer}</ModalFooter> : null}
       </ModalContent>

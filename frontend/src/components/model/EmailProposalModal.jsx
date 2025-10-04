@@ -209,7 +209,7 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
             {t('proposalCommon.emailTitle')}
           </Text>
         </ModalHeader>
-        <ModalCloseButton isDisabled={loading} aria-label="Close modal" />
+        <ModalCloseButton isDisabled={loading} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
 
         <ModalBody>
           <Stack spacing={5}>

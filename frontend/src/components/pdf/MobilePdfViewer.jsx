@@ -1,4 +1,5 @@
 import React, { useCallback, useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Document, Page, pdfjs } from 'react-pdf'
 import workerSrc from 'react-pdf/dist/pdf.worker.entry.js?url'
 import { Box, Button, HStack } from '@chakra-ui/react'
@@ -11,6 +12,7 @@ if (pdfjs?.GlobalWorkerOptions) {
 }
 
 const MobilePdfViewer = ({ fileUrl, onClose }) => {
+  const { t } = useTranslation()
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
@@ -83,7 +85,7 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
                 colorScheme={pageNumber <= 1 ? 'gray' : 'blue'}
                 minW="44px"
                 h="44px"
-                aria-label="Previous page"
+                aria-label={t('common.ariaLabels.previousPage', 'Previous page')}
               >
                 <ChevronLeft />
               </Button>
@@ -97,7 +99,7 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
                 colorScheme={pageNumber >= numPages ? 'gray' : 'blue'}
                 minW="44px"
                 h="44px"
-                aria-label="Next page"
+                aria-label={t('common.ariaLabels.nextPage', 'Next page')}
               >
                 <ChevronRight />
               </Button>

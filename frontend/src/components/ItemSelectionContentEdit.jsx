@@ -1483,7 +1483,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                                                                 colorScheme="gray"
                                                                                                                 onClick={prevSlide}
                                                                                                                 isDisabled={!canGoPrev() || readOnly}
-                                                                                                                aria-label="Previous styles"
+                                                                                                                aria-label={t('catalog.navigation.previousStyles', 'Previous styles')}
                                                                                                                 minH="44px"
                                                                                                                 minW="44px"
                                                                                                         />
@@ -1494,7 +1494,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                                                                 colorScheme="gray"
                                                                                                                 onClick={nextSlide}
                                                                                                                 isDisabled={!canGoNext() || readOnly}
-                                                                                                                aria-label="Next styles"
+                                                                                                                aria-label={t('catalog.navigation.nextStyles', 'Next styles')}
                                                                                                                 minH="44px"
                                                                                                                 minW="44px"
                                                                                                         />

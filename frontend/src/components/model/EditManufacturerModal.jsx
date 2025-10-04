@@ -90,7 +90,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
                 value={formData.name}
                 isReadOnly
                 variant='filled'
-                placeholder='Manufacturer name'
+                placeholder={t('manufacturers.placeholders.name', 'Manufacturer name')}
               />
             </FormControl>
 
@@ -103,7 +103,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
                 value={formData.email}
                 isReadOnly
                 variant='filled'
-                placeholder='Manufacturer email'
+                placeholder={t('manufacturers.placeholders.email', 'Manufacturer email')}
               />
             </FormControl>
 
@@ -116,7 +116,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
                 step='0.01'
                 value={formData.multiplier}
                 onChange={handleMultiplierChange}
-                placeholder='Enter multiplier'
+                placeholder={t('manufacturers.placeholders.multiplier', 'Enter multiplier')}
               />
             </FormControl>
 
@@ -135,10 +135,10 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
           </Stack>
         </ModalBody>
         <ModalFooter gap={4}>
-          <Button variant='outline' onClick={onClose} aria-label='Cancel editing manufacturer'>
+          <Button variant='outline' onClick={onClose} aria-label={t('manufacturers.actions.cancelEdit', 'Cancel editing manufacturer')}>
             {t('common.cancel')}
           </Button>
-          <Button colorScheme='brand' type='submit' minH='44px' aria-label='Save manufacturer changes'>
+          <Button colorScheme='brand' type='submit' minH='44px' aria-label={t('manufacturers.actions.saveChanges', 'Save manufacturer changes')}>
             {t('common.save')}
           </Button>
         </ModalFooter>

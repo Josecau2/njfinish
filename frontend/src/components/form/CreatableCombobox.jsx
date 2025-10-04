@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Box,
   Flex,
@@ -46,6 +47,7 @@ const CreatableCombobox = forwardRef(
     },
     ref,
   ) => {
+    const { t } = useTranslation()
     const [isOpen, setIsOpen] = useState(false)
     const [inputValue, setInputValue] = useState('')
     const [highlightIndex, setHighlightIndex] = useState(-1)
@@ -228,7 +230,7 @@ const CreatableCombobox = forwardRef(
             {isLoading && <Spinner size="sm" />}
             {isClearable && selectedLabel && (
               <IconButton
-                aria-label="Clear selection"
+                aria-label={t('form.actions.clearSelection', 'Clear selection')}
                 size="sm"
                 variant="ghost"
                 icon={<Icon as={X} boxSize={3} />}
@@ -236,7 +238,7 @@ const CreatableCombobox = forwardRef(
               />
             )}
             <IconButton
-              aria-label="Toggle options"
+              aria-label={t('form.actions.toggleOptions', 'Toggle options')}
               size="sm"
               variant="ghost"
               icon={<Icon as={ChevronsUpDown} boxSize={3} />}

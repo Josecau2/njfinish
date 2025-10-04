@@ -1,7 +1,9 @@
 import { Icon } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const PaginationControls = ({ page, totalPages, goPrev, goNext }) => {
+  const { t } = useTranslation()
   const commonButtonStyle = {
     backgroundColor: 'transparent',
     border: 'none',
@@ -27,13 +29,13 @@ const PaginationControls = ({ page, totalPages, goPrev, goNext }) => {
   return (
     <div
       style={{ display: 'flex', gap: '12px', alignItems: 'center' }}
-      aria-label="Pagination"
+      aria-label={t('common.ariaLabels.pagination', 'Pagination')}
       role="group"
     >
       <button
         onClick={goPrev}
         disabled={page === 1}
-        aria-label="Previous"
+        aria-label={t('common.ariaLabels.previous', 'Previous')}
         aria-disabled={page === 1}
         style={page === 1 ? disabledButtonStyle : commonButtonStyle}
         onMouseEnter={(e) => {
@@ -49,7 +51,7 @@ const PaginationControls = ({ page, totalPages, goPrev, goNext }) => {
       <button
         onClick={goNext}
         disabled={page === totalPages}
-        aria-label="Next"
+        aria-label={t('common.ariaLabels.next', 'Next')}
         aria-disabled={page === totalPages}
         style={page === totalPages ? disabledButtonStyle : commonButtonStyle}
         onMouseEnter={(e) => {
