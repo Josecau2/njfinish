@@ -27,7 +27,7 @@ export function DataTable({ columns, data, onRowClick, renderCell }) {
   return (
     <Box overflowX="auto" borderRadius="md" border="1px" borderColor={borderColor}>
       <Table variant="simple" size="md">
-        <Thead style={{ backgroundColor: headerBg }}>
+        <Thead bg={headerBg}>
           <Tr>
             {columns.map((col) => (
               <Th
@@ -36,7 +36,7 @@ export function DataTable({ columns, data, onRowClick, renderCell }) {
                 textTransform="none"
                 fontSize="sm"
                 fontWeight="600"
-                style={{ color: headerTextColor }}
+                color={headerTextColor}
               >
                 {col.label}
               </Th>
@@ -56,7 +56,7 @@ export function DataTable({ columns, data, onRowClick, renderCell }) {
                 <Td
                   key={col.key}
                   fontSize="sm"
-                  style={{ color: cellTextColor }}
+                  color={cellTextColor}
                 >
                   {renderCell ? renderCell(row, col) : row[col.key]}
                 </Td>
