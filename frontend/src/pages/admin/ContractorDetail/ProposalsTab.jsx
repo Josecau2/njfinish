@@ -17,7 +17,10 @@ import {
   ButtonGroup,
   CardBody,
   CardHeader,
+  Divider,
   Flex,
+  Heading,
+  HStack,
   Input,
   InputGroup,
   InputLeftElement,
@@ -34,6 +37,7 @@ import {
   Select,
   SimpleGrid,
   Spinner,
+  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -44,6 +48,7 @@ import {
   Tooltip,
   Tr,
   useColorModeValue,
+  VStack,
 } from '@chakra-ui/react'
 import EmptyState from '../../../components/common/EmptyState'
 import { notifyError } from '../../../helpers/notify'
@@ -93,6 +98,14 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   // Color mode values
   const textGray500 = useColorModeValue('gray.500', 'gray.400')
+  const bgLight = useColorModeValue('gray.50', 'gray.800')
+  const textWhite = 'white'
+  const timelineIconBg = {
+    secondary: useColorModeValue('gray.500', 'gray.600'),
+    info: useColorModeValue('blue.500', 'blue.600'),
+    success: useColorModeValue('green.500', 'green.600'),
+    brand: useColorModeValue('brand.500', 'brand.600'),
+  }
 
   // Status definitions with counts and colors
   const statusDefinitions = {
@@ -347,9 +360,9 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
   if (loading) {
     return (
-      <div minH="200px">
+      <Flex minH="200px" justify="center" align="center">
         <Spinner colorScheme="brand" />
-      </div>
+      </Flex>
     )
   }
 
@@ -359,10 +372,12 @@ const ProposalsTab = ({ contractor, groupId }) => {
         <Box>
           <StandardCard>
             <CardHeader>
-              <strong>
+              <HStack spacing={2}>
                 <BriefcaseBusiness size={ICON_SIZE_MD} aria-hidden="true" />
-                {t('contractorsAdmin.detail.proposals.header', { count: pagination?.total || 0 })}
-              </strong>
+                <Text fontWeight="bold">
+                  {t('contractorsAdmin.detail.proposals.header', { count: pagination?.total || 0 })}
+                </Text>
+              </HStack>
             </CardHeader>
             <CardBody>
               {error &&
@@ -398,7 +413,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
               </SimpleGrid>
 
               {/* Status Filter Chips */}
-              <div>
+              <Box>
                 <ButtonGroup>
                   {Object.entries(statusDefinitions).map(([status, definition]) => {
                     const count = statusCounts[status] || 0
@@ -425,7 +440,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     )
                   })}
                 </ButtonGroup>
-              </div>
+              </Box>
 
               {/* Table */}
               <TableContainer>
@@ -503,16 +518,16 @@ const ProposalsTab = ({ contractor, groupId }) => {
                       displayProposals.map((proposal) => (
                         <Tr key={proposal.id} verticalAlign="middle">
                           <Td>
-                            <div>
-                              <div>{proposal.title || `Proposal #${proposal.id}`}</div>
-                              <small>ID: {proposal.id}</small>
-                            </div>
+                            <VStack align="start" spacing={0}>
+                              <Text>{proposal.title || `Proposal #${proposal.id}`}</Text>
+                              <Text fontSize="sm">ID: {proposal.id}</Text>
+                            </VStack>
                           </Td>
                           <Td>
-                            <div>
+                            <HStack spacing={2}>
                               <User size={14} aria-hidden="true" />
-                              {proposal.customer?.name || proposal.customer_name || 'N/A'}
-                            </div>
+                              <Text>{proposal.customer?.name || proposal.customer_name || 'N/A'}</Text>
+                            </HStack>
                           </Td>
                           <Td>
                             <Badge color={getStatusColor(proposal.status)} w="fit-content">
@@ -526,17 +541,13 @@ const ProposalsTab = ({ contractor, groupId }) => {
                             </Badge>
                           </Td>
                           <Td>
-                            <div>{formatCurrency(calculateTotalAmount(proposal))}</div>
+                            <Text>{formatCurrency(calculateTotalAmount(proposal))}</Text>
                           </Td>
                           <Td>
-                            <div>
-                              <small>{formatDateShort(proposal.createdAt)}</small>
-                            </div>
+                            <Text fontSize="sm">{formatDateShort(proposal.createdAt)}</Text>
                           </Td>
                           <Td>
-                            <div>
-                              <small>{formatDateShort(proposal.updatedAt)}</small>
-                            </div>
+                            <Text fontSize="sm">{formatDateShort(proposal.updatedAt)}</Text>
                           </Td>
                           <Td>
                             <ButtonGroup size="sm">
@@ -581,14 +592,14 @@ const ProposalsTab = ({ contractor, groupId }) => {
 
               {/* Pagination */}
               {pagination?.totalPages > 1 && (
-                <div>
+                <Box>
                   <PaginationComponent
                     currentPage={currentPage}
                     totalPages={pagination?.totalPages || 1}
                     onPageChange={handlePageChange}
                     itemsPerPage={itemsPerPage}
                   />
-                </div>
+                </Box>
               )}
             </CardBody>
           </StandardCard>
@@ -601,61 +612,62 @@ const ProposalsTab = ({ contractor, groupId }) => {
         onClose={handleCloseModal}
         size={{ base: 'full', lg: 'xl' }}
         scrollBehavior="inside"
-        className="proposal-detail-modal"
       >
         <ModalOverlay>
           <ModalContent>
             <ModalHeader>
-              <BriefcaseBusiness size={ICON_SIZE_MD} aria-hidden="true" />
-              {t('contractorsAdmin.detail.proposals.modal.title')}
-              {selectedProposal && (
-                <Badge colorScheme={getStatusColor(selectedProposal.status)} borderRadius="full">
-                  {statusDefinitions[selectedProposal.status]?.label ||
-                    selectedProposal.status ||
-                    'Draft'}
-                </Badge>
-              )}
+              <HStack spacing={2}>
+                <BriefcaseBusiness size={ICON_SIZE_MD} aria-hidden="true" />
+                <Text>{t('contractorsAdmin.detail.proposals.modal.title')}</Text>
+                {selectedProposal && (
+                  <Badge colorScheme={getStatusColor(selectedProposal.status)} borderRadius="full">
+                    {statusDefinitions[selectedProposal.status]?.label ||
+                      selectedProposal.status ||
+                      'Draft'}
+                  </Badge>
+                )}
+              </HStack>
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               {proposalDetails.loading ? (
-                <div minH="300px">
+                <VStack minH="300px" justify="center" align="center" spacing={3}>
                   <Spinner colorScheme="brand" size="lg" />
-                  <span>{t('contractorsAdmin.detail.proposals.modal.loading')}</span>
-                </div>
+                  <Text>{t('contractorsAdmin.detail.proposals.modal.loading')}</Text>
+                </VStack>
               ) : proposalDetails.data ? (
-                <div>
+                <VStack spacing={4} align="stretch">
                   {/* Header Summary */}
                   <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
                     <Box gridColumn={{ base: '1', md: 'span 2' }}>
-                      <h4>
+                      <Heading size="md" mb={3}>
                         {proposalDetails.data.title || `Proposal #${proposalDetails.data.id}`}
-                      </h4>
-                      <div>
-                        <div>
+                      </Heading>
+                      <VStack align="start" spacing={2}>
+                        <HStack spacing={2}>
                           <User size={14} aria-hidden="true" />
-                          <strong>{t('proposalAcceptance.labels.customer')}:</strong>{' '}
-                          {proposalDetails.data.customer?.name || t('common.na')}
-                        </div>
-                        <div>
+                          <Text fontWeight="bold">{t('proposalAcceptance.labels.customer')}:</Text>
+                          <Text>{proposalDetails.data.customer?.name || t('common.na')}</Text>
+                        </HStack>
+                        <HStack spacing={2}>
                           <Calendar size={14} aria-hidden="true" />
-                          <strong>{t('proposals.headers.date')}:</strong>{' '}
-                          {formatDate(proposalDetails.data.createdAt)}
-                        </div>
-                        <div>
+                          <Text fontWeight="bold">{t('proposals.headers.date')}:</Text>
+                          <Text>{formatDate(proposalDetails.data.createdAt)}</Text>
+                        </HStack>
+                        <HStack spacing={2}>
                           <MapPin size={14} aria-hidden="true" />
-                          <strong>
+                          <Text fontWeight="bold">
                             {t('contractorsAdmin.detail.proposals.modal.group')}:
-                          </strong>{' '}
-                          {contractor?.name || t('common.na')}
-                        </div>
-                      </div>
+                          </Text>
+                          <Text>{contractor?.name || t('common.na')}</Text>
+                        </HStack>
+                      </VStack>
                     </Box>
                     <Box>
-                      <div>
-                        <h3>{formatCurrency(calculateTotalAmount(proposalDetails.data))}</h3>
-                        <small>{t('contractorsAdmin.detail.proposals.modal.totalAmount')}</small>
-                      </div>
+                      <VStack align="start" spacing={2}>
+                        <Heading size="lg">{formatCurrency(calculateTotalAmount(proposalDetails.data))}</Heading>
+                        <Text fontSize="sm">{t('contractorsAdmin.detail.proposals.modal.totalAmount')}</Text>
+                      </VStack>
                       <Button
                         colorScheme="brand"
                         size="sm"
@@ -686,13 +698,16 @@ const ProposalsTab = ({ contractor, groupId }) => {
                           <Box>
                             <List>
                               <ListItem>
-                                <span>
-                                  {t('contractorsAdmin.detail.proposals.modal.proposalId')}
-                                </span>
-                                <strong>#{proposalDetails.data.id}</strong>
+                                <HStack justify="space-between">
+                                  <Text>
+                                    {t('contractorsAdmin.detail.proposals.modal.proposalId')}
+                                  </Text>
+                                  <Text fontWeight="bold">#{proposalDetails.data.id}</Text>
+                                </HStack>
                               </ListItem>
                               <ListItem>
-                                <span>{t('proposals.headers.status')}</span>
+                                <HStack justify="space-between">
+                                  <Text>{t('proposals.headers.status')}</Text>
                                 <Badge
                                   colorScheme={getStatusColor(proposalDetails.data.status)}
                                   borderRadius="full"
@@ -707,49 +722,64 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                     proposalDetails.data.status ||
                                     t('proposals.status.draft')}
                                 </Badge>
+                                </HStack>
                               </ListItem>
                               <ListItem>
-                                <span>{t('proposalAcceptance.labels.customer')}</span>
-                                <span>{proposalDetails.data.customer?.name || 'N/A'}</span>
+                                <HStack justify="space-between">
+                                  <Text>{t('proposalAcceptance.labels.customer')}</Text>
+                                  <Text>{proposalDetails.data.customer?.name || 'N/A'}</Text>
+                                </HStack>
                               </ListItem>
                               <ListItem>
-                                <span>
-                                  {t('contractorsAdmin.detail.proposals.modal.totalAmount')}
-                                </span>
-                                <strong>
-                                  {formatCurrency(calculateTotalAmount(proposalDetails.data))}
-                                </strong>
+                                <HStack justify="space-between">
+                                  <Text>
+                                    {t('contractorsAdmin.detail.proposals.modal.totalAmount')}
+                                  </Text>
+                                  <Text fontWeight="bold">
+                                    {formatCurrency(calculateTotalAmount(proposalDetails.data))}
+                                  </Text>
+                                </HStack>
                               </ListItem>
                             </List>
                           </Box>
                           <Box>
                             <List>
                               <ListItem>
-                                <span>{t('contractorsAdmin.detail.proposals.modal.created')}</span>
-                                <span>{formatDate(proposalDetails.data.createdAt)}</span>
+                                <HStack justify="space-between">
+                                  <Text>{t('contractorsAdmin.detail.proposals.modal.created')}</Text>
+                                  <Text>{formatDate(proposalDetails.data.createdAt)}</Text>
+                                </HStack>
                               </ListItem>
                               <ListItem>
-                                <span>{t('contractorsAdmin.detail.proposals.modal.updated')}</span>
-                                <span>{formatDate(proposalDetails.data.updatedAt)}</span>
+                                <HStack justify="space-between">
+                                  <Text>{t('contractorsAdmin.detail.proposals.modal.updated')}</Text>
+                                  <Text>{formatDate(proposalDetails.data.updatedAt)}</Text>
+                                </HStack>
                               </ListItem>
                               {proposalDetails.data.sent_at && (
                                 <ListItem>
-                                  <span>{t('contractorsAdmin.detail.proposals.modal.sent')}</span>
-                                  <span>{formatDate(proposalDetails.data.sent_at)}</span>
+                                  <HStack justify="space-between">
+                                    <Text>{t('contractorsAdmin.detail.proposals.modal.sent')}</Text>
+                                    <Text>{formatDate(proposalDetails.data.sent_at)}</Text>
+                                  </HStack>
                                 </ListItem>
                               )}
                               <ListItem>
-                                <span>
-                                  {t('contractorsAdmin.detail.proposals.modal.contractorGroup')}
-                                </span>
-                                <span>{contractor?.name || 'N/A'}</span>
+                                <HStack justify="space-between">
+                                  <Text>
+                                    {t('contractorsAdmin.detail.proposals.modal.contractorGroup')}
+                                  </Text>
+                                  <Text>{contractor?.name || 'N/A'}</Text>
+                                </HStack>
                               </ListItem>
                               {proposalDetails.data.accepted_at && (
                                 <ListItem>
-                                  <span>
-                                    {t('contractorsAdmin.detail.proposals.modal.accepted')}
-                                  </span>
-                                  <span>{formatDate(proposalDetails.data.accepted_at)}</span>
+                                  <HStack justify="space-between">
+                                    <Text>
+                                      {t('contractorsAdmin.detail.proposals.modal.accepted')}
+                                    </Text>
+                                    <Text>{formatDate(proposalDetails.data.accepted_at)}</Text>
+                                  </HStack>
                                 </ListItem>
                               )}
                             </List>
@@ -757,12 +787,12 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         </SimpleGrid>
 
                         {proposalDetails.data.description && (
-                          <div>
-                            <h6>{t('proposals.labels.description')}</h6>
-                            <div className="bg-light p-3 rounded">
-                              <p>{proposalDetails.data.description}</p>
-                            </div>
-                          </div>
+                          <Box>
+                            <Heading size="xs" mb={2}>{t('proposals.labels.description')}</Heading>
+                            <Box bg={bgLight} p={3} borderRadius="md">
+                              <Text>{proposalDetails.data.description}</Text>
+                            </Box>
+                          </Box>
                         )}
                       </AccordionPanel>
                     </AccordionItem>
@@ -777,47 +807,53 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         <AccordionIcon />
                       </AccordionButton>
                       <AccordionPanel>
-                        <div className="timeline">
+                        <VStack align="stretch" spacing={4}>
                           {getStatusTimeline(proposalDetails.data).map((item, index) => (
-                            <div key={index}>
-                              <div
-                                className={`timeline-icon bg-${item.color} text-white rounded-circle d-flex align-items-center justify-content-center me-3`}
-                                style={{ width: '40px', height: '40px', minWidth: '40px' }}
+                            <HStack key={index} align="start" spacing={3}>
+                              <Flex
+                                bg={timelineIconBg[item.color] || timelineIconBg.brand}
+                                color={textWhite}
+                                borderRadius="full"
+                                align="center"
+                                justify="center"
+                                w="40px"
+                                h="40px"
+                                minW="40px"
                               >
                                 {(() => {
                                   const Icon = item.Icon || Clipboard
                                   return <Icon size={ICON_SIZE_MD} aria-hidden="true" />
                                 })()}
-                              </div>
-                              <div>
-                                <div>
-                                  <strong>{item.label}</strong>
-                                  <small>{formatDate(item.date)}</small>
-                                </div>
+                              </Flex>
+                              <Box flex="1">
+                                <HStack justify="space-between" mb={1}>
+                                  <Text fontWeight="bold">{item.label}</Text>
+                                  <Text fontSize="sm">{formatDate(item.date)}</Text>
+                                </HStack>
                                 {item.status === 'created' && (
-                                  <small>
+                                  <Text fontSize="sm">
                                     {t('contractorsAdmin.detail.proposals.timeline.created')}
-                                  </small>
+                                  </Text>
                                 )}
                                 {item.status === 'sent' && (
-                                  <small>
+                                  <Text fontSize="sm">
                                     {t('contractorsAdmin.detail.proposals.timeline.sent')}
-                                  </small>
+                                  </Text>
                                 )}
                                 {item.status === 'accepted' && (
-                                  <small>
+                                  <Text fontSize="sm">
                                     {t('contractorsAdmin.detail.proposals.timeline.accepted')}
-                                  </small>
+                                  </Text>
                                 )}
                                 {item.status === 'approved' && (
-                                  <small>
+                                  <Text fontSize="sm">
                                     {t('contractorsAdmin.detail.proposals.timeline.approved')}
-                                  </small>
+                                  </Text>
                                 )}
-                              </div>
-                            </div>
+                              </Box>
+                            </HStack>
                           ))}
-                        </div>
+                        </VStack>
                       </AccordionPanel>
                     </AccordionItem>
 
@@ -849,17 +885,17 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                 {proposalDetails.data.items.map((item, index) => (
                                   <Tr key={index}>
                                     <Td>
-                                      <strong>{item.name || `Item ${index + 1}`}</strong>
+                                      <Text fontWeight="bold">{item.name || `Item ${index + 1}`}</Text>
                                     </Td>
-                                    <Td>{item.description || 'N/A'}</Td>
-                                    <Td>{item.quantity || 1}</Td>
-                                    <Td>{formatCurrency(item.unit_price)}</Td>
+                                    <Td><Text>{item.description || 'N/A'}</Text></Td>
+                                    <Td><Text>{item.quantity || 1}</Text></Td>
+                                    <Td><Text>{formatCurrency(item.unit_price)}</Text></Td>
                                     <Td>
-                                      <strong>
+                                      <Text fontWeight="bold">
                                         {formatCurrency(
                                           (item.quantity || 1) * (item.unit_price || 0),
                                         )}
-                                      </strong>
+                                      </Text>
                                     </Td>
                                   </Tr>
                                 ))}
@@ -867,45 +903,45 @@ const ProposalsTab = ({ contractor, groupId }) => {
                             </Table>
                           </TableContainer>
 
-                          <div>
+                          <Box>
                             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                               <Box></Box>
-                              <Box>
-                                <div>
-                                  <span>
+                              <VStack align="stretch" spacing={2}>
+                                <HStack justify="space-between">
+                                  <Text>
                                     {t('contractorsAdmin.detail.proposals.totals.subtotal')}:
-                                  </span>
-                                  <span>
+                                  </Text>
+                                  <Text>
                                     {formatCurrency(
                                       proposalDetails.data.subtotal_amount ||
                                         proposalDetails.data.total_amount,
                                     )}
-                                  </span>
-                                </div>
+                                  </Text>
+                                </HStack>
                                 {proposalDetails.data.tax_amount > 0 && (
-                                  <div>
-                                    <span>
+                                  <HStack justify="space-between">
+                                    <Text>
                                       {t('contractorsAdmin.detail.proposals.totals.tax')}:
-                                    </span>
-                                    <span>{formatCurrency(proposalDetails.data.tax_amount)}</span>
-                                  </div>
+                                    </Text>
+                                    <Text>{formatCurrency(proposalDetails.data.tax_amount)}</Text>
+                                  </HStack>
                                 )}
-                                <div>
-                                  <strong>
+                                <HStack justify="space-between">
+                                  <Text fontWeight="bold">
                                     {t('contractorsAdmin.detail.proposals.totals.total')}:
-                                  </strong>
-                                  <strong>
+                                  </Text>
+                                  <Text fontWeight="bold">
                                     {formatCurrency(proposalDetails.data.total_amount)}
-                                  </strong>
-                                </div>
-                              </Box>
+                                  </Text>
+                                </HStack>
+                              </VStack>
                             </SimpleGrid>
-                          </div>
+                          </Box>
                         </AccordionPanel>
                       </AccordionItem>
                     )}
                   </Accordion>
-                </div>
+                </VStack>
               ) : (
                 <Alert status="warning">
                   <Info size={ICON_SIZE_MD} aria-hidden="true" />
@@ -914,31 +950,33 @@ const ProposalsTab = ({ contractor, groupId }) => {
               )}
             </ModalBody>
             <ModalFooter>
-              <div>
-                {selectedProposal && (
-                  <Button
-                    colorScheme="brand"
-                    variant="outline"
-                    leftIcon={<ExternalLink size={ICON_SIZE_MD} />}
-                    minH="44px"
-                    maxW={{ base: '180px', md: 'none' }}
-                    aria-label={t('contractorsAdmin.detail.proposals.modal.openFull')}
-                    onClick={() => handleGoToProposal(selectedProposal.id)}
-                    fontSize={{ base: 'sm', md: 'md' }}
-                  >
-                    {t('contractorsAdmin.detail.proposals.modal.openFull')}
-                  </Button>
-                )}
-              </div>
-              <Button
-                colorScheme="gray"
-                onClick={handleCloseModal}
-                minH="44px"
-                maxW={{ base: '140px', md: 'none' }}
-                fontSize={{ base: 'sm', md: 'md' }}
-              >
-                {t('common.cancel')}
-              </Button>
+              <HStack spacing={3} w="full" justify="space-between">
+                <Box>
+                  {selectedProposal && (
+                    <Button
+                      colorScheme="brand"
+                      variant="outline"
+                      leftIcon={<ExternalLink size={ICON_SIZE_MD} />}
+                      minH="44px"
+                      maxW={{ base: '180px', md: 'none' }}
+                      aria-label={t('contractorsAdmin.detail.proposals.modal.openFull')}
+                      onClick={() => handleGoToProposal(selectedProposal.id)}
+                      fontSize={{ base: 'sm', md: 'md' }}
+                    >
+                      {t('contractorsAdmin.detail.proposals.modal.openFull')}
+                    </Button>
+                  )}
+                </Box>
+                <Button
+                  colorScheme="gray"
+                  onClick={handleCloseModal}
+                  minH="44px"
+                  maxW={{ base: '140px', md: 'none' }}
+                  fontSize={{ base: 'sm', md: 'md' }}
+                >
+                  {t('common.cancel')}
+                </Button>
+              </HStack>
             </ModalFooter>
           </ModalContent>
         </ModalOverlay>
