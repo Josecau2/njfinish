@@ -43,6 +43,9 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
   useColorModeValue,
+  Card,
+  CardHeader,
+  CardBody,
 } from '@chakra-ui/react'
 import { ShoppingCart, ArrowLeft, FileText, Download, Mail, Trash } from 'lucide-react'
 import { fetchOrderById, clearCurrentOrder } from '../../store/slices/ordersSlice'
