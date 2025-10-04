@@ -29,6 +29,17 @@ const UsersPage = () => {
   const iconBrand = useColorModeValue('brand.500', 'brand.400')
   const iconOrange = useColorModeValue('orange.500', 'orange.400')
 
+  // Table colors
+  const theadBg = useColorModeValue('gray.50', 'gray.800')
+  const rowHoverBg = useColorModeValue('gray.50', 'gray.700')
+  const borderColor = useColorModeValue('gray.200', 'gray.700')
+  const textPrimary = useColorModeValue('gray.900', 'gray.100')
+  const textSecondary = useColorModeValue('gray.600', 'gray.400')
+
+  // Mobile card colors
+  const cardBg = useColorModeValue('white', 'gray.800')
+  const cardHeaderBg = useColorModeValue('gray.50', 'gray.900')
+
   const [filterText, setFilterText] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
@@ -36,8 +47,8 @@ const UsersPage = () => {
   const dispatch = useDispatch()
   const { list: users, loading, error } = useSelector((state) => state.users)
   const { t } = useTranslation()
-  const loggedInUser = JSON.parse(localStorage.getItem('user'))
-  let loggedInUserId = loggedInUser.userId
+  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}')
+  const loggedInUserId = loggedInUser?.userId
 
   // Delete confirmation dialog
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -135,12 +146,12 @@ const UsersPage = () => {
   const regularCount = filteredUsers.filter((user) => user.role !== 'Admin').length
 
   return (
-    <Container maxW="full" className="settings-container">
+    <Container maxW="full" px={{ base: 4, md: 6 }} py={6}>
       <PageHeader
         title={t('settings.users.header')}
         subtitle={t('settings.users.subtitle')}
         rightContent={
-          <div>
+          <Flex gap={3} flexWrap="wrap">
             <Button
               as={motion.button}
               variant="outline"
@@ -165,14 +176,14 @@ const UsersPage = () => {
             >
               {t('settings.users.addGroup')}
             </Button>
-          </div>
+          </Flex>
         }
       />
 
       {/* Stats Cards */}
-      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-        <StandardCard className="settings-stats-card">
-          <CardBody>
+      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} mb={6}>
+        <StandardCard shadow="sm" borderRadius="lg">
+          <CardBody p={6}>
             <Stat>
               <StatLabel fontSize="sm" color={borderGray600} mb={2}>
                 <Flex align="center" gap={2}>
@@ -186,8 +197,8 @@ const UsersPage = () => {
             </Stat>
           </CardBody>
         </StandardCard>
-        <StandardCard className="settings-stats-card">
-          <CardBody>
+        <StandardCard shadow="sm" borderRadius="lg">
+          <CardBody p={6}>
             <Stat>
               <StatLabel fontSize="sm" color={borderGray600} mb={2}>
                 <Flex align="center" gap={2}>
@@ -201,8 +212,8 @@ const UsersPage = () => {
             </Stat>
           </CardBody>
         </StandardCard>
-        <StandardCard className="settings-stats-card">
-          <CardBody>
+        <StandardCard shadow="sm" borderRadius="lg">
+          <CardBody p={6}>
             <Stat>
               <StatLabel fontSize="sm" color={borderGray600} mb={2}>
                 <Flex align="center" gap={2}>
@@ -219,8 +230,8 @@ const UsersPage = () => {
       </SimpleGrid>
 
       {/* Search Section */}
-      <StandardCard className="settings-search-card">
-        <CardBody>
+      <StandardCard shadow="sm" borderRadius="lg" mb={6}>
+        <CardBody p={6}>
           <Flex
             direction={{ base: 'column', md: 'row' }}
             justify="space-between"
@@ -229,7 +240,7 @@ const UsersPage = () => {
           >
             <Box flex={1} maxW={{ base: 'full', lg: '360px' }}>
               <InputGroup>
-                <InputLeftElement pointerEvents="none">
+                <InputLeftElement pointerEvents="none" h="full">
                   <Icon as={Search} boxSize={ICON_BOX_MD} color={iconGray500} />
                 </InputLeftElement>
                 <Input
@@ -240,13 +251,13 @@ const UsersPage = () => {
                     setFilterText(e.target.value)
                     setCurrentPage(1)
                   }}
-                  className="settings-search-input"
+                  size="md"
                   aria-label={t('settings.users.searchPlaceholder')}
                 />
               </InputGroup>
             </Box>
             <Box textAlign={{ base: 'left', md: 'right' }}>
-              <Text color={borderGray600}>
+              <Text color={borderGray600} fontSize="sm">
                 {t('settings.users.showing', {
                   count: filteredUsers?.length || 0,
                   total: users?.length || 0,
@@ -259,9 +270,9 @@ const UsersPage = () => {
 
       {/* Error State */}
       {error && (
-        <StandardCard className="settings-search-card">
-          <CardBody>
-            <Alert status="error" mb={0}>
+        <StandardCard shadow="sm" borderRadius="lg" mb={6}>
+          <CardBody p={6}>
+            <Alert status="error" borderRadius="md">
               <AlertIcon />
               <Box>
                 <Text fontWeight="bold" display="inline">{t('common.error')}:</Text> {t('settings.users.loadFailed')}:{' '}
@@ -274,85 +285,130 @@ const UsersPage = () => {
 
       {/* Loading State */}
       {loading && (
-        <StandardCard className="settings-table-card">
-          <CardBody className="settings-empty-state">
-            <Spinner colorScheme="brand" size="lg" />
-            <Text color={iconGray500} mt={3} mb={0}>{t('settings.users.loading')}</Text>
+        <StandardCard shadow="sm" borderRadius="lg" mb={6}>
+          <CardBody p={16}>
+            <Flex direction="column" align="center" justify="center" gap={4}>
+              <Spinner colorScheme="brand" size="lg" thickness="4px" />
+              <Text color={iconGray500} fontSize="md">{t('settings.users.loading')}</Text>
+            </Flex>
           </CardBody>
         </StandardCard>
       )}
 
       {/* Table */}
       {!loading && (
-        <StandardCard className="settings-table-card" mx={{ base: -4, md: -6 }}>
+        <StandardCard
+          shadow="sm"
+          borderRadius="lg"
+          overflow="hidden"
+        >
           <CardBody p={0}>
             {/* Desktop Table View */}
             <Box display={{ base: 'none', lg: 'block' }}>
               <TableContainer>
-                <Table variant="simple">
-                <Thead className="settings-table-header">
+                <Table variant="simple" size="md">
+                <Thead bg={theadBg}>
                   <Tr>
-                    <Th>#</Th>
-                    <Th>
-                      <div>
+                    <Th width="60px" textAlign="center" py={4}>#</Th>
+                    <Th py={4}>
+                      <Flex align="center" gap={2}>
                         <UserIcon size={14} aria-hidden="true" />
                         {t('settings.users.table.name')}
-                      </div>
+                      </Flex>
                     </Th>
-                    <Th>{t('settings.users.table.email')}</Th>
-                    <Th>{t('settings.users.table.group')}</Th>
-                    <Th>{t('settings.users.table.actions')}</Th>
+                    <Th py={4}>{t('settings.users.table.email')}</Th>
+                    <Th py={4}>{t('settings.users.table.group')}</Th>
+                    <Th width="140px" textAlign="center" py={4}>{t('settings.users.table.actions')}</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {paginatedUsers?.length === 0 ? (
                     <Tr>
-                      <Td colSpan={5} className="settings-empty-state">
-                        <div className="settings-mobile-actions">
-                          <Users size={48} className="settings-empty-icon" aria-hidden="true" />
-                          <p>{t('settings.users.empty.title')}</p>
-                          <small>{t('settings.users.empty.subtitle')}</small>
-                        </div>
+                      <Td colSpan={5} textAlign="center" py={8}>
+                        <Flex direction="column" align="center" gap={3}>
+                          <Icon as={Users} boxSize="48px" color={iconGray500} aria-hidden="true" />
+                          <Text fontWeight="medium">{t('settings.users.empty.title')}</Text>
+                          <Text fontSize="sm" color={iconGray500}>{t('settings.users.empty.subtitle')}</Text>
+                        </Flex>
                       </Td>
                     </Tr>
                   ) : (
                     paginatedUsers.map((user, index) => (
-                      <Tr key={user.id} className="settings-table-row">
-                        <Td>
+                      <Tr
+                        key={user.id}
+                        _hover={{ bg: rowHoverBg }}
+                        transition="background 0.2s"
+                      >
+                        <Td
+                          textAlign="center"
+                          py={4}
+                          borderBottomWidth="1px"
+                          borderColor={borderColor}
+                        >
                           <Badge
                             variant="subtle"
                             borderRadius="full"
                             fontSize="xs"
                             fontWeight="500"
                             colorScheme="gray"
-                            px={2}
+                            px={3}
                             py={1}
                           >
                             {startIdx + index}
                           </Badge>
                         </Td>
-                        <Td>
-                          <div>{user.name}</div>
+                        <Td
+                          py={4}
+                          borderBottomWidth="1px"
+                          borderColor={borderColor}
+                        >
+                          <Text fontWeight="medium" color={textPrimary}>
+                            {user.name}
+                          </Text>
                         </Td>
-                        <Td>
-                          <span>{user.email}</span>
+                        <Td
+                          py={4}
+                          borderBottomWidth="1px"
+                          borderColor={borderColor}
+                        >
+                          <Text color={textSecondary}>
+                            {user.email}
+                          </Text>
                         </Td>
-                        <Td>
+                        <Td
+                          py={4}
+                          borderBottomWidth="1px"
+                          borderColor={borderColor}
+                        >
                           {user.group ? (
                             <Badge
                               colorScheme={getRoleColor(user.group.name)}
-                              className="settings-badge"
+                              borderRadius="md"
+                              px={3}
+                              py={1}
+                              fontSize="xs"
                             >
                               {user.group.name}
                             </Badge>
                           ) : (
-                            <Badge colorScheme="gray" className="settings-badge">
+                            <Badge
+                              colorScheme="gray"
+                              borderRadius="md"
+                              px={3}
+                              py={1}
+                              fontSize="xs"
+                            >
                               {t('settings.users.noGroup')}
                             </Badge>
                           )}
                         </Td>
-                        <Td>
-                          <div>
+                        <Td
+                          textAlign="center"
+                          py={4}
+                          borderBottomWidth="1px"
+                          borderColor={borderColor}
+                        >
+                          <Flex gap={2} justify="center" align="center">
                             <Button
                               as={motion.button}
                               variant="ghost"
@@ -381,7 +437,7 @@ const UsersPage = () => {
                             >
                               <Trash size={ICON_SIZE_MD} />
                             </Button>
-                          </div>
+                          </Flex>
                         </Td>
                       </Tr>
                     ))
@@ -392,79 +448,111 @@ const UsersPage = () => {
             </Box>
 
             {/* Mobile Card View */}
-            <Box display={{ base: 'block', lg: 'none' }} className="settings-mobile-cards">
+            <Box display={{ base: 'block', lg: 'none' }} p={4}>
               {paginatedUsers?.length === 0 ? (
-                <div className="settings-empty-state">
-                  <div>
-                    <Users size={48} className="settings-empty-icon" aria-hidden="true" />
-                    <p>{t('settings.users.empty.title')}</p>
-                    <small>{t('settings.users.empty.subtitle')}</small>
-                  </div>
-                </div>
+                <Flex direction="column" align="center" gap={3} py={8}>
+                  <Icon as={Users} boxSize="48px" color={iconGray500} aria-hidden="true" />
+                  <Text fontWeight="medium">{t('settings.users.empty.title')}</Text>
+                  <Text fontSize="sm" color={iconGray500}>{t('settings.users.empty.subtitle')}</Text>
+                </Flex>
               ) : (
-                paginatedUsers.map((user, index) => (
-                  <div key={user.id} className="settings-mobile-card">
-                    <div className="settings-mobile-card-header">
-                      <div>
-                        <span>#{startIdx + index}</span>
+                <Flex direction="column" gap={4}>
+                  {paginatedUsers.map((user, index) => (
+                    <Box
+                      key={user.id}
+                      bg={cardBg}
+                      borderWidth="1px"
+                      borderColor={borderColor}
+                      borderRadius="lg"
+                      overflow="hidden"
+                      shadow="sm"
+                    >
+                      <Flex
+                        bg={cardHeaderBg}
+                        px={4}
+                        py={3}
+                        justify="space-between"
+                        align="center"
+                        borderBottomWidth="1px"
+                        borderColor={borderColor}
+                      >
+                        <Text fontSize="sm" fontWeight="medium" color={textSecondary}>
+                          #{startIdx + index}
+                        </Text>
                         <Badge
-                          colorScheme={user.group ? getRoleColor(user.group.name) : 'secondary'}
-                          className="settings-badge"
+                          colorScheme={user.group ? getRoleColor(user.group.name) : 'gray'}
+                          borderRadius="md"
+                          px={3}
+                          py={1}
+                          fontSize="xs"
                         >
                           {user.group ? user.group.name : t('settings.users.noGroup')}
                         </Badge>
-                      </div>
-                    </div>
-                    <div className="settings-mobile-card-body">
-                      <div className="settings-mobile-field">
-                        <span className="settings-mobile-label">
-                          {t('settings.users.table.name')}
-                        </span>
-                        <Text className="settings-mobile-value" fontWeight="medium">{user.name}</Text>
-                      </div>
-                      <div className="settings-mobile-field">
-                        <span className="settings-mobile-label">
-                          {t('settings.users.table.email')}
-                        </span>
-                        <Text className="settings-mobile-value" color={iconGray500}>{user.email}</Text>
-                      </div>
-                      <div className="settings-mobile-actions">
-                      <Button
-                        as={motion.button}
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleUpdateUser(user.id)}
-                        title={t('common.edit')}
-                        aria-label={t('common.edit')}
-                        whileTap={{ scale: 0.98 }}
-                        minW="44px"
-                        h="44px"
-                      >
-                        <Pencil size={ICON_SIZE_MD} />
-                      </Button>
-                      <Button
-                        as={motion.button}
-                        variant="ghost"
-                        colorScheme="red"
-                        size="sm"
-                        onClick={() => handleDelete(user.id)}
-                        title={t('common.delete')}
-                        aria-label={t('common.delete')}
-                        whileTap={{ scale: 0.98 }}
-                        minW="44px"
-                        h="44px"
-                      >
-                        <Trash size={ICON_SIZE_MD} />
-                      </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))
+                      </Flex>
+                      <Box p={4}>
+                        <Flex direction="column" gap={3} mb={4}>
+                          <Box>
+                            <Text fontSize="xs" color={textSecondary} mb={1}>
+                              {t('settings.users.table.name')}
+                            </Text>
+                            <Text fontWeight="medium" color={textPrimary}>
+                              {user.name}
+                            </Text>
+                          </Box>
+                          <Box>
+                            <Text fontSize="xs" color={textSecondary} mb={1}>
+                              {t('settings.users.table.email')}
+                            </Text>
+                            <Text color={textSecondary}>
+                              {user.email}
+                            </Text>
+                          </Box>
+                        </Flex>
+                        <Flex gap={2} justify="flex-end">
+                          <Button
+                            as={motion.button}
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleUpdateUser(user.id)}
+                            title={t('common.edit')}
+                            aria-label={t('common.edit')}
+                            whileTap={{ scale: 0.98 }}
+                            minW="44px"
+                            h="44px"
+                            leftIcon={<Pencil size={ICON_SIZE_MD} />}
+                          >
+                            <Text display={{ base: 'none', sm: 'inline' }}>{t('common.edit')}</Text>
+                          </Button>
+                          <Button
+                            as={motion.button}
+                            variant="ghost"
+                            colorScheme="red"
+                            size="sm"
+                            onClick={() => handleDelete(user.id)}
+                            title={t('common.delete')}
+                            aria-label={t('common.delete')}
+                            whileTap={{ scale: 0.98 }}
+                            minW="44px"
+                            h="44px"
+                            leftIcon={<Trash size={ICON_SIZE_MD} />}
+                          >
+                            <Text display={{ base: 'none', sm: 'inline' }}>{t('common.delete')}</Text>
+                          </Button>
+                        </Flex>
+                      </Box>
+                    </Box>
+                  ))}
+                </Flex>
               )}
             </Box>
 
             {/* Pagination */}
-            <Box className="settings-pagination">
+            <Box
+              px={4}
+              py={4}
+              borderTopWidth="1px"
+              borderColor={borderColor}
+            >
               <PaginationComponent
                 currentPage={currentPage}
                 totalPages={totalPages}
