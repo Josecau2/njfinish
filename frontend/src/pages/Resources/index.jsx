@@ -600,21 +600,43 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
   // CRUD handlers
   const handleSaveCategory = async () => {
+    const form = categoryModal.form
+    const payload = {
+      name: form.name,
+      description: form.description,
+      color: form.color,
+      icon: form.icon,
+      slug: form.slug,
+      parent_id: form.parentId ? Number(form.parentId) : null,
+      sort_order: Number(form.sortOrder) || 0,
+      is_active: !!form.isActive,
+      is_pinned: !!form.isPinned,
+      pinned_order: Number(form.pinnedOrder) || 0,
+    }
+
     try {
       setActionLoading(true)
-      const token = getFreshestToken()
-      const payload = { ...categoryModal.form }
-      delete payload.pendingThumbnail
-      delete payload.pendingThumbnailPreview
+      let categoryId = form.id
 
-      if (categoryModal.isEdit) {
-        await axiosInstance.put(`${CATEGORY_ENDPOINT}/${categoryModal.form.id}`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+      if (categoryModal.isEdit && form.id) {
+        await axiosInstance.put(`${CATEGORY_ENDPOINT}/${form.id}`, payload)
       } else {
-        await axiosInstance.post(CATEGORY_ENDPOINT, payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
+        const { data } = await axiosInstance.post(CATEGORY_ENDPOINT, payload)
+        categoryId = data?.data?.id
+      }
+
+      // Upload pending thumbnail if exists
+      if (form.pendingThumbnail && categoryId) {
+        try {
+          const fd = new FormData()
+          fd.append('thumbnail', form.pendingThumbnail)
+          await axiosInstance.post(`${CATEGORY_ENDPOINT}/${categoryId}/thumbnail`, fd, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          })
+        } catch (thumbnailError) {
+          console.error('Error uploading pending thumbnail:', thumbnailError)
+          showFeedback('warning', t('resources.messages.thumbnailUploadFailed', 'Failed to upload thumbnail'))
+        }
       }
 
       await fetchResources()
@@ -1212,6 +1234,104 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, color: e.target.value } }))}
                 />
               </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.icon', 'Icon')}</FormLabel>
+                <Select
+                  value={categoryModal.form.icon}
+                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, icon: e.target.value } }))}
+                >
+                  <option value="">{t('resources.fields.selectIcon', 'Select an icon...')}</option>
+                  {ICON_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.thumbnailUpload', 'Thumbnail Upload')}</FormLabel>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      const preview = URL.createObjectURL(file)
+                      setCategoryModal(prev => ({
+                        ...prev,
+                        form: {
+                          ...prev.form,
+                          pendingThumbnail: file,
+                          pendingThumbnailPreview: preview
+                        }
+                      }))
+                    }
+                  }}
+                />
+                {categoryModal.form.pendingThumbnailPreview && (
+                  <Box mt={2}>
+                    <Image
+                      src={categoryModal.form.pendingThumbnailPreview}
+                      alt="Thumbnail preview"
+                      maxH="160px"
+                      objectFit="cover"
+                      rounded="md"
+                      border="1px solid"
+                      borderColor="gray.200"
+                    />
+                    <Text fontSize="sm" color="gray.500" mt={1}>
+                      {t('resources.fields.pendingUpload', 'Will be uploaded when saved')}
+                    </Text>
+                  </Box>
+                )}
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.slug', 'Slug')}</FormLabel>
+                <Input
+                  value={categoryModal.form.slug}
+                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, slug: e.target.value } }))}
+                  placeholder={t('resources.fields.slugHelp', 'Used for URLs and quick references')}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.sortOrder', 'Sort Order')}</FormLabel>
+                <Input
+                  type="number"
+                  value={categoryModal.form.sortOrder}
+                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, sortOrder: e.target.value } }))}
+                />
+              </FormControl>
+
+              <FormControl display="flex" alignItems="center">
+                <FormLabel mb="0">{t('resources.fields.active', 'Active')}</FormLabel>
+                <Switch
+                  isChecked={categoryModal.form.isActive}
+                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, isActive: e.target.checked } }))}
+                />
+              </FormControl>
+
+              <FormControl display="flex" alignItems="center">
+                <FormLabel mb="0">{t('resources.fields.pinned', 'Pinned')}</FormLabel>
+                <Switch
+                  isChecked={categoryModal.form.isPinned}
+                  onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, isPinned: e.target.checked } }))}
+                />
+              </FormControl>
+
+              {categoryModal.form.isPinned && (
+                <FormControl>
+                  <FormLabel>{t('resources.fields.pinnedOrder', 'Pinned Order')}</FormLabel>
+                  <Input
+                    type="number"
+                    value={categoryModal.form.pinnedOrder}
+                    onChange={(e) => setCategoryModal(prev => ({ ...prev, form: { ...prev.form, pinnedOrder: e.target.value } }))}
+                  />
+                </FormControl>
+              )}
             </VStack>
           </ModalBody>
           <ModalFooter>
@@ -1288,6 +1408,98 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     </option>
                   ))}
                 </Select>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.thumbnailUrl', 'Thumbnail URL')}</FormLabel>
+                <Input
+                  value={linkModal.form.thumbnailUrl}
+                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, thumbnailUrl: e.target.value } }))}
+                  placeholder="https://"
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.tags', 'Tags')}</FormLabel>
+                <Input
+                  value={linkModal.form.tags}
+                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, tags: e.target.value } }))}
+                  placeholder="tag1, tag2"
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.ctaLabel', 'CTA Label')}</FormLabel>
+                <Input
+                  value={linkModal.form.ctaLabel}
+                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, ctaLabel: e.target.value } }))}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.ctaUrl', 'CTA URL')}</FormLabel>
+                <Input
+                  value={linkModal.form.ctaUrl}
+                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, ctaUrl: e.target.value } }))}
+                  placeholder="https://"
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.status', 'Status')}</FormLabel>
+                <Select
+                  value={linkModal.form.status}
+                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, status: e.target.value } }))}
+                >
+                  <option value="active">{t('resources.status.active', 'Active')}</option>
+                  <option value="draft">{t('resources.status.draft', 'Draft')}</option>
+                  <option value="archived">{t('resources.status.archived', 'Archived')}</option>
+                </Select>
+              </FormControl>
+
+              <FormControl display="flex" alignItems="center">
+                <FormLabel mb="0">{t('resources.fields.pinned', 'Pinned')}</FormLabel>
+                <Switch
+                  isChecked={linkModal.form.isPinned}
+                  onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, isPinned: e.target.checked } }))}
+                />
+              </FormControl>
+
+              {linkModal.form.isPinned && (
+                <FormControl>
+                  <FormLabel>{t('resources.fields.pinnedOrder', 'Pinned Order')}</FormLabel>
+                  <Input
+                    type="number"
+                    value={linkModal.form.pinnedOrder}
+                    onChange={(e) => setLinkModal(prev => ({ ...prev, form: { ...prev.form, pinnedOrder: e.target.value } }))}
+                  />
+                </FormControl>
+              )}
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.visibility', 'Visibility')}</FormLabel>
+                <VStack align="start" spacing={2}>
+                  {GROUP_VISIBILITY_OPTIONS.map((option) => (
+                    <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input
+                        type="checkbox"
+                        checked={linkModal.form.visibleToGroupTypes.includes(option)}
+                        onChange={(e) => {
+                          setLinkModal(prev => ({
+                            ...prev,
+                            form: {
+                              ...prev.form,
+                              visibleToGroupTypes: e.target.checked
+                                ? [...prev.form.visibleToGroupTypes, option]
+                                : prev.form.visibleToGroupTypes.filter(v => v !== option)
+                            }
+                          }))
+                        }}
+                      />
+                      {t(`resources.visibility.${option}`, option)}
+                    </label>
+                  ))}
+                </VStack>
               </FormControl>
             </VStack>
           </ModalBody>
@@ -1384,6 +1596,127 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   ))}
                 </Select>
               </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.thumbnailUpload', 'Thumbnail Upload')}</FormLabel>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      const preview = URL.createObjectURL(file)
+                      setFileModal(prev => ({
+                        ...prev,
+                        form: {
+                          ...prev.form,
+                          pendingThumbnail: file,
+                          pendingThumbnailPreview: preview
+                        }
+                      }))
+                    }
+                  }}
+                />
+                {fileModal.form.pendingThumbnailPreview && (
+                  <Box mt={2}>
+                    <Image
+                      src={fileModal.form.pendingThumbnailPreview}
+                      alt="Thumbnail preview"
+                      maxH="160px"
+                      objectFit="cover"
+                      rounded="md"
+                      border="1px solid"
+                      borderColor="gray.200"
+                    />
+                    <Text fontSize="sm" color="gray.500" mt={1}>
+                      {t('resources.fields.pendingUpload', 'Will be uploaded when saved')}
+                    </Text>
+                  </Box>
+                )}
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.tags', 'Tags')}</FormLabel>
+                <Input
+                  value={fileModal.form.tags}
+                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, tags: e.target.value } }))}
+                  placeholder="tag1, tag2"
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.ctaLabel', 'CTA Label')}</FormLabel>
+                <Input
+                  value={fileModal.form.ctaLabel}
+                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, ctaLabel: e.target.value } }))}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.ctaUrl', 'CTA URL')}</FormLabel>
+                <Input
+                  value={fileModal.form.ctaUrl}
+                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, ctaUrl: e.target.value } }))}
+                  placeholder="https://"
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.status', 'Status')}</FormLabel>
+                <Select
+                  value={fileModal.form.status}
+                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, status: e.target.value } }))}
+                >
+                  <option value="active">{t('resources.status.active', 'Active')}</option>
+                  <option value="draft">{t('resources.status.draft', 'Draft')}</option>
+                  <option value="archived">{t('resources.status.archived', 'Archived')}</option>
+                </Select>
+              </FormControl>
+
+              <FormControl display="flex" alignItems="center">
+                <FormLabel mb="0">{t('resources.fields.pinned', 'Pinned')}</FormLabel>
+                <Switch
+                  isChecked={fileModal.form.isPinned}
+                  onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, isPinned: e.target.checked } }))}
+                />
+              </FormControl>
+
+              {fileModal.form.isPinned && (
+                <FormControl>
+                  <FormLabel>{t('resources.fields.pinnedOrder', 'Pinned Order')}</FormLabel>
+                  <Input
+                    type="number"
+                    value={fileModal.form.pinnedOrder}
+                    onChange={(e) => setFileModal(prev => ({ ...prev, form: { ...prev.form, pinnedOrder: e.target.value } }))}
+                  />
+                </FormControl>
+              )}
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.visibility', 'Visibility')}</FormLabel>
+                <VStack align="start" spacing={2}>
+                  {GROUP_VISIBILITY_OPTIONS.map((option) => (
+                    <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input
+                        type="checkbox"
+                        checked={fileModal.form.visibleToGroupTypes.includes(option)}
+                        onChange={(e) => {
+                          setFileModal(prev => ({
+                            ...prev,
+                            form: {
+                              ...prev.form,
+                              visibleToGroupTypes: e.target.checked
+                                ? [...prev.form.visibleToGroupTypes, option]
+                                : prev.form.visibleToGroupTypes.filter(v => v !== option)
+                            }
+                          }))
+                        }}
+                      />
+                      {t(`resources.visibility.${option}`, option)}
+                    </label>
+                  ))}
+                </VStack>
+              </FormControl>
             </VStack>
           </ModalBody>
           <ModalFooter>
@@ -1401,6 +1734,11 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                   // Add file if present
                   if (fileModal.form.file) {
                     formData.append('file', fileModal.form.file)
+                  }
+
+                  // Add thumbnail if present
+                  if (fileModal.form.pendingThumbnail) {
+                    formData.append('thumbnail', fileModal.form.pendingThumbnail)
                   }
 
                   // Add other fields
@@ -1502,6 +1840,98 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                     </option>
                   ))}
                 </Select>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.status', 'Status')}</FormLabel>
+                <Select
+                  value={announcementModal.form.status}
+                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, status: e.target.value } }))}
+                >
+                  <option value="published">{t('resources.status.published', 'Published')}</option>
+                  <option value="draft">{t('resources.status.draft', 'Draft')}</option>
+                  <option value="archived">{t('resources.status.archived', 'Archived')}</option>
+                </Select>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.publishAt', 'Publish At')}</FormLabel>
+                <Input
+                  type="datetime-local"
+                  value={announcementModal.form.publishAt}
+                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, publishAt: e.target.value } }))}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.expireAt', 'Expire At')}</FormLabel>
+                <Input
+                  type="datetime-local"
+                  value={announcementModal.form.expireAt}
+                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, expireAt: e.target.value } }))}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.ctaLabel', 'CTA Label')}</FormLabel>
+                <Input
+                  value={announcementModal.form.ctaLabel}
+                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, ctaLabel: e.target.value } }))}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.ctaUrl', 'CTA URL')}</FormLabel>
+                <Input
+                  value={announcementModal.form.ctaUrl}
+                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, ctaUrl: e.target.value } }))}
+                  placeholder="https://"
+                />
+              </FormControl>
+
+              <FormControl display="flex" alignItems="center">
+                <FormLabel mb="0">{t('resources.fields.pinned', 'Pinned')}</FormLabel>
+                <Switch
+                  isChecked={announcementModal.form.isPinned}
+                  onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, isPinned: e.target.checked } }))}
+                />
+              </FormControl>
+
+              {announcementModal.form.isPinned && (
+                <FormControl>
+                  <FormLabel>{t('resources.fields.pinnedOrder', 'Pinned Order')}</FormLabel>
+                  <Input
+                    type="number"
+                    value={announcementModal.form.pinnedOrder}
+                    onChange={(e) => setAnnouncementModal(prev => ({ ...prev, form: { ...prev.form, pinnedOrder: e.target.value } }))}
+                  />
+                </FormControl>
+              )}
+
+              <FormControl>
+                <FormLabel>{t('resources.fields.visibility', 'Visibility')}</FormLabel>
+                <VStack align="start" spacing={2}>
+                  {GROUP_VISIBILITY_OPTIONS.map((option) => (
+                    <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <input
+                        type="checkbox"
+                        checked={announcementModal.form.visibleToGroupTypes.includes(option)}
+                        onChange={(e) => {
+                          setAnnouncementModal(prev => ({
+                            ...prev,
+                            form: {
+                              ...prev.form,
+                              visibleToGroupTypes: e.target.checked
+                                ? [...prev.form.visibleToGroupTypes, option]
+                                : prev.form.visibleToGroupTypes.filter(v => v !== option)
+                            }
+                          }))
+                        }}
+                      />
+                      {t(`resources.visibility.${option}`, option)}
+                    </label>
+                  ))}
+                </VStack>
               </FormControl>
             </VStack>
           </ModalBody>
