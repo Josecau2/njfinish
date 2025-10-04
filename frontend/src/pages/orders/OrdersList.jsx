@@ -492,11 +492,14 @@ const OrdersList = ({
               <Icon as={Search} boxSize={ICON_BOX_MD} color={iconColor} />
             </InputLeftElement>
             <Input
+            id="orders-search"
+            name="ordersSearch"
             type="search"
             placeholder={t('orders.searchPlaceholder', 'Search by customer, order number, or description')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             aria-label={t('orders.searchAria', 'Search orders by customer name')}
+            autoComplete="off"
           />
         </InputGroup>
         </Box>
@@ -590,8 +593,10 @@ const OrdersList = ({
                               e.stopPropagation()
                               handleMakePayment(item.id)
                             }}
+                            minH="44px"
+                            maxW="180px"
                           >
-                            {t('orders.actions.makePayment', 'Make Payment')}
+                            <Text noOfLines={1}>{t('orders.actions.makePayment', 'Make Payment')}</Text>
                           </Button>
                         )}
                         {paymentInfo.status === 'paid' && (
@@ -605,8 +610,10 @@ const OrdersList = ({
                               const payment = getOrderPayment(item.id)
                               handleDownloadReceipt(item, payment)
                             }}
+                            minH="44px"
+                            maxW="200px"
                           >
-                            {t('orders.actions.downloadInvoice', 'Download Invoice')}
+                            <Text noOfLines={1}>{t('orders.actions.downloadInvoice', 'Download Invoice')}</Text>
                           </Button>
                         )}
                       </HStack>
@@ -712,8 +719,11 @@ const OrdersList = ({
                               e.stopPropagation()
                               handleMakePayment(item.id)
                             }}
+                            minH="44px"
+                            maxW="180px"
+                            flex="1"
                           >
-                            {t('orders.actions.makePayment', 'Make Payment')}
+                            <Text noOfLines={1}>{t('orders.actions.makePayment', 'Make Payment')}</Text>
                           </Button>
                         )}
                         {paymentInfo.status === 'paid' && (
@@ -727,8 +737,11 @@ const OrdersList = ({
                               const payment = getOrderPayment(item.id)
                               handleDownloadReceipt(item, payment)
                             }}
+                            minH="44px"
+                            maxW="200px"
+                            flex="1"
                           >
-                            {t('orders.actions.downloadInvoice', 'Download Invoice')}
+                            <Text noOfLines={1}>{t('orders.actions.downloadInvoice', 'Download Invoice')}</Text>
                           </Button>
                         )}
                       </HStack>

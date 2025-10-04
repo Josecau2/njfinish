@@ -520,6 +520,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                 variant={isActive ? 'solid' : 'outline'}
                 colorScheme={isActive ? 'brand' : 'gray'}
                 minH="44px"
+                maxW="220px"
                 onClick={() => {
                   setActiveTab(tab)
                   setCurrentPage(1)
@@ -530,7 +531,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                   </Badge>
                 }
               >
-                {getTabLabel(tab)}
+                <Text noOfLines={1}>{getTabLabel(tab)}</Text>
               </Button>
             )
           })}
@@ -546,11 +547,14 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                 <Icon as={Search} boxSize={ICON_BOX_MD} color={iconGray400} />
               </InputLeftElement>
               <Input
+                id="proposals-search"
+                name="proposalsSearch"
                 type="search"
                 placeholder={t('proposals.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 aria-label={t('proposals.searchPlaceholder')}
+                autoComplete="off"
               />
             </InputGroup>
           </Box>

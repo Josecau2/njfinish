@@ -228,11 +228,14 @@ const CustomerTable = ({
                     <Icon as={Search} boxSize={ICON_BOX_MD} color={iconGray} />
                   </InputLeftElement>
                   <Input
+                    id="customers-search"
+                    name="customersSearch"
                     type="search"
                     value={searchTerm}
                     onChange={(event) => setSearchTerm(event.target.value.toLowerCase())}
                     placeholder={t('customers.searchPlaceholder')}
                     aria-label={t('customers.searchAriaLabel', 'Search customers')}
+                    autoComplete="off"
                   />
                 </InputGroup>
               </Box>
@@ -509,8 +512,11 @@ const CustomerTable = ({
                               leftIcon={<Icon as={Pencil} boxSize={ICON_BOX_MD} />}
                               flex="1"
                               onClick={() => handleEdit(cust)}
+                              minH="44px"
+                              minW="70px"
+                              maxW="140px"
                             >
-                              {t('common.edit')}
+                              <Text noOfLines={1}>{t('common.edit')}</Text>
                             </Button>
                           </PermissionGate>
                           <PermissionGate action="delete" resource="customer" item={cust}>
@@ -521,8 +527,11 @@ const CustomerTable = ({
                               leftIcon={<Icon as={Trash} boxSize={ICON_BOX_MD} />}
                               flex="1"
                               onClick={() => handleDelete(cust.id)}
+                              minH="44px"
+                              minW="70px"
+                              maxW="140px"
                             >
-                              {t('common.delete')}
+                              <Text noOfLines={1}>{t('common.delete')}</Text>
                             </Button>
                           </PermissionGate>
                         </HStack>

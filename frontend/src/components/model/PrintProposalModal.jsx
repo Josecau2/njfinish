@@ -538,10 +538,11 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 onClick={openPreview}
                 whileTap={{ scale: 0.98 }}
                 flex={isMobile ? '1' : 'unset'}
+                minH="44px"
               >
                 <HStack spacing={4} justify="center" width="100%">
                   <Icon as={Eye} boxSize={ICON_BOX_MD} />
-                  <Text>{t('proposalCommon.preview', 'Preview')}</Text>
+                  <Text noOfLines={1}>{t('proposalCommon.preview', 'Preview')}</Text>
                 </HStack>
               </MotionButton>
               <MotionButton
@@ -550,10 +551,11 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 onClick={() => handlePrint(getValues())}
                 whileTap={{ scale: 0.98 }}
                 flex={isMobile ? '1' : 'unset'}
+                minH="44px"
               >
                 <HStack spacing={4} justify="center" width="100%">
                   <Icon as={Printer} boxSize={ICON_BOX_MD} />
-                  <Text>{t('proposalCommon.print', 'Print')}</Text>
+                  <Text noOfLines={1}>{t('proposalCommon.print', 'Print')}</Text>
                 </HStack>
               </MotionButton>
               <MotionButton
@@ -562,16 +564,17 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 onClick={() => handleDownload(getValues())}
                 whileTap={{ scale: 0.98 }}
                 flex={isMobile ? '1' : 'unset'}
+                minH="44px"
               >
                 {isLoading ? (
                   <HStack spacing={4} justify="center" width="100%">
                     <Spinner size="sm" />
-                    <Text>{t('proposalCommon.downloading')}</Text>
+                    <Text noOfLines={1}>{t('proposalCommon.downloading')}</Text>
                   </HStack>
                 ) : (
                   <HStack spacing={4} justify="center" width="100%">
                     <Icon as={Download} boxSize={ICON_BOX_MD} />
-                    <Text>{t('proposalCommon.downloadPdf')}</Text>
+                    <Text noOfLines={1}>{t('proposalCommon.downloadPdf')}</Text>
                   </HStack>
                 )}
               </MotionButton>

@@ -511,8 +511,10 @@ const EditProposal = ({
             colorScheme="green"
             leftIcon={<Printer />}
             onClick={() => setShowPrintModal(true)}
+            minH="44px"
+            maxW={{ base: "180px", md: "none" }}
           >
-            {t('proposals.create.actions.print', 'Print Quote')}
+            <Text noOfLines={1}>{t('proposals.create.actions.print', 'Print Quote')}</Text>
           </Button>
           {!(loggedInUser?.group && loggedInUser.group.group_type === 'contractor') && (
             <>
@@ -520,15 +522,19 @@ const EditProposal = ({
                 colorScheme="cyan"
                 leftIcon={<Mail />}
                 onClick={() => setShowEmailModal(true)}
+                minH="44px"
+                maxW={{ base: "180px", md: "none" }}
               >
-                {t('proposals.create.actions.email', 'Email Quote')}
+                <Text noOfLines={1}>{t('proposals.create.actions.email', 'Email Quote')}</Text>
               </Button>
               <Button
                 colorScheme="yellow"
                 leftIcon={<FileText />}
                 onClick={() => setShowContractModal(true)}
+                minH="44px"
+                maxW={{ base: "180px", md: "none" }}
               >
-                {t('proposals.create.actions.contract', 'Email Contract')}
+                <Text noOfLines={1}>{t('proposals.create.actions.contract', 'Email Contract')}</Text>
               </Button>
             </>
           )}
@@ -831,21 +837,39 @@ const EditProposal = ({
             ) : (
               // Show action buttons only when quote is not locked
               <HStack spacing={4} flexWrap="wrap" justify="center">
-                <Button variant="outline" colorScheme="gray" type="submit" minW="140px">
-                  {t('common.save', 'Save')}
+                <Button
+                  variant="outline"
+                  colorScheme="gray"
+                  type="submit"
+                  minW={{ base: "110px", md: "140px" }}
+                  maxW="200px"
+                  minH="44px"
+                  flex={{ base: "1", md: "unset" }}
+                >
+                  <Text noOfLines={1}>{t('common.save', 'Save')}</Text>
                 </Button>
                 {formData.status !== 'Proposal accepted' && formData.status !== 'accepted' && (
                   <>
-                    <Button colorScheme="green" onClick={handleAcceptOrder} minW="140px">
-                      {t('proposals.actions.acceptAndOrder', 'Accept and Order')}
+                    <Button
+                      colorScheme="green"
+                      onClick={handleAcceptOrder}
+                      minW={{ base: "110px", md: "140px" }}
+                      maxW="220px"
+                      minH="44px"
+                      flex={{ base: "1", md: "unset" }}
+                    >
+                      <Text noOfLines={1}>{t('proposals.actions.acceptAndOrder', 'Accept and Order')}</Text>
                     </Button>
                     <Button
                       variant="outline"
                       colorScheme="red"
                       onClick={handleRejectOrder}
-                      minW="140px"
+                      minW={{ base: "110px", md: "140px" }}
+                      maxW="220px"
+                      minH="44px"
+                      flex={{ base: "1", md: "unset" }}
                     >
-                      {t('proposals.actions.rejectAndArchive', 'Reject and Archive')}
+                      <Text noOfLines={1}>{t('proposals.actions.rejectAndArchive', 'Reject and Archive')}</Text>
                     </Button>
                   </>
                 )}

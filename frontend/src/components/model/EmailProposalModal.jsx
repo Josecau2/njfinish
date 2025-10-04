@@ -305,22 +305,24 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
               onClick={handleCancel}
               isDisabled={loading}
               whileTap={{ scale: 0.98 }}
+              minH="44px"
             >
-              {t('common.cancel')}
+              <Text noOfLines={1}>{t('common.cancel')}</Text>
             </MotionButton>
             <MotionButton
               type='submit'
               colorScheme='brand'
               isDisabled={loading}
               whileTap={{ scale: 0.98 }}
+              minH="44px"
             >
               {loading ? (
                 <HStack spacing={4}>
                   <Spinner size='sm' />
-                  <Text>{t('proposalCommon.sending')}</Text>
+                  <Text noOfLines={1}>{t('proposalCommon.sending')}</Text>
                 </HStack>
               ) : (
-                t('proposalCommon.sendEmail')
+                <Text noOfLines={1}>{t('proposalCommon.sendEmail')}</Text>
               )}
             </MotionButton>
           </HStack>
