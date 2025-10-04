@@ -66,7 +66,7 @@ const ContractorDetail = () => {
           <Box>
             <AlertTitle>{t('contractorsAdmin.detail.errorTitle')}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
-            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="brand">
+            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="brand" minH="44px" maxW={{ base: "220px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
               {t('contractorsAdmin.detail.backToList')}
             </Button>
           </Box>
@@ -83,7 +83,7 @@ const ContractorDetail = () => {
           <Box>
             <AlertTitle>{t('contractorsAdmin.detail.notFoundTitle')}</AlertTitle>
             <AlertDescription>{t('contractorsAdmin.detail.notFoundText')}</AlertDescription>
-            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="brand">
+            <Button mt={4} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} onClick={handleBack} colorScheme="brand" minH="44px" maxW={{ base: "220px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
               {t('contractorsAdmin.detail.backToList')}
             </Button>
           </Box>
@@ -96,7 +96,7 @@ const ContractorDetail = () => {
     <PageContainer>
       <Stack spacing={6}>
         <Flex align={{ base: 'flex-start', md: 'center' }} direction={{ base: 'column', md: 'row' }} gap={4}>
-          <Button onClick={handleBack} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} variant="outline" colorScheme="gray">
+          <Button onClick={handleBack} leftIcon={<ArrowLeft size={ICON_SIZE_MD} />} variant="outline" colorScheme="gray" minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
             {t('common.back')}
           </Button>
 

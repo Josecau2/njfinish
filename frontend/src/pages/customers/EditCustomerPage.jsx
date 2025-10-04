@@ -284,6 +284,8 @@ const EditCustomerPage = () => {
             leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
             onClick={() => navigate(-1)}
             minH="44px"
+            maxW={{ base: "140px", md: "none" }}
+            fontSize={{ base: "sm", md: "md" }}
           >
             {t('common.back')}
           </Button>,
@@ -487,7 +489,9 @@ const EditCustomerPage = () => {
                   colorScheme="gray"
                   onClick={() => navigate('/customers')}
                   minH="44px"
+                  maxW={{ base: "140px", md: "none" }}
                   leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
+                  fontSize={{ base: "sm", md: "md" }}
                 >
                   {t('customers.form.actions.cancel')}
                 </Button>
@@ -495,11 +499,13 @@ const EditCustomerPage = () => {
                   type="submit"
                   colorScheme="brand"
                   minH="44px"
+                  maxW={{ base: "140px", md: "none" }}
                   isLoading={isSubmitting}
                   leftIcon={!isSubmitting ? <Icon as={Save} boxSize={ICON_BOX_MD} aria-hidden="true" /> : undefined}
                   bg={headerBg}
                   _hover={{ opacity: 0.9 }}
                   color={textColor}
+                  fontSize={{ base: "sm", md: "md" }}
                 >
                   {isSubmitting
                     ? t('customers.form.actions.updating')

@@ -387,6 +387,9 @@ const OrderDetails = () => {
         colorScheme="brand"
         leftIcon={<Icon as={FileText} boxSize={4} />}
         onClick={handleViewPdf}
+        minH="44px"
+        maxW={{ base: "140px", md: "none" }}
+        fontSize={{ base: "xs", md: "sm" }}
       >
         {t('orders.actions.viewPdf', 'View PDF')}
       </Button>,
@@ -400,6 +403,9 @@ const OrderDetails = () => {
         leftIcon={<Icon as={Download} boxSize={4} />}
         onClick={handleDownloadPdf}
         isLoading={downloading}
+        minH="44px"
+        maxW={{ base: "180px", md: "none" }}
+        fontSize={{ base: "xs", md: "sm" }}
       >
         {downloading ? t('orders.actions.downloading', 'Downloading…') : t('orders.actions.downloadPdf', 'Download PDF')}
       </Button>,
@@ -413,6 +419,9 @@ const OrderDetails = () => {
         leftIcon={<Icon as={Mail} boxSize={4} />}
         onClick={handleResendEmail}
         isLoading={resending}
+        minH="44px"
+        maxW={{ base: "180px", md: "none" }}
+        fontSize={{ base: "xs", md: "sm" }}
       >
         {resending ? t('orders.actions.resending', 'Resending…') : t('orders.actions.resendEmail', 'Resend Email')}
       </Button>,
@@ -425,6 +434,9 @@ const OrderDetails = () => {
         variant="outline"
         leftIcon={<Icon as={Trash} boxSize={4} />}
         onClick={handleDeleteOrder}
+        minH="44px"
+        maxW={{ base: "180px", md: "none" }}
+        fontSize={{ base: "xs", md: "sm" }}
       >
         {t('orders.actions.deleteOrder', 'Delete Order')}
       </Button>,
@@ -439,6 +451,9 @@ const OrderDetails = () => {
       colorScheme="gray"
       leftIcon={<Icon as={ArrowLeft} boxSize={4} />}
       onClick={handleBack}
+      minH="44px"
+      maxW={{ base: "140px", md: "none" }}
+      fontSize={{ base: "xs", md: "sm" }}
     >
       {t('common.back', 'Back')}
     </Button>,

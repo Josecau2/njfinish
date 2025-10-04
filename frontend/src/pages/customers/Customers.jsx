@@ -177,7 +177,14 @@ const CustomerTable = ({
           icon={Users}
           actions={[
             <PermissionGate permission="customers:create" key="create">
-              <Button colorScheme="brand" leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} />} onClick={handleNewCustomer}>
+              <Button
+                colorScheme="brand"
+                leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} />}
+                onClick={handleNewCustomer}
+                minH="44px"
+                maxW={{ base: "180px", md: "none" }}
+                fontSize={{ base: "sm", md: "md" }}
+              >
                 {t('nav.addCustomer')}
               </Button>
             </PermissionGate>,
@@ -515,8 +522,9 @@ const CustomerTable = ({
                               minH="44px"
                               minW="70px"
                               maxW="140px"
+                              fontSize={{ base: "xs", md: "sm" }}
                             >
-                              <Text noOfLines={1}>{t('common.edit')}</Text>
+                              {t('common.edit')}
                             </Button>
                           </PermissionGate>
                           <PermissionGate action="delete" resource="customer" item={cust}>
@@ -530,8 +538,9 @@ const CustomerTable = ({
                               minH="44px"
                               minW="70px"
                               maxW="140px"
+                              fontSize={{ base: "xs", md: "sm" }}
                             >
-                              <Text noOfLines={1}>{t('common.delete')}</Text>
+                              {t('common.delete')}
                             </Button>
                           </PermissionGate>
                         </HStack>

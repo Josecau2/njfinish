@@ -513,8 +513,9 @@ const EditProposal = ({
             onClick={() => setShowPrintModal(true)}
             minH="44px"
             maxW={{ base: "180px", md: "none" }}
+            fontSize={{ base: "sm", md: "md" }}
           >
-            <Text noOfLines={1}>{t('proposals.create.actions.print', 'Print Quote')}</Text>
+            {t('proposals.create.actions.print', 'Print Quote')}
           </Button>
           {!(loggedInUser?.group && loggedInUser.group.group_type === 'contractor') && (
             <>
@@ -524,8 +525,9 @@ const EditProposal = ({
                 onClick={() => setShowEmailModal(true)}
                 minH="44px"
                 maxW={{ base: "180px", md: "none" }}
+                fontSize={{ base: "sm", md: "md" }}
               >
-                <Text noOfLines={1}>{t('proposals.create.actions.email', 'Email Quote')}</Text>
+                {t('proposals.create.actions.email', 'Email Quote')}
               </Button>
               <Button
                 colorScheme="yellow"
@@ -533,8 +535,9 @@ const EditProposal = ({
                 onClick={() => setShowContractModal(true)}
                 minH="44px"
                 maxW={{ base: "180px", md: "none" }}
+                fontSize={{ base: "sm", md: "md" }}
               >
-                <Text noOfLines={1}>{t('proposals.create.actions.contract', 'Email Contract')}</Text>
+                {t('proposals.create.actions.contract', 'Email Contract')}
               </Button>
             </>
           )}
@@ -845,8 +848,9 @@ const EditProposal = ({
                   maxW="200px"
                   minH="44px"
                   flex={{ base: "1", md: "unset" }}
+                  fontSize={{ base: "sm", md: "md" }}
                 >
-                  <Text noOfLines={1}>{t('common.save', 'Save')}</Text>
+                  {t('common.save', 'Save')}
                 </Button>
                 {formData.status !== 'Proposal accepted' && formData.status !== 'accepted' && (
                   <>
@@ -857,8 +861,9 @@ const EditProposal = ({
                       maxW="220px"
                       minH="44px"
                       flex={{ base: "1", md: "unset" }}
+                      fontSize={{ base: "sm", md: "md" }}
                     >
-                      <Text noOfLines={1}>{t('proposals.actions.acceptAndOrder', 'Accept and Order')}</Text>
+                      {t('proposals.actions.acceptAndOrder', 'Accept and Order')}
                     </Button>
                     <Button
                       variant="outline"
@@ -868,8 +873,9 @@ const EditProposal = ({
                       maxW="220px"
                       minH="44px"
                       flex={{ base: "1", md: "unset" }}
+                      fontSize={{ base: "sm", md: "md" }}
                     >
-                      <Text noOfLines={1}>{t('proposals.actions.rejectAndArchive', 'Reject and Archive')}</Text>
+                      {t('proposals.actions.rejectAndArchive', 'Reject and Archive')}
                     </Button>
                   </>
                 )}

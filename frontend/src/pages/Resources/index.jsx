@@ -746,6 +746,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               leftIcon={<Plus size={ICON_SIZE_MD} />}
               colorScheme="brand"
               onClick={() => openCategoryModal()}
+              minH="44px"
+              maxW={{ base: "180px", md: "none" }}
+              fontSize={{ base: "sm", md: "md" }}
             >
               {t('resources.actions.newCategory', 'New Category')}
             </Button>
@@ -754,6 +757,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               variant="outline"
               onClick={handleCreateCategoryScaffold}
               isLoading={scaffoldLoading}
+              minH="44px"
+              maxW={{ base: "180px", md: "none" }}
+              fontSize={{ base: "sm", md: "md" }}
             >
               {t('resources.actions.scaffold', 'Create Scaffold')}
             </Button>
@@ -895,6 +901,9 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               variant="ghost"
               alignSelf="flex-start"
               onClick={() => setFilters(prev => ({ ...prev, categoryId: 'all' }))}
+              minH="44px"
+              maxW={{ base: "220px", md: "none" }}
+              fontSize={{ base: "sm", md: "md" }}
             >
               {t('resources.actions.backToCategories', 'Back to Categories')}
             </Button>
@@ -911,7 +920,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openAnnouncementModal()} alignSelf="flex-start">
+                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openAnnouncementModal()} alignSelf="flex-start" minH="44px" maxW={{ base: "220px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
                         {t('resources.actions.newAnnouncement', 'New Announcement')}
                       </Button>
                     )}
@@ -977,7 +986,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openLinkModal()} alignSelf="flex-start">
+                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openLinkModal()} alignSelf="flex-start" minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
                         {t('resources.actions.newLink', 'New Link')}
                       </Button>
                     )}
@@ -1050,7 +1059,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 <TabPanel px={0}>
                   <VStack spacing={4} align="stretch">
                     {isAdmin && (
-                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openFileModal()} alignSelf="flex-start">
+                      <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => openFileModal()} alignSelf="flex-start" minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
                         {t('resources.actions.newFile', 'New File')}
                       </Button>
                     )}

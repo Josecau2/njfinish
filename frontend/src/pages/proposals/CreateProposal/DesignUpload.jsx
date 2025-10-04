@@ -294,6 +294,9 @@ const DesignImportStep = ({
               onClick={() => setActiveTab('manual')}
               whileTap={{ scale: 0.98 }}
               leftIcon={<Icon as={PenSquare} boxSize={ICON_BOX_MD} />}
+              minH="44px"
+              maxW={{ base: "180px", md: "none" }}
+              fontSize={{ base: "sm", md: "md" }}
             >
               {t('proposals.create.design.tabs.manualEntry')}
             </MotionButton>
@@ -303,6 +306,9 @@ const DesignImportStep = ({
               onClick={() => setActiveTab('import')}
               whileTap={{ scale: 0.98 }}
               leftIcon={<Icon as={UploadCloud} boxSize={ICON_BOX_MD} />}
+              minH="44px"
+              maxW={{ base: "180px", md: "none" }}
+              fontSize={{ base: "sm", md: "md" }}
             >
               {t('proposals.create.design.tabs.import2020')}
             </MotionButton>

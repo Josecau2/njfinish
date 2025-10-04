@@ -595,8 +595,9 @@ const OrdersList = ({
                             }}
                             minH="44px"
                             maxW="180px"
+                            fontSize={{ base: "xs", md: "sm" }}
                           >
-                            <Text noOfLines={1}>{t('orders.actions.makePayment', 'Make Payment')}</Text>
+                            {t('orders.actions.makePayment', 'Make Payment')}
                           </Button>
                         )}
                         {paymentInfo.status === 'paid' && (
@@ -612,8 +613,9 @@ const OrdersList = ({
                             }}
                             minH="44px"
                             maxW="200px"
+                            fontSize={{ base: "xs", md: "sm" }}
                           >
-                            <Text noOfLines={1}>{t('orders.actions.downloadInvoice', 'Download Invoice')}</Text>
+                            {t('orders.actions.downloadInvoice', 'Download Invoice')}
                           </Button>
                         )}
                       </HStack>
@@ -722,8 +724,9 @@ const OrdersList = ({
                             minH="44px"
                             maxW="180px"
                             flex="1"
+                            fontSize={{ base: "xs", md: "sm" }}
                           >
-                            <Text noOfLines={1}>{t('orders.actions.makePayment', 'Make Payment')}</Text>
+                            {t('orders.actions.makePayment', 'Make Payment')}
                           </Button>
                         )}
                         {paymentInfo.status === 'paid' && (
@@ -740,8 +743,9 @@ const OrdersList = ({
                             minH="44px"
                             maxW="200px"
                             flex="1"
+                            fontSize={{ base: "xs", md: "sm" }}
                           >
-                            <Text noOfLines={1}>{t('orders.actions.downloadInvoice', 'Download Invoice')}</Text>
+                            {t('orders.actions.downloadInvoice', 'Download Invoice')}
                           </Button>
                         )}
                       </HStack>

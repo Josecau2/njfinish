@@ -588,8 +588,10 @@ const ProposalsTab = ({ contractor, groupId }) => {
                         size="sm"
                         leftIcon={<ExternalLink size={ICON_SIZE_MD} />}
                         minH="44px"
+                        maxW={{ base: "180px", md: "none" }}
                         aria-label={t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                         onClick={() => handleGoToProposal(proposalDetails.data.id)}
+                        fontSize={{ base: "sm", md: "md" }}
                       >
                         {t('contractorsAdmin.detail.proposals.modal.goToProposal')}
                       </Button>
@@ -796,14 +798,16 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     variant="outline"
                     leftIcon={<ExternalLink size={ICON_SIZE_MD} />}
                     minH="44px"
+                    maxW={{ base: "180px", md: "none" }}
                     aria-label={t('contractorsAdmin.detail.proposals.modal.openFull')}
                     onClick={() => handleGoToProposal(selectedProposal.id)}
+                    fontSize={{ base: "sm", md: "md" }}
                   >
                     {t('contractorsAdmin.detail.proposals.modal.openFull')}
                   </Button>
                 )}
               </div>
-              <Button colorScheme="gray" onClick={handleCloseModal}>
+              <Button colorScheme="gray" onClick={handleCloseModal} minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
                 {t('common.cancel')}
               </Button>
             </ModalFooter>

@@ -277,7 +277,9 @@ const Contractors = () => {
                             colorScheme="brand"
                             leftIcon={<Icon as={ChartBar} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                             onClick={() => handleView(contractor)}
-                            minH="36px"
+                            minH="44px"
+                            maxW={{ base: "180px", md: "none" }}
+                            fontSize={{ base: "xs", md: "sm" }}
                           >
                             {t('contractorsAdmin.actions.viewDetails', 'View Details')}
                           </Button>
@@ -308,6 +310,9 @@ const Contractors = () => {
                             colorScheme="brand"
                             onClick={() => handleView(contractor)}
                             leftIcon={<Icon as={ChartBar} boxSize={ICON_BOX_MD} aria-hidden="true" />}
+                            minH="44px"
+                            maxW={{ base: "140px", md: "none" }}
+                            fontSize={{ base: "xs", md: "sm" }}
                           >
                             {t('contractorsAdmin.actions.view', 'View')}
                           </Button>

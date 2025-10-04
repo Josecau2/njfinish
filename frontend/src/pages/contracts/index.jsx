@@ -388,16 +388,20 @@ const Contracts = () => {
                   <Button
                     colorScheme="brand"
                     minH="44px"
+                    maxW={{ base: "140px", md: "none" }}
                     variant={viewMode === 'card' ? 'solid' : 'outline'}
                     onClick={() => setViewMode('card')}
+                    fontSize={{ base: "sm", md: "md" }}
                   >
                     {t('contracts.view.cards')}
                   </Button>
                   <Button
                     colorScheme="brand"
                     minH="44px"
+                    maxW={{ base: "140px", md: "none" }}
                     variant={viewMode === 'table' ? 'solid' : 'outline'}
                     onClick={() => setViewMode('table')}
+                    fontSize={{ base: "sm", md: "md" }}
                   >
                     {t('contracts.view.table')}
                   </Button>
@@ -510,8 +514,10 @@ const Contracts = () => {
                               colorScheme="brand"
                               onClick={() => handleNavigate(item.id)}
                               leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
+                              minH="44px"
+                              maxW={{ base: "180px", md: "none" }}
                             >
-                              {t('contracts.viewDetails')}
+                              <Text noOfLines={1}>{t('contracts.viewDetails')}</Text>
                             </Button>
                           </HStack>
                         </Stack>
@@ -592,6 +598,9 @@ const Contracts = () => {
                                 colorScheme="brand"
                                 onClick={() => handleNavigate(item.id)}
                                 leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
+                                minH="44px"
+                                maxW={{ base: "180px", md: "none" }}
+                                fontSize={{ base: "xs", md: "sm" }}
                               >
                                 {t('contracts.viewDetails')}
                               </Button>
@@ -601,6 +610,9 @@ const Contracts = () => {
                                 colorScheme="red"
                                 onClick={() => handleDelete(item.id)}
                                 leftIcon={<Icon as={Trash2} boxSize={ICON_BOX_MD} />}
+                                minH="44px"
+                                maxW={{ base: "140px", md: "none" }}
+                                fontSize={{ base: "xs", md: "sm" }}
                               >
                                 {t('common.delete')}
                               </Button>
@@ -668,7 +680,7 @@ const Contracts = () => {
             )}
           </ModalBody>
           <ModalFooter bg={bgGray50} borderBottomRadius="md">
-            <Button variant="outline" onClick={() => setShowModal(false)}>
+            <Button variant="outline" onClick={() => setShowModal(false)} minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
               {t('common.close')}
             </Button>
           </ModalFooter>

@@ -177,6 +177,8 @@ const CustomerForm = ({
               onClick={handleCancel}
               colorScheme="gray"
               minH="44px"
+              maxW={{ base: "220px", md: "none" }}
+              fontSize={{ base: "sm", md: "md" }}
             >
               {t('customers.form.actions.backToCustomers')}
             </Button>
@@ -462,14 +464,16 @@ const CustomerForm = ({
                 </SimpleGrid>
 
                 <div className="d-flex justify-content-end gap-2">
-                  <Button type="button" variant="outline" colorScheme="gray" onClick={handleCancel} isDisabled={loading}>
+                  <Button type="button" variant="outline" colorScheme="gray" onClick={handleCancel} isDisabled={loading} minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
                     {t('customers.form.actions.cancel')}
                   </Button>
                   <Button
                     type="submit"
                     colorScheme="brand"
                     isDisabled={loading}
-
+                    minH="44px"
+                    maxW={{ base: "140px", md: "none" }}
+                    fontSize={{ base: "sm", md: "md" }}
                   >
                     {loading ? <Spinner size="sm" /> : <Save size={ICON_SIZE_MD} />}
                     {isEditing

@@ -206,7 +206,9 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
           colorScheme="green"
           leftIcon={<Icon as={Printer} boxSize={ICON_BOX_MD} />}
           minH="44px"
+          maxW={{ base: "140px", md: "none" }}
           onClick={() => setShowPrintModal(true)}
+          fontSize={{ base: "sm", md: "md" }}
         >
           {t('proposals.create.actions.print')}
         </Button>
@@ -216,7 +218,9 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
               colorScheme="brand"
               leftIcon={<Icon as={Mail} boxSize={ICON_BOX_MD} />}
               minH="44px"
+              maxW={{ base: "140px", md: "none" }}
               onClick={() => setShowEmailModal(true)}
+              fontSize={{ base: "sm", md: "md" }}
             >
               {t('proposals.create.actions.email')}
             </Button>
@@ -224,7 +228,9 @@ const ProposalForm = ({ isContractor, contractorGroupId, contractorModules, cont
               colorScheme="yellow"
               leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
               minH="44px"
+              maxW={{ base: "140px", md: "none" }}
               onClick={() => setShowContractModal(true)}
+              fontSize={{ base: "sm", md: "md" }}
             >
               {t('proposals.create.actions.contract')}
             </Button>

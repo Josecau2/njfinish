@@ -153,6 +153,7 @@ const CustomizationPage = () => {
             onClick={handleSave}
             isLoading={loading}
             minH="44px"
+            maxW={{ base: "200px", md: "none" }}
           >
             {loading
               ? t('settings.customization.ui.buttons.saving')

@@ -415,7 +415,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
             <Button variant="ghost" onClick={() => setPreviewModal({ open: false, file: null })} mr={3}>
               {t('common.cancel')}
             </Button>
-            <Button colorScheme="brand" leftIcon={<Icon as={Download} boxSize={ICON_BOX_MD} />} onClick={() => downloadFile(previewModal.file)}>
+            <Button colorScheme="brand" leftIcon={<Icon as={Download} boxSize={ICON_BOX_MD} />} onClick={() => downloadFile(previewModal.file)} minH="44px" maxW={{ base: "140px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
               {t('files.download')}
             </Button>
           </ModalFooter>

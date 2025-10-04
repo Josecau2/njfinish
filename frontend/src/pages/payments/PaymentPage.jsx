@@ -258,7 +258,7 @@ const PaymentPage = () => {
               <AlertIcon />
               {t('payment.unavailable.configuration', 'Please contact an administrator to enable Stripe payments.')}
             </Alert>
-            <Button colorScheme="brand" onClick={handleGoBack} minH="44px" leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}>
+            <Button colorScheme="brand" onClick={handleGoBack} minH="44px" maxW={{ base: "140px", md: "none" }} leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />} fontSize={{ base: "sm", md: "md" }}>
               {t('common.goBack', 'Go Back')}
             </Button>
           </CardBody>
@@ -323,6 +323,8 @@ const PaymentPage = () => {
                         onClick={handleRetryPayment}
                         isLoading={intentLoading}
                         minH="44px"
+                        maxW={{ base: "180px", md: "none" }}
+                        fontSize={{ base: "sm", md: "md" }}
                       >
                         {t('payment.retry', 'Retry Payment')}
                       </Button>
@@ -343,6 +345,8 @@ const PaymentPage = () => {
                     onClick={initializeIntent}
                     isLoading={intentLoading}
                     minH="44px"
+                    maxW={{ base: "180px", md: "none" }}
+                    fontSize={{ base: "sm", md: "md" }}
                   >
                     {t('payment.retry', 'Retry Payment')}
                   </Button>
@@ -405,7 +409,7 @@ const PaymentPage = () => {
 
               <HStack justify="flex-end" spacing={4} wrap="wrap">
                 {isCompleted && (
-                  <Button colorScheme="brand" onClick={handleViewPayments} minH="44px">
+                  <Button colorScheme="brand" onClick={handleViewPayments} minH="44px" maxW={{ base: "180px", md: "none" }} fontSize={{ base: "sm", md: "md" }}>
                     {t('payment.viewPayments', 'View Payments')}
                   </Button>
                 )}
@@ -414,7 +418,9 @@ const PaymentPage = () => {
                   variant="outline"
                   onClick={handleGoBack}
                   minH="44px"
+                  maxW={{ base: "140px", md: "none" }}
                   leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
+                  fontSize={{ base: "sm", md: "md" }}
                 >
                   {t('common.goBack', 'Go Back')}
                 </Button>

@@ -273,6 +273,8 @@ const LeadsPage = () => {
       onClick={() => fetchLeads({ status: statusFilter, search: searchTerm })}
       isDisabled={loading}
       minH="44px"
+      maxW={{ base: "140px", md: "none" }}
+      fontSize={{ base: "sm", md: "md" }}
     >
       {t('common.refresh')}
     </Button>
@@ -415,6 +417,9 @@ const LeadsPage = () => {
                                 variant="outline"
                                 leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                                 onClick={() => setSelectedLead(normalizeLead(lead))}
+                                minH="44px"
+                                maxW={{ base: "140px", md: "none" }}
+                                fontSize={{ base: "xs", md: "sm" }}
                               >
                                 {t('leadsPage.table.actions.details')}
                               </Button>
@@ -505,6 +510,8 @@ const LeadsPage = () => {
                                 leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                                 onClick={() => setSelectedLead(normalizeLead(lead))}
                                 minH="44px"
+                                maxW={{ base: "140px", md: "none" }}
+                                fontSize={{ base: "xs", md: "sm" }}
                               >
                                 {t('leadsPage.table.actions.details')}
                               </Button>
@@ -657,6 +664,9 @@ const LeadsPage = () => {
                             isLoading={savingNote}
                             loadingText={t('leadsPage.modal.addNote.saving', 'Saving...')}
                             isDisabled={!noteText.trim()}
+                            minH="44px"
+                            maxW={{ base: "140px", md: "none" }}
+                            fontSize={{ base: "sm", md: "md" }}
                           >
                             {t('leadsPage.modal.addNote.submit')}
                           </Button>

@@ -306,8 +306,9 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
               isDisabled={loading}
               whileTap={{ scale: 0.98 }}
               minH="44px"
+              fontSize={{ base: "sm", md: "md" }}
             >
-              <Text noOfLines={1}>{t('common.cancel')}</Text>
+              {t('common.cancel')}
             </MotionButton>
             <MotionButton
               type='submit'
@@ -315,14 +316,15 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
               isDisabled={loading}
               whileTap={{ scale: 0.98 }}
               minH="44px"
+              fontSize={{ base: "sm", md: "md" }}
             >
               {loading ? (
                 <HStack spacing={4}>
                   <Spinner size='sm' />
-                  <Text noOfLines={1}>{t('proposalCommon.sending')}</Text>
+                  <Text>{t('proposalCommon.sending')}</Text>
                 </HStack>
               ) : (
-                <Text noOfLines={1}>{t('proposalCommon.sendEmail')}</Text>
+                t('proposalCommon.sendEmail')
               )}
             </MotionButton>
           </HStack>

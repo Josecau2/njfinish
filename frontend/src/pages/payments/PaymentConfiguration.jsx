@@ -214,6 +214,8 @@ const PaymentConfiguration = () => {
             isLoading={configLoading}
             isDisabled={configLoading || !isDirty}
             minH="44px"
+            maxW={{ base: "180px", md: "none" }}
+            fontSize={{ base: "sm", md: "md" }}
           >
             {configLoading
               ? t('paymentConfig.buttons.saving', 'Saving...')

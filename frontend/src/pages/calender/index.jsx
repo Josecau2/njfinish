@@ -163,6 +163,9 @@ const CalendarView = () => {
                 variant="outline"
                 colorScheme="brand"
                 alignSelf={{ base: 'flex-start', md: 'initial' }}
+                minH="44px"
+                maxW={{ base: "140px", md: "none" }}
+                fontSize={{ base: "sm", md: "md" }}
               >
                 Refresh
               </Button>

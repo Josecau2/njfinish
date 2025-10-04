@@ -530,8 +530,9 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                     {count}
                   </Badge>
                 }
+                fontSize={{ base: "sm", md: "md" }}
               >
-                <Text noOfLines={1}>{getTabLabel(tab)}</Text>
+                {getTabLabel(tab)}
               </Button>
             )
           })}

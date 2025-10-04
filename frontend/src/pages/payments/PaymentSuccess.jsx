@@ -86,6 +86,8 @@ const PaymentSuccess = () => {
                   leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} />}
                   minH="44px"
                   size="lg"
+                  maxW={{ base: "140px", md: "none" }}
+                  fontSize={{ base: "sm", md: "md" }}
                 >
                   {t('common.goBack', 'Go Back')}
                 </Button>
