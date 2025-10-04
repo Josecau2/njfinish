@@ -254,7 +254,7 @@ const EditUserGroupForm = () => {
         ]}
       />
 
-      <Box as="form" onSubmit={handleSubmit} className="user-group-edit">
+      <Box as="form" onSubmit={handleSubmit}>
         <Stack spacing={6}>
           <FormSection title={t('settings.userGroups.form.titles.groupInfo')} icon={Users} customization={customization}>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
