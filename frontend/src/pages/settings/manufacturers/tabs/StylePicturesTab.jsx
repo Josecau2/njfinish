@@ -1,8 +1,7 @@
 import StandardCard from '../../../../components/StandardCard'
 import React, { useState, useEffect, useCallback } from 'react'
-import { Alert, Badge, Box, Button, CardBody, CardHeader, Flex, FormLabel, HStack, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spinner, Text, useColorModeValue } from '@chakra-ui/react'
+import { Alert, Badge, Box, Button, CardBody, CardHeader, Flex, FormLabel, HStack, Image, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spinner, Text, useColorModeValue } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
-import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { Upload, Pencil, Trash, Plus } from '@/icons-lucide'
 import axiosInstance from '../../../../helpers/axiosInstance'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../../constants/iconSizes'
@@ -298,22 +297,20 @@ const StylePicturesTab = ({ manufacturer }) => {
                     p={3}
                     bg={bgGray50}
                   >
-                    <LazyLoadImage
+                    <Image
                       src={
                         style.styleVariants?.[0]?.image
                           ? `${api_url}/uploads/images/${style.styleVariants[0].image}`
                           : '/images/nologo.png'
                       }
                       alt={style.styleVariants?.[0]?.shortName || style.style}
-                      style={{
-                        maxWidth: '120px',
-                        maxHeight: '150px',
-                        height: 'auto',
-                        width: 'auto',
-                        display: 'block',
-                      }}
-                      placeholderSrc="/images/nologo.png"
-                      effect="blur"
+                      maxW="120px"
+                      maxH="150px"
+                      h="auto"
+                      w="auto"
+                      display="block"
+                      fallbackSrc="/images/nologo.png"
+                      loading="lazy"
                       onError={(e) => handleImageError(e, style)}
                     />
                   </Box>
@@ -494,23 +491,21 @@ const StylePicturesTab = ({ manufacturer }) => {
                     {t('types.ui.currentImage', 'Current Image:')}
                   </Text>
                   <Flex justify="center">
-                    <LazyLoadImage
+                    <Image
                       src={
                         selectedStyle.styleVariants?.[0]?.image
                           ? `${api_url}/uploads/images/${selectedStyle.styleVariants[0].image}`
                           : '/default-image.png'
                       }
                       alt={selectedStyle.style}
-                      style={{
-                        maxWidth: '200px',
-                        maxHeight: '200px',
-                        objectFit: 'contain',
-                        border: '1px solid',
-                        borderColor: 'gray.200',
-                        borderRadius: '4px',
-                      }}
-                      placeholderSrc="/default-image.png"
-                      effect="blur"
+                      maxW="200px"
+                      maxH="200px"
+                      objectFit="contain"
+                      borderWidth="1px"
+                      borderColor="gray.200"
+                      borderRadius="4px"
+                      fallbackSrc="/default-image.png"
+                      loading="lazy"
                       onError={(e) => handleImageError(e, selectedStyle)}
                     />
                   </Flex>
@@ -541,19 +536,17 @@ const StylePicturesTab = ({ manufacturer }) => {
                       {t('styles.previewNewImage', 'New Image Preview:')}
                     </Text>
                     <Flex justify="center" borderWidth="1px" borderRadius="md" p={3} bg={bgGray50}>
-                      <LazyLoadImage
+                      <Image
                         src={URL.createObjectURL(selectedFile)}
                         alt="Preview"
-                        style={{
-                          maxWidth: '200px',
-                          maxHeight: '200px',
-                          objectFit: 'contain',
-                          border: '1px solid',
-                        borderColor: 'gray.200',
-                          borderRadius: '4px',
-                        }}
-                        placeholderSrc="/default-image.png"
-                        effect="blur"
+                        maxW="200px"
+                        maxH="200px"
+                        objectFit="contain"
+                        borderWidth="1px"
+                        borderColor="gray.200"
+                        borderRadius="4px"
+                        fallbackSrc="/default-image.png"
+                        loading="lazy"
                       />
                     </Flex>
                   </Box>
