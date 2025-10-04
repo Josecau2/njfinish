@@ -1,9 +1,8 @@
 import { useEffect, useState, useRef } from 'react'
-import { FormControl, Input, FormLabel, Select, CardBody, CardHeader, Flex, Box, Button, InputGroup, InputLeftElement, FormErrorMessage, Heading, Text, Icon, Divider, Spinner, useColorModeValue } from '@chakra-ui/react'
+import { FormControl, Input, FormLabel, Select, CardBody, CardHeader, Flex, Box, Button, InputGroup, InputLeftElement, FormErrorMessage, Heading, Text, Icon, Divider, Spinner, useColorModeValue, useToast, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader, AlertDialogContent, AlertDialogOverlay, useDisclosure } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import PageContainer from '../../../components/PageContainer'
 import { useNavigate } from 'react-router-dom'
-import Swal from 'sweetalert2'
 import ct from 'countries-and-timezones'
 import { formatDate, formatDateTime, getCurrentDate } from '../../../utils/dateHelpers'
 import { addLocation } from '../../../store/slices/locationSlice'
@@ -26,6 +25,9 @@ const initialForm = {
 const LocationForm = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const toast = useToast()
+  const { isOpen: isCancelOpen, onOpen: onCancelOpen, onClose: onCancelClose } = useDisclosure()
+  const cancelRef = useRef()
 
   // Color mode values
   const bgGray50 = useColorModeValue('gray.50', 'gray.800')
@@ -121,26 +123,22 @@ const LocationForm = () => {
     try {
       const response = await dispatch(addLocation(formData))
       if (response.payload.status == 200) {
-        Swal.fire({
+        toast({
           title: t('settings.locations.alerts.savedTitle'),
-          text: t('settings.locations.alerts.savedText'),
-          icon: 'success',
-          confirmButtoncolor: "green.500",
-          showClass: {
-            popup: 'animate__animated animate__fadeInDown',
-          },
-          hideClass: {
-            popup: 'animate__animated animate__fadeOutUp',
-          },
+          description: t('settings.locations.alerts.savedText'),
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
         })
         navigate('/settings/locations')
       }
     } catch (error) {
-      Swal.fire({
+      toast({
         title: t('common.error'),
-        text: error.message || t('settings.locations.alerts.genericError'),
-        icon: 'error',
-        confirmButtoncolor: "red.500",
+        description: error.message || t('settings.locations.alerts.genericError'),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
       })
     } finally {
       setLoading(false)
@@ -153,29 +151,15 @@ const LocationForm = () => {
 
   const handleCancel = () => {
     if (isFormDirty()) {
-      Swal.fire({
-        title: t('common.confirm'),
-        text: t('settings.locations.alerts.leaveWarning'),
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: t('settings.locations.alerts.leaveAnyway'),
-        cancelButtonText: t('settings.locations.alerts.stayOnPage'),
-        confirmButtoncolor: "red.500",
-        cancelButtoncolor: "gray.500",
-        showClass: {
-          popup: 'animate__animated animate__fadeInDown',
-        },
-        hideClass: {
-          popup: 'animate__animated animate__fadeOutUp',
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate('/settings/locations')
-        }
-      })
+      onCancelOpen()
     } else {
       navigate('/settings/locations')
     }
+  }
+
+  const confirmCancel = () => {
+    onCancelClose()
+    navigate('/settings/locations')
   }
 
   return (
@@ -606,6 +590,34 @@ const LocationForm = () => {
           </Box>
         </CardBody>
       </StandardCard>
+
+      {/* Cancel Confirmation Dialog */}
+      <AlertDialog
+        isOpen={isCancelOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onCancelClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('common.confirm')}
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              {t('settings.locations.alerts.leaveWarning')}
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onCancelClose}>
+                {t('settings.locations.alerts.stayOnPage')}
+              </Button>
+              <Button colorScheme="red" onClick={confirmCancel} ml={3}>
+                {t('settings.locations.alerts.leaveAnyway')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </PageContainer>
   )
 }
