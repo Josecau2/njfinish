@@ -113,6 +113,7 @@ const PaymentPage = () => {
 
   // Color mode values - MUST be before useState
   const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
+  const iconGray500 = useColorModeValue('gray.500', 'gray.400')
 
   const { currentPayment, publicPaymentConfig, loading } = useSelector((state) => state.payments)
   const [stripePromise, setStripePromise] = useState(null)
@@ -314,7 +315,7 @@ const PaymentPage = () => {
     statusVariant === 'error' ? 'error' : statusVariant === 'success' ? 'success' : 'info'
 
   return (
-    <PageContainer className="payment-page">
+    <PageContainer>
       <PageHeader
         title={t('payment.title', 'Make Payment')}
         subtitle={t('payment.subtitle', 'Complete your payment securely')}
