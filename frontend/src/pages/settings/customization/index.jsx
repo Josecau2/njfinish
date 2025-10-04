@@ -9,27 +9,39 @@ const CustomizationIndex = () => {
   const [activeKey, setActiveKey] = useState(1)
 
   return (
-    <StandardCard className="main-div-cutomization">
+    <StandardCard>
       <CardBody>
         <Flex role="tablist" gap={4}>
           <Box>
-            <Link onClick={() => setActiveKey(1)} style={{ cursor: 'pointer', fontWeight: activeKey === 1 ? 600 : 400 }}>
+            <Link
+              onClick={() => setActiveKey(1)}
+              cursor="pointer"
+              fontWeight={activeKey === 1 ? 600 : 400}
               minH="44px"
               py={2}
+            >
               General Customization
             </Link>
           </Box>
           <Box>
-            <Link onClick={() => setActiveKey(2)} style={{ cursor: 'pointer', fontWeight: activeKey === 2 ? 600 : 400 }}>
+            <Link
+              onClick={() => setActiveKey(2)}
+              cursor="pointer"
+              fontWeight={activeKey === 2 ? 600 : 400}
               minH="44px"
               py={2}
+            >
               PDF Layout
             </Link>
           </Box>
           <Box>
-            <Link onClick={() => setActiveKey(3)} style={{ cursor: 'pointer', fontWeight: activeKey === 3 ? 600 : 400 }}>
+            <Link
+              onClick={() => setActiveKey(3)}
+              cursor="pointer"
+              fontWeight={activeKey === 3 ? 600 : 400}
               minH="44px"
               py={2}
+            >
               Login Page
             </Link>
           </Box>
