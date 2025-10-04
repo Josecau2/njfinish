@@ -14,18 +14,17 @@ const AppShell = ({ children }) => {
   }, [sidebarPinned, sidebarUnfoldable])
 
   return (
-    <Box minH="100vh" className="app-shell">
+    <Box minH="100vh">
       <AppSidebar />
       <Box
         minW="0"
         flex="1"
         ml={{ base: 0, lg: sidebarWidth }}
         transition="margin-left 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
-        className="content-wrapper"
       >
         <Flex direction="column" minH="100vh">
           <AppHeader data-app-header />
-          <Box flex="1" minW="0" className="main-content">
+          <Box flex="1" minW="0">
             {children}
           </Box>
         </Flex>
