@@ -2847,22 +2847,23 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <Table>
               <Thead>
                 <Tr>
-                  <Th style={{ width: '35px', minWidth: '35px' }}>
-                    <input
-                      type="checkbox"
-                      checked={isSelectAll}
-                      onChange={(event) => handleSelectAll(event.currentTarget.checked)}
+                  <Th w="35px" minW="35px">
+                    <Checkbox
+                      isChecked={isSelectAll}
+                      onChange={(event) => handleSelectAll(event.target.checked)}
                       name="catalog-select-all"
                       id="catalog-select-all"
-                      style={{
-                        bordercolor: "gray.500",
-                        borderWidth: '2px',
-                        transform: 'scale(1.1)',
+                      borderColor="gray.500"
+                      sx={{
+                        '.chakra-checkbox__control': {
+                          transform: 'scale(1.1)',
+                        }
                       }}
                     />
                   </Th>
                   <Th
-                    style={{ minWidth: '80px', userSelect: 'none' }}
+                    minW="80px"
+                    userSelect="none"
                     scope="col"
                     aria-sort={
                       sortBy === 'code'
@@ -2895,7 +2896,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       {t('settings.manufacturers.catalogMapping.table.code')}
                     </Button>
                   </Th>
-                  <Th style={{ minWidth: '120px', maxWidth: '180px' }}>
+                  <Th minW="120px" maxW="180px">
                     {t('settings.manufacturers.catalogMapping.table.description')}
                   </Th>
                   <Th minW="80px">
@@ -2916,40 +2917,36 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 {currentItems.map((item, index) => (
                   <Tr key={index}>
                     <Td>
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.includes(item.id)}
-                        onChange={(event) => handleSelectItem(item.id, event.currentTarget.checked)}
+                      <Checkbox
+                        isChecked={selectedItems.includes(item.id)}
+                        onChange={(event) => handleSelectItem(item.id, event.target.checked)}
                         name={`catalog-select-${item.id}`}
                         id={`catalog-select-${item.id}`}
                         aria-label={`${t('common.select', 'Select')} ${item.code || ''}`}
-                        style={{
-                          bordercolor: "gray.500",
-                          borderWidth: '2px',
-                          transform: 'scale(1.1)',
+                        borderColor="gray.500"
+                        sx={{
+                          '.chakra-checkbox__control': {
+                            transform: 'scale(1.1)',
+                          }
                         }}
                       />
                     </Td>
                     <Td>{item.code}</Td>
                     <Td
-                      style={{
-                        maxWidth: '200px',
-                        wordWrap: 'break-word',
-                        whiteSpace: 'normal',
-                      }}
+                      maxW="200px"
+                      wordBreak="break-word"
+                      whiteSpace="normal"
                     >
                       {item.description ? item.description : t('common.na')}
                     </Td>
-                    <Td style={{ cursor: 'pointer' }}>
+                    <Td cursor="pointer">
                       <Button
                         size="sm"
                         colorScheme="gray"
                         onClick={() => handleShowStyleOnClick(item)}
-
-                        style={{
-                          fontSize: "xs",
-                          padding: '4px 8px',
-                        }}
+                        fontSize="xs"
+                        px={2}
+                        py={1}
                       >
                         {item.style}
                       </Button>
@@ -2962,11 +2959,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           size="sm"
                           colorScheme="gray"
                           onClick={() => handleEditClick(item)}
-                          style={{
-                            fontSize: "xs",
-                            padding: '2px 6px',
-                            minWidth: 'auto',
-                          }}
+                          fontSize="xs"
+                          px="6px"
+                          py="2px"
+                          minW="auto"
                         >
                           ✏️
                         </Button>
@@ -2974,14 +2970,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         <Button
                           size="sm"
                           onClick={() => handleManageStyleClick(item)}
-                          style={{
-                            fontSize: "xs",
-                            padding: '2px 6px',
-                            backgroundColor: headerBg,
-                            borderColor: headerBg,
-                            color: textColor,
-                            minWidth: 'auto',
-                          }}
+                          fontSize="xs"
+                          px="6px"
+                          py="2px"
+                          bg={headerBg}
+                          borderColor={headerBg}
+                          color={textColor}
+                          minW="auto"
+                          _hover={{ opacity: 0.8 }}
                           title={t('settings.manufacturers.catalogMapping.actions.manageStyle')}
                         >
                           🎨
@@ -2990,14 +2986,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         <Button
                           size="sm"
                           onClick={() => handleAssemblyCostClick(item)}
-                          style={{
-                            fontSize: "xs",
-                            padding: '2px 6px',
-                            backgroundColor: headerBg,
-                            borderColor: headerBg,
-                            color: textColor,
-                            minWidth: 'auto',
-                          }}
+                          fontSize="xs"
+                          px="6px"
+                          py="2px"
+                          bg={headerBg}
+                          borderColor={headerBg}
+                          color={textColor}
+                          minW="auto"
+                          _hover={{ opacity: 0.8 }}
                           title={t('settings.manufacturers.catalogMapping.actions.assemblyCost')}
                         >
                           🔧
@@ -3006,14 +3002,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         <Button
                           size="sm"
                           onClick={() => handleModificationDetailsClick(item)}
-                          style={{
-                            fontSize: "xs",
-                            padding: '2px 6px',
-                            backgroundColor: headerBg,
-                            borderColor: headerBg,
-                            color: textColor,
-                            minWidth: 'auto',
-                          }}
+                          fontSize="xs"
+                          px="6px"
+                          py="2px"
+                          bg={headerBg}
+                          borderColor={headerBg}
+                          color={textColor}
+                          minW="auto"
+                          _hover={{ opacity: 0.8 }}
                           title={t('settings.manufacturers.catalogMapping.actions.modification')}
                         >
                           ⚙️
@@ -3022,14 +3018,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         <Button
                           size="sm"
                           onClick={() => openItemGlobalMods(item)}
-                          style={{
-                            fontSize: "xs",
-                            padding: '2px 6px',
-                            backgroundColor: "teal.400",
-                            borderColor: "teal.400",
-                            color: "white",
-                            minWidth: 'auto',
-                          }}
+                          fontSize="xs"
+                          px="6px"
+                          py="2px"
+                          bg="teal.400"
+                          borderColor="teal.400"
+                          color="white"
+                          minW="auto"
+                          _hover={{ opacity: 0.8 }}
                           title="Global Mods for item"
                         >
                           🧩
@@ -3039,11 +3035,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           size="sm"
                           colorScheme="red"
                           onClick={() => handleDeleteItemClick(item)}
-                          style={{
-                            fontSize: "xs",
-                            padding: '2px 6px',
-                            minWidth: 'auto',
-                          }}
+                          fontSize="xs"
+                          px="6px"
+                          py="2px"
+                          minW="auto"
                           title={`Delete item: ${item.code}`}
                         >
                           🗑️
@@ -3231,7 +3226,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {t('common.cancel')}
             </Button>
             <Button
-              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              bg={headerBg}
+              color={textColor}
+              borderColor={headerBg}
+              _hover={{ opacity: 0.8 }}
               onClick={handleUpload}
             >
               {t('settings.manufacturers.catalogMapping.file.uploadBtn')}
@@ -3419,7 +3417,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {t('common.cancel')}
             </Button>
             <Button
-              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              bg={headerBg}
+              color={textColor}
+              borderColor={headerBg}
+              _hover={{ opacity: 0.8 }}
               onClick={submitAssignGlobal}
               disabled={!assignFormGM.templateId}
             >
@@ -3634,7 +3635,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {t('common.cancel')}
             </Button>
             <Button
-              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              bg={headerBg}
+              color={textColor}
+              borderColor={headerBg}
+              _hover={{ opacity: 0.8 }}
               onClick={handleSaveManualItem}
             >
               {t('common.save')}
@@ -3707,7 +3711,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {t('common.cancel')}
             </Button>
             <Button
-              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              bg={headerBg}
+              color={textColor}
+              borderColor={headerBg}
+              _hover={{ opacity: 0.8 }}
               onClick={handleUpdateItem}
               disabled={isUpdating}
             >
@@ -3801,7 +3808,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
           <ModalFooter>
             <Button
-              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              bg={headerBg}
+              color={textColor}
+              borderColor={headerBg}
+              _hover={{ opacity: 0.8 }}
               onClick={handleSaveStyle}
             >
               {t('common.save')}
@@ -3822,25 +3832,25 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           />
           <ModalBody>
             {styleDetails ? (
-              <div style={{ padding: '10px 5px' }}>
-                <div style={{ marginBottom: '1rem', display: 'flex', flexWrap: 'wrap' }}>
-                  <div style={{ flex: '1 1 100%', paddingRight: '10px' }}>
-                    <p>
-                      <strong>
+              <Box p="10px 5px">
+                <Flex mb={4} flexWrap="wrap">
+                  <Box flex="1 1 100%" pr="10px">
+                    <Text>
+                      <Text as="strong">
                         🏷️ {t('settings.manufacturers.catalogMapping.style.shortName')}:
-                      </strong>{' '}
+                      </Text>{' '}
                       {styleDetails.shortName ? styleDetails.shortName : t('common.na')}
-                    </p>
-                    <p>
-                      <strong>
+                    </Text>
+                    <Text>
+                      <Text as="strong">
                         📝 {t('settings.manufacturers.catalogMapping.fields.description')}:
-                      </strong>{' '}
+                      </Text>{' '}
                       {styleDetails.description ? styleDetails.description : t('common.na')}
-                    </p>
-                  </div>
-                </div>
+                    </Text>
+                  </Box>
+                </Flex>
                 {styleDetails.image ? (
-                  <div style={{ marginTop: '20px' }}>
+                  <Box mt={5}>
                     <Image
                       src={
                         styleDetails.image
@@ -3852,12 +3862,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         'Style preview',
                       )}
                       fallbackSrc="/images/nologo.png"
-                      style={{
-                        maxWidth: '100%',
-                        maxHeight: '300px',
-                        borderRadius: '8px',
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                      }}
+                      maxW="100%"
+                      maxH="300px"
+                      borderRadius="8px"
+                      boxShadow="0 2px 8px rgba(0, 0, 0, 0.15)"
                       onError={(event) => {
                         if (styleDetails.image && !event.currentTarget.dataset.fallbackTried) {
                           event.currentTarget.dataset.fallbackTried = '1'
@@ -3867,13 +3875,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         }
                       }}
                     />
-                  </div>
+                  </Box>
                 ) : (
-                  <p style={{ textAlign: 'center', color: "gray.500" }}>
+                  <Text textAlign="center" color="gray.500">
                     {t('settings.manufacturers.catalogMapping.style.noImage')}
-                  </p>
+                  </Text>
                 )}
-              </div>
+              </Box>
             ) : (
               <p>{t('settings.manufacturers.catalogMapping.style.noData')}</p>
             )}
@@ -3893,28 +3901,25 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         <ModalOverlay />
         <ModalContent>
           <PageHeader title={t('settings.manufacturers.catalogMapping.assembly.modalTitle')} />
-          <ModalBody style={{ position: 'relative' }}>
+          <ModalBody position="relative">
             {isAssemblyCostSaving && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  zIndex: 10,
-                  borderRadius: '8px',
-                }}
+              <Flex
+                position="absolute"
+                top={0}
+                left={0}
+                right={0}
+                bottom={0}
+                bg="rgba(255, 255, 255, 0.8)"
+                align="center"
+                justify="center"
+                zIndex={10}
+                borderRadius="8px"
               >
                 <Box>
                   <Spinner color={iconBlue500} mb={2} />
                   <Text>Applying assembly cost...</Text>
                 </Box>
-              </div>
+              </Flex>
             )}
             <FormLabel>{t('settings.manufacturers.catalogMapping.assembly.type')}</FormLabel>
             <Select
@@ -4215,7 +4220,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {t('common.cancel')}
             </Button>
             <Button
-              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              bg={headerBg}
+              color={textColor}
+              borderColor={headerBg}
+              _hover={{ opacity: 0.8 }}
               onClick={saveAssemblyCost}
               disabled={isAssemblyCostSaving}
             >
@@ -4292,7 +4300,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {t('common.cancel')}
             </Button>
             <Button
-              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              bg={headerBg}
+              color={textColor}
+              borderColor={headerBg}
+              _hover={{ opacity: 0.8 }}
               onClick={saveHingesDetails}
             >
               {t('common.save')}
@@ -4355,7 +4366,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {t('common.cancel')}
             </Button>
             <Button
-              style={{ backgroundColor: headerBg, color: textColor, borderColor: headerBg }}
+              bg={headerBg}
+              color={textColor}
+              borderColor={headerBg}
+              _hover={{ opacity: 0.8 }}
               onClick={saveModificationDetails}
             >
               {t('common.save')}
@@ -6390,7 +6404,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <Image
                       src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editCategory.image}`}
                       alt={t('globalMods.modal.editCategory.imageLabel', 'Category Image')}
-                      style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
+                      maxH="100%"
+                      maxW="100%"
+                      objectFit="contain"
                       onError={(event) => {
                         event.currentTarget.src = '/images/nologo.png'
                       }}
@@ -6694,7 +6710,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       <Image
                         src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${editTemplate.sampleImage}`}
                         alt={t('globalMods.modal.editTemplate.sampleAlt', 'Sample')}
-                        style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
+                        maxH="100%"
+                        maxW="100%"
+                        objectFit="contain"
                         onError={(event) => {
                           event.currentTarget.src = '/images/nologo.png'
                         }}
@@ -7365,7 +7383,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             </Text>
           </div>
 
-          <div style={{ maxHeight: '400px' }}>
+          <Box maxH="400px">
             <Table>
               <Thead>
                 <Tr>
@@ -7432,7 +7450,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 ))}
               </Tbody>
             </Table>
-          </div>
+          </Box>
         </ModalBody>
         <ModalFooter>
           <Button
