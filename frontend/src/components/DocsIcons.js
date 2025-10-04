@@ -3,8 +3,12 @@ import { Box, Button, Flex, Image, Link, Text, useColorModeValue } from '@chakra
 
 import IconsImg from 'src/assets/images/icons.webp'
 
-const DocsIcons = () => (
-  <Box bg="yellow.50" borderWidth="2px" borderColor="yellow.400" borderRadius="md" mb={4}>
+const DocsIcons = () => {
+  const bgYellow = useColorModeValue('yellow.50', 'yellow.900')
+  const borderYellow = useColorModeValue('yellow.400', 'yellow.600')
+
+  return (
+  <Box bg={bgYellow} borderWidth="2px" borderColor={borderYellow} borderRadius="md" mb={4}>
     <Flex
       align="center"
       direction={{ base: 'column', xl: 'row' }}
@@ -40,5 +44,6 @@ const DocsIcons = () => (
     </Flex>
   </Box>
 )
+}
 
 export default DocsIcons

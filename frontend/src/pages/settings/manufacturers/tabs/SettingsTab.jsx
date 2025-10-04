@@ -21,6 +21,8 @@ const SettingsTab = ({ manufacturer }) => {
   const iconGray = useColorModeValue('gray.400', 'gray.500')
   const bgBlue50 = useColorModeValue('blue.50', 'blue.900')
   const bgGreen50 = useColorModeValue('green.50', 'green.900')
+  const borderBrand = useColorModeValue('brand.500', 'brand.600')
+  const borderGreen = useColorModeValue('green.500', 'green.600')
 
   const [searchCode1, setSearchCode1] = useState('')
   const [page1, setPage1] = useState(1)
@@ -322,7 +324,7 @@ const SettingsTab = ({ manufacturer }) => {
             <Box
               id="costMultiplierHelp"
               borderWidth="1px"
-              borderColor="brand.500"
+              borderColor={borderBrand}
               bg={bgBlue50}
               borderRadius="md"
               px={3}
@@ -438,7 +440,7 @@ const SettingsTab = ({ manufacturer }) => {
             <Box
               id="customerMultiplierHelp"
               borderWidth="1px"
-              borderColor="green.500"
+              borderColor={borderGreen}
               bg={bgGreen50}
               borderRadius="md"
               px={3}

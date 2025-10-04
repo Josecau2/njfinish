@@ -6,9 +6,10 @@ import ComponentsImg from 'src/assets/images/components.webp'
 
 const DocsComponents = ({ href }) => {
   const documentationLink = href ? `https://coreui.io/react/docs/${href}` : null
+  const borderBlue = useColorModeValue('blue.500', 'blue.600')
 
   return (
-    <Box bg={useColorModeValue("blue.50","blue.900")} borderWidth="2px" borderColor="blue.500" borderRadius="md" mb={4}>
+    <Box bg={useColorModeValue("blue.50","blue.900")} borderWidth="2px" borderColor={borderBlue} borderRadius="md" mb={4}>
       <Flex
         align="center"
         direction={{ base: 'column', xl: 'row' }}

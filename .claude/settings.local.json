@@ -198,7 +198,9 @@
       "Bash(/tmp/check_hooks_order.sh:*)",
       "Bash(xargs:*)",
       "Bash(if grep -q \"useTranslation\" \"$file\")",
-      "Bash(else)"
+      "Bash(else)",
+      "Bash(then echo \"$file exists\")",
+      "Bash(else echo \"$file NOT FOUND\")"
     ],
     "deny": [],
     "ask": []
