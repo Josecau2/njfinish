@@ -498,7 +498,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   }
 
   return (
-    <PageContainer className="dashboard-container">
+    <PageContainer>
       {/* Scoped mobile layout improvements for Quotes */}
       <style>{`
         /* Visibility helpers hook into our global _responsive.scss classes */
