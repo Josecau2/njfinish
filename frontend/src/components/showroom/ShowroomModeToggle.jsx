@@ -236,9 +236,8 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
               color: showroomMode ? 'green.400' : 'white'
             }}
             fontSize="xs"
-            className="sidebar-footer-pin-btn"
           >
-            <Text as="span" fontWeight="medium" className="pin-label">
+            <Text as="span" fontWeight="medium">
               {showroomMode ? `${showroomMultiplier.toFixed(2)}x` : t('showroom.compact.label', 'Show')}
             </Text>
           </Button>
