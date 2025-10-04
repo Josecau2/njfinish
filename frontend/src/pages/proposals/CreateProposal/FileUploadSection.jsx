@@ -1,6 +1,13 @@
 import { useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Badge,
   Box,
   Button,
@@ -18,6 +25,7 @@ import {
   Stack,
   Text,
   useColorModeValue,
+  useDisclosure,
   useToast,
 } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
@@ -91,9 +99,13 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
   const toast = useToast()
   const [files, setFiles] = useState([])
   const [uploading, setUploading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [dragActive, setDragActive] = useState(false)
   const [previewModal, setPreviewModal] = useState({ open: false, file: null })
   const fileInputRef = useRef(null)
+  const { isOpen: isDeleteDialogOpen, onOpen: onOpenDeleteDialog, onClose: onCloseDeleteDialog } = useDisclosure()
+  const deleteCancelRef = useRef(null)
+  const [pendingDelete, setPendingDelete] = useState(null)
 
   // Dark mode colors
   const borderGray100 = useColorModeValue('gray.100', 'gray.700')
@@ -220,6 +232,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
   )
 
   const deleteFile = async (file) => {
+    setDeleting(true)
     try {
       await axiosInstance.delete(`/api/proposals/files/${file.id}`)
       const nextFiles = files.filter((item) => item.id !== file.id)
@@ -232,16 +245,27 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
         title: t('files.deleteErrorTitle', 'Unable to delete file'),
         description: error?.response?.data?.message || error?.message || t('common.errorGeneric'),
       })
+    } finally {
+      setDeleting(false)
     }
   }
 
   const confirmDelete = (file) => {
-    const confirmed = window.confirm(
-      t('files.deleteConfirm', { name: file.name }) || `Delete "${file.name}"?`,
-    )
-    if (confirmed) {
-      deleteFile(file)
+    setPendingDelete(file)
+    onOpenDeleteDialog()
+  }
+
+  const handleCloseDeleteDialog = () => {
+    setPendingDelete(null)
+    onCloseDeleteDialog()
+  }
+
+  const handleConfirmDelete = async () => {
+    if (pendingDelete) {
+      await deleteFile(pendingDelete)
     }
+    setPendingDelete(null)
+    onCloseDeleteDialog()
   }
 
   const downloadFile = (file) => {
@@ -435,7 +459,37 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
         title={previewModal.file?.name}
         size={{ base: 'full', md: 'lg', lg: 'xl' }}
       />
+
+      <AlertDialog
+        isOpen={isDeleteDialogOpen}
+        leastDestructiveRef={deleteCancelRef}
+        onClose={handleCloseDeleteDialog}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {t('files.deleteTitle', 'Delete file')}
+            </AlertDialogHeader>
+            <AlertDialogCloseButton />
+            <AlertDialogBody>
+              {t('files.deleteConfirm', {
+                name: pendingDelete?.name || t('files.thisFile', 'this file'),
+              })}
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={deleteCancelRef} onClick={handleCloseDeleteDialog} variant="outline">
+                {t('common.cancel')}
+              </Button>
+              <Button colorScheme="red" ml={3} onClick={handleConfirmDelete} isLoading={deleting}>
+                {t('common.delete')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </>
   )
 }
 export default FileUploadSection
+

@@ -1,6 +1,28 @@
-import { useState, useEffect, useMemo } from 'react'
-import { Box, Button, CardBody, Checkbox, Collapse, Divider, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Icon, Input, Select, SimpleGrid, Stack, Text, Textarea, useToast, useColorModeValue } from '@chakra-ui/react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import {
+  Box,
+  Button,
+  CardBody,
+  Checkbox,
+  Collapse,
+  Divider,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  HStack,
+  Heading,
+  Icon,
+  Input,
+  SimpleGrid,
+  Stack,
+  Text,
+  Textarea,
+  useToast,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
+import CreatableCombobox from '../../../components/form/CreatableCombobox'
 import { useForm, Controller } from 'react-hook-form'
 import { motion, useReducedMotion } from 'framer-motion'
 import axiosInstance from '../../../helpers/axiosInstance'
@@ -10,10 +32,19 @@ import { fetchUsers } from '../../../store/slices/userSlice'
 import { fetchLocations } from '../../../store/slices/locationSlice'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
+import { ICON_BOX_MD } from '../../../constants/iconSizes'
 
 const MotionButton = motion.create(Button)
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+const mapCustomerToOption = (customer) => ({
+  label: customer?.name ?? '',
+  value: customer?.id ?? customer?.name ?? '',
+  data: customer,
+})
+
+const mapUserToOption = (user) => ({ value: String(user.id), label: user.name })
+const toStringValue = (value) => (value == null ? '' : String(value))
 
 const CustomerInfoStep = ({
   formData,
@@ -28,14 +59,20 @@ const CustomerInfoStep = ({
   const toast = useToast()
   const prefersReducedMotion = useReducedMotion()
 
-  // Color mode values - MUST be before useState
-  const headingColor = useColorModeValue("gray.800", "gray.200")
-  const subheadingColor = useColorModeValue("gray.700", "gray.200")
+  const headingColor = useColorModeValue('gray.800', 'gray.200')
+  const subheadingColor = useColorModeValue('gray.700', 'gray.200')
 
   const [showMoreOptions, setShowMoreOptions] = useState(false)
   const [isCreatingDesigner, setIsCreatingDesigner] = useState(false)
   const [isCreatingCustomer, setIsCreatingCustomer] = useState(false)
+  const [customersLoading, setCustomersLoading] = useState(false)
   const [customerOptions, setCustomerOptions] = useState([])
+  const [designerChoices, setDesignerChoices] = useState([])
+  const [locationChoices, setLocationChoices] = useState([])
+  const [leadSourceChoices, setLeadSourceChoices] = useState([])
+  const [typeChoices, setTypeChoices] = useState([])
+  const [salesRepChoices, setSalesRepChoices] = useState([])
+
   const dispatch = useDispatch()
   const { list: users, loading: usersLoading } = useSelector((state) => state.users)
   const { list: locations } = useSelector((state) => state.locations)
@@ -49,7 +86,7 @@ const CustomerInfoStep = ({
       customerId: formData.customerId || '',
       customerName: formData.customerName || '',
       customerEmail: formData.customerEmail || '',
-      designer: formData.designer || '',
+      designer: canAssignDesigner ? toStringValue(formData.designer) : '',
       description: formData.description || '',
       measurementDone: !!formData.measurementDone,
       designDone: !!formData.designDone,
@@ -60,7 +97,7 @@ const CustomerInfoStep = ({
       leadSource: formData.leadSource || '',
       type: formData.type || '',
     }),
-    [formData],
+    [formData, canAssignDesigner],
   )
 
   const {
@@ -77,6 +114,11 @@ const CustomerInfoStep = ({
     defaultValues,
     shouldUnregister: false,
   })
+
+  const watchedCustomerId = watch('customerId')
+  const watchedCustomerEmail = watch('customerEmail')
+  const measurementDone = watch('measurementDone')
+  const designDone = watch('designDone')
 
   useEffect(() => {
     reset(defaultValues)
@@ -95,53 +137,21 @@ const CustomerInfoStep = ({
       url += `?group_id=${contractorGroupId}`
     }
 
+    setCustomersLoading(true)
     axiosInstance
       .get(url)
       .then((res) => {
-        const options = (res?.data?.data || []).map((data) => ({
-          label: data.name,
-          value: data.name,
-          data,
-        }))
+        const options = (res?.data?.data || []).map(mapCustomerToOption)
         setCustomerOptions(options)
       })
       .catch((error) => {
         console.error('Error fetching customers:', error)
       })
+      .finally(() => setCustomersLoading(false))
   }, [isContractor, contractorGroupId])
 
-  useEffect(() => {
-    if (!locations.length || formData.location) return
-    const mainLocation = locations.find((loc) => loc.locationName.trim().toLowerCase() === 'main')
-    if (mainLocation) {
-      updateFormData({ location: mainLocation.id.toString() })
-      setValue('location', mainLocation.id.toString())
-    }
-  }, [locations, formData.location, setValue, updateFormData])
-
-  useEffect(() => {
-    if (!canAssignDesigner || !users.length || !loggedInUserId) return
-    const currentUser = users.find((user) => user.id === loggedInUserId)
-    const availableDesigners = users.filter((user) => user.role === 'Manufacturers')
-    const isCurrentDesignerValid = availableDesigners.some((designer) => designer.id === formData.designer)
-
-    if (!formData.designer || !isCurrentDesignerValid) {
-      if (currentUser && currentUser.role === 'Manufacturers') {
-        setValue('designer', currentUser.id)
-        updateFormData({ designer: currentUser.id })
-      } else if (availableDesigners.length > 0) {
-        const firstDesigner = availableDesigners[0]
-        setValue('designer', firstDesigner.id)
-        updateFormData({ designer: firstDesigner.id })
-      }
-    }
-  }, [canAssignDesigner, users, formData.designer, loggedInUserId, setValue, updateFormData])
-
   const designerOptions = useMemo(
-    () =>
-      users
-        .filter((user) => user.role === 'Manufacturers')
-        .map((user) => ({ value: user.id, label: user.name })),
+    () => users.filter((user) => user.role === 'Manufacturers').map(mapUserToOption),
     [users],
   )
 
@@ -149,7 +159,7 @@ const CustomerInfoStep = ({
     () =>
       locations.map((loc) => ({
         label: loc.locationName,
-        value: loc.id.toString(),
+        value: loc.id != null ? String(loc.id) : loc.locationName,
       })),
     [locations],
   )
@@ -177,114 +187,191 @@ const CustomerInfoStep = ({
     [t],
   )
 
-  const measurementDone = watch('measurementDone')
-  const designDone = watch('designDone')
+  useEffect(() => setDesignerChoices(designerOptions), [designerOptions])
+  useEffect(() => setLocationChoices(locationOptions), [locationOptions])
+  useEffect(() => setLeadSourceChoices(leadSourceOptions), [leadSourceOptions])
+  useEffect(() => setTypeChoices(typeOptions), [typeOptions])
+  useEffect(() => setSalesRepChoices(designerOptions), [designerOptions])
 
-  const getCustomerOption = (value) =>
-    customerOptions.find((opt) => opt.value === value) || (value ? { label: value, value } : null)
-
-  const getSimpleOption = (value, options) => options.find((opt) => opt.value === value) || null
-
-  const handleCreateCustomer = async (inputValue) => {
-    const name = String(inputValue || '').trim()
-    if (!name) return
-
-    try {
-      setIsCreatingCustomer(true)
-      const values = getValues()
-      const payload = {
-        name,
-        email: values.customerEmail || '',
-        ...(isContractor && contractorGroupId ? { group_id: contractorGroupId } : {}),
-      }
-      const res = await axiosInstance.post('/api/customers/add', payload)
-      const created = res?.data?.customer || res?.data
-      const newOption = {
-        label: created?.name || name,
-        value: created?.name || name,
-        data: created,
-      }
-
-      setCustomerOptions((prev) => [newOption, ...prev.filter((opt) => opt.value !== newOption.value)])
-
-      const customerEmail = created?.email || values.customerEmail || ''
-      const customerId = created?.id || ''
-
-      setValue('customerName', newOption.value, { shouldValidate: true })
-      setValue('customerEmail', customerEmail, { shouldValidate: true })
-      setValue('customerId', customerId)
-      updateFormData({
-        customerName: newOption.value,
-        customerEmail,
-        customerId,
-      })
-
-      toast({
-        status: 'success',
-        title: t('proposals.create.customerInfo.customerCreated', 'Customer created'),
-        description: `"${newOption.value}" ${t('proposals.create.customerInfo.customerCreatedMsg', 'was added.')}`,
-      })
-    } catch (error) {
-      const message =
-        error?.response?.data?.message || error?.message || t('common.errorGeneric', 'Something went wrong')
-      toast({
-        status: 'error',
-        title: t('proposals.create.customerInfo.customerCreateError', 'Unable to create customer'),
-        description: message,
-      })
-    } finally {
-      setIsCreatingCustomer(false)
+  useEffect(() => {
+    if (!locations.length || formData.location) return
+    const mainLocation = locations.find((loc) => loc.locationName.trim().toLowerCase() === 'main')
+    if (mainLocation) {
+      const nextValue = String(mainLocation.id)
+      updateFormData({ location: nextValue })
+      setValue('location', nextValue)
     }
-  }
+  }, [locations, formData.location, setValue, updateFormData])
 
-  const createNewDesigner = async (designerName) => {
-    const trimmed = String(designerName || '').trim()
-    if (!trimmed) return null
+  useEffect(() => {
+    if (!canAssignDesigner || !users.length || !loggedInUserId) return
+    const currentUser = users.find((user) => user.id === loggedInUserId)
+    const availableDesigners = users.filter((user) => user.role === 'Manufacturers')
+    const isCurrentDesignerValid = availableDesigners.some(
+      (designer) => toStringValue(designer.id) === toStringValue(formData.designer),
+    )
 
-    try {
-      setIsCreatingDesigner(true)
-      const tempEmail = `${trimmed.toLowerCase().replace(/\s+/g, '.') }@designer.local`
+    if (!formData.designer || !isCurrentDesignerValid) {
+      if (currentUser && currentUser.role === 'Manufacturers') {
+        const nextValue = toStringValue(currentUser.id)
+        setValue('designer', nextValue)
+        updateFormData({ designer: nextValue })
+      } else if (availableDesigners.length > 0) {
+        const firstDesigner = availableDesigners[0]
+        const nextValue = toStringValue(firstDesigner.id)
+        setValue('designer', nextValue)
+        updateFormData({ designer: nextValue })
+      }
+    }
+  }, [canAssignDesigner, users, formData.designer, loggedInUserId, setValue, updateFormData])
 
-      const response = await axiosInstance.post('/api/users', {
-        name: trimmed,
-        email: tempEmail,
-        password: 'temppassword123',
-        role: 'Manufacturers',
-        isSalesRep: false,
-        location: null,
-        userGroup: null,
+  const getCustomerOption = useCallback(
+    (name, id, email) => {
+      if (!name && !id) return null
+      if (id) {
+        const byId = customerOptions.find((option) => String(option.data?.id) === String(id))
+        if (byId) return byId
+      }
+      if (name) {
+        const byName = customerOptions.find((option) => option.label === name)
+        if (byName) return byName
+      }
+      if (!name) return null
+      return {
+        label: name,
+        value: name,
+        data: { id: id || null, email: email || '' },
+      }
+    },
+    [customerOptions],
+  )
+
+  const handleCustomerSelection = useCallback(
+    (option) => {
+      const name = option?.label ?? ''
+      const email = option?.data?.email ?? ''
+      const selectedId = option?.data?.id ? String(option.data.id) : ''
+
+      setValue('customerName', name)
+      setValue('customerEmail', email)
+      setValue('customerId', selectedId)
+
+      updateFormData({
+        customerName: name,
+        customerEmail: email,
+        customerId: selectedId,
       })
+    },
+    [setValue, updateFormData],
+  )
 
-      if (response.status === 200 || response.status === 201) {
-        await dispatch(fetchUsers())
-        const newDesigner = response.data.user
+  const handleCustomerCreate = useCallback(
+    async (inputValue) => {
+      const name = String(inputValue || '').trim()
+      if (!name) return null
+      try {
+        setIsCreatingCustomer(true)
+        const values = getValues()
+        const payload = {
+          name,
+          email: values.customerEmail || '',
+          ...(isContractor && contractorGroupId ? { group_id: contractorGroupId } : {}),
+        }
+        const res = await axiosInstance.post('/api/customers/add', payload)
+        const created = res?.data?.customer || res?.data
+        if (!created) throw new Error('Invalid response when creating customer')
+
+        const option = mapCustomerToOption(created)
+        setCustomerOptions((prev) => [option, ...prev.filter((o) => o.value !== option.value)])
         toast({
           status: 'success',
-          title: t('proposals.create.customerInfo.designerCreated', 'Designer created'),
-          description: `"${trimmed}" ${t('proposals.create.customerInfo.designerCreatedMsg', 'is now available.')}`,
+          title: t('proposals.create.customerInfo.customerCreated', 'Customer created'),
+          description: t('proposals.create.customerInfo.customerCreatedMsg', 'Customer was added.'),
         })
-        return newDesigner
+        return option
+      } catch (error) {
+        console.error('Error creating customer:', error)
+        toast({
+          status: 'error',
+          title: t('proposals.create.customerInfo.customerCreateError', 'Unable to create customer'),
+          description:
+            error?.response?.data?.message ||
+            error?.message ||
+            t('common.errorGeneric', 'Something went wrong'),
+        })
+        return null
+      } finally {
+        setIsCreatingCustomer(false)
       }
+    },
+    [contractorGroupId, getValues, isContractor, t, toast],
+  )
 
-      return null
-    } catch (error) {
-      const message =
-        error?.response?.data?.message || error?.message || t('common.errorGeneric', 'Something went wrong')
-      toast({
-        status: 'error',
-        title: t('proposals.create.customerInfo.designerCreateError', 'Unable to create designer'),
-        description: message,
-      })
-      return null
-    } finally {
-      setIsCreatingDesigner(false)
-    }
-  }
+  const createNewDesigner = useCallback(
+    async (designerName) => {
+      const trimmed = String(designerName || '').trim()
+      if (!trimmed) return null
+      try {
+        setIsCreatingDesigner(true)
+        const tempEmail = `${trimmed.toLowerCase().replace(/\s+/g, '.')}@designer.local`
+        const response = await axiosInstance.post('/api/users', {
+          name: trimmed,
+          email: tempEmail,
+          password: 'temppassword123',
+          role: 'Manufacturers',
+          isSalesRep: false,
+          location: null,
+          userGroup: null,
+        })
+        if (response.status === 200 || response.status === 201) {
+          const newDesigner = response.data.user
+          const option = mapUserToOption(newDesigner)
+          setDesignerChoices((prev) => [option, ...prev.filter((opt) => opt.value !== option.value)])
+          setSalesRepChoices((prev) => [option, ...prev.filter((opt) => opt.value !== option.value)])
+          dispatch(fetchUsers())
+          toast({
+            status: 'success',
+            title: t('proposals.create.customerInfo.designerCreated', 'Designer created'),
+            description: t('proposals.create.customerInfo.designerCreatedMsg', 'Designer is now available.'),
+          })
+          return option
+        }
+        return null
+      } catch (error) {
+        console.error('Error creating designer:', error)
+        toast({
+          status: 'error',
+          title: t('proposals.create.customerInfo.designerCreateError', 'Unable to create designer'),
+          description:
+            error?.response?.data?.message ||
+            error?.message ||
+            t('common.errorGeneric', 'Something went wrong'),
+        })
+        return null
+      } finally {
+        setIsCreatingDesigner(false)
+      }
+    },
+    [dispatch, t, toast],
+  )
+
+  const handleSecondarySelect = useCallback(
+    ({ fieldName, value }) => {
+      const resolved = value == null ? '' : value
+      setValue(fieldName, resolved)
+      updateFormData({ [fieldName]: resolved })
+    },
+    [setValue, updateFormData],
+  )
+
+  const createSimpleOption = useCallback((label) => {
+    const value = label.trim()
+    if (!value) return null
+    return { label: value, value }
+  }, [])
 
   const onSubmit = (values) => {
-    console.log('CustomerInfo onSubmit called with:', values)
     updateFormData(values)
-    console.log('About to call nextStep()')
     nextStep()
   }
 
@@ -294,9 +381,7 @@ const CustomerInfoStep = ({
     <Box w="full" my={4}>
       <StandardCard shadow="md" borderRadius="xl">
         <CardBody p={{ base: 4, md: 6 }}>
-          <form onSubmit={handleSubmit(onSubmit, (errors) => {
-            console.log('Form validation errors:', errors)
-          })}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={6}>
               <Flex justify="space-between" align={{ base: 'stretch', md: 'center' }} flexDir={{ base: 'column', md: 'row' }} gap={4}>
                 <Heading size="md" color={headingColor}>
@@ -316,22 +401,51 @@ const CustomerInfoStep = ({
               </Flex>
 
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-                <FormControl isInvalid={!!errors.customerName} isRequired>
-                  <FormLabel htmlFor="customerName">
-                    {t('proposals.create.customerInfo.customerName')}
-                  </FormLabel>
-                  <Input
-                    id="customerName"
-                    placeholder={t('proposals.create.customerInfo.customerNamePlaceholder')}
-                    {...register('customerName', {
-                      required: t('form.validation.required', 'This field is required'),
-                      onChange: (event) => {
-                        updateFormData({ customerName: event.target.value })
-                      },
-                    })}
-                  />
-                  <FormErrorMessage>{errors.customerName && errors.customerName.message}</FormErrorMessage>
-                </FormControl>
+                <Controller
+                  control={control}
+                  name="customerName"
+                  rules={{ required: t('form.validation.required', 'This field is required') }}
+                  render={({ field, fieldState }) => {
+                    const selectedOption = getCustomerOption(field.value, watchedCustomerId, watchedCustomerEmail)
+                    return (
+                      <FormControl isInvalid={!!fieldState.error} isRequired>
+                        <FormLabel htmlFor="customerName">
+                          {t('proposals.create.customerInfo.customerName')}
+                        </FormLabel>
+                        <CreatableCombobox
+                          id="customerName"
+                          value={selectedOption}
+                          options={customerOptions}
+                          placeholder={t('proposals.create.customerInfo.customerNamePlaceholder')}
+                          onChange={(option) => {
+                            field.onChange(option?.label ?? '')
+                            handleCustomerSelection(option)
+                          }}
+                          onCreateOption={handleCustomerCreate}
+                          isLoading={customersLoading}
+                          isCreating={isCreatingCustomer}
+                          createOptionLabel={(name) =>
+                            t('proposals.create.customerInfo.createCustomer', {
+                              name,
+                            })
+                          }
+                          renderOption={(option) => (
+                            <Stack spacing={0} align="flex-start">
+                              <Text fontWeight="medium">{option.label}</Text>
+                              {option.data?.email && (
+                                <Text fontSize="sm" color="gray.500">
+                                  {option.data.email}
+                                </Text>
+                              )}
+                            </Stack>
+                          )}
+                          noOptionsMessage={t('proposals.create.customerInfo.noCustomers', 'No customers found')}
+                        />
+                        <FormErrorMessage>{fieldState.error?.message}</FormErrorMessage>
+                      </FormControl>
+                    )
+                  }}
+                />
 
                 <FormControl isInvalid={!!errors.customerEmail}>
                   <FormLabel htmlFor="customerEmail">
@@ -357,31 +471,39 @@ const CustomerInfoStep = ({
 
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 {canAssignDesigner && (
-                  <FormControl isInvalid={!!errors.designer} isRequired>
-                    <FormLabel htmlFor="designer">
-                      {t('proposals.create.customerInfo.designer')}
-                    </FormLabel>
-                    <Select
-                      id="designer"
-                      placeholder={t('proposals.create.customerInfo.designerPlaceholder', 'Select a designer')}
-                      {...register('designer', {
-                        required: t('form.validation.required', 'This field is required'),
-                        onChange: (event) => {
-                          updateFormData({ designer: event.target.value })
-                        },
-                      })}
-                    >
-                      {designerOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </Select>
-                    <FormErrorMessage>{errors.designer && errors.designer.message}</FormErrorMessage>
-                  </FormControl>
+                  <Controller
+                    control={control}
+                    name="designer"
+                    rules={{ required: t('proposals.create.customerInfo.validation.designer') }}
+                    render={({ field, fieldState }) => (
+                      <FormControl isRequired isInvalid={!!fieldState.error}>
+                        <FormLabel htmlFor="designer">
+                          {t('proposals.create.customerInfo.designer')}
+                        </FormLabel>
+                        <CreatableCombobox
+                          id="designer"
+                          value={designerChoices.find((option) => option.value === field.value) || null}
+                          options={designerChoices}
+                          placeholder={t('proposals.create.customerInfo.designerPlaceholder', 'Select a designer')}
+                          onChange={(option) => {
+                            const nextValue = option ? option.value : ''
+                            field.onChange(nextValue)
+                            handleSecondarySelect({ fieldName: 'designer', value: nextValue })
+                          }}
+                          onCreateOption={createNewDesigner}
+                          isLoading={usersLoading}
+                          isCreating={isCreatingDesigner}
+                          createOptionLabel={(name) =>
+                            t('proposals.create.customerInfo.createDesigner', { name })
+                          }
+                        />
+                        <FormErrorMessage>{fieldState.error?.message}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  />
                 )}
 
-                <FormControl isInvalid={!!errors.description} isRequired>
+                <FormControl isRequired isInvalid={!!errors.description}>
                   <FormLabel htmlFor="description">
                     {t('proposals.create.customerInfo.description')}
                   </FormLabel>
@@ -412,7 +534,7 @@ const CustomerInfoStep = ({
                             field.onChange(checked)
                             updateFormData({ measurementDone: checked })
                             if (!checked) {
-                              setValue('measurementDate', '', { shouldValidate: true })
+                              setValue('measurementDate', '')
                               updateFormData({ measurementDate: '' })
                             }
                           }}
@@ -422,33 +544,22 @@ const CustomerInfoStep = ({
                       )}
                     />
                     {measurementDone && (
-                      <Controller
-                        name="measurementDate"
-                        control={control}
-                        rules={{
-                          required: t('form.validation.required', 'This field is required'),
-                        }}
-                        render={({ field }) => (
-                          <FormControl isInvalid={!!errors.measurementDate}>
-                            <FormLabel htmlFor="measurementDate">
-                              {t('proposals.create.customerInfo.measurementDoneDate')}
-                            </FormLabel>
-                            <Input
-                              id="measurementDate"
-                              type="date"
-                              value={field.value ? field.value.substring(0, 10) : ''}
-                              onChange={(event) => {
-                                const value = event.target.value
-                                field.onChange(value)
-                                updateFormData({ measurementDate: value })
-                              }}
-                            />
-                            <FormErrorMessage>
-                              {errors.measurementDate && errors.measurementDate.message}
-                            </FormErrorMessage>
-                          </FormControl>
-                        )}
-                      />
+                      <FormControl isInvalid={!!errors.measurementDate}>
+                        <FormLabel htmlFor="measurementDate">
+                          {t('proposals.create.customerInfo.measurementDoneDate')}
+                        </FormLabel>
+                        <Input
+                          id="measurementDate"
+                          type="date"
+                          value={getValues('measurementDate')?.slice(0, 10) || ''}
+                          onChange={(event) => {
+                            const value = event.target.value
+                            setValue('measurementDate', value)
+                            updateFormData({ measurementDate: value })
+                          }}
+                        />
+                        <FormErrorMessage>{errors.measurementDate?.message}</FormErrorMessage>
+                      </FormControl>
                     )}
                   </Stack>
                 </FormControl>
@@ -466,7 +577,7 @@ const CustomerInfoStep = ({
                             field.onChange(checked)
                             updateFormData({ designDone: checked })
                             if (!checked) {
-                              setValue('designDate', '', { shouldValidate: true })
+                              setValue('designDate', '')
                               updateFormData({ designDate: '' })
                             }
                           }}
@@ -476,33 +587,22 @@ const CustomerInfoStep = ({
                       )}
                     />
                     {designDone && (
-                      <Controller
-                        name="designDate"
-                        control={control}
-                        rules={{
-                          required: t('form.validation.required', 'This field is required'),
-                        }}
-                        render={({ field }) => (
-                          <FormControl isInvalid={!!errors.designDate}>
-                            <FormLabel htmlFor="designDate">
-                              {t('proposals.create.customerInfo.designDoneDate')}
-                            </FormLabel>
-                            <Input
-                              id="designDate"
-                              type="date"
-                              value={field.value ? field.value.substring(0, 10) : ''}
-                              onChange={(event) => {
-                                const value = event.target.value
-                                field.onChange(value)
-                                updateFormData({ designDate: value })
-                              }}
-                            />
-                            <FormErrorMessage>
-                              {errors.designDate && errors.designDate.message}
-                            </FormErrorMessage>
-                          </FormControl>
-                        )}
-                      />
+                      <FormControl isInvalid={!!errors.designDate}>
+                        <FormLabel htmlFor="designDate">
+                          {t('proposals.create.customerInfo.designDoneDate')}
+                        </FormLabel>
+                        <Input
+                          id="designDate"
+                          type="date"
+                          value={getValues('designDate')?.slice(0, 10) || ''}
+                          onChange={(event) => {
+                            const value = event.target.value
+                            setValue('designDate', value)
+                            updateFormData({ designDate: value })
+                          }}
+                        />
+                        <FormErrorMessage>{errors.designDate?.message}</FormErrorMessage>
+                      </FormControl>
                     )}
                   </Stack>
                 </FormControl>
@@ -531,87 +631,123 @@ const CustomerInfoStep = ({
                     </Text>
 
                     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-                      <FormControl isInvalid={!!errors.location}>
-                        <FormLabel htmlFor="location">{t('profile.location')}</FormLabel>
-                        <Select
-                          id="location"
-                          placeholder={t('proposals.create.customerInfo.locationPlaceholder', 'Select a location')}
-                          {...register('location', {
-                            onChange: (event) => {
-                              updateFormData({ location: event.target.value })
-                            },
-                          })}
-                        >
-                          {locationOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Select>
-                        <FormErrorMessage>{errors.location && errors.location.message}</FormErrorMessage>
-                      </FormControl>
+                      <Controller
+                        control={control}
+                        name="location"
+                        render={({ field }) => (
+                          <FormControl isInvalid={!!errors.location}>
+                            <FormLabel htmlFor="location">{t('profile.location')}</FormLabel>
+                            <CreatableCombobox
+                              id="location"
+                              value={locationChoices.find((option) => option.value === field.value) || null}
+                              options={locationChoices}
+                              placeholder={t('proposals.create.customerInfo.locationPlaceholder', 'Select a location')}
+                              onChange={(option) => {
+                                const nextValue = option ? option.value : ''
+                                field.onChange(nextValue)
+                                handleSecondarySelect({ fieldName: 'location', value: nextValue })
+                              }}
+                              onCreateOption={(label) => {
+                                const option = createSimpleOption(label)
+                                if (option) {
+                                  setLocationChoices((prev) => [option, ...prev])
+                                }
+                                return option
+                              }}
+                            />
+                            <FormErrorMessage>{errors.location && errors.location.message}</FormErrorMessage>
+                          </FormControl>
+                        )}
+                      />
 
-                      <FormControl isInvalid={!!errors.salesRep}>
-                        <FormLabel htmlFor="salesRep">
-                          {t('proposals.create.customerInfo.salesRep')}
-                        </FormLabel>
-                        <Select
-                          id="salesRep"
-                          placeholder={t('proposals.create.customerInfo.salesRepPlaceholder', 'Select a sales representative')}
-                          {...register('salesRep', {
-                            onChange: (event) => {
-                              updateFormData({ salesRep: event.target.value })
-                            },
-                          })}
-                        >
-                          {designerOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Select>
-                        <FormErrorMessage>{errors.salesRep && errors.salesRep.message}</FormErrorMessage>
-                      </FormControl>
+                      <Controller
+                        control={control}
+                        name="salesRep"
+                        render={({ field }) => (
+                          <FormControl isInvalid={!!errors.salesRep}>
+                            <FormLabel htmlFor="salesRep">
+                              {t('proposals.create.customerInfo.salesRep')}
+                            </FormLabel>
+                            <CreatableCombobox
+                              id="salesRep"
+                              value={salesRepChoices.find((option) => option.value === field.value) || null}
+                              options={salesRepChoices}
+                              placeholder={t('proposals.create.customerInfo.salesRepPlaceholder', 'Select a sales representative')}
+                              onChange={(option) => {
+                                const nextValue = option ? option.value : ''
+                                field.onChange(nextValue)
+                                handleSecondarySelect({ fieldName: 'salesRep', value: nextValue })
+                              }}
+                              onCreateOption={(label) => {
+                                const option = createSimpleOption(label)
+                                if (option) {
+                                  setSalesRepChoices((prev) => [option, ...prev])
+                                }
+                                return option
+                              }}
+                            />
+                            <FormErrorMessage>{errors.salesRep && errors.salesRep.message}</FormErrorMessage>
+                          </FormControl>
+                        )}
+                      />
                     </SimpleGrid>
 
                     <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-                      <FormControl>
-                        <FormLabel htmlFor="leadSource">{t('form.labels.leadSource')}</FormLabel>
-                        <Select
-                          id="leadSource"
-                          placeholder={t('form.labels.leadSourcePlaceholder', 'Select lead source')}
-                          {...register('leadSource', {
-                            onChange: (event) => {
-                              updateFormData({ leadSource: event.target.value })
-                            },
-                          })}
-                        >
-                          {leadSourceOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Select>
-                      </FormControl>
+                      <Controller
+                        control={control}
+                        name="leadSource"
+                        render={({ field }) => (
+                          <FormControl>
+                            <FormLabel htmlFor="leadSource">{t('form.labels.leadSource')}</FormLabel>
+                            <CreatableCombobox
+                              id="leadSource"
+                              value={leadSourceChoices.find((option) => option.value === field.value) || null}
+                              options={leadSourceChoices}
+                              placeholder={t('form.labels.leadSourcePlaceholder', 'Select lead source')}
+                              onChange={(option) => {
+                                const nextValue = option ? option.value : ''
+                                field.onChange(nextValue)
+                                handleSecondarySelect({ fieldName: 'leadSource', value: nextValue })
+                              }}
+                              onCreateOption={(label) => {
+                                const option = createSimpleOption(label)
+                                if (option) {
+                                  setLeadSourceChoices((prev) => [option, ...prev])
+                                }
+                                return option
+                              }}
+                            />
+                          </FormControl>
+                        )}
+                      />
 
-                      <FormControl>
-                        <FormLabel htmlFor="type">{t('proposals.create.customerInfo.type')}</FormLabel>
-                        <Select
-                          id="type"
-                          placeholder={t('proposals.create.customerInfo.typePlaceholder', 'Select type')}
-                          {...register('type', {
-                            onChange: (event) => {
-                              updateFormData({ type: event.target.value })
-                            },
-                          })}
-                        >
-                          {typeOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Select>
-                      </FormControl>
+                      <Controller
+                        control={control}
+                        name="type"
+                        render={({ field }) => (
+                          <FormControl>
+                            <FormLabel htmlFor="type">{t('proposals.create.customerInfo.type')}</FormLabel>
+                            <CreatableCombobox
+                              id="type"
+                              value={typeChoices.find((option) => option.value === field.value) || null}
+                              options={typeChoices}
+                              placeholder={t('proposals.create.customerInfo.typePlaceholder', 'Select type')}
+                              onChange={(option) => {
+                                const nextValue = option ? option.value : ''
+                                field.onChange(nextValue)
+                                handleSecondarySelect({ fieldName: 'type', value: nextValue })
+                              }}
+                              onCreateOption={(label) => {
+                                const option = createSimpleOption(label)
+                                if (option) {
+                                  setTypeChoices((prev) => [option, ...prev])
+                                }
+                                return option
+                              }}
+                            />
+                          </FormControl>
+                        )}
+                      />
                     </SimpleGrid>
                   </Stack>
                 </Collapse>

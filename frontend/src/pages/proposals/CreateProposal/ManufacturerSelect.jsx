@@ -109,8 +109,14 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
           },
         ],
       })
+
+      if (!isUserAdmin) {
+        setTimeout(() => {
+          nextStep()
+        }, 0)
+      }
     },
-    [formData, isUserAdmin, getValues, setValue, updateFormData],
+    [formData, isUserAdmin, getValues, setValue, updateFormData, nextStep],
   )
 
   const handleImageLoaded = useCallback((manufacturerId) => {
@@ -384,3 +390,4 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
   )
 }
 export default ManufacturerStep
+

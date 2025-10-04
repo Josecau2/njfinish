@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
-import { Menu, MenuButton, MenuItem, MenuList, useColorModeValue } from '@chakra-ui/react'
+import { Box, Flex, Menu, MenuButton, MenuItem, MenuList, Text, useColorModeValue } from '@chakra-ui/react'
 import { ChevronDown } from 'lucide-react'
 import { setSidebarShow, setSidebarUnfoldable } from '../store/slices/sidebarSlice'
 import { ICON_SIZE_MD, ICON_SIZE_SM } from '../constants/iconSizes'
@@ -40,21 +40,6 @@ const hasActiveChild = (children, pathname) => {
   })
 }
 
-const getIconElement = (IconComponent, colors) => {
-  if (!IconComponent) {
-    return (
-      <span className="nav-icon nav-icon-bullet" aria-hidden>
-        <span />
-      </span>
-    )
-  }
-  return (
-    <span className="nav-icon" aria-hidden>
-      <IconComponent size={ICON_SIZE_MD} color={colors.iconColor} strokeWidth={1.75} />
-    </span>
-  )
-}
-
 const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
   const location = useLocation()
   const navigate = useNavigate()
@@ -62,9 +47,13 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
   const sidebarPinned = useSelector((state) => state.sidebar.sidebarPinned)
 
   // Color mode values for hover states
-  const hoverBgLight = useColorModeValue('gray.100', 'whiteAlpha.100')
-  const hoverBgDark = useColorModeValue('gray.200', 'whiteAlpha.200')
+  // Normal hover (lighter shade)
+  const navHoverBg = useColorModeValue('gray.100', 'whiteAlpha.100')
+  // Active item hover (darker shade)
+  const navActiveHoverBg = useColorModeValue('gray.200', 'whiteAlpha.200')
+  // Menu item hover
   const menuItemHoverBg = useColorModeValue('blue.50', 'whiteAlpha.200')
+  // Menu item active hover
   const menuItemActiveBg = useColorModeValue('blue.100', 'whiteAlpha.300')
 
   const colors = useMemo(() => buildColors(fontColor), [fontColor])
@@ -88,43 +77,64 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
   const renderLink = (item, depth = 0, opts = {}) => {
     const collapsedOverride = opts.collapsed ?? collapsed
     const active = isActivePath(location.pathname, item.to)
-    const classNames = ['nav-link']
-    if (active) classNames.push('active')
-    const sharedStyle = {
-      color: active ? colors.accentColor : colors.fontColor,
-      backgroundColor: active ? colors.activeBg : 'transparent',
-      minHeight: '44px',
-    }
-
-    if (!collapsedOverride) {
-      // No indentation - all items same padding regardless of depth
-      sharedStyle.paddingLeft = '0.85rem'
-      sharedStyle.paddingRight = '0.85rem'
-    }
+    const key = item.to || item.href || `${item.label}-${depth}`
 
     const content = (
       <>
-        {getIconElement(item.icon, colors)}
+        <Box
+          as="span"
+          w="1.5rem"
+          h="1.5rem"
+          minW="1.5rem"
+          display="inline-flex"
+          alignItems="center"
+          justifyContent="center"
+          flexShrink={0}
+        >
+          {item.icon ? (
+            <item.icon size={ICON_SIZE_MD} color={colors.iconColor} strokeWidth={1.75} />
+          ) : (
+            <Box
+              w="6px"
+              h="6px"
+              borderRadius="full"
+              bg="currentColor"
+            />
+          )}
+        </Box>
         {!collapsedOverride && (
-          <span className="nav-label">
+          <Text
+            as="span"
+            flex="1"
+            minW="0"
+            whiteSpace="nowrap"
+            textAlign="left"
+            lineHeight="1.4"
+          >
             {item.label}
-          </span>
+          </Text>
         )}
         {!collapsedOverride && item.badge && (
-          <span className="nav-link-badge">{item.badge.text}</span>
+          <Text
+            as="span"
+            fontSize="0.65rem"
+            fontWeight="600"
+            px="0.45rem"
+            py="0.1rem"
+            borderRadius="full"
+            bg="whiteAlpha.200"
+          >
+            {item.badge.text}
+          </Text>
         )}
       </>
     )
 
-    const key = item.to || item.href || `${item.label}-${depth}`
-
     if (item.to) {
       return (
-        <li key={key} className="nav-item">
+        <Box as="li" key={key} position="relative" p={0}>
           <AppButton
             type="button"
-            className={classNames.join(' ')}
-            style={sharedStyle}
             title={collapsedOverride ? item.label : undefined}
             onClick={() => handleNavigate(item.to)}
             onKeyDown={(event) => {
@@ -135,27 +145,61 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
             }}
             aria-current={active ? 'page' : undefined}
             variant="unstyled"
+            w="full"
+            display="flex"
+            alignItems="center"
+            justifyContent={collapsedOverride ? 'center' : 'flex-start'}
+            gap="0.75rem"
+            fontSize="0.95rem"
+            fontWeight={active ? '600' : '500'}
+            px={collapsedOverride ? 0 : '0.85rem'}
+            py="0.75rem"
+            minH="44px"
+            borderRadius={{ base: '6px', lg: '8px' }}
+            color={active ? colors.accentColor : colors.fontColor}
+            bg={active ? colors.activeBg : 'transparent'}
+            transition="background 0.15s ease, color 0.15s ease"
+            _hover={{
+              bg: active ? navActiveHoverBg : navHoverBg,
+            }}
           >
             {content}
           </AppButton>
-        </li>
+        </Box>
       )
     }
 
     if (item.href) {
       return (
-        <li key={key} className="nav-item">
-          <a
-            className={classNames.join(' ')}
-            style={sharedStyle}
+        <Box as="li" key={key} position="relative" p={0}>
+          <Box
+            as="a"
             title={collapsedOverride ? item.label : undefined}
             href={item.href}
             target="_blank"
             rel="noopener noreferrer"
+            display="flex"
+            alignItems="center"
+            justifyContent={collapsedOverride ? 'center' : 'flex-start'}
+            gap="0.75rem"
+            fontSize="0.95rem"
+            fontWeight={active ? '600' : '500'}
+            px={collapsedOverride ? 0 : '0.85rem'}
+            py="0.75rem"
+            minH="44px"
+            borderRadius={{ base: '6px', lg: '8px' }}
+            color={active ? colors.accentColor : colors.fontColor}
+            bg={active ? colors.activeBg : 'transparent'}
+            transition="background 0.15s ease, color 0.15s ease"
+            textDecoration="none"
+            cursor="pointer"
+            _hover={{
+              bg: active ? navActiveHoverBg : navHoverBg,
+            }}
           >
             {content}
-          </a>
-        </li>
+          </Box>
+        </Box>
       )
     }
 
@@ -168,7 +212,17 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
         const nested = renderCollapsedGroupMenuItems(child.children, depth + 1)
         if (!nested || nested.length === 0) return null
         return (
-          <MenuItem key={`${child.label}-${depth}`} className="nav-group-menu-heading" isDisabled>
+          <MenuItem
+            key={`${child.label}-${depth}`}
+            isDisabled
+            fontSize="0.75rem"
+            fontWeight="600"
+            textTransform="uppercase"
+            letterSpacing="0.08em"
+            opacity="0.8"
+            px="0.9rem"
+            py="0.35rem"
+          >
             {child.label}
           </MenuItem>
         )
@@ -178,13 +232,35 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
       return (
         <MenuItem
           key={`${child.to || child.label}-${depth}`}
-          className={`nav-group-menu-item ${active ? 'active' : ''}`}
           onClick={() => handleNavigate(child.to)}
+          fontSize="0.9rem"
+          minH="44px"
+          px="0.75rem"
+          py="0.5rem"
+          bg={active ? menuItemActiveBg : 'transparent'}
+          _hover={{
+            bg: active ? menuItemActiveBg : menuItemHoverBg,
+          }}
         >
-          <span className="nav-link nav-link--menu">
-            {getIconElement(child.icon, colors)}
-            <span className="nav-label">{child.label}</span>
-          </span>
+          <Flex align="center" gap="0.75rem" w="full">
+            <Box
+              as="span"
+              w="1.5rem"
+              h="1.5rem"
+              minW="1.5rem"
+              display="inline-flex"
+              alignItems="center"
+              justifyContent="center"
+              flexShrink={0}
+            >
+              {child.icon ? (
+                <child.icon size={ICON_SIZE_MD} color={colors.iconColor} strokeWidth={1.75} />
+              ) : (
+                <Box w="6px" h="6px" borderRadius="full" bg="currentColor" />
+              )}
+            </Box>
+            <Text as="span">{child.label}</Text>
+          </Flex>
         </MenuItem>
       )
     })
@@ -192,34 +268,72 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
 
   const renderGroupCollapsed = (item, depth = 0) => {
     const active = hasActiveChild(item.children, location.pathname)
-    const classNames = ['nav-link', 'nav-group-toggle']
-    if (active) classNames.push('active')
     const key = `${item.label}-${depth}`
 
     return (
-      <li key={key} className={`nav-group nav-group--compact ${active ? 'show' : ''}`}>
+      <Box as="li" key={key} position="relative">
         <Menu placement="right-start" offset={[8, 12]} isLazy>
           <MenuButton
             as={AppButton}
             type="button"
-            className={classNames.join(' ')}
             title={item.label}
             aria-label={`${item.label} navigation`}
-            style={{
-              color: active ? colors.accentColor : colors.fontColor,
-              backgroundColor: active ? colors.activeBg : 'transparent',
-            }}
             variant="unstyled"
+            w="full"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
             minH="44px"
+            px={0}
+            py="0.75rem"
+            color={active ? colors.accentColor : colors.fontColor}
+            bg={active ? colors.activeBg : 'transparent'}
+            _hover={{
+              bg: active ? navActiveHoverBg : navHoverBg,
+            }}
           >
-            {getIconElement(item.icon, colors)}
+            <Box
+              as="span"
+              w="1.5rem"
+              h="1.5rem"
+              minW="1.5rem"
+              display="inline-flex"
+              alignItems="center"
+              justifyContent="center"
+              flexShrink={0}
+            >
+              {item.icon ? (
+                <item.icon size={ICON_SIZE_MD} color={colors.iconColor} strokeWidth={1.75} />
+              ) : (
+                <Box w="6px" h="6px" borderRadius="full" bg="currentColor" />
+              )}
+            </Box>
           </MenuButton>
-          <MenuList className="nav-group-popover">
-            <div className="nav-group-menu-label">{item.label}</div>
+          <MenuList
+            minW="220px"
+            bg="slate.900"
+            color="slate.50"
+            border="1px solid"
+            borderColor="whiteAlpha.200"
+            borderRadius="12px"
+            py="0.35rem"
+          >
+            <Box
+              fontSize="0.75rem"
+              fontWeight="600"
+              textTransform="uppercase"
+              letterSpacing="0.08em"
+              opacity="0.8"
+              px="0.9rem"
+              py="0.35rem"
+              pb="0.15rem"
+            >
+              {item.label}
+            </Box>
             {renderCollapsedGroupMenuItems(item.children, depth + 1)}
           </MenuList>
         </Menu>
-      </li>
+      </Box>
     )
   }
 
@@ -231,10 +345,9 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
     const handleToggle = () => setOpen((prev) => !prev)
 
     return (
-      <li className={`nav-group ${open ? 'show' : ''}`}>
+      <Box as="li" position="relative">
         <AppButton
           type="button"
-          className={`nav-link nav-group-toggle ${open ? 'active' : ''}`}
           onClick={handleToggle}
           onKeyDown={(event) => {
             if (event.key === 'Enter' || event.key === ' ') {
@@ -243,22 +356,56 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
             }
           }}
           aria-expanded={open}
-          style={{
-            color: open || active ? colors.accentColor : colors.fontColor,
-            backgroundColor: open || active ? colors.activeBg : 'transparent',
-            minHeight: '44px',
-            paddingLeft: '0.85rem',
-            paddingRight: '0.85rem',
-          }}
           variant="unstyled"
+          w="full"
+          display="flex"
+          alignItems="center"
+          justifyContent="flex-start"
+          gap="0.75rem"
+          fontSize="0.95rem"
+          fontWeight={open || active ? '600' : '500'}
+          px="0.85rem"
+          py="0.75rem"
+          minH="44px"
+          borderRadius={{ base: '6px', lg: '8px' }}
+          color={open || active ? colors.accentColor : colors.fontColor}
+          bg={open || active ? colors.activeBg : 'transparent'}
+          transition="background 0.15s ease, color 0.15s ease"
+          _hover={{
+            bg: open || active ? navActiveHoverBg : navHoverBg,
+          }}
         >
-          {getIconElement(item.icon, colors)}
-          <span className="nav-label">{item.label}</span>
-          <span className="nav-caret" aria-hidden>
+          <Box
+            as="span"
+            w="1.5rem"
+            h="1.5rem"
+            minW="1.5rem"
+            display="inline-flex"
+            alignItems="center"
+            justifyContent="center"
+            flexShrink={0}
+          >
+            {item.icon ? (
+              <item.icon size={ICON_SIZE_MD} color={colors.iconColor} strokeWidth={1.75} />
+            ) : (
+              <Box w="6px" h="6px" borderRadius="full" bg="currentColor" />
+            )}
+          </Box>
+          <Text as="span" flex="1" minW="0" whiteSpace="nowrap" textAlign="left" lineHeight="1.4">
+            {item.label}
+          </Text>
+          <Box as="span" ml="auto" display="inline-flex" alignItems="center">
             <ChevronDown size={ICON_SIZE_SM} style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }} />
-          </span>
+          </Box>
         </AppButton>
-        <ul className="nav-group-items" style={{ display: open ? 'block' : 'none' }}>
+        <Box
+          as="ul"
+          listStyleType="none"
+          m={0}
+          py="0.15rem"
+          pb="0.25rem"
+          display={open ? 'block' : 'none'}
+        >
           {item.children?.map((child) => {
             if (child.type === 'group') {
               return (
@@ -271,8 +418,8 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
               </React.Fragment>
             )
           })}
-        </ul>
-      </li>
+        </Box>
+      </Box>
     )
   })
 
@@ -288,204 +435,16 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor }) => {
   }
 
   return (
-    <>
-      <style>{`
-        .c-sidebar-nav {
-          height: 100%;
-          width: 100%;
-          --nav-hover-bg: var(--sidebar-nav-hover-bg, var(--chakra-colors-whiteAlpha-100));
-          --nav-active-hover-bg: var(--sidebar-nav-active-hover-bg, var(--chakra-colors-whiteAlpha-200));
-          --menu-item-hover-bg: var(--sidebar-menu-item-hover-bg, var(--chakra-colors-blue-50));
-          --menu-item-active-bg: var(--sidebar-menu-item-active-bg, var(--chakra-colors-blue-100));
-        }
-        .c-sidebar-nav .simplebar-scrollbar:before {
-          background: var(--chakra-colors-whiteAlpha-400);
-        }
-        .c-sidebar-nav[data-collapsed="true"] .simplebar-scrollbar:before {
-          opacity: 0;
-        }
-        .c-sidebar-nav .simplebar-content {
-          display: block;
-          padding: 0 !important;
-        }
-        .c-sidebar-nav .nav {
-          list-style: none;
-          margin: 0;
-          padding: 0.5rem 0;
-        }
-        .c-sidebar-nav .nav-item {
-          position: relative;
-          padding: 0;
-        }
-        .c-sidebar-nav .nav-link {
-          width: 100%;
-          border: none;
-          background: transparent;
-          display: flex;
-          align-items: center;
-          justify-content: flex-start;
-          gap: 0.75rem;
-          font-size: 0.95rem;
-          font-weight: 500;
-          padding: 0.75rem 1rem;
-          min-height: 44px;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: background 0.15s ease, color 0.15s ease;
-          text-decoration: none;
-          text-align: left;
-        }
-        .c-sidebar-nav .nav-link:hover {
-          background: var(--nav-hover-bg);
-        }
-        .c-sidebar-nav .nav-link.active:hover {
-          background: var(--nav-active-hover-bg);
-        }
-        /* Mobile: tighter padding for better use of space */
-        @media (max-width: 1023px) {
-          .c-sidebar-nav .nav {
-            padding: 0.25rem 0;
-          }
-          .c-sidebar-nav .nav-link {
-            padding: 0.7rem 0.85rem;
-            border-radius: 6px;
-          }
-        }
-        .c-sidebar-nav[data-collapsed="true"] .nav-link {
-          justify-content: center;
-          padding: 0.75rem 0;
-          min-height: 44px;
-        }
-        .c-sidebar-nav[data-collapsed="true"] .nav-link .nav-label,
-        .c-sidebar-nav[data-collapsed="true"] .nav-link .nav-link-badge,
-        .c-sidebar-nav[data-collapsed="true"] .nav-link .nav-caret {
-          display: none;
-        }
-        .c-sidebar-nav .nav-link.active {
-          font-weight: 600;
-        }
-        .c-sidebar-nav .nav-icon {
-          width: 1.5rem;
-          height: 1.5rem;
-          min-width: 1.5rem;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-        .c-sidebar-nav .nav-icon svg {
-          width: 1.25rem;
-          height: 1.25rem;
-        }
-        .c-sidebar-nav .nav-icon-bullet span {
-          width: 6px;
-          height: 6px;
-          border-radius: 999px;
-          background: currentColor;
-        }
-        .c-sidebar-nav .nav-label {
-          flex: 1;
-          min-width: 0;
-          white-space: nowrap;
-          text-align: left;
-          line-height: 1.4;
-        }
-        .c-sidebar-nav .nav-link-badge {
-          font-size: 0.65rem;
-          font-weight: 600;
-          padding: 0.1rem 0.45rem;
-          border-radius: 999px;
-          background: var(--chakra-colors-whiteAlpha-200);
-        }
-        .c-sidebar-nav .nav-group {
-          position: relative;
-        }
-        .c-sidebar-nav .nav-group-toggle {
-          width: 100%;
-        }
-        .c-sidebar-nav .nav-group-items {
-          list-style: none;
-          margin: 0;
-          padding: 0.15rem 0 0.25rem 0;
-        }
-        .c-sidebar-nav .nav-group.show > .nav-group-items {
-          display: block;
-        }
-        .c-sidebar-nav .nav-group-items .nav-item {
-          padding-left: 0;
-        }
-        .c-sidebar-nav .nav-caret {
-          margin-left: auto;
-          display: inline-flex;
-          align-items: center;
-        }
-        .nav-group-popover {
-          min-width: 220px;
-          background: var(--chakra-colors-slate-900);
-          color: var(--chakra-colors-slate-50);
-          border: 1px solid var(--chakra-colors-whiteAlpha-200);
-          border-radius: 12px;
-          padding: 0.35rem 0;
-        }
-        .nav-group-menu-label {
-          font-size: 0.75rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          opacity: 0.8;
-          padding: 0.35rem 0.9rem 0.15rem;
-        }
-        .nav-group-menu-item {
-          font-size: 0.9rem;
-          display: flex;
-          align-items: center;
-          min-height: 44px;
-          padding: 0.5rem 0.75rem;
-        }
-        .nav-group-menu-item .nav-link--menu {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          width: 100%;
-        }
-        .nav-group-menu-item:hover {
-          background: var(--menu-item-hover-bg);
-        }
-        .nav-group-menu-item.active,
-        .nav-group-menu-item.active:hover {
-          background: var(--menu-item-active-bg);
-        }
-        .nav-group-toggle:hover {
-          background: var(--nav-hover-bg);
-        }
-        .nav-group-toggle.active:hover {
-          background: var(--nav-active-hover-bg);
-        }
-        /* Child/nested items hover states */
-        .c-sidebar-nav .nav-group-items .nav-link:hover {
-          background: var(--nav-hover-bg);
-        }
-        .c-sidebar-nav .nav-group-items .nav-link.active:hover {
-          background: var(--nav-active-hover-bg);
-        }
-      `}</style>
-      <nav
-        className="c-sidebar-nav"
-        data-collapsed={collapsed ? 'true' : 'false'}
-        style={{
-          '--sidebar-nav-hover-bg': `var(--chakra-colors-${hoverBgLight.replace('.', '-')})`,
-          '--sidebar-nav-active-hover-bg': `var(--chakra-colors-${hoverBgDark.replace('.', '-')})`,
-          '--sidebar-menu-item-hover-bg': `var(--chakra-colors-${menuItemHoverBg.replace('.', '-')})`,
-          '--sidebar-menu-item-active-bg': `var(--chakra-colors-${menuItemActiveBg.replace('.', '-')})`,
-        }}
+    <SimpleBar style={{ height: '100%' }}>
+      <Box
+        as="ul"
+        listStyleType="none"
+        m={0}
+        py={{ base: '0.25rem', lg: '0.5rem' }}
       >
-        <SimpleBar style={{ height: '100%' }}>
-          <ul className="nav">
-            {items?.map((item) => renderItem(item))}
-          </ul>
-        </SimpleBar>
-      </nav>
-    </>
+        {items?.map((item) => renderItem(item))}
+      </Box>
+    </SimpleBar>
   )
 }
 
