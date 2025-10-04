@@ -61,6 +61,7 @@ export default function FileViewerModal({
   const [textContent, setTextContent] = useState('')
   const [xmlContent, setXmlContent] = useState('')
   const [isMobile, setIsMobile] = useState(false)
+  const [blobUrl, setBlobUrl] = useState(null)
   const modalVisible = (typeof visible === 'boolean' ? visible : undefined) ?? Boolean(isOpen)
 
   useEffect(() => {
@@ -145,8 +146,43 @@ export default function FileViewerModal({
     if (!modalVisible) {
       setTextContent('')
       setXmlContent('')
+      // Clean up blob URL when modal closes
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl)
+        setBlobUrl(null)
+      }
     }
-  }, [modalVisible])
+  }, [modalVisible, blobUrl])
+
+  // Pre-fetch image/video files with auth headers and create blob URL for Lightbox
+  useEffect(() => {
+    const loadMediaBlob = async () => {
+      if (!modalVisible || !file) return
+      if (!['image', 'video'].includes(detectedType)) {
+        if (blobUrl) {
+          URL.revokeObjectURL(blobUrl)
+          setBlobUrl(null)
+        }
+        return
+      }
+
+      try {
+        const url =
+          typeof resolveFileUrl === 'function' ? resolveFileUrl(file, 'inline') : file?.url || ''
+        if (!url) return
+
+        const response = await axiosInstance.get(url, { responseType: 'blob' })
+        const blob = response.data
+        const objectUrl = URL.createObjectURL(blob)
+        setBlobUrl(objectUrl)
+      } catch (err) {
+        console.error('Failed to load media file:', err)
+        setBlobUrl(null)
+      }
+    }
+
+    loadMediaBlob()
+  }, [modalVisible, file, resolveFileUrl, detectedType])
 
   const handleDownload = () => {
     if (!file) return
@@ -335,13 +371,25 @@ export default function FileViewerModal({
     )
   }
 
-  // Use Lightbox for images and videos
-  if (modalVisible && (detectedType === 'image' || detectedType === 'video') && inlineUrl) {
+  // Use Lightbox for images and videos (use blob URL with auth)
+  if (modalVisible && (detectedType === 'image' || detectedType === 'video')) {
+    // Show loading state while fetching blob
+    if (!blobUrl) {
+      return (
+        <Center h="80vh">
+          <VStack spacing={4}>
+            <Spinner size="xl" color="brand.500" />
+            <Text>{t('common.loading', 'Loading...')}</Text>
+          </VStack>
+        </Center>
+      )
+    }
+
     const slides = []
 
     if (detectedType === 'image') {
       slides.push({
-        src: inlineUrl,
+        src: blobUrl,
         alt: file?.name || 'preview',
       })
     } else if (detectedType === 'video') {
@@ -351,7 +399,7 @@ export default function FileViewerModal({
         height: 1080,
         sources: [
           {
-            src: inlineUrl,
+            src: blobUrl,
             type: file?.mimeType || 'video/mp4',
           },
         ],
