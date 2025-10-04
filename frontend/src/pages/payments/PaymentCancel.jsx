@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { CardBody, Box, Flex, Button } from '@chakra-ui/react'
+import { CardBody, Box, Flex, Button, Heading, Text, Icon, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import PageContainer from '../../components/PageContainer'
 import PageHeader from '../../components/PageHeader'
@@ -11,11 +11,11 @@ const PaymentCancel = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
+  // Color mode values
+  const textColor = useColorModeValue('gray.700', 'gray.200')
+
   return (
-    <PageContainer className="payment-result">
-      <style>{`
-        .payment-result .btn { min-height: 44px; }
-      `}</style>
+    <PageContainer>
       <PageHeader
         title={t('payments.toast.paymentCancelled', 'Payment Cancelled')}
         subtitle={t(
@@ -26,14 +26,16 @@ const PaymentCancel = () => {
       />
       <Box maxW="800px" mx="auto">
         <StandardCard>
-          <CardBody className="text-center py-5">
-              <h4>{t('payments.toast.paymentCancelled', 'Payment Cancelled')}</h4>
-              <p>
+          <CardBody textAlign="center" py={5}>
+              <Heading as="h4" size="md" mb={4}>
+                {t('payments.toast.paymentCancelled', 'Payment Cancelled')}
+              </Heading>
+              <Text color={textColor} mb={6}>
                 {t(
                   'payment.error.generic',
                   'There was an error processing your payment. Please try again.',
                 )}
-              </p>
+              </Text>
               <Flex gap={2} justify="center">
                 <Button
                   colorScheme="brand"
@@ -49,8 +51,8 @@ const PaymentCancel = () => {
                   onClick={() => navigate(-1)}
                   aria-label={t('common.goBack', 'Go Back')}
                   minH="44px"
+                  leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
                 >
-                  <ArrowLeft size={ICON_SIZE_MD} style={{ marginRight: '0.5rem' }} />
                   {t('common.goBack', 'Go Back')}
                 </Button>
               </Flex>
