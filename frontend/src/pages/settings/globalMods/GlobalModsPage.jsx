@@ -525,7 +525,7 @@ const GlobalModsPage = () => {
                           }
                         }}
                       />
-                      <small>{t('globalMods.category.imageHint')}</small>
+                      <Text fontSize="sm" color="gray.500">{t('globalMods.category.imageHint')}</Text>
                     </Box>
                     <Box md={6}>
                       {newCategory.image ? (
@@ -545,9 +545,9 @@ const GlobalModsPage = () => {
                             }}
                           />
                           <Box>
-                            <small>
+                            <Text fontSize="sm">
                               {t('globalMods.category.imageReady')}
-                            </small>
+                            </Text>
                           </Box>
                         </Box>
                       ) : (
@@ -556,7 +556,7 @@ const GlobalModsPage = () => {
                           w={60}
                           h={60}
                         >
-                          <small>📁</small>
+                          <Text fontSize="sm">📁</Text>
                         </Box>
                       )}
                     </Box>
@@ -687,9 +687,9 @@ const GlobalModsPage = () => {
                         required
                       />
                       {!newTemplate.name.trim() && (
-                        <small>
+                        <Text fontSize="sm" color="gray.500">
                           {t('globalMods.template.nameRequired')}
-                        </small>
+                        </Text>
                       )}
                     </Box>
                   </Flex>
@@ -710,9 +710,9 @@ const GlobalModsPage = () => {
                         required
                       />
                       {!newTemplate.defaultPrice && (
-                        <small>
+                        <Text fontSize="sm" color="gray.500">
                           {t('globalMods.template.defaultPriceRequired')}
-                        </small>
+                        </Text>
                       )}
                     </Box>
                   </Flex>
@@ -1202,9 +1202,9 @@ const GlobalModsPage = () => {
                         }}
 
                       />
-                      <small>
+                      <Text fontSize="sm" color="gray.500">
                         {t('globalMods.builder.sampleUpload.hint')}
-                      </small>
+                      </Text>
                     </Box>
                     <Box md={6}>
                       {newTemplate.sampleImage ? (
@@ -1221,11 +1221,11 @@ const GlobalModsPage = () => {
                             }}
                           />
                           <Box>
-                            <small>
+                            <Text fontSize="sm">
                               {t('globalMods.builder.sampleUpload.uploaded', {
                                 name: newTemplate.sampleImage,
                               })}
-                            </small>
+                            </Text>
                           </Box>
                         </Box>
                       ) : (
@@ -1233,7 +1233,7 @@ const GlobalModsPage = () => {
                           bg="gray.50"
                         >
                           <Box>📷</Box>
-                          <small>{t('globalMods.builder.sampleUpload.none')}</small>
+                          <Text fontSize="sm">{t('globalMods.builder.sampleUpload.none')}</Text>
                         </Box>
                       )}
                     </Box>
@@ -1502,9 +1502,9 @@ const GlobalModsPage = () => {
                         required
                       />
                       {!newTemplate.name.trim() && (
-                        <small>
+                        <Text fontSize="sm" color="gray.500">
                           {t('globalMods.template.nameRequired')}
-                        </small>
+                        </Text>
                       )}
                     </Box>
                     <Box md={6}>
@@ -1523,9 +1523,9 @@ const GlobalModsPage = () => {
                         required
                       />
                       {!newTemplate.defaultPrice && (
-                        <small>
+                        <Text fontSize="sm" color="gray.500">
                           {t('globalMods.template.defaultPriceRequired')}
-                        </small>
+                        </Text>
                       )}
                     </Box>
                   </Flex>
@@ -1983,9 +1983,9 @@ const GlobalModsPage = () => {
                         }}
 
                       />
-                      <small>
+                      <Text fontSize="sm" color="gray.500">
                         {t('globalMods.builder.sampleUpload.hint')}
-                      </small>
+                      </Text>
                     </Box>
                     <Box md={6}>
                       {newTemplate.sampleImage ? (
@@ -2002,11 +2002,11 @@ const GlobalModsPage = () => {
                             }}
                           />
                           <Box>
-                            <small>
+                            <Text fontSize="sm">
                               {t('globalMods.builder.sampleUpload.uploaded', {
                                 name: newTemplate.sampleImage,
                               })}
-                            </small>
+                            </Text>
                           </Box>
                         </Box>
                       ) : (
@@ -2014,7 +2014,7 @@ const GlobalModsPage = () => {
                           bg="gray.50"
                         >
                           <Box>📷</Box>
-                          <small>{t('globalMods.builder.sampleUpload.none')}</small>
+                          <Text fontSize="sm">{t('globalMods.builder.sampleUpload.none')}</Text>
                         </Box>
                       )}
                     </Box>
@@ -2201,9 +2201,9 @@ const GlobalModsPage = () => {
                       setEditTemplate((t) => ({ ...t, isReady: e.target.checked }))
                     }
                   />
-                  <Box as="small" color="gray.500" display="block" mt={1}>
+                  <Text fontSize="sm" color="gray.500" display="block" mt={1}>
                     {t('globalMods.modal.editTemplate.ready.hint')}
-                  </small>
+                  </Text>
                 </Box>
               </Box>
             </Flex>
@@ -2529,12 +2529,12 @@ const GlobalModsPage = () => {
 
                     {deleteMode === 'withMods' && (
                       <Box bg="red.100" p={3} borderRadius="md" mt={2} ml={4}>
-                        <small>
+                        <Text fontSize="sm">
                           <Trans
                             i18nKey="globalMods.modal.deleteCategory.withMods.danger"
                             values={{ count: deleteCategory.templateCount }}
                           />
-                        </small>
+                        </Text>
                       </Box>
                     )}
                   </Box>
