@@ -570,6 +570,7 @@ const Contracts = () => {
             )}
           </Stack>
         ) : (
+          <Box display={{ base: 'none', lg: 'block' }}>
           <TableCard>
             <Table variant="simple">
                   <Thead>
@@ -668,6 +669,7 @@ const Contracts = () => {
                   </Tbody>
                 </Table>
           </TableCard>
+          </Box>
         )}
         {totalPages > 1 && (
           <StandardCard variant="outline">

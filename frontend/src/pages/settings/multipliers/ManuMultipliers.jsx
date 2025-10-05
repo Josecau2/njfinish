@@ -317,6 +317,7 @@ const ManuMultipliers = () => {
           </CardBody>
         </StandardCard>
 
+        <Box display={{ base: 'none', lg: 'block' }}>
         <TableCard>
           <Table variant="simple">
                 <Thead>
@@ -416,6 +417,7 @@ const ManuMultipliers = () => {
               </Box>
             )}
         </TableCard>
+        </Box>
 
         <EditGroupModal
           show={showModal}

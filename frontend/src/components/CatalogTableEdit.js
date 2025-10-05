@@ -121,6 +121,7 @@ const CatalogTableEdit = ({
   const textRed500 = useColorModeValue("red.500", "red.300")
   const textGreen500 = useColorModeValue("green.500", "green.300")
   const borderGray400 = useColorModeValue("gray.400", "gray.600")
+  const buildUnavailableTextProps = (item) => (item?.unavailable ? { color: textRed500, textDecoration: 'line-through' } : {})
   const rowBgEven = useColorModeValue("gray.50", "gray.700")
   const rowBgOdd = useColorModeValue("white", "gray.800")
   const rowBorder = useColorModeValue("gray.200", "gray.600")
@@ -462,7 +463,7 @@ const CatalogTableEdit = ({
                       py={1}
                       fontWeight="normal"
                     >
-                      <strong>{item.code}</strong> — {item.description}
+                      <Text as="span" fontWeight="bold">{item.code}</Text> — {item.description}
                     </Button>
                     {hasTypeMetadata(getItemType(item)) && (
                       <Button
@@ -583,9 +584,7 @@ const CatalogTableEdit = ({
                 : 0
               const total = Number(item.price || 0) * qty + assemblyFee + modsTotal
 
-              const rowStyle = item.unavailable
-                ? { color: 'var(--chakra-colors-red-600)', textDecoration: 'line-through' }
-                : undefined
+              const rowTextProps = buildUnavailableTextProps(item)
               return (
                 <React.Fragment key={idx}>
                   <Tr
@@ -628,7 +627,7 @@ const CatalogTableEdit = ({
                       />
                     </Td>
 
-                    <Td style={rowStyle}>
+                    <Td  {{...rowTextProps}}>
                       <Flex align="center" gap={2} minW={0}>
                         <Flex
                           align="baseline"
@@ -769,13 +768,13 @@ const CatalogTableEdit = ({
                       </Td>
                     )}
 
-                    <Td style={rowStyle}>
+                    <Td  {{...rowTextProps}}>
                       {formatPrice(item.unavailable ? 0 : item.price)}
                     </Td>
 
                     <Td>
                       {assembled ? (
-                        <Text as="span" color={rowStyle?.color} textDecoration={rowStyle?.textDecoration}>
+                        <Text as="span" {...mobileTextProps}>
                           {formatPrice(item.unavailable ? 0 : assemblyFee)}
                         </Text>
                       ) : (
@@ -784,7 +783,7 @@ const CatalogTableEdit = ({
                     </Td>
 
                     <Td>{formatPrice(modsTotal)}</Td>
-                    <Td style={rowStyle}>
+                    <Td  {{...rowTextProps}}>
                       {formatPrice(item.unavailable ? 0 : total)}
                     </Td>
 
@@ -989,9 +988,7 @@ const CatalogTableEdit = ({
             ? item.modifications.reduce((s, m) => s + Number(m.price || 0) * Number(m.qty || 1), 0)
             : 0
           const total = Number(item.price || 0) * qty + assemblyFee + modsTotal
-          const rowStyle = item.unavailable
-            ? { color: 'var(--chakra-colors-red-600)', textDecoration: 'line-through' }
-            : undefined
+          const mobileTextProps = buildUnavailableTextProps(item)
 
           return (
             <React.Fragment key={`mobile-${idx}`}>
@@ -1045,7 +1042,7 @@ const CatalogTableEdit = ({
                     wrap="wrap"
                     minW={0}
                   >
-                    <Text fontWeight="bold" style={rowStyle}>
+                    <Text fontWeight="bold"  {{...rowTextProps}}>
                       {item.code}
                     </Text>
                     {item?.description ? (
@@ -1094,7 +1091,7 @@ const CatalogTableEdit = ({
 
                 <Flex mb={2} justify="space-between" align="center">
                   <Text fontWeight="medium" color={textGray600}>{t('proposalColumns.price')}</Text>
-                  <Text style={rowStyle}>
+                  <Text  {{...rowTextProps}}>
                     {formatPrice(item.unavailable ? 0 : item.price)}
                   </Text>
                 </Flex>
@@ -1195,7 +1192,7 @@ const CatalogTableEdit = ({
 
                     <Flex mb={2} justify="space-between" align="center">
                       <Text fontWeight="medium" color={textGray600}>{t('proposalColumns.assemblyCost')}</Text>
-                      <Text style={rowStyle}>
+                      <Text  {{...rowTextProps}}>
                         {formatPrice(item.unavailable ? 0 : assemblyFee)}
                       </Text>
                     </Flex>
@@ -1217,7 +1214,7 @@ const CatalogTableEdit = ({
                   borderRadius="md"
                   textAlign="center"
                 >
-                  <Text fontWeight="bold" style={rowStyle}>
+                  <Text fontWeight="bold"  {{...rowTextProps}}>
                     {t('proposalColumns.total')}: {formatPrice(item.unavailable ? 0 : total)}
                   </Text>
                 </Box>

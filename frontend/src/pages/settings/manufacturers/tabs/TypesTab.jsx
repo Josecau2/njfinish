@@ -1,4 +1,5 @@
 import StandardCard from '../../../../components/StandardCard'
+import { TableCard } from '../../../../components/TableCard'
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { Alert, Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormLabel, HStack, IconButton, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue, Heading } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
@@ -954,7 +955,8 @@ const TypesTab = ({ manufacturer }) => {
             </>
           ) : (
             // Table View
-            <Table hover responsive>
+            <TableCard>
+              <Table variant="simple">
               <Thead>
                 <Tr>
                   <Th>
@@ -1013,6 +1015,7 @@ const TypesTab = ({ manufacturer }) => {
                 ))}
               </Tbody>
             </Table>
+            </TableCard>
           )}
         </CardBody>
       </StandardCard>

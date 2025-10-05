@@ -203,7 +203,8 @@
       "Bash(else echo \"$file NOT FOUND\")",
       "Bash(git restore:*)",
       "Bash(git grep:*)",
-      "Bash(start table-card-preview.html)"
+      "Bash(start table-card-preview.html)",
+      "Bash(do echo -e \"\\n### $file\")"
     ],
     "deny": [],
     "ask": []

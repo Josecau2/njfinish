@@ -444,6 +444,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
               </Box>
 
               {/* Table */}
+              <Box display={{ base: 'none', lg: 'block' }}>
               <TableCard>
                 <Table variant="striped">
                   <Thead>
@@ -590,6 +591,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                   </Tbody>
                 </Table>
               </TableCard>
+              </Box>
 
               {/* Pagination */}
               {pagination?.totalPages > 1 && (
@@ -871,6 +873,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                           <AccordionIcon />
                         </AccordionButton>
                         <AccordionPanel>
+                          <Box display={{ base: 'none', lg: 'block' }}>
                           <TableCard>
                             <Table variant="striped">
                               <Thead>
@@ -903,6 +906,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                               </Tbody>
                             </Table>
                           </TableCard>
+                          </Box>
 
                           <Box>
                             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>

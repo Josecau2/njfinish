@@ -1,10 +1,10 @@
 {
   "summary": {
-    "total": 257,
-    "chakra_only": 43,
-    "mixed": 107,
+    "total": 260,
+    "chakra_only": 141,
+    "mixed": 12,
     "no_chakra": 107,
-    "components_flagged": 106
+    "components_flagged": 14
   },
   "files": [
     {
@@ -234,17 +234,13 @@
     {
       "path": "components/AppFooter.js",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/AppHeader.js",
@@ -284,20 +280,27 @@
     {
       "path": "components/AppSidebar.js",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/AppSidebarNav.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/AuthLayout.jsx",
       "has_chakra_import": true,
       "raw_tags": [],
       "classnames": 0,
@@ -321,64 +324,35 @@
     {
       "path": "components/CatalogTable.js",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "strong",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/CatalogTableEdit.js",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "strong",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
-      "classnames": 0,
-      "inline_styles": 7,
-      "non_chakra_imports": [],
-      "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags",
-        "inline_style_usage"
-      ]
-    },
-    {
-      "path": "components/DocsComponents.js",
-      "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/DocsComponents.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/DocsExample.js",
@@ -394,17 +368,13 @@
     {
       "path": "components/DocsIcons.js",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/DocsLink.js",
@@ -420,36 +390,24 @@
     {
       "path": "components/EditManufacturerModal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/EditUsersModel.js",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/EmbeddedPaymentForm.jsx",
@@ -465,32 +423,24 @@
     {
       "path": "components/ErrorBoundary.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": false,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/FileViewerModal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/index.js",
@@ -508,62 +458,35 @@
     {
       "path": "components/ItemSelectionContent.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/ItemSelectionContentEdit.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/LanguageSwitcher.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/Loader.js",
@@ -590,19 +513,13 @@
     {
       "path": "components/LoginPreview.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "textarea"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/NeutralModal.jsx",
@@ -631,17 +548,13 @@
     {
       "path": "components/NotificationBell.js",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/PageContainer.jsx",
@@ -657,17 +570,13 @@
     {
       "path": "components/PageErrorBoundary.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/PageHeader.jsx",
@@ -744,18 +653,13 @@
     {
       "path": "components/ProposalAcceptanceModal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/ProtectedRoute.jsx",
@@ -786,22 +690,13 @@
     {
       "path": "components/ResponsiveTable.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/RouteGuard.js",
@@ -867,50 +762,46 @@
     {
       "path": "components/StyleCarousel.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/StyleMerger.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/TableCard.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/TermsModal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "strong"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/TileCard.jsx",
@@ -976,17 +867,13 @@
     {
       "path": "components/common/AppButton.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": false,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/common/EmptyState.jsx",
@@ -1024,65 +911,46 @@
     {
       "path": "components/contact/ContactInfoEditor.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/contact/MessageComposer.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "textarea"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/contact/MessageHistory.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/contact/ThreadView.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "textarea"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/ContentTile/index.jsx",
@@ -1098,22 +966,13 @@
     {
       "path": "components/DataTable/DataTable.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/DataTable/index.js",
@@ -1155,17 +1014,13 @@
     {
       "path": "components/form/CreatableCombobox.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": false,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/header/AppHeaderDropdown.js",
@@ -1194,57 +1049,41 @@
     {
       "path": "components/model/EditGroupModal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/model/EditManufacturerModal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/model/EmailContractModal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/model/EmailProposalModal.jsx",
       "has_chakra_import": true,
       "raw_tags": [
-        "br",
-        "input",
-        "textarea"
+        "br"
       ],
       "classnames": 0,
       "inline_styles": 0,
@@ -1258,60 +1097,40 @@
     {
       "path": "components/model/ModificationBrowserModal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/model/ModificationModal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/model/ModificationModalEdit.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/model/PrintPaymentReceiptModal.jsx",
       "has_chakra_import": true,
       "raw_tags": [
-        "button",
         "div",
         "h1",
         "h2",
@@ -1331,17 +1150,13 @@
     {
       "path": "components/model/PrintProposalModal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/PageLayout/index.js",
@@ -1370,33 +1185,24 @@
     {
       "path": "components/showroom/ShowroomModeToggle.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/ui/CButton.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "config/customization.js",
@@ -1754,79 +1560,46 @@
     {
       "path": "pages/3dkitchen/ComingSoon.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/admin/ContractorDetail.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/admin/Contractors.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/admin/LeadsPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select",
-        "table",
-        "tbody",
-        "td",
-        "textarea",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/admin/contact/AdminContactSettings.js",
@@ -1857,23 +1630,13 @@
     {
       "path": "pages/admin/ContractorDetail/CustomersTab.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "input",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/admin/ContractorDetail/OverviewTab.jsx",
@@ -1889,82 +1652,54 @@
     {
       "path": "pages/admin/ContractorDetail/ProposalsTab.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/admin/ContractorDetail/SettingsTab.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "code"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/auth/ForgotPasswordPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 3,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
       "status": "mixed",
       "reasons": [
-        "raw_html_tags",
         "className_usage"
       ]
     },
     {
       "path": "pages/auth/LoginPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
-      "classnames": 3,
+      "raw_tags": [],
+      "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags",
-        "className_usage"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/auth/RequestAccessPage.jsx",
       "has_chakra_import": true,
       "raw_tags": [
-        "button",
-        "input",
-        "span",
-        "textarea"
+        "span"
       ],
       "classnames": 3,
       "inline_styles": 0,
@@ -1979,53 +1714,39 @@
     {
       "path": "pages/auth/ResetPasswordPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 3,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
       "status": "mixed",
       "reasons": [
-        "raw_html_tags",
         "className_usage"
       ]
     },
     {
       "path": "pages/auth/SignupPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 1,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
       "status": "mixed",
       "reasons": [
-        "raw_html_tags",
         "className_usage"
       ]
     },
     {
       "path": "pages/calender/index.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/contact/ContactUs.jsx",
@@ -2041,27 +1762,19 @@
     {
       "path": "pages/contractor/ContractorDashboard.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/contracts/index.jsx",
       "has_chakra_import": true,
       "raw_tags": [
-        "button",
         "div",
-        "input",
-        "option",
-        "select",
         "strong",
         "table",
         "tbody",
@@ -2082,98 +1795,68 @@
     {
       "path": "pages/customers/AddCustomerForm.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select",
-        "textarea"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/customers/CustomerForm.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select",
-        "textarea"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/customers/Customers.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/customers/EditCustomerPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select",
-        "textarea"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/dashboard/Dashboard.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "pages/demo/TableCardDemo.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/orders/AdminOrders.jsx",
@@ -2204,199 +1887,123 @@
     {
       "path": "pages/orders/OrderDetails.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/orders/OrdersList.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/payments/PaymentCancel.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/payments/PaymentConfiguration.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select",
-        "textarea"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/payments/PaymentPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/payments/PaymentsList.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/payments/PaymentSuccess.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "code"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/payments/PaymentTest.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/profile/index.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/proposals/CreateProposalForm.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/proposals/EditProposal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/proposals/ProposalEditor.jsx",
@@ -2412,87 +2019,57 @@
     {
       "path": "pages/proposals/Proposals.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/proposals/CreateProposal/CustomerInfo.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "input",
-        "textarea"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/proposals/CreateProposal/DesignUpload.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/proposals/CreateProposal/FileUploadSection.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/proposals/CreateProposal/ManufacturerSelect.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/proposals/CreateProposal/ProposalEditor.jsx",
@@ -2508,20 +2085,13 @@
     {
       "path": "pages/proposals/CreateProposal/ProposalSummary.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/proposals/EditProposal/EditProposal.jsx",
@@ -2539,17 +2109,13 @@
     {
       "path": "pages/public/PublicProposalPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/quotes/Create/CreateQuote.jsx",
@@ -2600,38 +2166,24 @@
     {
       "path": "pages/Resources/index.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select",
-        "textarea",
-        "video"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/customization/CustomizationPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/customization/index.jsx",
@@ -2647,58 +2199,30 @@
     {
       "path": "pages/settings/customization/LoginCustomizerPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "input",
-        "textarea"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/customization/PdfLayoutCustomization.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "table",
-        "tbody",
-        "td",
-        "textarea",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/globalMods/GlobalModsPage.jsx",
       "has_chakra_import": true,
       "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select",
-        "strong",
-        "table",
-        "tbody",
-        "td",
-        "textarea",
-        "th",
-        "thead",
-        "tr"
+        "strong"
       ],
       "classnames": 0,
       "inline_styles": 0,
@@ -2712,62 +2236,35 @@
     {
       "path": "pages/settings/locations/CreateLocation.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/locations/EditLocation.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/locations/LocationList.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/manufacturers/EditManufacturer.jsx",
@@ -2783,58 +2280,34 @@
     {
       "path": "pages/settings/manufacturers/ManufacturersForm.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "textarea"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/manufacturers/ManufacturersList.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
       "has_chakra_import": true,
       "raw_tags": [
         "br",
-        "button",
         "em",
         "hr",
-        "input",
         "label",
-        "option",
-        "select",
-        "strong",
-        "table",
-        "tbody",
-        "td",
-        "textarea",
-        "th",
-        "thead",
-        "tr"
+        "strong"
       ],
       "classnames": 0,
       "inline_styles": 0,
@@ -2848,69 +2321,40 @@
     {
       "path": "pages/settings/manufacturers/tabs/EditManufacturerTab.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "textarea"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/manufacturers/tabs/FilesHistoryTab.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/manufacturers/tabs/SettingsTab.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "input",
-        "option",
-        "select",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/manufacturers/tabs/StylePicturesTab.jsx",
       "has_chakra_import": true,
       "raw_tags": [
-        "button",
-        "input",
         "strong"
       ],
       "classnames": 0,
@@ -2926,17 +2370,7 @@
       "path": "pages/settings/manufacturers/tabs/TypesTab.jsx",
       "has_chakra_import": true,
       "raw_tags": [
-        "button",
-        "datalist",
-        "input",
-        "option",
-        "table",
-        "tbody",
-        "td",
-        "textarea",
-        "th",
-        "thead",
-        "tr"
+        "datalist"
       ],
       "classnames": 0,
       "inline_styles": 0,
@@ -2963,192 +2397,112 @@
     {
       "path": "pages/settings/multipliers/EditManuMultiplier.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/multipliers/ManuMultipliers.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "input",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/taxes/TaxesPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/terms/TermsPage.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "table",
-        "tbody",
-        "td",
-        "textarea",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/users/CreateUser.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/users/EditUser.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/users/UserList.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/usersGroup/CreateUserGroup.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/usersGroup/EditUserGroup.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "input",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "pages/settings/usersGroup/UserGroupList.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "queries/contractQueries.js",
@@ -3219,7 +2573,6 @@
       "path": "routes/__audit__/index.jsx",
       "has_chakra_import": true,
       "raw_tags": [
-        "button",
         "code"
       ],
       "classnames": 0,
@@ -3778,55 +3131,35 @@
     {
       "path": "views/notifications/NotificationsPage.js",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "option",
-        "select"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "views/pages/page404/Page404.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "input"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "views/proposals/AdminProposalView.js",
       "has_chakra_import": true,
-      "raw_tags": [
-        "button",
-        "table",
-        "tbody",
-        "td",
-        "th",
-        "thead",
-        "tr"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     }
   ]
 }

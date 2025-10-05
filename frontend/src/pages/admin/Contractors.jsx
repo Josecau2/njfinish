@@ -298,6 +298,7 @@ const Contractors = () => {
           </CardBody>
         </StandardCard>
 
+        <Box display={{ base: 'none', lg: 'block' }}>
         <TableCard>
           <Table variant="simple">
                 <Thead>
@@ -371,6 +372,7 @@ const Contractors = () => {
                 </Tbody>
               </Table>
         </TableCard>
+        </Box>
 
             <Box display={{ base: 'block', lg: 'none' }} mt={6}>
               <Stack spacing={4}>

@@ -141,6 +141,7 @@ const TermsPage = () => {
               <Text color={iconGray500} fontSize="sm" mb={2}>
                 {t('settings.terms.version', 'Version')}: {acceptance?.version ?? '-'}
               </Text>
+              <Box display={{ base: 'none', lg: 'block' }}>
               <TableCard cardProps={{ mb: 0 }}>
               <Table variant="simple">
                 <Thead>
@@ -173,6 +174,7 @@ const TermsPage = () => {
                 </Tbody>
               </Table>
               </TableCard>
+              </Box>
             </CardBody>
           </StandardCard>
         </Box>

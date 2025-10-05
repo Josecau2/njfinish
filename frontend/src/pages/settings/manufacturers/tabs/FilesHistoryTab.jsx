@@ -30,6 +30,7 @@ const FilesHistoryTab = ({ manufacturer }) => {
       {files.length === 0 ? (
         <Text>{t('settings.manufacturers.filesHistory.empty')}</Text>
       ) : (
+        <Box display={{ base: 'none', lg: 'block' }}>
         <TableCard>
           <Table variant="simple" size="md">
             <Thead>
@@ -79,6 +80,7 @@ const FilesHistoryTab = ({ manufacturer }) => {
             </Tbody>
           </Table>
         </TableCard>
+        </Box>
       )}
     </Box>
   )

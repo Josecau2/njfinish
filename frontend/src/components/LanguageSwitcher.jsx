@@ -1,13 +1,16 @@
 import React from 'react'
-import { Select } from '@chakra-ui/react'
+import { Button, Menu, MenuButton, MenuItemOption, MenuList, MenuOptionGroup } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
+
+import { ChevronDown } from 'lucide-react'
+
+const languages = ['en', 'es']
 
 const LanguageSwitcher = ({ compact = false }) => {
   const { i18n, t } = useTranslation()
   const current = i18n.resolvedLanguage || i18n.language || 'en'
 
-  const handleChange = (event) => {
-    const nextLanguage = event.target.value
+  const handleChange = (nextLanguage) => {
     i18n.changeLanguage(nextLanguage)
     try {
       localStorage.setItem('lang', nextLanguage)
@@ -17,20 +20,30 @@ const LanguageSwitcher = ({ compact = false }) => {
   }
 
   const minWidth = compact ? 'auto' : '140px'
+  const currentLabel = t(`languages.${current === 'en' ? 'english' : 'spanish'}`)
 
   return (
-    <Select
-      size='sm'
-      value={current}
-      onChange={handleChange}
-      w='auto'
-      aria-label='Select language'
-      minH='44px'
-      minW={minWidth}
-    >
-      <option value='en'>{t('languages.english')}</option>
-      <option value='es'>{t('languages.spanish')}</option>
-    </Select>
+    <Menu placement='bottom-end'>
+      <MenuButton
+        as={Button}
+        size='sm'
+        minH='44px'
+        minW={minWidth}
+        variant={compact ? 'ghost' : 'outline'}
+        rightIcon={<ChevronDown size={14} />}
+      >
+        {currentLabel}
+      </MenuButton>
+      <MenuList minW={minWidth}>
+        <MenuOptionGroup type='radio' value={current} onChange={handleChange}>
+          {languages.map((lang) => (
+            <MenuItemOption key={lang} value={lang}>
+              {t(`languages.${lang === 'en' ? 'english' : 'spanish'}`)}
+            </MenuItemOption>
+          ))}
+        </MenuOptionGroup>
+      </MenuList>
+    </Menu>
   )
 }
 

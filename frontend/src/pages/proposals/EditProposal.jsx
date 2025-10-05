@@ -70,8 +70,7 @@ import EmailContractModal from '../../components/model/EmailContractModal'
 import Loader from '../../components/Loader'
 import axiosInstance from '../../helpers/axiosInstance'
 import {
-  validateProposalSubTypeRequirements,
-  showSubTypeValidationError,
+  validateProposalSubTypeRequirements
 } from '../../helpers/subTypeValidation'
 
 // Removed Yup validation schema - using simple form validation

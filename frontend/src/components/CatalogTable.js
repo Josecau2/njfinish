@@ -358,7 +358,7 @@ const CatalogTable = ({
                     py={1}
                     fontWeight="normal"
                   >
-                    <strong>{item.code}</strong> — {item.description}
+                    <Text as="span" fontWeight="bold">{item.code}</Text> — {item.description}
                   </Button>
                   {hasTypeMetadata(item.type) && (
                     <Button
@@ -488,19 +488,19 @@ const CatalogTable = ({
                 {selectedTypeInfo.code && (
                   <Box mb={2} borderBottom="1px solid" borderColor={borderColor} pb={2}>
                     <Text as="span" color={labelColor} fontWeight="medium">{t('catalog.labels.code', 'Code')}:</Text>{' '}
-                    <strong>{selectedTypeInfo.code}</strong>
+                    <Text as="span" fontWeight="bold">{selectedTypeInfo.code}</Text>
                   </Box>
                 )}
                 {selectedTypeInfo.name && (
                   <Box mb={2} borderBottom="1px solid" borderColor={borderColor} pb={2}>
                     <Text as="span" color={labelColor} fontWeight="medium">{t('catalog.labels.name', 'Name')}:</Text>{' '}
-                    <strong>{selectedTypeInfo.name}</strong>
+                    <Text as="span" fontWeight="bold">{selectedTypeInfo.name}</Text>
                   </Box>
                 )}
                 {selectedTypeInfo.shortName && (
                   <Box mb={3} borderBottom="1px solid" borderColor={borderColor} pb={2}>
                     <Text as="span" color={labelColor} fontWeight="medium">{t('catalog.labels.short', 'Short')}:</Text>{' '}
-                    <strong>{selectedTypeInfo.shortName}</strong>
+                    <Text as="span" fontWeight="bold">{selectedTypeInfo.shortName}</Text>
                   </Box>
                 )}
                 <Box mt={3}>
@@ -649,7 +649,7 @@ const CatalogTable = ({
                           textOverflow="ellipsis"
                           maxW="320px"
                         >
-                          <strong>{item.code}</strong>
+                          <Text as="span" fontWeight="bold">{item.code}</Text>
                           {item.description ? (
                             <Text as="span" color={descriptionColor} ml={1}>— {item.description}</Text>
                           ) : null}

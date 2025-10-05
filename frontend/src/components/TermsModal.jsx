@@ -11,6 +11,7 @@ import {
   Alert,
   AlertIcon,
   Box,
+  Text,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getLatestTerms, acceptTerms } from '../helpers/termsApi'
@@ -180,7 +181,7 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
             <Alert status='warning' mt={3} borderRadius='md'>
               <AlertIcon />
               <Box>
-                <strong>{t('termsModal.forced.requiredLabel')}</strong>{' '}
+                <Text as="span" fontWeight="semibold">{t('termsModal.forced.requiredLabel')}</Text>{' '}
                 {t('termsModal.forced.requiredMessage')}
               </Box>
             </Alert>
@@ -216,3 +217,5 @@ const TermsModal = ({ visible, onClose, onReject, requireScroll = true, isForced
 }
 
 export default TermsModal
+
+

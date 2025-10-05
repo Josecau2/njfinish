@@ -12,12 +12,12 @@ from typing import Dict, List
 
 RAW_HTML_TAGS = [
     'div', 'span', 'section', 'main', 'header', 'footer', 'nav', 'ul', 'ol', 'li', 'button', 'table',
-    'thead', 'tbody', 'tr', 'th', 'td', 'form', 'input', 'label', 'select', 'option', 'textarea',
+    'thead', 'tbody', 'tr', 'th', 'td', 'form', 'input', 'label', 'select', 'textarea',
     'img', 'p', 'strong', 'em', 'small', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'article', 'aside',
     'figure', 'figcaption', 'fieldset', 'legend', 'datalist', 'details', 'summary', 'canvas',
     'video', 'audio', 'iframe', 'pre', 'code', 'blockquote', 'q', 'sup', 'sub', 'br', 'hr'
 ]
-RAW_TAG_PATTERN = re.compile(r'<\s*(%s)(?=[\s>/])' % '|'.join(RAW_HTML_TAGS), re.IGNORECASE)
+RAW_TAG_PATTERN = re.compile(r'<\s*(%s)(?=[\s>/])' % '|'.join(RAW_HTML_TAGS))
 CLASSNAME_PATTERN = re.compile(r'\bclassName\s*=')
 INLINE_STYLE_PATTERN = re.compile(r'\bstyle\s*=\s*\{')
 CHAKRA_IMPORT_PATTERN = re.compile(r"@chakra-ui/(?:react|icons)")
@@ -218,6 +218,7 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+
 
 
 

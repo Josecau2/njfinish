@@ -55,27 +55,15 @@ export const formatSubTypeValidationErrors = (missingRequirements) => {
     const itemCode = req.itemCode ? `(${req.itemCode})` : ''
     const requirement = req.requirement || 'selection'
 
-    return `• ${itemName} ${itemCode}: ${requirement} selection required`
+    return `- ${itemName} ${itemCode}: ${requirement} selection required`
   })
 
-  return `The following items have missing requirements:\n\n${errorMessages.join('\n')}\n\nPlease complete all required selections before accepting the quote.`
-}
+  return `The following items have missing requirements:
 
-/**
- * Shows a user-friendly error dialog for sub-type validation failures
- * @param {Array} missingRequirements - Array of missing requirement objects
- * @param {Function} Swal - SweetAlert2 instance
- */
-export const showSubTypeValidationError = (missingRequirements, Swal) => {
-  const errorMessage = formatSubTypeValidationErrors(missingRequirements)
+${errorMessages.join('
+')}
 
-  return Swal.fire({
-    title: 'Missing Required Selections',
-    text: errorMessage,
-    icon: 'warning',
-    confirmButtonText: 'OK',
-    confirmButtonColor: '#d33',
-  })
+Please complete all required selections before accepting the quote.`
 }
 
 /**
