@@ -2740,9 +2740,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       <>
         {/* Debug info - remove this later */}
         {process.env.NODE_ENV === 'development' && (
-          <small>
+          <Text fontSize="sm" color="gray.500">
             Style Filter: "{styleFilter}" | Styles Count: {sortedUniqueStyles.length}
-          </small>
+          </Text>
         )}
 
         {/* Style Management Section */}
@@ -2752,10 +2752,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <Box>
                 <strong>Managing Style: "{styleFilter}"</strong>
                 <br />
-                <small>
+                <Text fontSize="sm" color="gray.500">
                   {catalogData.filter((item) => item.style === styleFilter).length} items with this
                   style
-                </small>
+                </Text>
               </Box>
               <Flex gap={2} flexShrink={0}>
                 <Button
@@ -5578,9 +5578,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             </Box>
                             {guidedBuilder.sideSelector.enabled && (
                               <Box>
-                                <small>
+                                <Text fontSize="sm" color="gray.500">
                                   Limited to Left/Right options
-                                </small>
+                                </Text>
                                 <Input
                                   placeholder="L,R"
                                   value={guidedBuilder.sideSelector.options?.join(',')}
@@ -7236,9 +7236,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresHingeSelection')}
               </Checkbox>
-              <small>
+              <Text fontSize="sm" color="gray.500">
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresHingeHelp')}
-              </small>
+              </Text>
             </Box>
             <Box>
               <Checkbox
@@ -7253,9 +7253,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresExposedSelection')}
               </Checkbox>
-              <small>
+              <Text fontSize="sm" color="gray.500">
                 {t('settings.manufacturers.catalogMapping.subTypes.requiresExposedHelp')}
-              </small>
+              </Text>
             </Box>
           </Box>
         </ModalBody>
@@ -7375,11 +7375,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <Td>{group.description}</Td>
                     <Td>{group.type}</Td>
                     <Td>
-                      <small>
+                      <Text fontSize="sm" color="gray.500">
                         {group.styles.slice(0, 3).join(', ')}
                         {group.styles.length > 3 &&
                           ` +${group.styles.length - 3} ${t('settings.manufacturers.catalogMapping.subTypes.assignModal.more', 'more')}`}
-                      </small>
+                      </Text>
                     </Td>
                     <Td>
                       <Badge colorScheme="info">{group.itemIds.length}</Badge>

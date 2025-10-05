@@ -566,7 +566,7 @@ const GlobalModsPage = () => {
 
               {gallery.map((cat) => (
                 <Box key={cat.id}>
-                  <Box as="h6" mb={2} display="flex" alignItems="center" gap={2}>
+                  <Heading as="h6" size="sm" mb={2} display="flex" alignItems="center" gap={2}>
                     {cat.image && (
                       <Image
                         src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${cat.image}`}
@@ -1187,9 +1187,9 @@ const GlobalModsPage = () => {
                 <CardBody>
                   <Flex>
                     <Box md={6}>
-                      <Box as="label" mb={2}>
+                      <Text as="label" mb={2}>
                         {t('globalMods.builder.sampleUpload.uploadLabel')}
-                      </label>
+                      </Text>
                       <Input
                         type="file"
                         accept="image/*"
@@ -1968,9 +1968,9 @@ const GlobalModsPage = () => {
                 <CardBody>
                   <Flex>
                     <Box md={6}>
-                      <Box as="label" mb={2}>
+                      <Text as="label" mb={2}>
                         {t('globalMods.builder.sampleUpload.uploadLabel')}
-                      </label>
+                      </Text>
                       <Input
                         type="file"
                         accept="image/*"
