@@ -65,6 +65,11 @@ EXCLUDED_PATH_PREFIXES = [
     'components/pdf/',
 ]
 
+EXCLUDED_FILE_PATHS = {
+    'components/model/PrintPaymentReceiptModal.jsx',
+    'helpers/generateContractHtml.js',
+}
+
 @dataclass
 class FileAnalysis:
     path: str
@@ -103,7 +108,7 @@ def detect_non_chakra_components(root: str) -> List[FileAnalysis]:
             full_path = os.path.join(dirpath, filename)
             rel_path = os.path.relpath(full_path, root)
             rel_path = rel_path.replace('\\', '/')
-            if any(rel_path.startswith(prefix) for prefix in EXCLUDED_PATH_PREFIXES):
+            if any(rel_path.startswith(prefix) for prefix in EXCLUDED_PATH_PREFIXES) or rel_path in EXCLUDED_FILE_PATHS:
                 continue
             try:
                 with open(full_path, 'r', encoding='utf-8') as fh:

@@ -178,7 +178,7 @@ const UserGroupList = () => {
           )}
 
           {/* Desktop table */}
-          <Box display={{ base: 'none', md: 'block' }}>
+          <Box display={{ base: 'none', lg: 'block' }}>
             <TableCard>
               <Table variant="simple" size="sm">
               <Thead>
@@ -246,7 +246,7 @@ const UserGroupList = () => {
           </Box>
 
           {/* Mobile card list */}
-          <VStack display={{ base: 'flex', md: 'none' }} spacing={4} align="stretch">
+          <VStack display={{ base: 'flex', lg: 'none' }} spacing={4} align="stretch">
             {userGroups.length === 0 ? (
               <Text textAlign="center" color={textGray500} py={8}>
                 {t('settings.userGroups.empty')}

@@ -7,6 +7,7 @@ import {
   Stack,
   Link,
   Text,
+  Code,
   Button,
   IconButton,
   VStack,
@@ -364,7 +365,7 @@ function ButtonVariants() {
         })}
         <Divider />
         <Text fontSize="sm" color={useColorModeValue("gray.600","gray.300")}>
-          Need bespoke fixtures? Extend BUTTON_VARIANT_PRESETS in <code>src/routes/__audit__/index.jsx</code>.
+          Need bespoke fixtures? Extend BUTTON_VARIANT_PRESETS in <Code>src/routes/__audit__/index.jsx</Code>.
         </Text>
       </VStack>
     </Box>

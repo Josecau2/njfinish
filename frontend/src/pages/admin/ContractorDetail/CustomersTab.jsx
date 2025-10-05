@@ -298,7 +298,7 @@ const CustomersTab = ({ contractor, groupId }) => {
               ))}
             </SimpleGrid>
 
-            <Box display={{ base: 'none', md: 'block' }}>
+            <Box display={{ base: 'none', lg: 'block' }}>
               <TableCard>
                 <Table variant="striped" size="sm">
                   <Thead>
@@ -425,7 +425,7 @@ const CustomersTab = ({ contractor, groupId }) => {
               </TableCard>
             </Box>
 
-            <Box display={{ base: 'block', md: 'none' }}>
+            <Box display={{ base: 'block', lg: 'none' }}>
               {paginatedCustomers.length === 0 ? (
                 <EmptyState
                   title={t('contractorsAdmin.detail.customers.empty.title')}

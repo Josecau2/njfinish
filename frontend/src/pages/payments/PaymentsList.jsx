@@ -476,7 +476,7 @@ const PaymentsList = ({ isContractor }) => {
       {/* Create Payment Modal */}
       <Modal isOpen={isCreateModalOpen} onClose={onCreateModalClose} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={createPaymentForm.handleSubmit(onCreatePaymentSubmit)}>
+        <ModalContent as="form" onSubmit={createPaymentForm.handleSubmit(onCreatePaymentSubmit)} borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('payments.create.title', 'Create Payment')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -508,7 +508,7 @@ const PaymentsList = ({ isContractor }) => {
       {/* Gateway Selection Modal */}
       <Modal isOpen={isGatewayModalOpen} onClose={onGatewayModalClose} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={gatewayForm.handleSubmit(onGatewaySubmit)}>
+        <ModalContent as="form" onSubmit={gatewayForm.handleSubmit(onGatewaySubmit)} borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('payments.create.gatewayTitle', 'Select payment type')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -541,7 +541,7 @@ const PaymentsList = ({ isContractor }) => {
       {/* Apply Payment Modal */}
       <Modal isOpen={isApplyModalOpen} onClose={onApplyModalClose} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={applyPaymentForm.handleSubmit(onApplyPaymentSubmit)}>
+        <ModalContent as="form" onSubmit={applyPaymentForm.handleSubmit(onApplyPaymentSubmit)} borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('payments.apply.title', 'Apply Payment')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

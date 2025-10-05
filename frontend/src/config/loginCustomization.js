@@ -28,8 +28,8 @@ export const LOGIN_CUSTOMIZATION = {
   "requestAccessLeadBody": "Hi {{firstName}},\n\nThank you for your interest in the NJ Cabinets platform. Our team will review your request and reach out shortly with next steps.\n\nIf you have immediate questions, simply reply to this email.\n\n— The NJ Cabinets Team",
   "id": 1,
   "createdAt": "2025-09-22T19:51:15.000Z",
-  "updatedAt": "2025-09-26T02:16:35.000Z",
-  "_generated": "2025-10-04T16:35:21.489Z",
+  "updatedAt": "2025-10-05T05:10:10.000Z",
+  "_generated": "2025-10-05T16:24:44.104Z",
   "_version": "1.0.0"
 }
 

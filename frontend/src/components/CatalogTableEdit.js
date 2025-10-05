@@ -1,9 +1,10 @@
 import StandardCard from './StandardCard'
+import { TableCard } from './TableCard'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
-import { Button, Box, Flex, Text, Badge, Checkbox, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, TableContainer, Thead, Tbody, Tr, Th, Td, useColorModeValue } from '@chakra-ui/react'
+import { Button, Box, Flex, Text, Badge, Checkbox, Image, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, TableContainer, Thead, Tbody, Tr, Th, Td, useColorModeValue } from '@chakra-ui/react'
 import { Copy, Settings, Trash, Wrench } from 'lucide-react'
 import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
@@ -119,9 +120,13 @@ const CatalogTableEdit = ({
 
   // Dark mode colors - ALL at component top level
   const textRed500 = useColorModeValue("red.500", "red.300")
+  const textRed600 = useColorModeValue("red.600", "red.400")
   const textGreen500 = useColorModeValue("green.500", "green.300")
   const borderGray400 = useColorModeValue("gray.400", "gray.600")
-  const buildUnavailableTextProps = (item) => (item?.unavailable ? { color: textRed500, textDecoration: 'line-through' } : {})
+  const bgUnavailableRow = useColorModeValue("red.50", "red.900")
+  const textUnavailable = useColorModeValue("red.600", "red.400")
+  const bgValidationWarning = useColorModeValue("orange.50", "orange.900")
+  const buildUnavailableTextProps = (item) => (item?.unavailable ? { color: textUnavailable, textDecoration: 'line-through' } : {})
   const rowBgEven = useColorModeValue("gray.50", "gray.700")
   const rowBgOdd = useColorModeValue("white", "gray.800")
   const rowBorder = useColorModeValue("gray.200", "gray.600")
@@ -293,7 +298,7 @@ const CatalogTableEdit = ({
         isCentered
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader p={0}>
             <PageHeader
               title={selectedTypeInfo?.type || 'Type Specifications'}
@@ -534,7 +539,7 @@ const CatalogTableEdit = ({
 
       {/* Desktop table view */}
       <Box display={{ base: 'none', lg: 'block' }}>
-        <TableContainer>
+        <TableCard>
           <Table variant="simple">
           <Thead>
             <Tr>
@@ -588,7 +593,7 @@ const CatalogTableEdit = ({
               return (
                 <React.Fragment key={idx}>
                   <Tr
-                    bg={item.unavailable ? textRed500 : (idx % 2 === 0 ? rowBgEven : rowBgOdd)}
+                    bg={item.unavailable ? bgUnavailableRow : (idx % 2 === 0 ? rowBgEven : rowBgOdd)}
                     borderBottom="2px solid"
                     borderBottomColor={rowBorder}
                     borderTop={idx === 0 ? "2px solid" : undefined}
@@ -627,7 +632,7 @@ const CatalogTableEdit = ({
                       />
                     </Td>
 
-                    <Td  {{...rowTextProps}}>
+                    <Td {...rowTextProps}>
                       <Flex align="center" gap={2} minW={0}>
                         <Flex
                           align="baseline"
@@ -673,7 +678,7 @@ const CatalogTableEdit = ({
                         bg={
                           subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                           (!item.hingeSide || item.hingeSide === '-')
-                            ? 'red.50'
+                            ? bgValidationWarning
                             : 'transparent'
                         }
                       >
@@ -723,7 +728,7 @@ const CatalogTableEdit = ({
                         bg={
                           subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                           (!item.exposedSide || item.exposedSide === '-')
-                            ? 'red.50'
+                            ? bgValidationWarning
                             : 'transparent'
                         }
                       >
@@ -768,13 +773,13 @@ const CatalogTableEdit = ({
                       </Td>
                     )}
 
-                    <Td  {{...rowTextProps}}>
+                    <Td {...rowTextProps}>
                       {formatPrice(item.unavailable ? 0 : item.price)}
                     </Td>
 
                     <Td>
                       {assembled ? (
-                        <Text as="span" {...mobileTextProps}>
+                        <Text as="span" {...rowTextProps}>
                           {formatPrice(item.unavailable ? 0 : assemblyFee)}
                         </Text>
                       ) : (
@@ -783,7 +788,7 @@ const CatalogTableEdit = ({
                     </Td>
 
                     <Td>{formatPrice(modsTotal)}</Td>
-                    <Td  {{...rowTextProps}}>
+                    <Td {...rowTextProps}>
                       {formatPrice(item.unavailable ? 0 : total)}
                     </Td>
 
@@ -973,7 +978,7 @@ const CatalogTableEdit = ({
             })}
           </Tbody>
         </Table>
-        </TableContainer>
+        </TableCard>
       </Box>
 
       {/* Mobile card view to match create */}
@@ -1042,7 +1047,7 @@ const CatalogTableEdit = ({
                     wrap="wrap"
                     minW={0}
                   >
-                    <Text fontWeight="bold"  {{...rowTextProps}}>
+                    <Text fontWeight="bold" {...mobileTextProps}>
                       {item.code}
                     </Text>
                     {item?.description ? (
@@ -1091,7 +1096,7 @@ const CatalogTableEdit = ({
 
                 <Flex mb={2} justify="space-between" align="center">
                   <Text fontWeight="medium" color={textGray600}>{t('proposalColumns.price')}</Text>
-                  <Text  {{...rowTextProps}}>
+                  <Text {...mobileTextProps}>
                     {formatPrice(item.unavailable ? 0 : item.price)}
                   </Text>
                 </Flex>
@@ -1104,7 +1109,7 @@ const CatalogTableEdit = ({
                         bg={
                           subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                           (!item.hingeSide || item.hingeSide === '-')
-                            ? 'red.50'
+                            ? bgValidationWarning
                             : 'transparent'
                         }
                         p="0.5rem"
@@ -1150,7 +1155,7 @@ const CatalogTableEdit = ({
                         bg={
                           subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                           (!item.exposedSide || item.exposedSide === '-')
-                            ? 'red.50'
+                            ? bgValidationWarning
                             : 'transparent'
                         }
                         p="0.5rem"
@@ -1192,7 +1197,7 @@ const CatalogTableEdit = ({
 
                     <Flex mb={2} justify="space-between" align="center">
                       <Text fontWeight="medium" color={textGray600}>{t('proposalColumns.assemblyCost')}</Text>
-                      <Text  {{...rowTextProps}}>
+                      <Text {...mobileTextProps}>
                         {formatPrice(item.unavailable ? 0 : assemblyFee)}
                       </Text>
                     </Flex>
@@ -1214,7 +1219,7 @@ const CatalogTableEdit = ({
                   borderRadius="md"
                   textAlign="center"
                 >
-                  <Text fontWeight="bold"  {{...rowTextProps}}>
+                  <Text fontWeight="bold" {...mobileTextProps}>
                     {t('proposalColumns.total')}: {formatPrice(item.unavailable ? 0 : total)}
                   </Text>
                 </Box>

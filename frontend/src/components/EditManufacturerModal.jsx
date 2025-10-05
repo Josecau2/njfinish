@@ -71,7 +71,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
   return (
     <Modal isOpen={show} onClose={onClose} size={{ base: "full", lg: "lg" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent as="form" onSubmit={handleSubmit}>
+      <ModalContent as="form" onSubmit={handleSubmit} borderRadius="12px" overflow="hidden">
         <ModalHeader>{t('editManufacturerModal.title')}</ModalHeader>
         <ModalBody pb={6}>
           <Stack spacing={4}>

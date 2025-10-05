@@ -420,7 +420,7 @@ const LeadsPage = () => {
             ) : (
               <>
                 {/* Desktop table view */}
-                <Box display={{ base: 'none', xl: 'block' }}>
+                <Box display={{ base: 'none', lg: 'block' }}>
                 <TableCard>
                   <Table variant="simple" size="md">
                     <Thead>
@@ -492,7 +492,7 @@ const LeadsPage = () => {
                 {/* Mobile card view */}
                 <VStack
                   spacing={4}
-                  display={{ base: 'flex', xl: 'none' }}
+                  display={{ base: 'flex', lg: 'none' }}
                   px={{ base: 4, md: 6 }}
                   py={{ base: 4, md: 6 }}
                 >

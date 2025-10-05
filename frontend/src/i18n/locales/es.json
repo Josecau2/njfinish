@@ -111,7 +111,8 @@
       "selectGroup": "-- Seleccione Grupo --",
       "selectLocation": "Seleccionar ubicación"
     },
-    "qty": "Cant"
+    "qty": "Cant",
+    "selected": "Seleccionado"
   },
   "creating": "Creando...",
   "noDescription": "Sin descripción",
@@ -861,216 +862,11 @@
     "quickProposal": "Cotización Rápida"
   },
   "resources": {
-    "manage": "Administra tu {{title}}",
-    "size": "Tamaño",
-    "uploaded": "Subido",
-    "added": "Agregado",
-    "downloadFile": "Descargar archivo",
-    "openLink": "Abrir enlace",
-    "headerContractor": "Accede a tus recursos seleccionados",
-    "headerAdmin": "Administra todos tus enlaces y archivos",
-    "searchPlaceholder": "Buscar recursos...",
-    "allLinkTypes": "Todos los tipos de enlace",
-    "allFileTypes": "Todos los tipos de archivo",
-    "loading": "Cargando recursos...",
-    "links": {
-      "title": "Enlaces"
-    },
-    "files": {
-      "title": "Archivos"
-    },
-    "addLink": "Agregar enlace",
-    "noLinks": "No hay enlaces disponibles",
-    "noLinksContractor": "No se han compartido enlaces con tu grupo",
-    "noLinksAdmin": "Comienza agregando tu primer enlace",
-    "noLinksAdminAlt": "Comienza agregando un enlace útil",
-    "addFirstLink": "Agregar primer enlace",
-    "addFile": "Agregar archivo",
-    "noFiles": "No hay archivos disponibles",
-    "noFilesContractor": "No se han compartido archivos con tu grupo",
-    "noFilesAdmin": "Sube tu primer archivo",
-    "noFilesAdminAlt": "Comienza subiendo tu primer documento",
-    "uploadFirstFile": "Subir primer archivo",
-    "editLink": "Editar enlace",
-    "addNewLink": "Agregar nuevo enlace",
-    "updateLink": "Actualizar enlace",
-    "linkTitle": "Título del enlace",
-    "enterLinkTitle": "Escribe el título del enlace",
-    "url": "URL",
-    "urlPlaceholder": "https://ejemplo.com",
-    "linkType": {
-      "label": "Tipo de enlace",
-      "external": "Enlace externo",
-      "internal": "Enlace interno",
-      "document": "Documento",
-      "video": "Enlace de video",
-      "help": "Ayuda/Soporte"
-    },
-    "editFile": "Editar archivo",
-    "uploadNewFile": "Subir nuevo archivo",
-    "updateFile": "Actualizar archivo",
-    "uploadFile": "Subir archivo",
-    "file": "Archivo",
-    "fileName": "Nombre del archivo",
-    "enterFileName": "Escribe el nombre del archivo",
-    "fileType": {
-      "label": "Tipo de archivo",
-      "pdf": "Documento PDF",
-      "spreadsheet": "Hoja de cálculo",
-      "document": "Documento",
-      "video": "Video",
-      "audio": "Audio",
-      "image": "Imagen",
-      "archive": "Archivo comprimido",
-      "other": "Otro"
-    },
-    "leaveEmpty": "Déjalo vacío para mantener el archivo actual",
-    "actions": {
-      "newCategory": "Nueva categoría",
-      "newLink": "Nuevo enlace",
-      "uploadFile": "Subir archivo",
-      "newAnnouncement": "Nuevo anuncio",
-      "download": "Descargar",
-      "scaffoldCategories": "Agregar categorías base"
-    },
-    "filters": {
-      "search": "Buscar",
-      "searchPlaceholder": "Busca títulos, descripciones o etiquetas",
-      "category": "Categoría",
-      "allCategories": "Todas las categorías",
-      "uncategorized": "Sin categoría",
-      "medium": {
-        "title": "Tipo",
-        "all": "Todos",
-        "announcements": "Anuncios",
-        "links": "Enlaces",
-        "files": "Archivos"
-      }
-    },
-    "fields": {
-      "title": "Título",
-      "summary": "Resumen",
-      "body": "Contenido",
-      "category": "Categoría",
-      "categoryName": "Nombre de la categoría",
-      "parentCategory": "Categoría padre",
-      "noParent": "Sin padre",
-      "noCategory": "Sin categoría",
-      "slug": "Identificador",
-      "slugHelp": "Se usa para URLs y referencias rápidas",
-      "description": "Descripción",
-      "color": "Color",
-      "icon": "Ícono",
-      "thumbnailUrl": "URL de miniatura",
-      "sortOrder": "Orden",
-      "pinned": "Fijado",
-      "pinnedOrder": "Orden de fijado",
-      "status": "Estado",
-      "publishAt": "Publicar el",
-      "expireAt": "Expira el",
-      "tags": "Etiquetas",
-      "ctaLabel": "Etiqueta del botón",
-      "ctaUrl": "URL del botón",
-      "linkType": "Tipo de enlace",
-      "url": "URL",
-      "file": "Archivo",
-      "fileName": "Nombre del archivo",
-      "fileReplaceHint": "Déjalo vacío para mantener el archivo actual",
-      "visibility": "Visibilidad",
-      "visibleGroupIds": "Grupos específicos (separados por comas)",
-      "active": "Activo"
-    },
-    "messages": {
-      "loading": "Cargando recursos...",
-      "loadFailed": "No se pudieron cargar los recursos. Inténtalo nuevamente.",
-      "noCategories": "Aún no hay categorías",
-      "noMatching": "No hay resultados que coincidan con tus filtros",
-      "categoryNameRequired": "El nombre de la categoría es obligatorio",
-      "categoryCreated": "Categoría creada",
-      "categoryUpdated": "Categoría actualizada",
-      "categoryDeleted": "Categoría eliminada",
-      "categorySaveFailed": "No se pudo guardar la categoría",
-      "categoryDeleteFailed": "No se pudo eliminar la categoría",
-      "linkRequired": "El título y la URL del enlace son obligatorios",
-      "linkCreated": "Enlace creado",
-      "linkUpdated": "Enlace actualizado",
-      "linkDeleted": "Enlace eliminado",
-      "linkSaveFailed": "No se pudo guardar el enlace",
-      "linkDeleteFailed": "No se pudo eliminar el enlace",
-      "fileRequired": "Selecciona un archivo para subir",
-      "fileUploaded": "Archivo subido",
-      "fileUpdated": "Archivo actualizado",
-      "fileDeleted": "Archivo eliminado",
-      "fileSaveFailed": "No se pudo guardar el archivo",
-      "fileDeleteFailed": "No se pudo eliminar el archivo",
-      "fileAccessFailed": "No pudimos abrir ese archivo. Inténtalo de nuevo.",
-      "announcementTitleRequired": "El título del anuncio es obligatorio",
-      "announcementCreated": "Anuncio creado",
-      "announcementUpdated": "Anuncio actualizado",
-      "announcementDeleted": "Anuncio eliminado",
-      "announcementSaveFailed": "No se pudo guardar el anuncio",
-      "announcementDeleteFailed": "No se pudo eliminar el anuncio",
-      "confirmDeleteCategory": "¿Eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
-      "confirmDeleteLink": "¿Eliminar este enlace?",
-      "confirmDeleteFile": "¿Eliminar {{name}}?",
-      "confirmDeleteAnnouncement": "¿Eliminar este anuncio?",
-      "scaffoldCreated": "Categorías iniciales listas",
-      "scaffoldFailed": "No se pudieron preparar las categorías iniciales",
-      "confirmScaffold": "¿Agregar las categorías base de recursos? Las categorías existentes no se modificarán.",
-      "scaffoldAlreadyExists": "Las categorías iniciales ya existen"
-    },
-    "labels": {
-      "pinned": "Fijado",
-      "published": "Publicado",
-      "expires": "Expira",
-      "inactive": "Inactivo"
-    },
-    "status": {
-      "published": "Publicado",
-      "draft": "Borrador",
-      "hidden": "Oculto",
-      "active": "Activo"
-    },
-    "modals": {
-      "newCategory": "Nueva categoría",
-      "editCategory": "Editar categoría",
-      "newLink": "Nuevo enlace",
-      "editLink": "Editar enlace",
-      "uploadFile": "Subir archivo",
-      "editFile": "Editar archivo",
-      "newAnnouncement": "Nuevo anuncio",
-      "editAnnouncement": "Editar anuncio"
-    },
-    "pinned": {
-      "announcements": "Anuncios fijados",
-      "links": "Enlaces fijados",
-      "files": "Archivos fijados"
-    },
-    "stats": {
-      "announcements": "Anuncios",
-      "links": "Enlaces",
-      "files": "Archivos"
-    },
-    "announcements": {
-      "title": "Anuncios",
-      "empty": "Aún no hay anuncios"
-    },
-    "media": {
-      "libraryTitle": "Biblioteca de medios",
-      "empty": "No hay contenido",
-      "video": "Video",
-      "audio": "Audio",
-      "images": "Imágenes",
-      "documents": "Documentos",
-      "other": "Otros"
-    },
-    "categories": {
-      "uncategorized": "Sin categoría",
-      "uncategorizedDescription": "Elementos que no han sido asignados a ninguna categoría"
-    },
-    "visibility": {
-      "admin": "Administradores",
-      "contractor": "Contratistas"
+    "placeholders": {
+      "colorCode": "#000000",
+      "url": "https://ejemplo.com",
+      "urlPrefix": "https://",
+      "tags": "etiqueta1, etiqueta2"
     }
   },
   "proposals": {
@@ -1243,7 +1039,10 @@
           "builder": "Constructor",
           "architect": "Arquitecto",
           "interiorDesigner": "Diseñador de interiores"
-        }
+        },
+        "createCustomer": "Crear \"{{name}}\"",
+        "customerEmailPlaceholder": "Correo electrónico del cliente",
+        "noCustomers": "No se encontraron clientes"
       },
       "manufacturer": {
         "title": "Detalles del fabricante",
@@ -3812,8 +3611,9 @@
     "multiplier": "Multiplicador"
   },
   "errors": {
-    "somethingWentWrong": "Algo salió mal",
-    "errorDetails": "Detalles del Error"
+    "actions": {
+      "refreshPage": "Actualizar página"
+    }
   },
   "states": {
     "AL": "Alabama",
@@ -3904,22 +3704,9 @@
       "toggleOptions": "Alternar opciones"
     }
   },
-  "errors": {
-    "actions": {
-      "refreshPage": "Actualizar página"
-    }
-  },
   "showroom": {
     "placeholders": {
       "defaultMultiplier": "1.00"
-    }
-  },
-  "resources": {
-    "placeholders": {
-      "colorCode": "#000000",
-      "url": "https://ejemplo.com",
-      "urlPrefix": "https://",
-      "tags": "etiqueta1, etiqueta2"
     }
   },
   "customization": {

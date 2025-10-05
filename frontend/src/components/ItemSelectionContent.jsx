@@ -1,4 +1,5 @@
 import StandardCard from './StandardCard'
+import { TableCard } from './TableCard'
 import { useEffect, useMemo, useRef, useState, useDeferredValue, startTransition, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, AlertDescription, AlertIcon, Box, Button, Checkbox, CloseButton, Divider, Flex, Heading, HStack, Icon, IconButton, Image, Input, NumberInput, NumberInputField, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react';
@@ -48,7 +49,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const [isAssembled, setIsAssembled] = useState(true);
     const [discountPercent, setDiscountPercent] = useState(0);
     const { taxes, loading } = useSelector((state) => state.taxes);
-    const taxesReady = useMemo(() => !loading && Array.isArray(taxes) && taxes.length > 0, [loading, taxes]);
+    const taxesReady = useMemo(() => !loading && Array.isArray(taxes), [loading, taxes]);
     const authUser = useSelector((state) => state.auth?.user);
     const customization = useSelector((state) => state.customization);
     const headerBg = customization.headerBg || "black";
@@ -101,6 +102,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const [collectionsLoading, setCollectionsLoading] = useState(true);
     const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(4); // Desktop default
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
     // Stable baseline for comparison cards (prevents drift when switching styles) - no longer used
     // const [comparisonBaseline, setComparisonBaseline] = useState({ styleId: null, stylePrice: null });
     const [isStylesCollapsed, setIsStylesCollapsed] = useState(false); // New state for collapse/expand
@@ -401,6 +404,32 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
     const canGoPrev = () => carouselCurrentIndex > 0;
 
+    // Touch swipe handlers for mobile carousel
+    const minSwipeDistance = 50;
+
+    const onTouchStart = (e) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const onTouchMove = (e) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe && canGoNext()) {
+            nextSlide();
+        }
+        if (isRightSwipe && canGoPrev()) {
+            prevSlide();
+        }
+    };
+
     // Atomic totals cache (cents) per style for driving the breakdown table, mirroring Edit
     // Shape: { epoch: number, key: string, entries: { [styleId]: { result: { partsCents, assemblyCents, modsCents, customCents, subtotalBeforeDiscountCents, discountCents, totalAfterDiscountCents, deliveryCents, taxRatePct, taxCents, grandTotalCents } } } }
     const totalsCacheRef = useRef({ epoch: 0, key: '', entries: {} });
@@ -600,50 +629,86 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
     // (Consolidated in a single effect above)
 
-    // Keep selectVersion.summary in sync for persistence, but do not render from it
+    // Keep formData.manufacturersData in sync so saved drafts retain items even before totals compute
     useEffect(() => {
         const versionName = selectVersion?.versionName;
-        if (!versionName || !selectedResult) return;
+        if (!versionName) return;
 
-        const newSummary = {
-            cabinets: ((selectedResult.partsCents || 0) / 100).toFixed(2),
-            assemblyFee: ((selectedResult.assemblyCents || 0) / 100).toFixed(2),
-            modificationsCost: ((selectedResult.modsCents || 0) / 100).toFixed(2),
-            deliveryFee: ((selectedResult.deliveryCents || 0) / 100).toFixed(2),
-            styleTotal: ((selectedResult.subtotalBeforeDiscountCents || 0) / 100).toFixed(2),
+        const matchedItems = filteredItems.filter((item) => item.selectVersion === versionName);
+        const matchedCustomItems = customItems.filter((item) => item.selectVersion === versionName);
+
+        let summaryForState = null;
+        if (selectedResult) {
+            summaryForState = {
+                cabinets: ((selectedResult.partsCents || 0) / 100).toFixed(2),
+                assemblyFee: ((selectedResult.assemblyCents || 0) / 100).toFixed(2),
+                modificationsCost: ((selectedResult.modsCents || 0) / 100).toFixed(2),
+                deliveryFee: ((selectedResult.deliveryCents || 0) / 100).toFixed(2),
+                styleTotal: ((selectedResult.subtotalBeforeDiscountCents || 0) / 100).toFixed(2),
+                discountPercent: Number(discountPercent) || 0,
+                discountAmount: (((selectedResult.discountCents || 0)) / 100).toFixed(2),
+                total: ((((selectedResult.subtotalBeforeDiscountCents || 0) - (selectedResult.discountCents || 0))) / 100).toFixed(2),
+                taxRate: selectedResult.taxRatePct || defaultTaxValue || 0,
+                taxAmount: ((selectedResult.taxCents || 0) / 100).toFixed(2),
+                grandTotal: ((selectedResult.grandTotalCents || 0) / 100).toFixed(2),
+            };
+        }
+
+        const snapshot = JSON.stringify({
+            items: matchedItems,
+            customItems: matchedCustomItems,
+            summary: summaryForState,
+            selectedStyle: selectVersion?.selectedStyle ?? null,
             discountPercent: Number(discountPercent) || 0,
-            discountAmount: (((selectedResult.discountCents || 0)) / 100).toFixed(2),
-            total: ((((selectedResult.subtotalBeforeDiscountCents || 0) - (selectedResult.discountCents || 0))) / 100).toFixed(2),
-            taxRate: selectedResult.taxRatePct || defaultTaxValue || 0,
-            taxAmount: ((selectedResult.taxCents || 0) / 100).toFixed(2),
-            grandTotal: ((selectedResult.grandTotalCents || 0) / 100).toFixed(2)
-        };
+        });
+
+        if (summaryHashRef.current[versionName] === snapshot) {
+            return;
+        }
+
+        summaryHashRef.current[versionName] = snapshot;
 
         startTransition(() => {
-            setFormData(prev => {
-                const updatedManufacturersData = prev.manufacturersData.map(manufacturer => {
-                    if (manufacturer.versionName === versionName) {
-                        const matchedItems = filteredItems.filter((item) => item.selectVersion === versionName);
-                        const matchedCustomItems = customItems.filter((item) => item.selectVersion === versionName);
-                        return {
-                            ...manufacturer,
-                            selectedStyle: selectVersion?.selectedStyle,
-                            items: matchedItems,
-                            customItems: matchedCustomItems,
-                            summary: newSummary
-                        };
+            setFormData((prev) => {
+                if (!Array.isArray(prev?.manufacturersData)) {
+                    return prev;
+                }
+
+                let didUpdate = false;
+                const nextManufacturersData = prev.manufacturersData.map((manufacturer) => {
+                    if (manufacturer.versionName !== versionName) {
+                        return manufacturer;
                     }
-                    return manufacturer;
+
+                    const nextEntry = {
+                        ...manufacturer,
+                        items: matchedItems,
+                        customItems: matchedCustomItems,
+                    };
+
+                    if (summaryForState) {
+                        nextEntry.summary = summaryForState;
+                    }
+
+                    if (selectVersion?.selectedStyle && manufacturer.selectedStyle !== selectVersion.selectedStyle) {
+                        nextEntry.selectedStyle = selectVersion.selectedStyle;
+                    }
+
+                    didUpdate = true;
+                    return nextEntry;
                 });
+
+                if (!didUpdate) {
+                    return prev;
+                }
 
                 return {
                     ...prev,
-                    manufacturersData: updatedManufacturersData
+                    manufacturersData: nextManufacturersData,
                 };
             });
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedResult, selectVersion?.selectedStyle, discountPercent]);
+    }, [filteredItems, customItems, selectedResult, selectVersion?.selectedStyle, selectVersion?.versionName, discountPercent, defaultTaxValue]);
 
     const handleDelete = (index) => {
         // index is relative to filteredItems; map to tableItems index
@@ -1622,28 +1687,28 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                             spacing={4}
                                             display={{ base: 'flex', md: 'none' }}
                                         >
-                                                                                        <IconButton
-                                                                                                icon={<ChevronLeft size={ICON_SIZE_MD} />}
-                                                                                                size="sm"
-                                                                                                variant="outline"
-                                                                                                colorScheme="gray"
-                                                                                                onClick={prevSlide}
-                                                                                                isDisabled={!canGoPrev()}
-                                                                                                aria-label={t('catalog.navigation.previousStyles', 'Previous styles')}
-                                                                                                minH="44px"
-                                                                                                minW="44px"
-                                                                                        />
-                                                                                        <IconButton
-                                                                                                icon={<ChevronRight size={ICON_SIZE_MD} />}
-                                                                                                size="sm"
-                                                                                                variant="outline"
-                                                                                                colorScheme="gray"
-                                                                                                onClick={nextSlide}
-                                                                                                isDisabled={!canGoNext()}
-                                                                                                aria-label={t('catalog.navigation.nextStyles', 'Next styles')}
-                                                                                                minH="44px"
-                                                                                                minW="44px"
-                                                                                        />
+                                            <IconButton
+                                                icon={<ChevronLeft size={ICON_SIZE_MD} />}
+                                                size="sm"
+                                                variant="outline"
+                                                colorScheme="gray"
+                                                onClick={prevSlide}
+                                                isDisabled={!canGoPrev()}
+                                                aria-label={t('catalog.navigation.previousStyles', 'Previous styles')}
+                                                minH="44px"
+                                                minW="44px"
+                                            />
+                                            <IconButton
+                                                icon={<ChevronRight size={ICON_SIZE_MD} />}
+                                                size="sm"
+                                                variant="outline"
+                                                colorScheme="gray"
+                                                onClick={nextSlide}
+                                                isDisabled={!canGoNext()}
+                                                aria-label={t('catalog.navigation.nextStyles', 'Next styles')}
+                                                minH="44px"
+                                                minW="44px"
+                                            />
                                         </HStack>
                                     )}
                                 </HStack>
@@ -1660,9 +1725,11 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             )}
 
                             <Box
-                                maxH={isStylesCollapsed ? '0' : '500px'}
-                                overflow="hidden"
-                                transition="max-height 0.3s ease"
+                                position="relative"
+                                w="100%"
+                                overflowX="hidden"
+                                overflowY="visible"
+                                minH={isStylesCollapsed ? '120px' : '320px'}
                             >
                                 {collectionsLoading ? (
                                     <Text py={4} color={colorGray500}>
@@ -1719,13 +1786,13 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                             <Box
                                                 display="flex"
                                                 gap="1rem"
-                                                transform={`translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`}
+                                                flexWrap={{ base: 'nowrap', md: 'wrap' }}
+                                                transform={{ base: `translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`, md: 'none' }}
                                                 transition="transform 0.3s ease-in-out"
-                                                width={
-                                                    stylesMeta.length > itemsPerPage
-                                                        ? `${Math.ceil(stylesMeta.length / itemsPerPage) * 100}%`
-                                                        : '100%'
-                                                }
+                                                width={{ base: stylesMeta.length > itemsPerPage ? `${Math.ceil(stylesMeta.length / itemsPerPage) * 100}%` : '100%', md: '100%' }}
+                                                onTouchStart={onTouchStart}
+                                                onTouchMove={onTouchMove}
+                                                onTouchEnd={onTouchEnd}
                                             >
                                                 {stylesMeta.map((styleItem, index) => {
                                                     const variant = styleItem.styleVariants?.[0];
@@ -1751,12 +1818,12 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                         : '/images/nologo.png'
                                                                 }
                                                                 alt={variant?.shortName || styleItem.style}
-                                                                w="100%"
-                                                                h="220px"
+                                                                w="140px"
+                                                                h="140px"
                                                                 objectFit="contain"
-                                                                borderRadius="10px"
+                                                                borderRadius="md"
                                                                 bg={bgGray50}
-                                                                borderWidth={styleItem.id === selectedStyleData?.id ? '3px' : '1px'}
+                                                                borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
                                                                 borderStyle="solid"
                                                                 borderColor={styleItem.id === selectedStyleData?.id ? 'blue.500' : 'gray.200'}
                                                                 onError={(e) => {
@@ -1769,20 +1836,21 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                 }}
                                                             />
                                                             <Box
-                                                                mt={2}
-                                                                p={2}
-                                                                borderRadius="md"
+                                                                mt={1.5}
+                                                                px={2}
+                                                                py={1}
+                                                                borderRadius="sm"
                                                                 bg={styleItem.id === selectedStyleData?.id ? styleCardBgSelected : styleCardBgUnselected}
-                                                                borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
+                                                                borderWidth="1px"
                                                                 borderStyle="solid"
                                                                 borderColor={styleItem.id === selectedStyleData?.id ? styleCardBorderSelected : styleCardBorderUnselected}
                                                                 fontWeight={styleItem.id === selectedStyleData?.id ? '600' : 'normal'}
                                                             >
-                                                                <Text fontSize="sm" mb="0.25rem" color={styleCardTextColor}>
+                                                                <Text fontSize="xs" mb={0} color={styleCardTextColor} noOfLines={1}>
                                                                     {styleItem.style}
                                                                 </Text>
                                                                 {styleItem.id === selectedStyleData?.id && (
-                                                                    <Text fontSize="xs" color={styleCardLabelColor} mb="0.25rem">
+                                                                    <Text fontSize="2xs" color={styleCardLabelColor} mt={0.5}>
                                                                         {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
                                                                     </Text>
                                                                 )}
@@ -1916,42 +1984,44 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                         </Text>
                     )}
 
-                    <TableContainer display={{ base: 'none', md: 'block' }}>
-                        <Table size="sm">
-                            <Thead>
-                                <Tr>
-                                    <Th>{t('proposalUI.custom.table.index')}</Th>
-                                    <Th>{t('proposalUI.custom.table.itemName')}</Th>
-                                    <Th>{t('proposalUI.custom.table.price')}</Th>
-                                    <Th>{t('proposalUI.custom.table.taxable')}</Th>
-                                    <Th>{t('proposalUI.custom.table.actions')}</Th>
-                                </Tr>
-                            </Thead>
-                            <Tbody>
-                                {customItems
-                                    .filter((ci) => ci.selectVersion === selectVersion?.versionName)
-                                    .map((item, idx) => (
-                                        <Tr key={`${item.name}-${idx}`}>
-                                            <Td>{idx + 1}</Td>
-                                            <Td>{item.name}</Td>
-                                            <Td>${(Number(item.price) || 0).toFixed(2)}</Td>
-                                            <Td>{item.taxable ? t('common.yes') : t('common.no')}</Td>
-                                            <Td>
-                                                <Button
-                                                    size="xs"
-                                                    colorScheme="red"
-                                                    onClick={() => handleDeleteCustomItem(item)}
-                                                >
-                                                    {t('proposalUI.custom.delete')}
-                                                </Button>
-                                            </Td>
-                                        </Tr>
-                                    ))}
-                            </Tbody>
-                        </Table>
-                    </TableContainer>
+                    <Box display={{ base: 'none', lg: 'block' }}>
+                        <TableCard>
+                            <Table size="sm">
+                                <Thead>
+                                    <Tr>
+                                        <Th>{t('proposalUI.custom.table.index')}</Th>
+                                        <Th>{t('proposalUI.custom.table.itemName')}</Th>
+                                        <Th>{t('proposalUI.custom.table.price')}</Th>
+                                        <Th>{t('proposalUI.custom.table.taxable')}</Th>
+                                        <Th>{t('proposalUI.custom.table.actions')}</Th>
+                                    </Tr>
+                                </Thead>
+                                <Tbody>
+                                    {customItems
+                                        .filter((ci) => ci.selectVersion === selectVersion?.versionName)
+                                        .map((item, idx) => (
+                                            <Tr key={`${item.name}-${idx}`}>
+                                                <Td>{idx + 1}</Td>
+                                                <Td>{item.name}</Td>
+                                                <Td>${(Number(item.price) || 0).toFixed(2)}</Td>
+                                                <Td>{item.taxable ? t('common.yes') : t('common.no')}</Td>
+                                                <Td>
+                                                    <Button
+                                                        size="xs"
+                                                        colorScheme="red"
+                                                        onClick={() => handleDeleteCustomItem(item)}
+                                                    >
+                                                        {t('proposalUI.custom.delete')}
+                                                    </Button>
+                                                </Td>
+                                            </Tr>
+                                        ))}
+                                </Tbody>
+                            </Table>
+                        </TableCard>
+                    </Box>
 
-                    <Box display={{ base: 'block', md: 'none' }}>
+                    <Box display={{ base: 'block', lg: 'none' }}>
                         {customItems && customItems.filter((ci) => ci.selectVersion === selectVersion?.versionName).length > 0 && (
                             <Flex
                                 fontWeight="semibold"
@@ -2014,7 +2084,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                     mb={5}
                     justify="center"
                 >
-                    <Box w="full" maxW="420px">
+                    <Box w="full" maxW="420px" overflowX="auto">
                         <Table variant="simple" size="sm">
                             <Tbody>
                                 <Tr>
@@ -2127,5 +2197,4 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 };
 
 export default ItemSelectionContent;
-
 

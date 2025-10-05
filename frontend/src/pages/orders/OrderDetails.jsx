@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import PageHeader from '../../components/PageHeader'
 import StandardCard from '../../components/StandardCard'
+import { TableCard } from '../../components/TableCard'
 import FileViewerModal from '../../components/FileViewerModal'
 import { useTranslation } from 'react-i18next'
 import {
@@ -740,8 +741,8 @@ const OrderDetails = () => {
         <StandardCard variant="outline">
           <CardHeader fontWeight="semibold">{t('orders.details.items', 'Items')}</CardHeader>
           <CardBody>
-            <Box display={{ base: 'none', md: 'block' }}>
-              <TableContainer>
+            <Box display={{ base: 'none', lg: 'block' }}>
+              <TableCard>
                 <Table variant="simple" size="sm">
                   <Thead bg={bgGray50}>
                     <Tr>
@@ -885,10 +886,10 @@ const OrderDetails = () => {
                     )}
                   </Tbody>
                 </Table>
-              </TableContainer>
+              </TableCard>
             </Box>
 
-            <Box display={{ base: 'block', md: 'none' }}>
+            <Box display={{ base: 'block', lg: 'none' }}>
               {parsed.items.length === 0 ? (
                 <Center py={8} color={iconGray500}>
                   {t('orders.details.noItems', 'No items')}

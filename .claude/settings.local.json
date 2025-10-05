@@ -204,7 +204,9 @@
       "Bash(git restore:*)",
       "Bash(git grep:*)",
       "Bash(start table-card-preview.html)",
-      "Bash(do echo -e \"\\n### $file\")"
+      "Bash(do echo -e \"\\n### $file\")",
+      "Bash(do echo \"Processing $file...\")",
+      "Bash(./update-modals-dark-mode.ps1)"
     ],
     "deny": [],
     "ask": []

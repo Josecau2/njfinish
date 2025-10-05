@@ -39,7 +39,8 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  useToast,
+  UnorderedList,
+  ListItem,
   useColorModeValue,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -52,7 +53,7 @@ import ItemSelectionContent from '../../../components/ItemSelectionContent'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 import FileUploadSection from './FileUploadSection'
 import { setSelectVersionNew } from '../../../store/slices/selectVersionNewSlice'
-import { validateProposalSubTypeRequirements } from '../../../helpers/subTypeValidation'
+import { validateProposalSubTypeRequirements, getMissingRequirementMessages } from '../../../helpers/subTypeValidation'
 
 const ItemSelectionStep = ({
   setFormData,
@@ -67,7 +68,59 @@ const ItemSelectionStep = ({
   const { t } = useTranslation()
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const toast = useToast()
+  const alertCancelRef = useRef(null)
+  const [alertState, setAlertState] = useState({ isOpen: false, title: '', body: null, onConfirm: null })
+
+  const showAlert = (title, body, onConfirm) => {
+    setAlertState({
+      isOpen: true,
+      title,
+      body,
+      onConfirm: typeof onConfirm === 'function' ? onConfirm : null,
+    })
+  }
+
+  const closeAlert = () => {
+    setAlertState((prev) => {
+      const callback = prev.onConfirm
+      if (callback) {
+        setTimeout(() => callback(), 0)
+      }
+      return { ...prev, isOpen: false, title: '', body: null, onConfirm: null }
+    })
+  }
+
+  const showMissingRequirementsDialog = (missingRequirements) => {
+    const messages = getMissingRequirementMessages(missingRequirements)
+    if (!messages.length) return
+
+    showAlert(
+      t('proposals.errors.cannotAccept', 'Cannot accept quote'),
+      (
+        <Box>
+          <Text>
+            {t(
+              'proposals.errors.missingSelectionsIntro',
+              'The following items require additional selections:',
+            )}
+          </Text>
+          <UnorderedList mt={2} pl={4} spacing={1}>
+            {messages.map((line, idx) => (
+              <ListItem key={`${line}-${idx}`}>{line}</ListItem>
+            ))}
+          </UnorderedList>
+          <Text mt={3} fontSize='sm'>
+            {t(
+              'proposals.errors.completeSelections',
+              'Please complete all required selections before accepting the quote.',
+            )}
+          </Text>
+        </Box>
+      ),
+    )
+  }
+
+
   const cancelRef = useRef()
 
   // Color mode values - MUST be before useState
@@ -104,7 +157,6 @@ const ItemSelectionStep = ({
   const [selectedVersion, setSelectedVersion] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false)
-  const [isDuplicateDialogOpen, setIsDuplicateDialogOpen] = useState(false)
 
   // React Hook Form initialization
   const defaultValues = useMemo(
@@ -197,18 +249,7 @@ const ItemSelectionStep = ({
               validation.missingRequirements,
             )
 
-          const itemsText = validation.missingRequirements
-            .map((req) => `${req.item}: ${req.requirements.join(', ')}`)
-            .join('\n')
-
-          toast({
-            title: t('proposals.errors.cannotAccept', 'Cannot accept quote'),
-            description: t('proposals.errors.missingRequirements', 'Missing required selections') + ': ' + itemsText,
-            status: 'warning',
-            duration: 8000,
-            isClosable: true,
-            position: 'top',
-          })
+          showMissingRequirementsDialog(validation.missingRequirements)
           return
         }
       }
@@ -244,19 +285,14 @@ const ItemSelectionStep = ({
       }
 
       // Step 2: Now accept the newly created proposal using the acceptance API
-      const acceptResponse = await axiosInstance.post(`/api/quotes/${newProposalId}/accept`, {})
+      const acceptResponse = await axiosInstance.post(`/api/proposals/${newProposalId}/accept`, {})
 
       if (acceptResponse.data.success) {
-        toast({
-          title: t('common.success', 'Success'),
-          description: t('proposals.success.acceptConverted', 'Quote accepted and converted to order!'),
-          status: 'success',
-          duration: 5000,
-          isClosable: true,
-          position: 'top',
-        })
-        // Navigate away to prevent duplicate submissions
-        navigate('/orders') // Navigate to orders since it's now an accepted quote
+        showAlert(
+          t('common.success', 'Success'),
+          <Text>{t('proposals.success.acceptConverted', 'Quote accepted and converted to order!')}</Text>,
+          () => navigate('/orders'),
+        )
       } else {
         throw new Error(acceptResponse.data.message || 'Failed to accept quote')
       }
@@ -271,27 +307,12 @@ const ItemSelectionStep = ({
 
       // Check if this is a sub-type validation error from backend
       if (error.response?.status === 400 && error.response?.data?.missingRequirements) {
-        const itemsText = error.response.data.missingRequirements
-          .map((req) => `${req.item}: ${req.requirements.join(', ')}`)
-          .join('\n')
-
-        toast({
-          title: t('proposals.errors.cannotAccept', 'Cannot accept quote'),
-          description: t('proposals.errors.missingRequirements', 'Missing required selections') + ': ' + itemsText,
-          status: 'warning',
-          duration: 8000,
-          isClosable: true,
-          position: 'top',
-        })
+        showMissingRequirementsDialog(error.response.data.missingRequirements)
       } else {
-        toast({
-          title: t('common.error', 'Error'),
-          description: error.message || t('proposals.errors.acceptFailed', 'Failed to accept quote. Please try again.'),
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-          position: 'top',
-        })
+        showAlert(
+          t('common.error', 'Error'),
+          <Text>{error.message || t('proposals.errors.acceptFailed', 'Failed to accept quote. Please try again.')}</Text>,
+        )
       }
       setIsSubmitting(false)
     }
@@ -317,14 +338,10 @@ const ItemSelectionStep = ({
     )
 
     if (existingEntry) {
-      toast({
-        title: t('common.error', 'Error'),
-        description: t('proposals.create.summary.duplicate', 'Duplicate'),
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-      })
+      showAlert(
+        t('common.error', 'Error'),
+        <Text>{t('proposals.create.summary.duplicate', 'Duplicate')}</Text>,
+      )
       return
     }
 
@@ -660,7 +677,7 @@ const ItemSelectionStep = ({
 
       <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('proposals.create.summary.editVersionTitle')}</ModalHeader>
           <ModalBody>
             <Input
@@ -682,7 +699,7 @@ const ItemSelectionStep = ({
 
       <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('customers.confirmTitle')}</ModalHeader>
           <ModalBody>{t('proposals.create.summary.confirmDeleteVersion')}</ModalBody>
           <ModalFooter>
@@ -695,6 +712,29 @@ const ItemSelectionStep = ({
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      <AlertDialog
+        isOpen={alertState.isOpen}
+        leastDestructiveRef={alertCancelRef}
+        onClose={closeAlert}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {alertState.title}
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              {typeof alertState.body === 'string' ? <Text>{alertState.body}</Text> : alertState.body}
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={alertCancelRef} colorScheme='brand' onClick={closeAlert}>
+                {t('common.ok', 'OK')}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
 
       <AlertDialog
         isOpen={isAcceptDialogOpen}

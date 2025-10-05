@@ -457,8 +457,6 @@ const Contractors = () => {
                 />
               </Box>
             )}
-          </CardBody>
-        </StandardCard>
       </Stack>
     </PageContainer>
   )

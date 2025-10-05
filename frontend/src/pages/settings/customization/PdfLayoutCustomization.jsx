@@ -1,4 +1,5 @@
 import StandardCard from '../../../components/StandardCard'
+import { TableCard } from '../../../components/TableCard'
 import React, { useState, useEffect, useRef } from 'react'
 import { Alert, AlertIcon, Badge, Box, Button, CardBody, CardHeader, Center, Container, FormControl, FormLabel, HStack, Icon, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
@@ -342,73 +343,75 @@ const PdfLayoutCustomization = () => {
           </Text>
         )}
 
-        <Box overflowX="auto" borderWidth="1px" borderColor={borderGray200} borderRadius="lg" mb={6}>
-          <Table variant="simple" size="sm">
-            <Thead>
-              <Tr>
-                <Th>#</Th>
-                <Th>{t('common.qty')}</Th>
-                <Th>{t('common.item')}</Th>
-                <Th>{t('proposalDoc.itemColumns.assembled')}</Th>
-                <Th>{t('proposalDoc.itemColumns.hingeSide')}</Th>
-                <Th>{t('proposalDoc.itemColumns.exposedSide')}</Th>
-                <Th isNumeric>{t('proposalDoc.itemColumns.price')}</Th>
-                <Th isNumeric>{t('proposalDoc.itemColumns.assemblyFee')}</Th>
-                <Th isNumeric>{t('common.total')}</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              <Tr>
-                <Td>1.</Td>
-                <Td>2</Td>
-                <Td>B3021 Base Cabinet</Td>
-                <Td>{t('common.yes')}</Td>
-                <Td>L</Td>
-                <Td>R</Td>
-                <Td isNumeric>$95.20</Td>
-                <Td isNumeric>$12.00</Td>
-                <Td isNumeric>$214.40</Td>
-              </Tr>
-              <Tr>
-                <Td>2.</Td>
-                <Td>1</Td>
-                <Td>W3012</Td>
-                <Td>{t('common.yes')}</Td>
-                <Td>-</Td>
-                <Td>-</Td>
-                <Td isNumeric>$88.20</Td>
-                <Td isNumeric>$0.00</Td>
-                <Td isNumeric>$88.20</Td>
-              </Tr>
-              <Tr>
-                <Td>3.</Td>
-                <Td>3</Td>
-                <Td>W2436</Td>
-                <Td>{t('common.yes')}</Td>
-                <Td>-</Td>
-                <Td>-</Td>
-                <Td isNumeric>$144.90</Td>
-                <Td isNumeric>$0.00</Td>
-                <Td isNumeric>$434.70</Td>
-              </Tr>
-              <Tr>
-                <Td colSpan={9} fontStyle="italic">
-                  {t('proposalDoc.modifications')}
-                </Td>
-              </Tr>
-              <Tr>
-                <Td>-</Td>
-                <Td>1</Td>
-                <Td>SPEC BOOK</Td>
-                <Td></Td>
-                <Td></Td>
-                <Td></Td>
-                <Td isNumeric>$31.00</Td>
-                <Td></Td>
-                <Td isNumeric>$31.00</Td>
-              </Tr>
-            </Tbody>
-          </Table>
+        <Box display={{ base: 'none', lg: 'block' }} mb={6}>
+          <TableCard>
+            <Table variant="simple" size="sm">
+              <Thead>
+                <Tr>
+                  <Th>#</Th>
+                  <Th>{t('common.qty')}</Th>
+                  <Th>{t('common.item')}</Th>
+                  <Th>{t('proposalDoc.itemColumns.assembled')}</Th>
+                  <Th>{t('proposalDoc.itemColumns.hingeSide')}</Th>
+                  <Th>{t('proposalDoc.itemColumns.exposedSide')}</Th>
+                  <Th isNumeric>{t('proposalDoc.itemColumns.price')}</Th>
+                  <Th isNumeric>{t('proposalDoc.itemColumns.assemblyFee')}</Th>
+                  <Th isNumeric>{t('common.total')}</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                <Tr>
+                  <Td>1.</Td>
+                  <Td>2</Td>
+                  <Td>B3021 Base Cabinet</Td>
+                  <Td>{t('common.yes')}</Td>
+                  <Td>L</Td>
+                  <Td>R</Td>
+                  <Td isNumeric>$95.20</Td>
+                  <Td isNumeric>$12.00</Td>
+                  <Td isNumeric>$214.40</Td>
+                </Tr>
+                <Tr>
+                  <Td>2.</Td>
+                  <Td>1</Td>
+                  <Td>W3012</Td>
+                  <Td>{t('common.yes')}</Td>
+                  <Td>-</Td>
+                  <Td>-</Td>
+                  <Td isNumeric>$88.20</Td>
+                  <Td isNumeric>$0.00</Td>
+                  <Td isNumeric>$88.20</Td>
+                </Tr>
+                <Tr>
+                  <Td>3.</Td>
+                  <Td>3</Td>
+                  <Td>W2436</Td>
+                  <Td>{t('common.yes')}</Td>
+                  <Td>-</Td>
+                  <Td>-</Td>
+                  <Td isNumeric>$144.90</Td>
+                  <Td isNumeric>$0.00</Td>
+                  <Td isNumeric>$434.70</Td>
+                </Tr>
+                <Tr>
+                  <Td colSpan={9} fontStyle="italic">
+                    {t('proposalDoc.modifications')}
+                  </Td>
+                </Tr>
+                <Tr>
+                  <Td>-</Td>
+                  <Td>1</Td>
+                  <Td>SPEC BOOK</Td>
+                  <Td></Td>
+                  <Td></Td>
+                  <Td></Td>
+                  <Td isNumeric>$31.00</Td>
+                  <Td></Td>
+                  <Td isNumeric>$31.00</Td>
+                </Tr>
+              </Tbody>
+            </Table>
+          </TableCard>
         </Box>
 
         <Box
@@ -761,7 +764,7 @@ const PdfLayoutCustomization = () => {
 
       <Modal isOpen={previewOpen} onClose={() => setPreviewOpen(false)} size={{ base: 'full', md: 'xl', lg: '6xl' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent maxH="90vh" overflow="hidden">
+        <ModalContent maxH="90vh" overflow="hidden" borderRadius="12px">
           <ModalHeader bg={formData.headerBgColor} color={getContrastColor(formData.headerBgColor)}>
             <HStack spacing={4} align="center">
               <Icon as={Settings} />

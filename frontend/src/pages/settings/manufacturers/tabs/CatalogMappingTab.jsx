@@ -1,9 +1,10 @@
 import StandardCard from '../../../../components/StandardCard'
+import { TableCard } from '../../../../components/TableCard'
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import PageHeader from '../../../../components/PageHeader'
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Divider, Flex, FormControl, FormLabel, HStack, Heading, Icon, Image, Input, ListItem, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Select, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, UnorderedList, VStack, useColorModeValue, useToast } from '@chakra-ui/react'
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Divider, Flex, FormControl, FormLabel, HStack, Heading, Icon, Image, Input, ListItem, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Select, SimpleGrid, Spinner, Stack, Table, Tbody, Td, Text, Textarea, Th, Thead, Tr, UnorderedList, VStack, useColorModeValue, useToast } from '@chakra-ui/react'
 // Use lucide icons (React components) only via centralized module
 import { Plus, ChevronDown, ChevronUp, RefreshCw, Sparkles, Upload, Wrench } from '@/icons-lucide'
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice'
@@ -2750,8 +2751,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <Box mb={3} p={3} border="1px solid" borderColor={iconGray300} borderRadius="md" bg={bgGray50}>
             <Flex flexDir={{ base: "column", sm: "row" }} justify="space-between" align={{ base: "start", sm: "center" }} gap={2}>
               <Box>
-                <strong>Managing Style: "{styleFilter}"</strong>
-                <br />
+                <Text fontWeight="semibold" mb={1}>
+                  {`Managing Style: "${styleFilter}"`}
+                </Text>
                 <Text fontSize="sm" color="gray.500">
                   {catalogData.filter((item) => item.style === styleFilter).length} items with this
                   style
@@ -2843,8 +2845,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       ) : (
         <>
           {/* Desktop Table View - Hidden on mobile */}
-          <Box overflowX="auto" display={{ base: "none", md: "block" }}>
-            <Table>
+          <Box display={{ base: "none", md: "block" }}>
+            <TableCard overflowX="auto">
+              <Table>
               <Thead>
                 <Tr>
                   <Th w="35px" minW="35px">
@@ -3048,7 +3051,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   </Tr>
                 ))}
               </Tbody>
-            </Table>
+              </Table>
+            </TableCard>
           </Box>
 
           {/* Mobile Card View - Visible only on mobile */}
@@ -3214,7 +3218,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* File Upload Modal */}
       <Modal isOpen={fileModalVisible} onClose={() => setFileModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('settings.manufacturers.catalogMapping.file.modalTitle')} />
           <ModalBody>
             <FormControl>
@@ -3242,7 +3246,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       <Modal isOpen={showAssignGlobalModsModal} onClose={() => setShowAssignGlobalModsModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader
             title={t(
               'settings.manufacturers.catalogMapping.assign.header',
@@ -3348,7 +3352,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 {selectedItems.length} selected item(s) will receive this assignment.
               </Text>
             )}
-            <hr />
+            <Divider />
             <Box>
               <Heading as="h6" size="sm">Existing assignments</Heading>
               {assignLoading ? (
@@ -3356,7 +3360,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <Spinner size="sm" />
                 </Flex>
               ) : (
-                <TableContainer>
+                <TableCard>
                   <Table size="sm" variant="simple">
                     <Thead>
                       <Tr>
@@ -3408,7 +3412,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       )}
                     </Tbody>
                   </Table>
-                </TableContainer>
+                </TableCard>
               )}
             </Box>
           </ModalBody>
@@ -3437,10 +3441,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         size={{ base: 'full', md: 'md', lg: 'lg' }}
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={`Global Mods — ${selectedCatalogItem?.code || ''}`} />
           <ModalBody>
-            <TableContainer>
+            <TableCard>
               <Table size="sm" variant="simple">
                 <Thead>
                   <Tr>
@@ -3504,8 +3508,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   )}
                 </Tbody>
               </Table>
-            </TableContainer>
-            <hr />
+            </TableCard>
+            <Divider />
             <VStack spacing={3} align="stretch">
               <FormControl>
                 <FormLabel>Add template to this item</FormLabel>
@@ -3580,7 +3584,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Manual Upload Modal */}
       <Modal isOpen={manualModalVisible} onClose={() => setManualModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('settings.manufacturers.catalogMapping.manual.modalTitle')} />
           <ModalBody>
             <Select
@@ -3649,7 +3653,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       <Modal isOpen={editModalVisible} onClose={() => setEditModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('settings.manufacturers.catalogMapping.edit.modalTitle')} />
           <ModalBody>
             <Select
@@ -3729,7 +3733,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Style Modal */}
       <Modal isOpen={showStyleModal} onClose={() => setShowStyleModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader
             title={t('settings.manufacturers.catalogMapping.style.manageTitle', {
               style: selectedStyle,
@@ -3779,7 +3783,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             ) : styleForm.image ? (
               <Box>
                 <Text>
-                  <strong>{t('settings.manufacturers.catalogMapping.style.currentImage')}</strong>
+                  <Text as="span" fontWeight="semibold">{t('settings.manufacturers.catalogMapping.style.currentImage')}</Text>
                 </Text>
                 <Image
                   src={styleForm.image ? `${api_url}/uploads/images/${styleForm.image}` : undefined}
@@ -3824,7 +3828,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Style View Modal */}
       <Modal isOpen={showStyleViewModal} onClose={() => setShowStyleViewModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader
             title={`📝 ${t('settings.manufacturers.catalogMapping.style.detailsTitle')}`}
           />
@@ -3897,7 +3901,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         onClose={() => !isAssemblyCostSaving && setShowAssemblyModal(false)}
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('settings.manufacturers.catalogMapping.assembly.modalTitle')} />
           <ModalBody position="relative">
             {isAssemblyCostSaving && (
@@ -4070,7 +4074,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             setAssemblyData({ ...assemblyData, selectedItemType: typeItem.type })
                           }
                         />
-                        <label
+                        <Box as="label"
 
                           htmlFor={`single-type-${typeItem.type}`}
                         >
@@ -4090,7 +4094,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               </Badge>
                             ))}
                           </Box>
-                        </label>
+                        </Box>
                       </Flex>
                     )
                   })}
@@ -4140,7 +4144,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             }
                           }}
                         />
-                        <label
+                        <Box as="label"
 
                           htmlFor={`type-${typeItem.type}`}
                         >
@@ -4160,7 +4164,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               </Badge>
                             ))}
                           </Box>
-                        </label>
+                        </Box>
                       </Flex>
                     )
                   })}
@@ -4236,7 +4240,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       <Modal isOpen={showHingesModal} onClose={() => setShowHingesModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('settings.manufacturers.catalogMapping.hinges.modalTitle')} />
           <ModalBody>
             <FormLabel>{t('settings.manufacturers.catalogMapping.hinges.left')}</FormLabel>
@@ -4304,7 +4308,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       <Modal isOpen={showModificationModal} onClose={() => setShowModificationModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('settings.manufacturers.catalogMapping.mod.modalTitle')} />
           <ModalBody>
             <FormLabel>{t('settings.manufacturers.catalogMapping.mod.name')}</FormLabel>
@@ -4371,7 +4375,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Delete Style Modal */}
       <Modal isOpen={deleteStyleModalVisible} onClose={() => setDeleteStyleModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader
             title={t('settings.manufacturers.catalogMapping.deleteStyle.modalTitle', {
               style: styleToDelete,
@@ -4380,9 +4384,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <ModalBody>
             <Box>
               <Text>
-                You are about to delete the style "<strong>{styleToDelete}</strong>". This will
+                You are about to delete the style "<Text as="span" fontWeight="semibold">{styleToDelete}</Text>". This will
                 affect{' '}
-                <strong>{catalogData.filter((item) => item.style === styleToDelete).length}</strong>{' '}
+                <Text as="span" fontWeight="semibold">{catalogData.filter((item) => item.style === styleToDelete).length}</Text>{' '}
                 catalog items.
               </Text>
 
@@ -4397,7 +4401,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     onChange={() => setMergeToStyle('')}
                   />
                   <Text as="label" htmlFor="deleteItems" color={iconRed500} ml={2}>
-                    <strong>Delete all items</strong> with this style permanently
+                    <Text as="span" fontWeight="semibold">Delete all items</Text> with this style permanently
                   </Text>
                 </Flex>
 
@@ -4411,7 +4415,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     }
                   />
                   <Text as="label" htmlFor="mergeItems" color={iconBlue500} ml={2}>
-                    <strong>Merge items</strong> to another style
+                    <Text as="span" fontWeight="semibold">Merge items</Text> to another style
                   </Text>
                 </Flex>
               </VStack>
@@ -4439,7 +4443,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <Text fontSize="sm">
                   {mergeToStyle ? (
                     <>
-                      <strong>Smart Merge Action:</strong> All{' '}
+                      <Text as="span" fontWeight="semibold">Smart Merge Action:</Text> All{' '}
                       {catalogData.filter((item) => item.style === styleToDelete).length} items with
                       style "{styleToDelete}" will be processed:
                       <Box as="ul" mt={1} mb={0}>
@@ -4449,7 +4453,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     </>
                   ) : (
                     <>
-                      <strong>Delete Action:</strong> All{' '}
+                      <Text as="span" fontWeight="semibold">Delete Action:</Text> All{' '}
                       {catalogData.filter((item) => item.style === styleToDelete).length} items with
                       style "{styleToDelete}" will be permanently deleted. This action cannot be
                       undone.
@@ -4490,20 +4494,25 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Individual Delete Item Modal */}
       <Modal isOpen={deleteItemModalVisible} onClose={() => setDeleteItemModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('settings.manufacturers.catalogMapping.deleteItem.modalTitle')} />
           <ModalBody>
             {itemToDelete && (
               <Box>
                 <Text>Are you sure you want to delete this catalog item?</Text>
                 <Box p={3} bg={bgGray50} borderRadius="md">
-                  <strong>Code:</strong> {itemToDelete.code}
-                  <br />
-                  <strong>Description:</strong> {itemToDelete.description || 'N/A'}
-                  <br />
-                  <strong>Style:</strong> {itemToDelete.style || 'N/A'}
-                  <br />
-                  <strong>Price:</strong> ${itemToDelete.price || '0.00'}
+                  <Text>
+                    <Text as="span" fontWeight="semibold">Code:</Text> {itemToDelete.code}
+                  </Text>
+                  <Text>
+                    <Text as="span" fontWeight="semibold">Description:</Text> {itemToDelete.description || 'N/A'}
+                  </Text>
+                  <Text>
+                    <Text as="span" fontWeight="semibold">Style:</Text> {itemToDelete.style || 'N/A'}
+                  </Text>
+                  <Text>
+                    <Text as="span" fontWeight="semibold">Price:</Text> ${itemToDelete.price || '0.00'}
+                  </Text>
                 </Box>
                 <Text color={iconRed500} mt={3} fontSize="sm">
                   ⚠️ This action cannot be undone.
@@ -4536,17 +4545,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Bulk Delete Modal */}
       <Modal isOpen={bulkDeleteModalVisible} onClose={() => setBulkDeleteModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('settings.manufacturers.catalogMapping.bulk.deleteModalTitle')} />
           <ModalBody>
             <Box>
               <Text>
-                Are you sure you want to delete <strong>{selectedItems.length}</strong> selected
+                Are you sure you want to delete <Text as="span" fontWeight="semibold">{selectedItems.length}</Text> selected
                 catalog items?
               </Text>
 
               <Box p={3} bg={bgGray50} borderRadius="md">
-                <strong>Items to be deleted:</strong>
+                <Text as="span" fontWeight="semibold">Items to be deleted:</Text>
                 <Box as="ul" mt={2} mb={0}>
                   {currentItems
                     .filter((item) => selectedItems.includes(item.id))
@@ -4558,7 +4567,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     ))}
                   {selectedItems.length > 10 && (
                     <ListItem>
-                      <em>... and {selectedItems.length - 10} more items</em>
+                      <Text as="em">... and {selectedItems.length - 10} more items</Text>
                     </ListItem>
                   )}
                 </Box>
@@ -4594,7 +4603,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Rollback Modal */}
       <Modal isOpen={rollbackModalVisible} onClose={() => setRollbackModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('settings.manufacturers.catalogMapping.rollback.modalTitle')} />
           <ModalBody>
             <Box>
@@ -4620,21 +4629,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         checked={selectedBackup === backup.uploadSessionId}
                         onChange={(event) => setSelectedBackup(event.currentTarget.value)}
                       />
-                      <Text
+                      <Box
                         as="label"
                         htmlFor={`backup-${backup.uploadSessionId}`}
-                        aria-label={`Select backup ${backup.originalName}`}
                         ml={2}
                       >
-                        <Box>
-                          <strong>{backup.originalName}</strong>
-                          <br />
-                          <Text fontSize="sm">
-                            {new Date(backup.uploadedAt).toLocaleString()} - {backup.itemsCount}{' '}
-                            items
-                          </Text>
-                        </Box>
-                      </Text>
+                        <Text fontWeight="semibold">{backup.originalName}</Text>
+                        <Text fontSize="sm">
+                          {new Date(backup.uploadedAt).toLocaleString()} - {backup.itemsCount}{' '}
+                          items
+                        </Text>
+                      </Box>
                     </Flex>
                   ))}
                 </VStack>
@@ -4643,9 +4648,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
             {selectedBackup && (
               <Box mt={3} p={3} bg={colorOrange50} borderRadius="md">
-                <strong>{t('settings.manufacturers.catalogMapping.rollback.warning')}</strong>
-                <br />
-                {t('settings.manufacturers.catalogMapping.rollback.confirmText')}
+                <Text fontWeight="semibold">{t('settings.manufacturers.catalogMapping.rollback.warning')}</Text>
+                <Text>{t('settings.manufacturers.catalogMapping.rollback.confirmText')}</Text>
               </Box>
             )}
           </ModalBody>
@@ -4681,7 +4685,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Bulk Edit Modal */}
       <Modal isOpen={bulkEditModalVisible} onClose={() => setBulkEditModalVisible(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader
             title={t('settings.manufacturers.catalogMapping.bulkEdit.header', {
               count: selectedItems.length,
@@ -4747,7 +4751,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
               <Box mt={3} p={3} bg={bgGray50} borderRadius="md">
                 <Text fontSize="sm">
-                  <strong>Note:</strong> Only the fields you fill will be updated. Empty fields will
+                  <Text as="span" fontWeight="semibold">Note:</Text> Only the fields you fill will be updated. Empty fields will
                   preserve the existing values for each item.
                 </Text>
               </Box>
@@ -4778,7 +4782,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Edit Style Name Modal */}
       <Modal isOpen={editStyleNameModalVisible} onClose={() => setEditStyleNameModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title="Edit Style Name" />
           <ModalBody>
             <Box>
@@ -4814,7 +4818,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
               <Box p={3} bg={colorOrange50} borderRadius="md">
                 <Text fontSize="sm">
-                  <strong>Warning:</strong> This will rename the style for all items currently using
+                  <Text as="span" fontWeight="semibold">Warning:</Text> This will rename the style for all items currently using
                   "{styleNameEditForm.oldStyleName}". The change applies to all{' '}
                   {
                     catalogData.filter((item) => item.style === styleNameEditForm.oldStyleName)
@@ -4858,7 +4862,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         size="xl"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader
             title={t(
               'settings.manufacturers.catalogMapping.modManagement.title',
@@ -6119,7 +6123,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                     />
                                   )}
                                   <Box>
-                                    <strong>{template.name}</strong>
+                                    <Text as="span" fontWeight="semibold">{template.name}</Text>
                                     {template.defaultPrice && (
                                       <Text as="span">
                                         {' '}
@@ -6294,7 +6298,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         size={{ base: 'full', md: 'md', lg: 'lg' }}
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('globalMods.modal.editCategory.title', 'Edit Category')} />
           <ModalBody>
             <VStack spacing={3} align="stretch">
@@ -6386,7 +6390,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Delete Category Modal */}
       <Modal isOpen={showDeleteCategoryModal} onClose={() => setShowDeleteCategoryModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader
             title={t('globalMods.modal.deleteCategory.title', {
               name: categoryToDelete?.name || '',
@@ -6396,14 +6400,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             {categoryToDelete && (
               <>
                 <Text>
-                  <strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong>{' '}
+                  <Text as="span" fontWeight="semibold">{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</Text>{' '}
                   {t('globalMods.modal.deleteCategory.aboutToDelete', {
                     name: categoryToDelete.name,
                   })}
                 </Text>
                 {categoryToDelete.templates?.length > 0 && (
                   <Box p={3} bg={colorOrange50} borderRadius="md">
-                    <strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong>{' '}
+                    <Text as="span" fontWeight="semibold">{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</Text>{' '}
                     {t('globalMods.modal.deleteCategory.contains', {
                       count: categoryToDelete.templates.length,
                     })}
@@ -6415,9 +6419,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           value="cancel"
                           defaultChecked
                         />
-                        <label htmlFor="deleteCancel">
+                        <Box as="label" htmlFor="deleteCancel">
                           {t('globalMods.modal.deleteCategory.cancel')}
-                        </label>
+                        </Box>
                       </Box>
                       <Box>
                         <Radio
@@ -6425,9 +6429,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           id="deleteWithMods"
                           value="withMods"
                         />
-                        <label htmlFor="deleteWithMods">
+                        <Box as="label" htmlFor="deleteWithMods">
                           {t('globalMods.modal.deleteCategory.deleteWithMods')}
-                        </label>
+                        </Box>
                       </Box>
                     </Box>
                   </Box>
@@ -6472,13 +6476,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Move Modification Modal */}
       <Modal isOpen={showMoveModificationModal} onClose={() => setShowMoveModificationModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('common.move', 'Move Modification')} />
           <ModalBody>
             {modificationToMove && (
               <>
                 <Text>
-                  {t('common.move', 'Move')} <strong>"{modificationToMove.name}"</strong>{' '}
+                  {t('common.move', 'Move')} <Text as="span" fontWeight="semibold">"{modificationToMove.name}"</Text>{' '}
                   {t('common.to', 'to')} {t('common.whichCategory', 'which category?')}
                 </Text>
                 <FormControl>
@@ -6513,7 +6517,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </FormControl>
                 <Box p={3} bg={bgBlue50} borderRadius="md">
                   <Text fontSize="sm">
-                    <strong>{t('common.note', 'Note')}:</strong>{' '}
+                    <Text as="span" fontWeight="semibold">{t('common.note', 'Note')}:</Text>{' '}
                     {t(
                       'settings.manufacturers.catalogMapping.gallery.tooltips.move',
                       'Move to different category',
@@ -6551,7 +6555,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         size="xl"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <PageHeader title={t('globalMods.modal.editTemplate.title', 'Edit Modification')} />
           <ModalBody>
             {/* Basic Information */}

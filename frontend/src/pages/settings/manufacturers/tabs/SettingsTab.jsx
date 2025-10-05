@@ -1,4 +1,5 @@
 import StandardCard from '../../../../components/StandardCard'
+import { TableCard } from '../../../../components/TableCard'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Box, Button, CardBody, Checkbox, Flex, FormControl, FormLabel, Heading, Icon, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Select, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react'
@@ -256,60 +257,62 @@ const SettingsTab = ({ manufacturer }) => {
           { count: Math.min(data.length, 5) },
         )}
       </Text>
-      <TableContainer>
-        <Table size="sm" variant="striped">
-          <Thead>
-            <Tr>
-              {selectedFields.map((field, index) => (
-                <Th key={`header-${index}`} textTransform="none" fontSize="xs" color={textGray600}>
-                  {field === 'code'
-                    ? 'CODE'
-                    : typeof field === 'string' && field
-                      ? `${field.toUpperCase()} PRICE`
-                      : t('common.na', 'N/A')}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {loading ? (
+      <Box display={{ base: 'none', lg: 'block' }}>
+        <TableCard>
+          <Table size="sm" variant="striped">
+            <Thead>
               <Tr>
-                <Td colSpan={selectedFields.length}>
-                  <Flex align="center" justify="center" py={8} color={textGray500}>
-                    <Spinner size="sm" />
-                  </Flex>
-                </Td>
+                {selectedFields.map((field, index) => (
+                  <Th key={`header-${index}`} textTransform="none" fontSize="xs" color={textGray600}>
+                    {field === 'code'
+                      ? 'CODE'
+                      : typeof field === 'string' && field
+                        ? `${field.toUpperCase()} PRICE`
+                        : t('common.na', 'N/A')}
+                  </Th>
+                ))}
               </Tr>
-            ) : data.length > 0 ? (
-              data.map((item) => (
-                <Tr key={item.id ?? item.code}>
-                  {selectedFields.map((field, index) => {
-                    if (field === 'code') {
-                      return <Td key={`${item.id ?? item.code}-${index}`}>{item.code ?? '--'}</Td>
-                    }
-
-                    const price = resolvePrice(item.code, field)
-
-                    return (
-                      <Td key={`${item.id ?? item.code}-${index}`}>
-                        {price ? `$${multiplierCalc(price)}` : '--'}
-                      </Td>
-                    )
-                  })}
+            </Thead>
+            <Tbody>
+              {loading ? (
+                <Tr>
+                  <Td colSpan={selectedFields.length}>
+                    <Flex align="center" justify="center" py={8} color={textGray500}>
+                      <Spinner size="sm" />
+                    </Flex>
+                  </Td>
                 </Tr>
-              ))
-            ) : (
-              <Tr>
-                <Td colSpan={selectedFields.length}>
-                  <Text textAlign="center" py={6} color={textGray500}>
-                    {t('common.noData', 'No data found.')}
-                  </Text>
-                </Td>
-              </Tr>
-            )}
-          </Tbody>
-        </Table>
-      </TableContainer>
+              ) : data.length > 0 ? (
+                data.map((item) => (
+                  <Tr key={item.id ?? item.code}>
+                    {selectedFields.map((field, index) => {
+                      if (field === 'code') {
+                        return <Td key={`${item.id ?? item.code}-${index}`}>{item.code ?? '--'}</Td>
+                      }
+
+                      const price = resolvePrice(item.code, field)
+
+                      return (
+                        <Td key={`${item.id ?? item.code}-${index}`}>
+                          {price ? `$${multiplierCalc(price)}` : '--'}
+                        </Td>
+                      )
+                    })}
+                  </Tr>
+                ))
+              ) : (
+                <Tr>
+                  <Td colSpan={selectedFields.length}>
+                    <Text textAlign="center" py={6} color={textGray500}>
+                      {t('common.noData', 'No data found.')}
+                    </Text>
+                  </Td>
+                </Tr>
+              )}
+            </Tbody>
+          </Table>
+        </TableCard>
+      </Box>
     </Stack>
   )
 

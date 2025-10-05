@@ -89,7 +89,7 @@ const EditUserModal = ({ visible, onClose, user }) => {
       isCentered
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent borderRadius="12px" overflow="hidden">
         <ModalHeader>{t('users.edit.modalHeader', 'Edit User')}</ModalHeader>
         <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>

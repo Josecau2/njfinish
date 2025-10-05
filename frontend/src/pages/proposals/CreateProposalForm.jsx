@@ -1,5 +1,5 @@
 import StandardCard from '../../components/StandardCard'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -16,7 +16,12 @@ import {
   Stack,
   Text,
   useColorModeValue,
-  useToast,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
 } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import {
@@ -60,14 +65,34 @@ const ProposalForm = ({
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const toast = useToast()
+  const alertCancelRef = useRef(null)
+  const [alertState, setAlertState] = useState({ isOpen: false, title: '', message: '', onConfirm: null })
+
+  const showAlert = (title, message, onConfirm) => {
+    setAlertState({
+      isOpen: true,
+      title,
+      message,
+      onConfirm: typeof onConfirm === 'function' ? onConfirm : null,
+    })
+  }
+
+  const closeAlert = () => {
+    setAlertState((prev) => {
+      const callback = prev.onConfirm
+      if (callback) {
+        setTimeout(() => callback(), 0)
+      }
+      return { ...prev, isOpen: false, title: '', message: '', onConfirm: null }
+    })
+  }
 
   const queryParams = new URLSearchParams(location.search)
   const isQuick = queryParams.get('quick') === 'yes'
 
   const [currentStep, setCurrentStep] = useState(isQuick ? 2 : 1)
   const [backStep, setBackStep] = useState(false)
-  const [formData, setFormData] = useState({
+  const [formData, setFormDataState] = useState({
     customerId: '',
     customerName: '',
     customerEmail: '',
@@ -85,15 +110,91 @@ const ProposalForm = ({
     versionName: '',
     assembled: true,
     totalPrice: 0,
-    status: '',
+    status: 'Draft',
     manufacturersData: [],
   })
   const [showPrintModal, setShowPrintModal] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [showContractModal, setShowContractModal] = useState(false)
-  const [isFormDirty, setIsFormDirty] = useState(true)
+  const [isFormDirty, setIsFormDirty] = useState(false)
 
   const manufacturerData = useSelector((state) => state.manufacturers.selected)
+
+  const userInteractedRef = useRef(false)
+
+  useEffect(() => {
+    const markInteraction = () => {
+      if (userInteractedRef.current) return
+      userInteractedRef.current = true
+      window.removeEventListener('pointerdown', markInteraction)
+      window.removeEventListener('touchstart', markInteraction)
+      window.removeEventListener('keydown', markInteraction)
+    }
+
+    window.addEventListener('pointerdown', markInteraction)
+    window.addEventListener('touchstart', markInteraction)
+    window.addEventListener('keydown', markInteraction)
+
+    return () => {
+      window.removeEventListener('pointerdown', markInteraction)
+      window.removeEventListener('touchstart', markInteraction)
+      window.removeEventListener('keydown', markInteraction)
+    }
+  }, [])
+
+  const maybeMarkFormDirty = (previous, next, options = {}) => {
+    const { markDirty = true, keys } = options
+
+    if (!markDirty || !userInteractedRef.current) {
+      return
+    }
+
+    let hasChanged = false
+    if (Array.isArray(keys) && keys.length) {
+      hasChanged = keys.some((key) => previous[key] !== next[key])
+    } else {
+      hasChanged = previous !== next
+    }
+
+    if (hasChanged) {
+      setIsFormDirty(true)
+    }
+  }
+
+  const setFormData = (updater, options = {}) => {
+    setFormDataState((prev) => {
+      const next = typeof updater === 'function' ? updater(prev) : updater
+
+      if (next === prev) {
+        return prev
+      }
+
+      maybeMarkFormDirty(prev, next, options)
+      return next
+    })
+  }
+
+  const updateFormData = (newData, options = {}) => {
+    setFormDataState((prev) => {
+      if (!newData || typeof newData !== 'object') {
+        return prev
+      }
+
+      const keys = Object.keys(newData)
+      if (!keys.length) {
+        return prev
+      }
+
+      const hasChanges = keys.some((key) => prev[key] !== newData[key])
+      if (!hasChanges) {
+        return prev
+      }
+
+      const next = { ...prev, ...newData }
+      maybeMarkFormDirty(prev, next, { ...options, keys })
+      return next
+    })
+  }
 
   useEffect(() => {
     if (!isFormDirty) return
@@ -131,10 +232,6 @@ const ProposalForm = ({
     }
   }, [dispatch, formData.manufacturerId])
 
-  const updateFormData = (newData) => {
-    setFormData((prev) => ({ ...prev, ...newData }))
-  }
-
   const handleStyleSelect = (styleId) => {
     const updatedData = [...formData.manufacturersData]
     const lastEntry = updatedData[updatedData.length - 1]
@@ -150,12 +247,7 @@ const ProposalForm = ({
   }
 
   const nextStep = () => {
-    console.log('nextStep called, currentStep:', currentStep, 'TOTAL_STEPS:', TOTAL_STEPS)
-    setCurrentStep((prev) => {
-      const next = Math.min(prev + 1, TOTAL_STEPS)
-      console.log('Setting currentStep from', prev, 'to', next)
-      return next
-    })
+    setCurrentStep((prev) => Math.min(prev + 1, TOTAL_STEPS))
   }
 
   const prevStep = () => {
@@ -179,56 +271,45 @@ const ProposalForm = ({
       const response = await sendFormDataToBackend(payload)
 
       if (response.data.success === true) {
-        toast({
-          title: t('common.success', 'Success'),
-          description: t('proposals.toast.successSend', 'Quote sent successfully'),
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        })
         setIsFormDirty(false)
-        navigate('/quotes')
+        const successMessage =
+          actionType === '2'
+            ? t('proposals.toast.successReject', 'Quote rejected successfully')
+            : actionType === '0'
+            ? t('proposals.toast.successSave', 'Quote saved successfully')
+            : t('proposals.toast.successSend', 'Quote sent successfully')
+        const onConfirm =
+          actionType === '2'
+            ? () => window.location.reload()
+            : () => navigate('/quotes')
+
+        showAlert(t('common.success', 'Success'), successMessage, onConfirm)
       } else {
-        toast({
-          title: t('common.error', 'Error'),
-          description: response.data?.message ||
+        showAlert(
+          t('common.error', 'Error'),
+          response.data?.message ||
             t('proposals.errors.operationFailed', 'Operation failed. Please try again.'),
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        })
+        )
       }
     } catch (error) {
       if (error.response?.status === 403) {
-        toast({
-          title: t('common.error', 'Error'),
-          description: t(
+        showAlert(
+          t('common.error', 'Error'),
+          t(
             'settings.customization.ui.alerts.saveFailed',
             'Failed to save customization. Please try again.',
           ),
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        })
+        )
       } else if (error.response?.status === 400) {
         const message =
           error.response?.data?.message ||
           t('proposals.errors.operationFailed', 'Operation failed. Please try again.')
-        toast({
-          title: t('common.error', 'Error'),
-          description: message,
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        })
+        showAlert(t('common.error', 'Error'), message)
       } else {
-        toast({
-          title: t('common.error', 'Error'),
-          description: error.message || t('proposals.toast.errorGeneric', 'An error occurred'),
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        })
+        showAlert(
+          t('common.error', 'Error'),
+          error.message || t('proposals.toast.errorGeneric', 'An error occurred'),
+        )
       }
     }
   }
@@ -499,6 +580,26 @@ const ProposalForm = ({
           formData={formData}
         />
         <EmailContractModal show={showContractModal} onClose={() => setShowContractModal(false)} />
+        <AlertDialog
+          isOpen={alertState.isOpen}
+          leastDestructiveRef={alertCancelRef}
+          onClose={closeAlert}
+          isCentered
+        >
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                {alertState.title}
+              </AlertDialogHeader>
+              <AlertDialogBody>{alertState.message}</AlertDialogBody>
+              <AlertDialogFooter>
+                <Button ref={alertCancelRef} colorScheme='brand' onClick={closeAlert}>
+                  {t('common.ok', 'OK')}
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
       </Stack>
     </PageContainer>
   )

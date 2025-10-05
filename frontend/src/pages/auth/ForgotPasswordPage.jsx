@@ -1,12 +1,25 @@
 import React, { useEffect, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
-import { Box, Flex, Container, Heading, Text, FormControl, FormLabel, Input, Button, Link, Alert, AlertIcon, VStack, useColorModeValue } from '@chakra-ui/react'
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Link,
+  Text,
+  VStack,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import axios from 'axios'
 import { useTranslation } from 'react-i18next'
 import { getOptimalColors } from '../../utils/colorUtils'
 import BrandLogo from '../../components/BrandLogo'
-import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand'
-import LanguageSwitcher from '../../components/LanguageSwitcher'
+import { getBrand, getBrandColors, getLoginBrand } from '../../brand/useBrand'
+import AuthLayout from '../../components/AuthLayout'
 
 const EMPTY_FORM = {
   email: '',
@@ -14,18 +27,17 @@ const EMPTY_FORM = {
 
 const ForgotPasswordPage = () => {
   const { t } = useTranslation()
-  const api_url = import.meta.env.VITE_API_URL
+  const apiUrl = import.meta.env.VITE_API_URL
   const brand = getBrand()
   const loginBrand = getLoginBrand()
   const brandColors = getBrandColors()
   const logoHeight = Number(loginBrand.logoHeight) || 60
-  const loginBackground = loginBrand.backgroundColor || brandColors.surface || "gray.900"
+  const loginBackground = loginBrand.backgroundColor || brandColors.surface || 'gray.900'
   const rightPanelColors = getOptimalColors(loginBackground)
 
-  // Color mode values
-  const bgWhite = useColorModeValue("white", "gray.800")
-  const textGray700 = useColorModeValue("gray.700", "gray.300")
-  const linkBlue = useColorModeValue("blue.600", "blue.300")
+  const bgWhite = useColorModeValue('white', 'gray.800')
+  const textGray700 = useColorModeValue('gray.700', 'gray.300')
+  const linkBlue = useColorModeValue('blue.600', 'blue.300')
 
   const [form, setForm] = useState({ ...EMPTY_FORM })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -35,8 +47,8 @@ const ForgotPasswordPage = () => {
   useEffect(() => {
     try {
       localStorage.setItem('coreui-free-react-admin-template-theme', 'light')
-    } catch (_) {
-      // ignore
+    } catch (_err) {
+      // ignore storage failures
     }
   }, [])
 
@@ -59,8 +71,8 @@ const ForgotPasswordPage = () => {
         return
       }
 
-      const res = await axios.post(`${api_url}/api/forgot-password`, { email: trimmedEmail })
-      const data = res?.data || {}
+      const response = await axios.post(`${apiUrl}/api/forgot-password`, { email: trimmedEmail })
+      const data = response?.data || {}
       setMessage(data.message || t('auth.forgotPassword.success'))
       setForm({ ...EMPTY_FORM })
     } catch (err) {
@@ -71,110 +83,93 @@ const ForgotPasswordPage = () => {
     }
   }
 
+  const leftPanel = (
+    <VStack spacing={6} maxW="lg" textAlign="center">
+      <Heading as="h1" size="2xl" color={rightPanelColors.text}>
+        {loginBrand.rightTitle || brand.logoAlt || t('auth.forgotPassword.title')}
+      </Heading>
+      <Text fontSize="xl" color={rightPanelColors.subtitle}>
+        {loginBrand.rightSubtitle || t('auth.forgotPassword.subtitle')}
+      </Text>
+      <Text fontSize="md" color={rightPanelColors.subtitle}>
+        {loginBrand.rightDescription || ''}
+      </Text>
+    </VStack>
+  )
+
   return (
-    <Flex minH="100vh" className="login-page-wrapper">
-      {/* Left Panel - Illustration and Branding */}
-      <Box
-        display={{ base: 'none', lg: 'flex' }}
-        flex="1"
-        bg={loginBackground}
-        alignItems="center"
-        justifyContent="center"
-        px={8}
-        className="login-left-panel"
-      >
-        <VStack spacing={4} maxW="500px" textAlign="center">
-          <Heading as="h1" size="2xl" color={rightPanelColors.text}>
-            {loginBrand.rightTitle || brand.logoAlt || t('auth.forgotPassword.title')}
-          </Heading>
-          <Text fontSize="xl" color={rightPanelColors.subtitle}>
-            {loginBrand.rightSubtitle || t('auth.forgotPassword.subtitle')}
-          </Text>
-          <Text fontSize="md" color={rightPanelColors.subtitle}>
-            {loginBrand.rightDescription || ''}
-          </Text>
-        </VStack>
-      </Box>
-
-      {/* Right Panel - Form */}
-      <Flex
-        flex="1"
-        alignItems="center"
-        justifyContent="center"
-        bg={bgWhite}
-        className="login-right-panel"
-        position="relative"
-      >
-        <Box position="absolute" top={4} right={4}>
-          <LanguageSwitcher compact />
+    <AuthLayout
+      leftContent={leftPanel}
+      leftBg={loginBackground}
+      leftTextColor={rightPanelColors.text}
+      rightBg={bgWhite}
+      languageSwitcherProps={{ compact: true }}
+    >
+      <VStack spacing={6} align="stretch">
+        <Box textAlign="center">
+          <BrandLogo size={logoHeight} />
         </Box>
-        <Container maxW="md" py={8}>
-          <VStack spacing={6} align="stretch">
-            <Box textAlign="center">
-              <BrandLogo size={logoHeight} />
-            </Box>
-            <Heading as="h2" size="lg" textAlign="center">
-              {loginBrand.resetTitle || t('auth.forgotPassword.title')}
-            </Heading>
-            <Text textAlign="center" color={textGray700}>
-              {loginBrand.resetSubtitle || t('auth.forgotPassword.subtitle')}
-            </Text>
 
-            {message && (
-              <Alert status="success" borderRadius="md">
-                <AlertIcon />
-                {message}
-              </Alert>
-            )}
+        <Heading as="h2" size="lg" textAlign="center">
+          {loginBrand.resetTitle || t('auth.forgotPassword.title')}
+        </Heading>
+        <Text textAlign="center" color={textGray700}>
+          {loginBrand.resetSubtitle || t('auth.forgotPassword.subtitle')}
+        </Text>
 
-            {error && (
-              <Alert status="error" borderRadius="md">
-                <AlertIcon />
-                {error}
-              </Alert>
-            )}
+        {message && (
+          <Alert status="success" borderRadius="md">
+            <AlertIcon />
+            {message}
+          </Alert>
+        )}
 
-            <Box as="form" onSubmit={handleSubmit}>
-              <VStack spacing={4}>
-                <FormControl isRequired>
-                  <FormLabel htmlFor="email" fontWeight="500">
-                    {t('auth.email')}
-                  </FormLabel>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    size="lg"
-                    placeholder={t('auth.emailPlaceholder')}
-                    value={form.email}
-                    onChange={handleChange}
-                    minH="44px"
-                  />
-                </FormControl>
+        {error && (
+          <Alert status="error" borderRadius="md">
+            <AlertIcon />
+            {error}
+          </Alert>
+        )}
 
-                <Button
-                  type="submit"
-                  colorScheme="brand"
-                  size="lg"
-                  width="100%"
-                  minH="44px"
-                  isLoading={isSubmitting}
-                  loadingText={t('auth.forgotPassword.submitting')}
-                >
-                  {t('auth.forgotPassword.submit')}
-                </Button>
-              </VStack>
-            </Box>
+        <Box as="form" onSubmit={handleSubmit}>
+          <VStack spacing={4}>
+            <FormControl isRequired>
+              <FormLabel htmlFor="email" fontWeight="500">
+                {t('auth.email')}
+              </FormLabel>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                size="lg"
+                placeholder={t('auth.emailPlaceholder')}
+                value={form.email}
+                onChange={handleChange}
+                minH="44px"
+              />
+            </FormControl>
 
-            <Text textAlign="center">
-              <Link as={RouterLink} to="/login" color={linkBlue} minH="44px" py={2}>
-                {t('auth.backToLogin')}
-              </Link>
-            </Text>
+            <Button
+              type="submit"
+              colorScheme="brand"
+              size="lg"
+              width="100%"
+              minH="44px"
+              isLoading={isSubmitting}
+              loadingText={t('auth.forgotPassword.submitting')}
+            >
+              {t('auth.forgotPassword.submit')}
+            </Button>
           </VStack>
-        </Container>
-      </Flex>
-    </Flex>
+        </Box>
+
+        <Text textAlign="center">
+          <Link as={RouterLink} to="/login" color={linkBlue} minH="44px" py={2}>
+            {t('auth.backToLogin')}
+          </Link>
+        </Text>
+      </VStack>
+    </AuthLayout>
   )
 }
 

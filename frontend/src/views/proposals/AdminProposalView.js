@@ -1,4 +1,5 @@
 import StandardCard from '../../components/StandardCard'
+import { TableCard } from '../../components/TableCard'
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../helpers/axiosInstance'
@@ -430,34 +431,36 @@ const AdminProposalView = () => {
                   </HStack>
                 </CardHeader>
                 <CardBody>
-                  <TableContainer>
-                    <Table variant="simple" size="sm">
-                      <Thead>
-                        <Tr>
-                          <Th>{t('proposalColumns.item', 'Item')}</Th>
-                          <Th>{t('common.description', 'Description')}</Th>
-                          <Th textAlign="center">{t('proposalColumns.qty', 'Qty')}</Th>
-                          <Th isNumeric>{t('proposalDoc.catalog.unitPrice', 'Unit Price')}</Th>
-                          <Th isNumeric>{t('proposalColumns.total', 'Total')}</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody>
-                        {parsedData.items.map((item, index) => (
-                          <Tr key={index}>
-                            <Td fontWeight="semibold">
-                              {item.code || t('adminQuote.ui.itemNumber', 'Item {{n}}', { n: index + 1 })}
-                            </Td>
-                            <Td>{item.description || t('common.na', 'N/A')}</Td>
-                            <Td textAlign="center">{item.qty || 1}</Td>
-                            <Td isNumeric>{formatCurrency(parseFloat(item.price) || 0)}</Td>
-                            <Td isNumeric fontWeight="semibold">
-                              {formatCurrency(parseFloat(item.total) || 0)}
-                            </Td>
+                  <Box display={{ base: 'none', lg: 'block' }}>
+                    <TableCard>
+                      <Table variant="simple" size="sm">
+                        <Thead>
+                          <Tr>
+                            <Th>{t('proposalColumns.item', 'Item')}</Th>
+                            <Th>{t('common.description', 'Description')}</Th>
+                            <Th textAlign="center">{t('proposalColumns.qty', 'Qty')}</Th>
+                            <Th isNumeric>{t('proposalDoc.catalog.unitPrice', 'Unit Price')}</Th>
+                            <Th isNumeric>{t('proposalColumns.total', 'Total')}</Th>
                           </Tr>
-                        ))}
-                      </Tbody>
-                    </Table>
-                  </TableContainer>
+                        </Thead>
+                        <Tbody>
+                          {parsedData.items.map((item, index) => (
+                            <Tr key={index}>
+                              <Td fontWeight="semibold">
+                                {item.code || t('adminQuote.ui.itemNumber', 'Item {{n}}', { n: index + 1 })}
+                              </Td>
+                              <Td>{item.description || t('common.na', 'N/A')}</Td>
+                              <Td textAlign="center">{item.qty || 1}</Td>
+                              <Td isNumeric>{formatCurrency(parseFloat(item.price) || 0)}</Td>
+                              <Td isNumeric fontWeight="semibold">
+                                {formatCurrency(parseFloat(item.total) || 0)}
+                              </Td>
+                            </Tr>
+                          ))}
+                        </Tbody>
+                      </Table>
+                    </TableCard>
+                  </Box>
 
                   <Stack spacing={2} mt={6} borderTopWidth="1px" borderColor={borderGray200} pt={4}>
                     <HStack justify="space-between">

@@ -198,7 +198,7 @@ const CustomerInfoStep = ({
     const mainLocation = locations.find((loc) => loc.locationName.trim().toLowerCase() === 'main')
     if (mainLocation) {
       const nextValue = String(mainLocation.id)
-      updateFormData({ location: nextValue })
+      updateFormData({ location: nextValue }, { markDirty: false })
       setValue('location', nextValue)
     }
   }, [locations, formData.location, setValue, updateFormData])
@@ -215,12 +215,12 @@ const CustomerInfoStep = ({
       if (currentUser && currentUser.role === 'Manufacturers') {
         const nextValue = toStringValue(currentUser.id)
         setValue('designer', nextValue)
-        updateFormData({ designer: nextValue })
+        updateFormData({ designer: nextValue }, { markDirty: false })
       } else if (availableDesigners.length > 0) {
         const firstDesigner = availableDesigners[0]
         const nextValue = toStringValue(firstDesigner.id)
         setValue('designer', nextValue)
-        updateFormData({ designer: nextValue })
+        updateFormData({ designer: nextValue }, { markDirty: false })
       }
     }
   }, [canAssignDesigner, users, formData.designer, loggedInUserId, setValue, updateFormData])

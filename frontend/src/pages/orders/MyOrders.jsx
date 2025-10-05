@@ -1,6 +1,7 @@
 import OrdersList from './OrdersList'
 import withContractorScope from '../../components/withContractorScope'
 import { useTranslation } from 'react-i18next'
+import { Box } from '@chakra-ui/react'
 
 const MyOrders = ({ isContractor, contractorGroupId, contractorGroupName }) => {
   const { t } = useTranslation()
@@ -13,14 +14,15 @@ const MyOrders = ({ isContractor, contractorGroupId, contractorGroupName }) => {
     : t('orders.page.my.subtitleDefault', 'Your accepted and locked quotes')
 
   return (
-    <OrdersList
-      title={title}
-      subtitle={subtitle}
-      groupId={isContractor ? contractorGroupId : null}
-      isContractor={isContractor}
-      mineOnly={true}
-    />
-  
+    <Box>
+      <OrdersList
+        title={title}
+        subtitle={subtitle}
+        groupId={isContractor ? contractorGroupId : null}
+        isContractor={isContractor}
+        mineOnly={true}
+      />
+    </Box>
   )
 }
 

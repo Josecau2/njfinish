@@ -153,7 +153,7 @@ const ManufacturersList = () => {
       leftIcon={<Icon as={Plus} boxSize={ICON_BOX_MD} />}
       onClick={handleCreateManufacturer}
     >
-      {t('settings.manufacturers.create')}
+      {t('settings.manufacturers.create.title')}
     </Button>,
   ]
 

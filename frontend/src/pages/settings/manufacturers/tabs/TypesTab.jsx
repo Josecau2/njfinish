@@ -1,7 +1,7 @@
 import StandardCard from '../../../../components/StandardCard'
 import { TableCard } from '../../../../components/TableCard'
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Alert, Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormLabel, HStack, IconButton, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue, Heading } from '@chakra-ui/react'
+import { Alert, Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormLabel, HStack, IconButton, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue, Heading, chakra } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import axiosInstance from '../../../../helpers/axiosInstance'
@@ -11,6 +11,8 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../../constants/iconSizes'
 
 // Helper function to get auth headers
 
+const DataList = chakra('datalist')
+const DataListOption = chakra('option')
 
 const TypesTab = ({ manufacturer }) => {
   const { t } = useTranslation()
@@ -753,11 +755,11 @@ const TypesTab = ({ manufacturer }) => {
                   list="stylesList"
                   borderColor="brand.300"
                 />
-                <datalist id="stylesList">
+                <DataList id="stylesList">
                   {uniqueStyles.map((style) => (
-                    <option key={style} value={style} />
+                    <DataListOption key={style} value={style} />
                   ))}
-                </datalist>
+                </DataList>
               </Box>
               <Box flex="1" minW="200px">
                 <FormLabel fontWeight="semibold" color="brand.600">
@@ -770,11 +772,11 @@ const TypesTab = ({ manufacturer }) => {
                   list="typesList"
                   borderColor="brand.300"
                 />
-                <datalist id="typesList">
+                <DataList id="typesList">
                   {uniqueTypes.map((type) => (
-                    <option key={type} value={type} />
+                    <DataListOption key={type} value={type} />
                   ))}
-                </datalist>
+                </DataList>
               </Box>
               <Box display="flex" alignItems="end">
                 <Button
@@ -1709,11 +1711,11 @@ const TypesTab = ({ manufacturer }) => {
                   onChange={(e) => setNewTypeCategory(e.target.value)}
                   list="existingTypesList"
                 />
-                <datalist id="existingTypesList">
+                <DataList id="existingTypesList">
                   {uniqueTypes.map((type) => (
-                    <option key={type} value={type} />
+                    <DataListOption key={type} value={type} />
                   ))}
-                </datalist>
+                </DataList>
                 <Text fontSize="sm" color={borderGray600} mt={2}>
                   You can enter a new type category or select from existing ones.
                 </Text>

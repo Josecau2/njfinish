@@ -48,8 +48,8 @@ export default defineConfig(({ mode }) => {
             'form-vendor': ['formik', 'yup', 'react-select', 'react-select/creatable'],
             'date-vendor': ['date-fns', 'date-fns-tz', 'react-datepicker'],
             'redux-vendor': ['@reduxjs/toolkit', 'react-redux', 'redux'],
-            'icons-vendor': ['react-icons', 'lucide-react', '@fortawesome/react-fontawesome'],
-            'utils-vendor': ['axios', 'sweetalert2', 'classnames', 'prop-types'],
+            'icons-vendor': ['lucide-react', '@fortawesome/react-fontawesome'],
+            'utils-vendor': ['axios', 'classnames', 'prop-types'],
             'pdf-vendor': ['pdfjs-dist', 'react-pdf']
           },
         },
@@ -79,7 +79,6 @@ export default defineConfig(({ mode }) => {
         'date-fns',
         'date-fns-tz',
         'axios',
-        'sweetalert2',
         'react-select',
         'react-select/creatable',
         'formik',

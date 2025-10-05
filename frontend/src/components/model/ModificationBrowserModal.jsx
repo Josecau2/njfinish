@@ -658,7 +658,7 @@ const ModificationBrowserModal = ({
   return (
     <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "6xl" }} scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent borderRadius="xl" overflow="hidden">
+      <ModalContent borderRadius="12px" overflow="hidden">
         <ModalHeader px={6} py={4} borderBottomWidth="1px" borderColor={bgGray100}>
           <HStack justify="space-between" align="center">
             <HStack spacing={4} align="center">

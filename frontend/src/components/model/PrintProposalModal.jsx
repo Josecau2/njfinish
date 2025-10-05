@@ -359,7 +359,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>
             <Text fontSize="lg" fontWeight="semibold">
               {t('proposalCommon.printTitle')}
@@ -609,7 +609,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>
             <Text fontSize="lg" fontWeight="semibold">
               {t('proposalCommon.previewTitle', 'Quote Preview')}

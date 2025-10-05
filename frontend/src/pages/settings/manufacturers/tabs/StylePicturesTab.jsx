@@ -377,7 +377,7 @@ const StylePicturesTab = ({ manufacturer }) => {
       {/* Create Style Modal */}
       <Modal isOpen={createModal} onClose={() => setCreateModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('styles.createHeader', 'Add Style')}</ModalHeader>
           <ModalBody>
             <Flex direction="column" gap={4}>
@@ -435,12 +435,12 @@ const StylePicturesTab = ({ manufacturer }) => {
       {/* Delete Confirm Modal */}
       <Modal isOpen={deleteAsk.open} onClose={() => setDeleteAsk({ open: false, styleName: '' })} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('styles.deleteHeader', 'Delete Style')}</ModalHeader>
           <ModalBody>
             <Text>
               {t('styles.deleteConfirm', 'Delete style')}{' '}
-              <strong>{deleteAsk.styleName}</strong>?
+              <Text as="span" fontWeight="semibold">{deleteAsk.styleName}</Text>?
             </Text>
             <Box mt={4}>
               <FormLabel>
@@ -476,14 +476,14 @@ const StylePicturesTab = ({ manufacturer }) => {
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('styles.editImage', 'Edit Style Image')}</ModalHeader>
           <ModalBody>
             {selectedStyle && (
               <>
                 <Box mb={3}>
                   <Text>
-                    <strong>{t('common.style', 'Style')}:</strong> {selectedStyle.style}
+                    <Text as="span" fontWeight="semibold">{t('common.style', 'Style')}:</Text> {selectedStyle.style}
                   </Text>
                 </Box>
                 <Box mb={4} borderWidth="1px" borderRadius="md" p={3} bg={bgGray50}>

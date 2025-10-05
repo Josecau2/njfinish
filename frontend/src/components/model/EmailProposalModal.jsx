@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import {
   Modal,
@@ -20,6 +21,7 @@ import {
   HStack,
   Text,
   Spinner,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { Controller, useForm } from 'react-hook-form'
 import { motion } from 'framer-motion'
@@ -28,11 +30,19 @@ import {
   buildProposalPdfHtml,
   DEFAULT_PROPOSAL_PDF_COLUMNS,
 } from '../../helpers/proposalPdfBuilder'
+import { getContrastColor } from '../../utils/colorUtils'
 
 const MotionButton = motion.create(Button)
 
 const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
   const { t, i18n } = useTranslation()
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
+  const primaryButtonColor = customization.primaryColor || resolvedHeaderBg
+  const primaryButtonText = customization.primaryFontColor || getContrastColor(primaryButtonColor)
+  const primaryButtonHover = customization.primaryHover || primaryButtonColor
   const [loading, setLoading] = useState(false)
   const [pdfCustomization, setPdfCustomization] = useState(null)
   const [styleData, setStyleData] = useState(null)
@@ -172,10 +182,11 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
     try {
       setLoading(true)
       const htmlContent = buildHtml(values)
+      const breakTag = ['<', 'br />'].join('')
       const htmlBody = (values.body || '')
         .split(/\r?\n/)
         .map((line) => (line.length ? line : '&nbsp;'))
-        .join('<br />')
+        .join(breakTag)
       const proposalNum = formData?.proposal_number
       const subject = proposalNum ? `Your Quote ${proposalNum}` : 'Your Proposal'
       const attachmentFilename = proposalNum ? `Quote-${proposalNum}.pdf` : 'Proposal.pdf'
@@ -203,13 +214,13 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
   return (
     <Modal isOpen={show} onClose={handleCancel} size="xl" isCentered scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent as="form" onSubmit={handleSubmit(onSubmit)}>
-        <ModalHeader>
-          <Text fontSize="lg" fontWeight="semibold">
+      <ModalContent as="form" onSubmit={handleSubmit(onSubmit)} borderRadius="12px" overflow="hidden">
+        <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+          <Text fontSize='lg' fontWeight='semibold'>
             {t('proposalCommon.emailTitle')}
           </Text>
         </ModalHeader>
-        <ModalCloseButton isDisabled={loading} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+        <ModalCloseButton isDisabled={loading} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
 
         <ModalBody>
           <Stack spacing={5}>
@@ -309,11 +320,14 @@ const EmailProposalModal = ({ show, onClose, formData, onSend }) => {
               {t('common.cancel')}
             </MotionButton>
             <MotionButton
-              type="submit"
-              colorScheme="brand"
+              type='submit'
+              bg={primaryButtonColor}
+              color={primaryButtonText}
+              _hover={{ bg: primaryButtonHover }}
+              _active={{ bg: primaryButtonHover }}
               isDisabled={loading}
               whileTap={{ scale: 0.98 }}
-              minH="44px"
+              minH='44px'
               fontSize={{ base: 'sm', md: 'md' }}
             >
               {loading ? (

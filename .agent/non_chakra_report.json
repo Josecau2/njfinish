@@ -1,10 +1,10 @@
 {
   "summary": {
-    "total": 260,
-    "chakra_only": 141,
-    "mixed": 12,
+    "total": 258,
+    "chakra_only": 140,
+    "mixed": 11,
     "no_chakra": 107,
-    "components_flagged": 14
+    "components_flagged": 13
   },
   "files": [
     {
@@ -290,17 +290,6 @@
     },
     {
       "path": "components/AppSidebarNav.js",
-      "has_chakra_import": true,
-      "raw_tags": [],
-      "classnames": 0,
-      "inline_styles": 0,
-      "non_chakra_imports": [],
-      "looks_like_component": true,
-      "status": "chakra_only",
-      "reasons": []
-    },
-    {
-      "path": "components/AuthLayout.jsx",
       "has_chakra_import": true,
       "raw_tags": [],
       "classnames": 0,
@@ -1082,17 +1071,13 @@
     {
       "path": "components/model/EmailProposalModal.jsx",
       "has_chakra_import": true,
-      "raw_tags": [
-        "br"
-      ],
+      "raw_tags": [],
       "classnames": 0,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
+      "status": "chakra_only",
+      "reasons": []
     },
     {
       "path": "components/model/ModificationBrowserModal.jsx",
@@ -1126,26 +1111,6 @@
       "looks_like_component": true,
       "status": "chakra_only",
       "reasons": []
-    },
-    {
-      "path": "components/model/PrintPaymentReceiptModal.jsx",
-      "has_chakra_import": true,
-      "raw_tags": [
-        "div",
-        "h1",
-        "h2",
-        "p",
-        "span",
-        "strong"
-      ],
-      "classnames": 0,
-      "inline_styles": 0,
-      "non_chakra_imports": [],
-      "looks_like_component": true,
-      "status": "mixed",
-      "reasons": [
-        "raw_html_tags"
-      ]
     },
     {
       "path": "components/model/PrintProposalModal.jsx",
@@ -1688,12 +1653,14 @@
       "path": "pages/auth/LoginPage.jsx",
       "has_chakra_import": true,
       "raw_tags": [],
-      "classnames": 0,
+      "classnames": 3,
       "inline_styles": 0,
       "non_chakra_imports": [],
       "looks_like_component": true,
-      "status": "chakra_only",
-      "reasons": []
+      "status": "mixed",
+      "reasons": [
+        "className_usage"
+      ]
     },
     {
       "path": "pages/auth/RequestAccessPage.jsx",

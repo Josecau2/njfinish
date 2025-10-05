@@ -1,4 +1,5 @@
 import StandardCard from '../../../components/StandardCard'
+import { TableCard } from '../../../components/TableCard'
 import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -246,7 +247,7 @@ const LocationPage = () => {
       <Box display={{ base: 'none', lg: 'block' }}>
         <Card>
           <CardBody p={0}>
-            <TableContainer borderWidth="1px" borderColor={borderGray} borderRadius="md">
+            <TableCard>
               <Table variant="simple">
               <Thead>
                 <Tr>
@@ -380,7 +381,7 @@ const LocationPage = () => {
                 )}
               </Tbody>
             </Table>
-            </TableContainer>
+            </TableCard>
 
           {totalPages > 1 && (
             <Box borderTopWidth="1px" borderColor={stickyBorder} p={4}>

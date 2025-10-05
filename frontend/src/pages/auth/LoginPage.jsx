@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUser, setError } from '../../store/slices/authSlice';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
-import { Box, Flex, Container, Heading, Text, FormControl, FormLabel, Input, InputGroup, InputRightElement, IconButton, Button, Checkbox, Link, Alert, AlertIcon, VStack, HStack, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text, FormControl, FormLabel, Input, InputGroup, InputRightElement, IconButton, Button, Checkbox, Link, Alert, AlertIcon, VStack, HStack, useColorModeValue } from '@chakra-ui/react';
 import { Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ import BrandLogo from '../../components/BrandLogo';
 import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand';
 import { installTokenEverywhere } from '../../utils/authToken';
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
-import LanguageSwitcher from '../../components/LanguageSwitcher';
+import AuthLayout from '../../components/AuthLayout';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -121,45 +121,29 @@ const LoginPage = () => {
   // Compute optimal text colors for the right panel based on background
   const rightPanelColors = getOptimalColors(loginBackground);
 
-  return (
-    <Flex minH="100vh" className="login-page-wrapper">
-      {/* Left Panel - Illustration and Branding */}
-      <Box
-        display={{ base: 'none', lg: 'flex' }}
-        flex="1"
-        bg={loginBackground}
-        alignItems="center"
-        justifyContent="center"
-        px={8}
-        className="login-left-panel"
-      >
-        <VStack spacing={4} maxW="500px" textAlign="center">
-          <Heading as="h1" size="2xl" color={rightPanelColors.text}>
-            {loginBrand.rightTitle}
-          </Heading>
-          <Text fontSize="xl" color={rightPanelColors.subtitle}>
-            {loginBrand.rightSubtitle}
-          </Text>
-          <Text fontSize="md" color={rightPanelColors.subtitle}>
-            {loginBrand.rightDescription}
-          </Text>
-        </VStack>
-      </Box>
+  const leftPanel = (
+    <VStack spacing={6} maxW="lg" textAlign="center">
+      <Heading as="h1" size="2xl" color={rightPanelColors.text}>
+        {loginBrand.rightTitle}
+      </Heading>
+      <Text fontSize="xl" color={rightPanelColors.subtitle}>
+        {loginBrand.rightSubtitle}
+      </Text>
+      <Text fontSize="md" color={rightPanelColors.subtitle}>
+        {loginBrand.rightDescription}
+      </Text>
+    </VStack>
+  );
 
-      {/* Right Panel - Form */}
-      <Flex
-        flex="1"
-        alignItems="center"
-        justifyContent="center"
-        bg={bgWhite}
-        className="login-right-panel"
-        position="relative"
-      >
-        <Box position="absolute" top={4} right={4}>
-          <LanguageSwitcher compact />
-        </Box>
-        <Container maxW="md" py={8}>
-          <VStack spacing={6} align="stretch">
+  return (
+    <AuthLayout
+      leftContent={leftPanel}
+      leftBg={loginBackground}
+      leftTextColor={rightPanelColors.text}
+      rightBg={bgWhite}
+      languageSwitcherProps={{ compact: true }}
+    >
+      <VStack spacing={6} align="stretch">
             <Box textAlign="center">
               <BrandLogo size={logoHeight} />
             </Box>
@@ -271,9 +255,7 @@ const LoginPage = () => {
               </Link>
             </Text>
           </VStack>
-        </Container>
-      </Flex>
-    </Flex>
+    </AuthLayout>
   );
 };
 

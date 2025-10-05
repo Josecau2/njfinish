@@ -6,6 +6,7 @@ import { decodeParam } from '../../utils/obfuscate'
 import { useTranslation } from 'react-i18next'
 import {
   Alert,
+  AlertIcon,
   Badge,
   Box,
   Button,
@@ -17,6 +18,7 @@ import {
   Icon,
   Input,
   Link,
+  ListItem,
   Menu,
   MenuButton,
   MenuItem,
@@ -35,6 +37,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  UnorderedList,
   VStack,
   useToast,
   useColorModeValue,
@@ -70,7 +73,8 @@ import EmailContractModal from '../../components/model/EmailContractModal'
 import Loader from '../../components/Loader'
 import axiosInstance from '../../helpers/axiosInstance'
 import {
-  validateProposalSubTypeRequirements
+  validateProposalSubTypeRequirements,
+  getMissingRequirementMessages
 } from '../../helpers/subTypeValidation'
 
 // Removed Yup validation schema - using simple form validation
@@ -113,12 +117,59 @@ const EditProposal = ({
   const badgeBgUnselected = useColorModeValue('blue.100', 'blue.900')
   const badgeColorSelected = useColorModeValue('white', 'white')
   const badgeColorUnselected = useColorModeValue('blue.600', 'blue.200')
+  const toastBgWarning = useColorModeValue('yellow.50', 'yellow.900')
+  const toastBorderWarning = useColorModeValue('yellow.200', 'yellow.700')
+  const toastColorWarning = useColorModeValue('yellow.900', 'yellow.100')
 
-  const normalizeManufacturersData = (data) => {
-    if (!data) return []
-    if (Array.isArray(data)) return data
-    if (typeof data === 'object') return Object.values(data)
-    return []
+  const showMissingRequirementsToast = (missingRequirements) => {
+    const messages = getMissingRequirementMessages(missingRequirements)
+    if (!messages.length) return
+
+    toast.closeAll()
+
+    toast({
+      duration: 10000,
+      isClosable: true,
+      position: 'top',
+      render: () => (
+        <Alert
+          status='warning'
+          variant='left-accent'
+          borderRadius='md'
+          bg={toastBgWarning}
+          color={toastColorWarning}
+          borderColor={toastBorderWarning}
+          boxShadow='lg'
+          alignItems='flex-start'
+          px={4}
+          py={5}
+        >
+          <AlertIcon />
+          <Box ml={3}>
+            <Text fontWeight='bold'>
+              {t('proposals.errors.cannotAccept', 'Cannot accept quote')}
+            </Text>
+            <Text mt={2}>
+              {t(
+                'proposals.errors.missingSelectionsIntro',
+                'The following items require additional selections:'
+              )}
+            </Text>
+            <UnorderedList mt={2} pl={4} spacing={1}>
+              {messages.map((line, idx) => (
+                <ListItem key={`${line}-${idx}`}>{line}</ListItem>
+              ))}
+            </UnorderedList>
+            <Text mt={3} fontSize='sm'>
+              {t(
+                'proposals.errors.completeSelections',
+                'Please complete all required selections before accepting the quote.'
+              )}
+            </Text>
+          </Box>
+        </Alert>
+      ),
+    })
   }
 
   // Get user info from store/localStorage
@@ -139,6 +190,10 @@ const EditProposal = ({
   const [showContractModal, setShowContractModal] = useState(false)
   const [hovered, setHovered] = useState(null)
   const [designerOptions, setDesignerOptions] = useState([])
+  const [isCreatingDesigner, setIsCreatingDesigner] = useState(false)
+  const [isCreatingStatus, setIsCreatingStatus] = useState(false)
+  const [customDesignerInput, setCustomDesignerInput] = useState('')
+  const [customStatusInput, setCustomStatusInput] = useState('')
   // Use manufacturers map from Redux so we can attach full manufacturer data
   const manufacturersByIdMap = useSelector((state) => state.manufacturers.byId)
   const loggedInUser = JSON.parse(localStorage.getItem('user'))
@@ -165,7 +220,6 @@ const EditProposal = ({
   }
 
   const [formData, setFormData] = useState(defaultFormData)
-  const manufacturersData = normalizeManufacturersData(formData?.manufacturersData)
   // Determine if form should be disabled (locked quote OR contractor viewing accepted quote)
   const isAccepted = formData?.status === 'Proposal accepted' || formData?.status === 'accepted'
   const isFormDisabled = !!formData?.is_locked || (isAccepted && !isAdmin)
@@ -179,46 +233,48 @@ const EditProposal = ({
     isFormDisabled: isFormDisabled,
     proposal_id: formData?.id,
   })
+  // Parse manufacturersData if it's a string
+  const parseManufacturersData = (data) => {
+    if (!data) return []
+    if (Array.isArray(data)) return data
+    if (typeof data === 'string') {
+      try {
+        const parsed = JSON.parse(data)
+        if (Array.isArray(parsed)) return parsed
+        if (typeof parsed === 'object' && Array.isArray(parsed.manufacturersData)) {
+          return parsed.manufacturersData
+        }
+        return []
+      } catch (e) {
+        console.error('Failed to parse manufacturersData:', e)
+        return []
+      }
+    }
+    if (typeof data === 'object' && Array.isArray(data.manufacturersData)) {
+      return data.manufacturersData
+    }
+    return []
+  }
+
   // Fetch initial data
   useEffect(() => {
-    if (!requestId) {
-      setLoading(false)
-      toast({
-        title: t('proposals.errors.invalidIdTitle', 'Unable to open quote'),
-        description: t(
-          'proposals.errors.invalidIdDescription',
-          'The quote identifier is invalid or missing.',
-        ),
-        status: 'error',
-      })
-      return
-    }
-
     axiosInstance
       .get(`/api/quotes/proposalByID/${requestId}`)
       .then((res) => {
-        const merged = { ...defaultFormData, ...(res.data || {}) }
-        const normalized = {
-          ...merged,
-          manufacturersData: normalizeManufacturersData(merged.manufacturersData),
+        // Parse manufacturersData immediately upon load to ensure it's always an array
+        const loadedData = res.data || defaultFormData
+        if (loadedData.manufacturersData) {
+          loadedData.manufacturersData = parseManufacturersData(loadedData.manufacturersData)
         }
-        setInitialData(normalized)
-        setFormData(normalized)
+        setInitialData(loadedData)
+        setFormData(loadedData)
         setLoading(false)
       })
       .catch((err) => {
         console.error('Error fetching quote:', err)
         setLoading(false)
-        toast({
-          title: t('proposals.errors.fetchFailedTitle', 'Failed to load quote'),
-          description:
-            err?.response?.data?.message ||
-            err.message ||
-            t('proposals.errors.fetchFailedDescription', 'We could not load this quote.'),
-          status: 'error',
-        })
       })
-  }, [requestId, t, toast])
+  }, [requestId])
 
   // Fetch designers
   useEffect(() => {
@@ -246,24 +302,24 @@ const EditProposal = ({
 
   // Fetch manufacturers data
   useEffect(() => {
-    if (manufacturersData.length > 0) {
+    if (formData?.manufacturersData?.length > 0) {
       // Initialize index; actual selectedVersion will be set when details are ready
       if (selectedVersionIndex === null) setSelectedVersionIndex(0)
 
-      manufacturersData.forEach((item) => {
+      formData.manufacturersData.forEach((item) => {
         if (item.manufacturer && !manufacturersByIdMap[item.manufacturer]) {
           // Don't load full catalog data for quote editing - only manufacturer info needed
           dispatch(fetchManufacturerById({ id: item.manufacturer, includeCatalog: false }))
         }
       })
     }
-  }, [manufacturersData, dispatch, manufacturersByIdMap, selectedVersionIndex])
+  }, [formData?.manufacturersData, dispatch, manufacturersByIdMap, selectedVersionIndex])
 
   useEffect(() => {
     if (!Array.isArray(formData.manufacturersData) || formData.manufacturersData.length === 0)
       return
 
-    const details = manufacturersData.map((item) => ({
+    const details = formData.manufacturersData.map((item) => ({
       ...item,
       manufacturerData: manufacturersByIdMap[item.manufacturer],
     }))
@@ -291,7 +347,7 @@ const EditProposal = ({
         dispatch(setSelectVersionNewEdit(next))
       }
     }
-  }, [manufacturersData, manufacturersByIdMap, selectedVersionIndex])
+  }, [formData.manufacturersData, manufacturersByIdMap, selectedVersionIndex])
 
   // Update selected version in Redux
   useEffect(() => {
@@ -324,7 +380,7 @@ const EditProposal = ({
   }
 
   const saveEditVersionName = () => {
-    const existingEntry = manufacturersData.find(
+    const existingEntry = formData.manufacturersData.find(
       (entry, idx) => entry.versionName === editedVersionName && idx !== currentEditIndex,
     )
     if (existingEntry) {
@@ -340,7 +396,7 @@ const EditProposal = ({
       })
       return
     }
-    const updatedManufacturersData = [...manufacturersData]
+    const updatedManufacturersData = [...formData.manufacturersData]
     updatedManufacturersData[currentEditIndex].versionName = editedVersionName
     updateFormData({ manufacturersData: updatedManufacturersData })
     setEditModalOpen(false)
@@ -352,7 +408,7 @@ const EditProposal = ({
   }
 
   const confirmDelete = () => {
-    const updatedManufacturersData = manufacturersData.filter((_, i) => i !== currentDeleteIndex)
+    const updatedManufacturersData = formData.manufacturersData.filter((_, i) => i !== currentDeleteIndex)
     updateFormData({ manufacturersData: updatedManufacturersData })
 
     if (currentDeleteIndex === selectedVersionIndex) {
@@ -366,21 +422,50 @@ const EditProposal = ({
   }
 
   const duplicateVersion = (index) => {
-    const copy = { ...manufacturersData[index] }
+    const copy = { ...formData.manufacturersData[index] }
     copy.versionName = `Copy of ${copy.versionName}`
-    updateFormData({ manufacturersData: [...manufacturersData, copy] })
+    updateFormData({ manufacturersData: [...formData.manufacturersData, copy] })
   }
 
   const versionDetails =
-    manufacturersData.map((item) => ({
+    (formData?.manufacturersData || []).map((item) => ({
       ...item,
       manufacturerData: manufacturersByIdMap[item.manufacturer],
-    })) || []
+    }))
 
   const selectVersion = versionDetails[selectedVersionIndex] || null
 
-  const handleSubmit = (values) => {
-    sendToBackend({ ...formData, ...values }, 'update')
+  const validateForm = () => {
+    const errors = []
+
+    if (!formData.designer || formData.designer.trim() === '') {
+      errors.push(t('proposals.validation.designerRequired', 'Designer is required'))
+    }
+
+    if (!formData.description || formData.description.trim() === '') {
+      errors.push(t('proposals.validation.descriptionRequired', 'Description is required'))
+    }
+
+    return errors
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    // Validate form
+    const errors = validateForm()
+    if (errors.length > 0) {
+      toast({
+        title: t('common.validationError', 'Validation Error'),
+        description: errors.join('. '),
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+      return
+    }
+
+    sendToBackend(formData, 'update')
   }
 
   const handleSaveOrder = () => sendToBackend({ ...formData }, 'update')
@@ -430,13 +515,7 @@ const EditProposal = ({
               'Sub-type validation failed in sendToBackend:',
               validation.missingRequirements,
             )
-          toast({
-            title: t('proposals.errors.cannotAccept', 'Cannot accept quote'),
-            description: t('proposals.errors.missingRequirements', 'Missing required selections'),
-            status: 'warning',
-            duration: 5000,
-            isClosable: true,
-          })
+          showMissingRequirementsToast(validation.missingRequirements)
           return
         }
       }
@@ -464,14 +543,12 @@ const EditProposal = ({
             duration: 5000,
             isClosable: true,
           })
-          setFormData(() => {
-            const merged = { ...defaultFormData, ...(response.data.data || finalData) }
-
-            return {
-              ...merged,
-              manufacturersData: normalizeManufacturersData(merged.manufacturersData),
-            }
-          })
+          const savedData = response.data.data || finalData
+          // Ensure manufacturersData is parsed after save
+          if (savedData.manufacturersData) {
+            savedData.manufacturersData = parseManufacturersData(savedData.manufacturersData)
+          }
+          setFormData(savedData)
         }
       } else {
         const apiMsg = response.data?.message
@@ -496,13 +573,7 @@ const EditProposal = ({
       } else if (error.response?.status === 400) {
         // Check if this is a sub-type validation error from backend
         if (error.response?.data?.missingRequirements) {
-          toast({
-            title: t('proposals.errors.cannotAccept', 'Cannot accept quote'),
-            description: t('proposals.errors.missingRequirements', 'Missing required selections'),
-            status: 'warning',
-            duration: 5000,
-            isClosable: true,
-          })
+          showMissingRequirementsToast(error.response.data.missingRequirements)
         } else {
           const message =
             error.response?.data?.message || t('proposals.toast.errorGeneric', 'An error occurred')
@@ -600,13 +671,7 @@ const EditProposal = ({
       </Box>
 
       <PageContainer maxW="100%" bg={pageBg} minH="100vh">
-        <Box
-          as="form"
-          onSubmit={(e) => {
-            e.preventDefault()
-            handleSubmit(formData)
-          }}
-        >
+        <Box as="form" onSubmit={handleSubmit}>
           {/* Basic Information Card */}
           <StandardCard mb={4}>
             <CardBody>
@@ -616,20 +681,86 @@ const EditProposal = ({
               <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
                 <FormControl>
                   <FormLabel htmlFor="designer">{t('common.designer', 'Designer')} *</FormLabel>
-                  <Select
-                    id="designer"
-                    name="designer"
-                    value={formData.designer}
-                    onChange={(e) => updateFormData({ designer: e.target.value })}
-                    placeholder={t('common.selectDesigner', 'Select Designer')}
-                    isDisabled={isFormDisabled}
-                  >
-                    {designerOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </Select>
+                  {isCreatingDesigner ? (
+                    <HStack>
+                      <Input
+                        autoFocus
+                        value={customDesignerInput}
+                        onChange={(e) => setCustomDesignerInput(e.target.value)}
+                        placeholder={t('common.enterDesignerName', 'Enter designer name')}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && customDesignerInput.trim()) {
+                            updateFormData({ designer: customDesignerInput.trim() })
+                            setIsCreatingDesigner(false)
+                            setCustomDesignerInput('')
+                          } else if (e.key === 'Escape') {
+                            setIsCreatingDesigner(false)
+                            setCustomDesignerInput('')
+                          }
+                        }}
+                        isDisabled={isFormDisabled}
+                      />
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          if (customDesignerInput.trim()) {
+                            updateFormData({ designer: customDesignerInput.trim() })
+                            setIsCreatingDesigner(false)
+                            setCustomDesignerInput('')
+                          }
+                        }}
+                        isDisabled={isFormDisabled}
+                      >
+                        {t('common.add', 'Add')}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setIsCreatingDesigner(false)
+                          setCustomDesignerInput('')
+                        }}
+                        isDisabled={isFormDisabled}
+                      >
+                        {t('common.cancel', 'Cancel')}
+                      </Button>
+                    </HStack>
+                  ) : (
+                    <HStack>
+                      <Select
+                        id="designer"
+                        name="designer"
+                        value={formData.designer ?? ''}
+                        onChange={(e) => {
+                          if (e.target.value === '__create__') {
+                            setIsCreatingDesigner(true)
+                          } else {
+                            updateFormData({ designer: e.target.value })
+                          }
+                        }}
+                        placeholder={t('common.selectDesigner', 'Select Designer')}
+                        isDisabled={isFormDisabled}
+                        flex="1"
+                      >
+                        {designerOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                        <option value="__create__">{t('common.createNew', '+ Create New...')}</option>
+                      </Select>
+                      {formData.designer && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => updateFormData({ designer: '' })}
+                          isDisabled={isFormDisabled}
+                        >
+                          {t('common.clear', 'Clear')}
+                        </Button>
+                      )}
+                    </HStack>
+                  )}
                 </FormControl>
                 <FormControl>
                   <FormLabel htmlFor="description">
@@ -648,19 +779,85 @@ const EditProposal = ({
                 </FormControl>
                 <FormControl>
                   <FormLabel htmlFor="status">{t('common.status', 'Status')}</FormLabel>
-                  <Select
-                    id="status"
-                    name="status"
-                    value={formData.status || 'Draft'}
-                    onChange={(e) => updateFormData({ status: e.target.value })}
-                    isDisabled={isFormDisabled}
-                  >
-                    {statusOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </Select>
+                  {isCreatingStatus ? (
+                    <HStack>
+                      <Input
+                        autoFocus
+                        value={customStatusInput}
+                        onChange={(e) => setCustomStatusInput(e.target.value)}
+                        placeholder={t('common.enterStatusName', 'Enter status name')}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && customStatusInput.trim()) {
+                            updateFormData({ status: customStatusInput.trim() })
+                            setIsCreatingStatus(false)
+                            setCustomStatusInput('')
+                          } else if (e.key === 'Escape') {
+                            setIsCreatingStatus(false)
+                            setCustomStatusInput('')
+                          }
+                        }}
+                        isDisabled={isFormDisabled}
+                      />
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          if (customStatusInput.trim()) {
+                            updateFormData({ status: customStatusInput.trim() })
+                            setIsCreatingStatus(false)
+                            setCustomStatusInput('')
+                          }
+                        }}
+                        isDisabled={isFormDisabled}
+                      >
+                        {t('common.add', 'Add')}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setIsCreatingStatus(false)
+                          setCustomStatusInput('')
+                        }}
+                        isDisabled={isFormDisabled}
+                      >
+                        {t('common.cancel', 'Cancel')}
+                      </Button>
+                    </HStack>
+                  ) : (
+                    <HStack>
+                      <Select
+                        id="status"
+                        name="status"
+                        value={formData.status || 'Draft'}
+                        onChange={(e) => {
+                          if (e.target.value === '__create__') {
+                            setIsCreatingStatus(true)
+                          } else {
+                            updateFormData({ status: e.target.value })
+                          }
+                        }}
+                        isDisabled={isFormDisabled}
+                        flex="1"
+                      >
+                        {statusOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                        <option value="__create__">{t('common.createNew', '+ Create New...')}</option>
+                      </Select>
+                      {formData.status && formData.status !== 'Draft' && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => updateFormData({ status: 'Draft' })}
+                          isDisabled={isFormDisabled}
+                        >
+                          {t('common.clear', 'Clear')}
+                        </Button>
+                      )}
+                    </HStack>
+                  )}
                 </FormControl>
               </SimpleGrid>
             </CardBody>

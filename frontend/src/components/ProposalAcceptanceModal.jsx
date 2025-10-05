@@ -22,8 +22,7 @@ import {
 } from '@chakra-ui/react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
-import { acceptProposal } from '../queries/proposalQueries'
+import { useAcceptProposal } from '../queries/proposalQueries'
 
 const defaultValues = {
   isExternalAcceptance: false,
@@ -38,8 +37,8 @@ const ProposalAcceptanceModal = ({
   onAcceptanceComplete,
   isContractor = false,
 }) => {
-  const dispatch = useDispatch()
   const { t } = useTranslation()
+  const acceptProposalMutation = useAcceptProposal()
   const toast = useToast({ duration: 2500, isClosable: true })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
@@ -90,6 +89,12 @@ const ProposalAcceptanceModal = ({
     setIsSubmitting(true)
 
     try {
+      if (!proposal?.id) {
+        setFormError(t('proposals.errors.noId', 'Quote ID not found'))
+        setIsSubmitting(false)
+        return
+      }
+
       const payload = { id: proposal.id }
 
       if (values.isExternalAcceptance) {
@@ -101,7 +106,7 @@ const ProposalAcceptanceModal = ({
         }
       }
 
-      const result = await dispatch(acceptProposal(payload)).unwrap()
+      const result = await acceptProposalMutation.mutateAsync(payload)
 
       toast({
         status: 'success',
@@ -121,7 +126,7 @@ const ProposalAcceptanceModal = ({
       onAcceptanceComplete?.(result)
       handleClose()
     } catch (err) {
-      const message = err?.message || t('proposals.toast.errorAccept')
+      const message = err?.response?.data?.message || err?.message || t('proposals.toast.errorAccept')
       toast({ status: 'error', title: t('common.error'), description: message })
       setFormError(message)
     } finally {
@@ -150,7 +155,7 @@ const ProposalAcceptanceModal = ({
   return (
     <Modal isOpen={show} onClose={handleClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" closeOnOverlayClick={!isSubmitting}>
       <ModalOverlay as={motion.div} {...overlayMotionProps} />
-      <ModalContent as={motion.div} {...contentMotionProps}>
+      <ModalContent as={motion.div} {...contentMotionProps} borderRadius="12px" overflow="hidden">
         <Box as="form" onSubmit={submitProposal}>
           <ModalHeader>{t('proposalAcceptance.title')}</ModalHeader>
           <ModalCloseButton disabled={isSubmitting} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />

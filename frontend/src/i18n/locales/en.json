@@ -112,7 +112,8 @@
       "selectLocation": "Select location"
     },
     "qty": "Qty",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "selected": "Selected"
   },
   "actions": {
     "editManufacturer": "Edit {{name}}"
@@ -1084,8 +1085,252 @@
     }
   },
   "proposals": {
+    "header": "Quotes",
+    "subtitle": "Manage and track all your quotes",
+    "new": "New Quote",
+    "quick": "Quick Quote",
+    "searchPlaceholder": "Search by customer name...",
+    "showingCount": "Showing {{count}} of {{total}} quotes",
+    "headers": {
+      "date": "Date",
+      "customer": "Customer",
+      "description": "Description",
+      "designer": "Designer",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No quotes found",
+      "subtitle": "Try adjusting your search or filters"
+    },
+    "labels": {
+      "sentOn": "Sent:",
+      "description": "Description",
+      "designer": "Designer"
+    },
+    "tabs": {
+      "all": "All"
+    },
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "expired": "Expired",
+      "measurementScheduled": "Measurement Scheduled",
+      "measurementDone": "Measurement done",
+      "designDone": "Design done",
+      "followUp1": "Follow up 1",
+      "followUp2": "Follow up 2",
+      "followUp3": "Follow up 3",
+      "proposalAccepted": "Quote accepted",
+      "proposalRejected": "Quote rejected",
+      "proposalDone": "Quote done"
+    },
+    "actions": {
+      "send": "Send",
+      "accept": "Accept",
+      "reject": "Reject",
+      "resend": "Resend",
+      "share": "Create share link",
+      "view": "View quote",
+      "edit": "Edit quote",
+      "delete": "Delete quote"
+    },
+    "confirm": {
+      "sendTitle": "Send Quote?",
+      "sendText": "This will mark the quote as sent to the customer.",
+      "sendConfirm": "Yes, send it!",
+      "rejectTitle": "Reject Quote?",
+      "rejectText": "This will mark the quote as rejected.",
+      "rejectConfirm": "Yes, reject it!",
+      "deleteTitle": "Are you sure?",
+      "deleteText": "You won't be able to revert this!",
+      "deleteConfirm": "Yes, delete it!",
+      "acceptTitle": "Confirm Acceptance",
+      "acceptText": "Are you sure you want to accept this quote? This will convert it to an order.",
+      "acceptConfirm": "Accept",
+      "submitTitle": "Confirm Quote Submission",
+      "submitText": "Once you submit this quote, it will be sent to production and cannot be changed.",
+      "submitWarning": "By continuing, you confirm that all details are correct and you accept the Terms & Conditions.",
+      "submitConfirm": "Accept and Submit",
+      "goBack": "Go Back",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "noId": "No quote ID found. Please refresh and try again.",
+      "noIdAcceptance": "No quote ID available for acceptance",
+      "alreadyLockedTitle": "Warning",
+      "alreadyLockedText": "This quote is already locked and cannot be modified.",
+      "alreadyAccepted": "This quote is already accepted.",
+      "acceptFailed": "Failed to accept quote. Please try again.",
+      "cannotAccept": "Cannot accept quote",
+      "operationFailed": "Operation failed. Please try again."
+    },
+    "success": {
+      "acceptConverted": "Quote accepted and converted to order!"
+    },
+    "toast": {
+      "successSend": "Quote sent successfully",
+      "successAccept": "Quote accepted successfully",
+      "successReject": "Quote rejected successfully",
+      "deleted": "Your quote has been deleted.",
+      "deleteFailed": "Failed to delete the quote.",
+      "errorGeneric": "An error occurred"
+    },
+    "lockedStatus": {
+      "title": "Quote Accepted",
+      "description": "This quote has been accepted and is now being processed for delivery. No further changes are allowed.",
+      "processingNote": "Your order is currently being prepared for manufacturing and delivery."
+    },
+    "share": {
+      "createdTitle": "Share link created",
+      "expires": "This link expires:",
+      "copy": "Copy link",
+      "error": "Could not create share link"
+    },
+    "lockedTooltip": "Quote is locked",
     "edit": {
-      "basicInformation": "Basic Information"
+      "title": "Edit Quote"
+    },
+    "create": {
+      "steps": {
+        "1": "Customer Information",
+        "2": "Manufacturer Selection",
+        "3": "Design & Style",
+        "4": "Quote Summary"
+      },
+      "quickMode": "Quick Mode",
+      "standardMode": "Standard Mode",
+      "stepOf": "Step {{current}} of {{total}}",
+      "loadingManufacturer": "Loading manufacturer data...",
+      "actions": {
+        "print": "Print Quote",
+        "email": "Email Quote",
+        "contract": "Email Contract"
+      },
+      "fields": {
+        "designer": "Designer",
+        "date": "Date"
+      },
+      "placeholders": {
+        "externalSignerEmail": "email@example.com"
+      },
+      "customerInfo": {
+        "title": "Customer Details",
+        "customerName": "Customer Name",
+        "customerNamePlaceholder": "Select or type a name",
+        "customerEmail": "Customer Email",
+        "designer": "Designer",
+        "designerPlaceholder": "Select a designer",
+        "description": "Description",
+        "descriptionPlaceholder": "Description",
+        "schedule": "Schedule",
+        "measurementDone": "Measurement Done",
+        "measurementDoneDate": "Measurement Done Date",
+        "measurementScheduledDate": "Measurement Scheduled Date",
+        "designDone": "Design Done",
+        "designDoneDate": "Design Done Date",
+        "designScheduledDate": "Design Scheduled Date",
+        "moreOptions": "More Options ▼",
+        "hideOptions": "Hide Options ▲",
+        "additionalInfo": "Additional Info",
+        "salesRep": "Sales Representative",
+        "type": "Type",
+        "validation": {
+          "customerName": "Customer name is required",
+          "description": "Description is required",
+          "designer": "Designer is required"
+        },
+        "sources": {
+          "existing": "Existing customer",
+          "online": "Online",
+          "call": "Call",
+          "email": "Email"
+        },
+        "types": {
+          "builder": "Builder",
+          "architect": "Architect",
+          "interiorDesigner": "Interior Designer"
+        },
+        "createCustomer": "Create \"{{name}}\"",
+        "customerEmailPlaceholder": "Customer email",
+        "noCustomers": "No customers found"
+      },
+      "manufacturer": {
+        "title": "Manufacturer Details",
+        "editTitle": "Edit Manufacturer",
+        "name": "Name",
+        "email": "Email",
+        "multiplier": "Multiplier",
+        "labels": {
+          "manufacturer": "Manufacturer",
+          "versionName": "Version Name"
+        },
+        "placeholders": {
+          "selectManufacturer": "Select Manufacturer",
+          "enterVersionName": "Enter version name"
+        },
+        "validation": {
+          "manufacturerRequired": "Manufacturer is required",
+          "versionNameRequired": "Version name is required"
+        },
+        "cta": {
+          "needAnother": "Need another manufacturer?",
+          "addManufacturer": "Add manufacturer"
+        }
+      },
+      "design": {
+        "title": "Select Style",
+        "tabs": {
+          "import2020": "Import 2020 Design",
+          "manualEntry": "Select Style & Enter Parts Manually"
+        },
+        "supportedTypes": "Supported file types: {{types}}",
+        "selectExportedFile": "Select the exported design file",
+        "selectFileCta": "Select a File",
+        "no2020SwitchToManual": "I don't have a 2020 design. Let me enter parts manually.",
+        "howToExport": "How to export a design file?",
+        "searchStylePlaceholder": "Search Style..."
+      },
+      "files": {
+        "title": "File Upload",
+        "subtitle": "This section allows users to upload or manage files.",
+        "uploaded": "Files Uploaded",
+        "upload": "Upload",
+        "titleShort": "Files",
+        "supportedList": "Supported: Images (JPEG, PNG, GIF, WebP), Documents (PDF, DOC, DOCX, TXT), Videos (MP4, AVI, MOV, WMV, FLV)",
+        "uploading": "Uploading files...",
+        "dropOrBrowse": "Drop files here or click to browse",
+        "maxSize": "Maximum file size: {{size}}",
+        "uploadedCount": "Uploaded Files ({{count}})",
+        "preview": "Preview",
+        "download": "Download",
+        "noneYet": "No files uploaded yet.",
+        "dropHint": "Drag and drop files above or click to browse.",
+        "docPreviewNA": "Document preview not available",
+        "downloadToView": "Download to view",
+        "videoNotSupported": "Your browser does not support the video tag.",
+        "validation": {
+          "unsupportedType": "File type {{type}} is not supported",
+          "sizeExceeded": "File size exceeds {{size}} limit"
+        },
+        "uploadSuccess": "{{count}} file(s) uploaded successfully",
+        "uploadFailedTitle": "Upload Failed",
+        "uploadFailedText": "Failed to upload files. Please try again.",
+        "deleteSuccess": "File has been deleted successfully",
+        "deleteFailedTitle": "Delete Failed",
+        "deleteFailedText": "Failed to delete file. Please try again.",
+        "confirmDelete": "Do you want to delete \"{{name}}\"?",
+        "invalidTitle": "Invalid Files"
+      },
+      "summary": {
+        "duplicate": "Duplicate",
+        "acceptAndOrder": "Accept and Order",
+        "rejectAndArchive": "Reject and Archive",
+        "editVersionTitle": "Edit Version Name",
+        "confirmDeleteVersion": "Are you sure you want to delete this version?"
+      }
     }
   },
   "paymentConfig": {
@@ -1374,462 +1619,11 @@
     "quickProposal": "Quick Quote"
   },
   "resources": {
-    "manage": "Manage your {{title}}",
-    "size": "Size",
-    "uploaded": "Uploaded",
-    "added": "Added",
-    "downloadFile": "Download file",
-    "openLink": "Open link",
-    "headerContractor": "Access your curated resources",
-    "headerAdmin": "Manage your links and files in one place",
-    "searchPlaceholder": "Search resources...",
-    "allLinkTypes": "All Link Types",
-    "allFileTypes": "All File Types",
-    "loading": "Loading resources...",
-    "links": {
-      "title": "Links"
-    },
-    "files": {
-      "title": "Files"
-    },
-    "addLink": "Add Link",
-    "noLinks": "No links available",
-    "noLinksContractor": "No links have been shared with your group",
-    "noLinksAdmin": "Start by adding your first link",
-    "noLinksAdminAlt": "Start by adding your first useful link",
-    "addFirstLink": "Add First Link",
-    "addFile": "Add File",
-    "noFiles": "No files available",
-    "noFilesContractor": "No files have been shared with your group",
-    "noFilesAdmin": "Upload your first file",
-    "noFilesAdminAlt": "Start by uploading your first document",
-    "uploadFirstFile": "Upload First File",
-    "editLink": "Edit Link",
-    "addNewLink": "Add New Link",
-    "updateLink": "Update Link",
-    "linkTitle": "Link Title",
-    "enterLinkTitle": "Enter link title",
-    "url": "URL",
-    "urlPlaceholder": "https://example.com",
-    "linkType": {
-      "label": "Link Type",
-      "external": "External Link",
-      "internal": "Internal Link",
-      "document": "Document",
-      "video": "Video Link",
-      "help": "Help/Support"
-    },
-    "editFile": "Edit File",
-    "uploadNewFile": "Upload New File",
-    "updateFile": "Update File",
-    "uploadFile": "Upload File",
-    "file": "File",
-    "fileName": "File Name",
-    "enterFileName": "Enter file name",
-    "fileType": {
-      "label": "File Type",
-      "pdf": "PDF Document",
-      "spreadsheet": "Spreadsheet",
-      "document": "Document",
-      "video": "Video",
-      "audio": "Audio",
-      "image": "Image",
-      "archive": "Archive",
-      "other": "Other"
-    },
-    "leaveEmpty": "Leave empty to keep the current file",
-    "actions": {
-      "newCategory": "New Category",
-      "newLink": "New Link",
-      "uploadFile": "Upload File",
-      "newAnnouncement": "New Announcement",
-      "download": "Download",
-      "scaffoldCategories": "Add Starter Categories"
-    },
-    "filters": {
-      "search": "Search",
-      "searchPlaceholder": "Search titles, descriptions, or tags",
-      "category": "Category",
-      "allCategories": "All Categories",
-      "uncategorized": "Uncategorized",
-      "medium": {
-        "title": "Type",
-        "all": "All types",
-        "announcements": "Announcements",
-        "links": "Links",
-        "files": "Files"
-      }
-    },
-    "fields": {
-      "title": "Title",
-      "summary": "Summary",
-      "body": "Body",
-      "category": "Category",
-      "categoryName": "Category Name",
-      "parentCategory": "Parent Category",
-      "noParent": "No parent",
-      "noCategory": "No category",
-      "slug": "Slug",
-      "slugHelp": "Used for URLs and quick references",
-      "description": "Description",
-      "color": "Color",
-      "icon": "Icon",
-      "thumbnailUrl": "Thumbnail URL",
-      "sortOrder": "Sort Order",
-      "pinned": "Pinned",
-      "pinnedOrder": "Pinned Order",
-      "status": "Status",
-      "publishAt": "Publish At",
-      "expireAt": "Expire At",
-      "tags": "Tags",
-      "ctaLabel": "CTA Label",
-      "ctaUrl": "CTA URL",
-      "linkType": "Link Type",
-      "url": "URL",
-      "file": "File",
-      "fileName": "File Name",
-      "fileReplaceHint": "Leave empty to keep the current file",
-      "visibility": "Visibility",
-      "visibleGroupIds": "Specific Groups (comma separated)",
-      "active": "Active"
-    },
-    "messages": {
-      "loading": "Loading resources...",
-      "loadFailed": "Unable to load resources. Please try again.",
-      "noCategories": "No categories available",
-      "noMatching": "No results match your filters",
-      "categoryNameRequired": "Category name is required",
-      "categoryCreated": "Category created",
-      "categoryUpdated": "Category updated",
-      "categoryDeleted": "Category deleted",
-      "categorySaveFailed": "Failed to save category",
-      "categoryDeleteFailed": "Failed to delete category",
-      "linkRequired": "Link title and URL are required",
-      "linkCreated": "Link created",
-      "linkUpdated": "Link updated",
-      "linkDeleted": "Link deleted",
-      "linkSaveFailed": "Failed to save link",
-      "linkDeleteFailed": "Failed to delete link",
-      "fileRequired": "Select a file to upload",
-      "fileUploaded": "File uploaded",
-      "fileUpdated": "File updated",
-      "fileDeleted": "File deleted",
-      "fileSaveFailed": "Failed to save file",
-      "fileDeleteFailed": "Failed to delete file",
-      "fileAccessFailed": "We couldn't open that file. Please try again.",
-      "announcementTitleRequired": "Announcement title is required",
-      "announcementCreated": "Announcement created",
-      "announcementUpdated": "Announcement updated",
-      "announcementDeleted": "Announcement deleted",
-      "announcementSaveFailed": "Failed to save announcement",
-      "announcementDeleteFailed": "Failed to delete announcement",
-      "confirmDeleteCategory": "Are you sure you want to delete \"{{name}}\"? This cannot be undone.",
-      "confirmDeleteLink": "Delete this link?",
-      "confirmDeleteFile": "Delete {{name}}?",
-      "confirmDeleteAnnouncement": "Delete this announcement?",
-      "scaffoldCreated": "Starter categories ready to use",
-      "scaffoldFailed": "Could not prepare starter categories",
-      "confirmScaffold": "Add the starter resource categories? Existing categories remain untouched.",
-      "scaffoldAlreadyExists": "Starter categories already exist"
-    },
-    "labels": {
-      "pinned": "Pinned",
-      "published": "Published",
-      "expires": "Expires",
-      "inactive": "Inactive"
-    },
-    "status": {
-      "published": "Published",
-      "draft": "Draft",
-      "hidden": "Hidden",
-      "active": "Active"
-    },
-    "modals": {
-      "newCategory": "New Category",
-      "editCategory": "Edit Category",
-      "newLink": "New Link",
-      "editLink": "Edit Link",
-      "uploadFile": "Upload File",
-      "editFile": "Edit File",
-      "newAnnouncement": "New Announcement",
-      "editAnnouncement": "Edit Announcement"
-    },
-    "pinned": {
-      "announcements": "Pinned Announcements",
-      "links": "Pinned Links",
-      "files": "Pinned Files"
-    },
-    "stats": {
-      "announcements": "Announcements",
-      "links": "Links",
-      "files": "Files"
-    },
-    "announcements": {
-      "title": "Announcements",
-      "empty": "No announcements yet"
-    },
-    "media": {
-      "libraryTitle": "Media library",
-      "empty": "No media available",
-      "video": "Video",
-      "audio": "Audio",
-      "images": "Images",
-      "documents": "Documents",
-      "other": "Other"
-    },
-    "categories": {
-      "uncategorized": "Uncategorized",
-      "uncategorizedDescription": "Items that have not been assigned to any category"
-    },
-    "visibility": {
-      "admin": "Admins",
-      "contractor": "Contractors"
-    }
-  },
-  "proposals": {
-    "header": "Quotes",
-    "subtitle": "Manage and track all your quotes",
-    "new": "New Quote",
-    "quick": "Quick Quote",
-    "searchPlaceholder": "Search by customer name...",
-    "showingCount": "Showing {{count}} of {{total}} quotes",
-    "headers": {
-      "date": "Date",
-      "customer": "Customer",
-      "description": "Description",
-      "designer": "Designer",
-      "status": "Status",
-      "actions": "Actions"
-    },
-    "empty": {
-      "title": "No quotes found",
-      "subtitle": "Try adjusting your search or filters"
-    },
-    "labels": {
-      "sentOn": "Sent:",
-      "description": "Description",
-      "designer": "Designer"
-    },
-    "tabs": {
-      "all": "All"
-    },
-    "status": {
-      "draft": "Draft",
-      "sent": "Sent",
-      "accepted": "Accepted",
-      "rejected": "Rejected",
-      "expired": "Expired",
-      "measurementScheduled": "Measurement Scheduled",
-      "measurementDone": "Measurement done",
-      "designDone": "Design done",
-      "followUp1": "Follow up 1",
-      "followUp2": "Follow up 2",
-      "followUp3": "Follow up 3",
-      "proposalAccepted": "Quote accepted",
-      "proposalRejected": "Quote rejected",
-      "proposalDone": "Quote done"
-    },
-    "actions": {
-      "send": "Send",
-      "accept": "Accept",
-      "reject": "Reject",
-      "resend": "Resend",
-      "share": "Create share link",
-      "view": "View quote",
-      "edit": "Edit quote",
-      "delete": "Delete quote"
-    },
-    "confirm": {
-      "sendTitle": "Send Quote?",
-      "sendText": "This will mark the quote as sent to the customer.",
-      "sendConfirm": "Yes, send it!",
-      "rejectTitle": "Reject Quote?",
-      "rejectText": "This will mark the quote as rejected.",
-      "rejectConfirm": "Yes, reject it!",
-      "deleteTitle": "Are you sure?",
-      "deleteText": "You won't be able to revert this!",
-      "deleteConfirm": "Yes, delete it!",
-      "acceptTitle": "Confirm Acceptance",
-      "acceptText": "Are you sure you want to accept this quote? This will convert it to an order.",
-      "acceptConfirm": "Accept",
-      "submitTitle": "Confirm Quote Submission",
-      "submitText": "Once you submit this quote, it will be sent to production and cannot be changed.",
-      "submitWarning": "By continuing, you confirm that all details are correct and you accept the Terms & Conditions.",
-      "submitConfirm": "Accept and Submit",
-      "goBack": "Go Back",
-      "cancel": "Cancel"
-    },
-    "errors": {
-      "noId": "No quote ID found. Please refresh and try again.",
-      "noIdAcceptance": "No quote ID available for acceptance",
-      "alreadyLockedTitle": "Warning",
-      "alreadyLockedText": "This quote is already locked and cannot be modified.",
-      "alreadyAccepted": "This quote is already accepted.",
-      "acceptFailed": "Failed to accept quote. Please try again.",
-      "cannotAccept": "Cannot accept quote",
-      "operationFailed": "Operation failed. Please try again."
-    },
-    "success": {
-      "acceptConverted": "Quote accepted and converted to order!"
-    },
-    "toast": {
-      "successSend": "Quote sent successfully",
-      "successAccept": "Quote accepted successfully",
-      "successReject": "Quote rejected successfully",
-      "deleted": "Your quote has been deleted.",
-      "deleteFailed": "Failed to delete the quote.",
-      "errorGeneric": "An error occurred"
-    },
-    "lockedStatus": {
-      "title": "Quote Accepted",
-      "description": "This quote has been accepted and is now being processed for delivery. No further changes are allowed.",
-      "processingNote": "Your order is currently being prepared for manufacturing and delivery."
-    },
-    "share": {
-      "createdTitle": "Share link created",
-      "expires": "This link expires:",
-      "copy": "Copy link",
-      "error": "Could not create share link"
-    },
-    "lockedTooltip": "Quote is locked",
-    "edit": {
-      "title": "Edit Quote"
-    },
-    "create": {
-      "steps": {
-        "1": "Customer Information",
-        "2": "Manufacturer Selection",
-        "3": "Design & Style",
-        "4": "Quote Summary"
-      },
-      "quickMode": "Quick Mode",
-      "standardMode": "Standard Mode",
-      "stepOf": "Step {{current}} of {{total}}",
-      "loadingManufacturer": "Loading manufacturer data...",
-      "actions": {
-        "print": "Print Quote",
-        "email": "Email Quote",
-        "contract": "Email Contract"
-      },
-      "fields": {
-        "designer": "Designer",
-        "date": "Date"
-      },
-      "placeholders": {
-        "externalSignerEmail": "email@example.com"
-      },
-      "customerInfo": {
-        "title": "Customer Details",
-        "customerName": "Customer Name",
-        "customerNamePlaceholder": "Select or type a name",
-        "customerEmail": "Customer Email",
-        "designer": "Designer",
-        "designerPlaceholder": "Select a designer",
-        "description": "Description",
-        "descriptionPlaceholder": "Description",
-        "schedule": "Schedule",
-        "measurementDone": "Measurement Done",
-        "measurementDoneDate": "Measurement Done Date",
-        "measurementScheduledDate": "Measurement Scheduled Date",
-        "designDone": "Design Done",
-        "designDoneDate": "Design Done Date",
-        "designScheduledDate": "Design Scheduled Date",
-        "moreOptions": "More Options ▼",
-        "hideOptions": "Hide Options ▲",
-        "additionalInfo": "Additional Info",
-        "salesRep": "Sales Representative",
-        "type": "Type",
-        "validation": {
-          "customerName": "Customer name is required",
-          "description": "Description is required",
-          "designer": "Designer is required"
-        },
-        "sources": {
-          "existing": "Existing customer",
-          "online": "Online",
-          "call": "Call",
-          "email": "Email"
-        },
-        "types": {
-          "builder": "Builder",
-          "architect": "Architect",
-          "interiorDesigner": "Interior Designer"
-        }
-      },
-      "manufacturer": {
-        "title": "Manufacturer Details",
-        "editTitle": "Edit Manufacturer",
-        "name": "Name",
-        "email": "Email",
-        "multiplier": "Multiplier",
-        "labels": {
-          "manufacturer": "Manufacturer",
-          "versionName": "Version Name"
-        },
-        "placeholders": {
-          "selectManufacturer": "Select Manufacturer",
-          "enterVersionName": "Enter version name"
-        },
-        "validation": {
-          "manufacturerRequired": "Manufacturer is required",
-          "versionNameRequired": "Version name is required"
-        },
-        "cta": {
-          "needAnother": "Need another manufacturer?",
-          "addManufacturer": "Add manufacturer"
-        }
-      },
-      "design": {
-        "title": "Select Style",
-        "tabs": {
-          "import2020": "Import 2020 Design",
-          "manualEntry": "Select Style & Enter Parts Manually"
-        },
-        "supportedTypes": "Supported file types: {{types}}",
-        "selectExportedFile": "Select the exported design file",
-        "selectFileCta": "Select a File",
-        "no2020SwitchToManual": "I don't have a 2020 design. Let me enter parts manually.",
-        "howToExport": "How to export a design file?",
-        "searchStylePlaceholder": "Search Style..."
-      },
-      "files": {
-        "title": "File Upload",
-        "subtitle": "This section allows users to upload or manage files.",
-        "uploaded": "Files Uploaded",
-        "upload": "Upload",
-        "titleShort": "Files",
-        "supportedList": "Supported: Images (JPEG, PNG, GIF, WebP), Documents (PDF, DOC, DOCX, TXT), Videos (MP4, AVI, MOV, WMV, FLV)",
-        "uploading": "Uploading files...",
-        "dropOrBrowse": "Drop files here or click to browse",
-        "maxSize": "Maximum file size: {{size}}",
-        "uploadedCount": "Uploaded Files ({{count}})",
-        "preview": "Preview",
-        "download": "Download",
-        "noneYet": "No files uploaded yet.",
-        "dropHint": "Drag and drop files above or click to browse.",
-        "docPreviewNA": "Document preview not available",
-        "downloadToView": "Download to view",
-        "videoNotSupported": "Your browser does not support the video tag.",
-        "validation": {
-          "unsupportedType": "File type {{type}} is not supported",
-          "sizeExceeded": "File size exceeds {{size}} limit"
-        },
-        "uploadSuccess": "{{count}} file(s) uploaded successfully",
-        "uploadFailedTitle": "Upload Failed",
-        "uploadFailedText": "Failed to upload files. Please try again.",
-        "deleteSuccess": "File has been deleted successfully",
-        "deleteFailedTitle": "Delete Failed",
-        "deleteFailedText": "Failed to delete file. Please try again.",
-        "confirmDelete": "Do you want to delete \"{{name}}\"?",
-        "invalidTitle": "Invalid Files"
-      },
-      "summary": {
-        "duplicate": "Duplicate",
-        "acceptAndOrder": "Accept and Order",
-        "rejectAndArchive": "Reject and Archive",
-        "editVersionTitle": "Edit Version Name",
-        "confirmDeleteVersion": "Are you sure you want to delete this version?"
-      }
+    "placeholders": {
+      "colorCode": "#000000",
+      "url": "https://example.com",
+      "urlPrefix": "https://",
+      "tags": "tag1, tag2"
     }
   },
   "publicQuote": {
@@ -2967,7 +2761,20 @@
       "subtitle": "Manage your manufacturing partners",
       "title": "Manufacturers",
       "add": "New Manufacturer",
-      "create": "Add Manufacturer",
+      "create": {
+        "title": "Add New Manufacturer",
+        "subtitle": "Create a comprehensive manufacturer profile",
+        "back": "Back",
+        "infoTitle": "Important:",
+        "infoText": "Please enter information for the new manufacturer. We need your help to add the catalog into our system as manufacturers do not share the pricing spec sheets with us.",
+        "submitting": "Submitting...",
+        "submit": "Create Manufacturer",
+        "messages": {
+          "validationFix": "Please fix the validation errors before submitting.",
+          "created": "Manufacturer created successfully!",
+          "createFailed": "Failed to create manufacturer"
+        }
+      },
       "search": "Search",
       "searchPlaceholder": "Search by name or email...",
       "sortBy": "Sort by",
@@ -3010,20 +2817,6 @@
         "updateSuccess": "Manufacturer updated successfully",
         "updateFailed": "Failed to update manufacturer"
       },
-      "create": {
-        "title": "Add New Manufacturer",
-        "subtitle": "Create a comprehensive manufacturer profile",
-        "back": "Back",
-        "infoTitle": "Important:",
-        "infoText": "Please enter information for the new manufacturer. We need your help to add the catalog into our system as manufacturers do not share the pricing spec sheets with us.",
-        "submitting": "Submitting...",
-        "submit": "Create Manufacturer",
-        "messages": {
-          "validationFix": "Please fix the validation errors before submitting.",
-          "created": "Manufacturer created successfully!",
-          "createFailed": "Failed to create manufacturer"
-        }
-      },
       "sections": {
         "basicInfo": "Basic Information",
         "logo": "Manufacturer Logo",
@@ -3032,18 +2825,14 @@
         "catalog": "Catalog Files"
       },
       "fields": {
-        "manufacturerName": "Manufacturer Name",
-        "orderEmail": "Order Email",
+        "name": "Manufacturer Name",
+        "email": "Email",
         "phone": "Phone",
         "website": "Website",
         "address": "Address",
-        "uploadLogo": "Upload Logo",
-        "priceInfoType": "Price Information Type",
-        "msrpOption": "Prices in the attached files are MSRP",
-        "costOption": "Prices in the attached files are my cost when ordering from manufacturer",
-        "costMultiplier": "Cost Multiplier",
-        "instructions": "Instructions",
-        "chooseCatalogFiles": "Choose Catalog Files"
+        "msrpOption": "Use MSRP pricing",
+        "costOption": "Use cost pricing",
+        "instructions": "Special Instructions"
       },
       "placeholders": {
         "name": "Manufacturer name",
@@ -3104,16 +2893,6 @@
         "updated": "Manufacturer updated successfully!",
         "updateFailed": "Could not update manufacturer data"
       },
-      "fields": {
-        "name": "Manufacturer Name",
-        "email": "Email",
-        "phone": "Phone",
-        "website": "Website",
-        "address": "Address",
-        "msrpOption": "Use MSRP pricing",
-        "costOption": "Use cost pricing",
-        "instructions": "Special Instructions"
-      },
       "tabs": {
         "editDetails": "Edit Manufacturer Details",
         "settings": "Settings",
@@ -3125,11 +2904,22 @@
       "catalogMapping": {
         "title": "Catalog Data",
         "empty": "No catalog data available.",
-        "assign": "Assign",
+        "assign": {
+          "header": "Assign Global Modifications"
+        },
         "selectAll": "Select All ({{count}} items)",
         "price": "Price",
         "type": "Type",
-        "style": "Style",
+        "style": {
+          "manageTitle": "Manage Style: {{style}}",
+          "shortName": "Short Name",
+          "uploadImage": "Upload Image",
+          "imageSelected": "Image selected: {{name}}",
+          "currentImage": "Current Image:",
+          "noImage": "No image available",
+          "noData": "No style data available",
+          "detailsTitle": "Style Details"
+        },
         "applyingAssemblyCost": "Applying assembly cost...",
         "assemblyFee": "Assembly Fee",
         "catalogItems": "Catalog Items",
@@ -3298,9 +3088,6 @@
           "uploadCta": "➕ Add Item",
           "modalTitle": "Manual Catalog Entry"
         },
-        "assign": {
-          "header": "Assign Global Modifications"
-        },
         "bulk": {
           "selected": "{{count}} item(s) selected",
           "deleteSelected": "🗑️ Delete Selected",
@@ -3368,16 +3155,6 @@
           "modalTitle": "Edit Catalog Item",
           "update": "Update",
           "updating": "Updating..."
-        },
-        "style": {
-          "manageTitle": "Manage Style: {{style}}",
-          "shortName": "Short Name",
-          "uploadImage": "Upload Image",
-          "imageSelected": "Image selected: {{name}}",
-          "currentImage": "Current Image:",
-          "noImage": "No image available",
-          "noData": "No style data available",
-          "detailsTitle": "Style Details"
         },
         "assembly": {
           "modalTitle": "Add Assembly Cost",
@@ -4122,14 +3899,6 @@
   "showroom": {
     "placeholders": {
       "defaultMultiplier": "1.00"
-    }
-  },
-  "resources": {
-    "placeholders": {
-      "colorCode": "#000000",
-      "url": "https://example.com",
-      "urlPrefix": "https://",
-      "tags": "tag1, tag2"
     }
   },
   "customization": {

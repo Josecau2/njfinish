@@ -1,5 +1,6 @@
 import StandardCard from './StandardCard'
-import { TableContainer, Table, Thead, Tbody, Tr, Th, Td, Stack, Text, useBreakpointValue, useColorModeValue } from '@chakra-ui/react'
+import { TableCard } from './TableCard'
+import { TableContainer, Table, Thead, Tbody, Tr, Th, Td, Stack, Text, Box, useBreakpointValue, useColorModeValue } from '@chakra-ui/react'
 
 const ResponsiveTable = ({ data = [], columns = [] }) => {
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -29,7 +30,7 @@ const ResponsiveTable = ({ data = [], columns = [] }) => {
   }
 
   return (
-    <TableContainer>
+    <TableCard>
       <Table variant="simple">
         <Thead>
           <Tr>
@@ -50,7 +51,7 @@ const ResponsiveTable = ({ data = [], columns = [] }) => {
           ))}
         </Tbody>
       </Table>
-    </TableContainer>
+    </TableCard>
   );
 };
 

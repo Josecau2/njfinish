@@ -1,191 +1,226 @@
 import React, { useState } from 'react'
-import { useNavigate, Link as RouterLink } from 'react-router-dom'
-import { Box, Flex, Container, Heading, Text, FormControl, FormLabel, Input, InputGroup, InputRightElement, IconButton, Button, Link, Alert, AlertIcon, VStack, useColorModeValue } from '@chakra-ui/react'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  IconButton,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Link,
+  Text,
+  VStack,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import { Eye, EyeOff } from 'lucide-react'
 import axios from 'axios'
+import { useTranslation } from 'react-i18next'
 import { getOptimalColors } from '../../utils/colorUtils'
-import { getLoginBrand, getBrandColors } from '../../brand/useBrand'
+import { getBrand, getBrandColors, getLoginBrand } from '../../brand/useBrand'
+import BrandLogo from '../../components/BrandLogo'
+import AuthLayout from '../../components/AuthLayout'
 import { ICON_SIZE_MD } from '../../constants/iconSizes'
 
 const SignupPage = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
-  const api_url = import.meta.env.VITE_API_URL
+  const apiUrl = import.meta.env.VITE_API_URL
 
+  const brand = getBrand()
   const loginBrand = getLoginBrand()
   const brandColors = getBrandColors()
-  const loginBackground = loginBrand.backgroundColor || brandColors.surface || "gray.900"
+  const loginBackground = loginBrand.backgroundColor || brandColors.surface || 'gray.900'
+  const rightPanelColors = getOptimalColors(loginBackground)
+  const logoHeight = Number(loginBrand.logoHeight) || 60
 
-  // Color mode values
-  const bgWhite = useColorModeValue("white", "gray.800")
-  const textGray600 = useColorModeValue("gray.600", "gray.400")
-  const linkBlue = useColorModeValue("blue.600", "blue.300")
+  const bgWhite = useColorModeValue('white', 'gray.800')
+  const textGray600 = useColorModeValue('gray.600', 'gray.400')
+  const linkBlue = useColorModeValue('blue.600', 'blue.300')
+
+  const copy = {
+    title: loginBrand.signupTitle || t('auth.signUp.title'),
+    subtitle: loginBrand.signupSubtitle || t('auth.signUp.subtitle'),
+    alreadyHaveAccount: loginBrand.signupAlreadyHaveAccount || t('auth.signUp.alreadyHaveAccount'),
+    signInLink: loginBrand.signupSignInLink || t('auth.signUp.signInLink'),
+  }
 
   const [formData, setFormData] = useState({
     username: '',
     email: '',
     password: '',
   })
-
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }))
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async (event) => {
+    event.preventDefault()
     setError('')
-    try {
-      const response = await axios.post(`${api_url}/api/signup`, formData)
+    setSuccess('')
+    setIsSubmitting(true)
 
-      alert('Signup successful!')
-      navigate('/login')
+    try {
+      await axios.post(`${apiUrl}/api/signup`, formData)
+      setSuccess(t('auth.signUp.success'))
+      setFormData({ username: '', email: '', password: '' })
+      setShowPassword(false)
+      setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err?.response?.data?.message) {
         setError(err.response.data.message)
       } else {
-        setError('Something went wrong. Please try again.')
+        setError(t('auth.genericError') || 'Something went wrong. Please try again.')
       }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
-  // Compute optimal text colors for the right panel based on background
-  const rightPanelColors = getOptimalColors(loginBackground)
+  const leftPanel = (
+    <VStack spacing={6} maxW="lg" textAlign="center">
+      <Heading as="h1" size="2xl" color={rightPanelColors.text}>
+        {loginBrand.rightTitle || brand.logoAlt || copy.title}
+      </Heading>
+      <Text fontSize="xl" color={rightPanelColors.subtitle}>
+        {loginBrand.rightSubtitle || copy.subtitle}
+      </Text>
+      <Text fontSize="md" color={rightPanelColors.subtitle}>
+        {loginBrand.rightDescription || ''}
+      </Text>
+    </VStack>
+  )
 
   return (
-    <Flex minH="100vh">
-      {/* Left Panel - Form */}
-      <Flex
-        flex="1"
-        alignItems="center"
-        justifyContent="center"
-        bg={bgWhite}
-      >
-        <Container maxW="md" py={8}>
-          <VStack spacing={6} align="stretch">
-            <Heading as="h2" size="lg" fontWeight="bold">
-              Sign Up
-            </Heading>
-            <Text color={textGray600}>
-              Create your account to get started.
-            </Text>
+    <AuthLayout
+      leftContent={leftPanel}
+      leftBg={loginBackground}
+      leftTextColor={rightPanelColors.text}
+      rightBg={bgWhite}
+      languageSwitcherProps={{ compact: true }}
+      rightContainerProps={{ maxW: 'md' }}
+    >
+      <VStack spacing={6} align="stretch">
+        <Box textAlign="center">
+          <BrandLogo size={logoHeight} />
+        </Box>
 
-            {error && (
-              <Alert status="error" borderRadius="md">
-                <AlertIcon />
-                {error}
-              </Alert>
-            )}
+        <Heading as="h2" size="lg" textAlign="center">
+          {copy.title}
+        </Heading>
+        <Text color={textGray600} textAlign="center">
+          {copy.subtitle}
+        </Text>
 
-            <Box as="form" onSubmit={handleSubmit}>
-              <VStack spacing={4}>
-                <FormControl isRequired>
-                  <FormLabel htmlFor="username" fontWeight="600">
-                    Username
-                  </FormLabel>
-                  <Input
-                    type="text"
-                    id="username"
-                    name="username"
-                    size="lg"
-                    placeholder="john_doe"
-                    value={formData.username}
-                    onChange={handleChange}
-                    minH="44px"
-                  />
-                </FormControl>
+        {success && (
+          <Alert status="success" borderRadius="md">
+            <AlertIcon />
+            {success}
+          </Alert>
+        )}
 
-                <FormControl isRequired>
-                  <FormLabel htmlFor="email" fontWeight="600">
-                    Email
-                  </FormLabel>
-                  <Input
-                    type="email"
-                    id="email"
-                    name="email"
-                    size="lg"
-                    placeholder="you@example.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    minH="44px"
-                  />
-                </FormControl>
+        {error && (
+          <Alert status="error" borderRadius="md">
+            <AlertIcon />
+            {error}
+          </Alert>
+        )}
 
-                <FormControl isRequired>
-                  <FormLabel htmlFor="password" fontWeight="600">
-                    Password
-                  </FormLabel>
-                  <InputGroup size="lg">
-                    <Input
-                      type={showPassword ? 'text' : 'password'}
-                      id="password"
-                      name="password"
-                      placeholder="Enter your password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      autoComplete="new-password"
-                      minH="44px"
-                    />
-                    <InputRightElement width="44px" height="44px">
-                      <IconButton
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
-                        icon={showPassword ? <EyeOff size={ICON_SIZE_MD} /> : <Eye size={ICON_SIZE_MD} />}
-                        onClick={() => setShowPassword(!showPassword)}
-                        variant="ghost"
-                        tabIndex={-1}
-                        minW="44px"
-                        minH="44px"
-                      />
-                    </InputRightElement>
-                  </InputGroup>
-                </FormControl>
+        <Box as="form" onSubmit={handleSubmit}>
+          <VStack spacing={4}>
+            <FormControl isRequired>
+              <FormLabel htmlFor="username" fontWeight="500">
+                {t('auth.username', { defaultValue: 'Username' })}
+              </FormLabel>
+              <Input
+                id="username"
+                name="username"
+                type="text"
+                size="lg"
+                placeholder={t('auth.placeholders.usernameExample')}
+                value={formData.username}
+                onChange={handleChange}
+                minH="44px"
+              />
+            </FormControl>
 
-                <Button
-                  type="submit"
-                  colorScheme="brand"
-                  size="lg"
-                  width="100%"
+            <FormControl isRequired>
+              <FormLabel htmlFor="email" fontWeight="500">
+                {t('auth.email')}
+              </FormLabel>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                size="lg"
+                placeholder={t('auth.emailPlaceholder')}
+                value={formData.email}
+                onChange={handleChange}
+                minH="44px"
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel htmlFor="password" fontWeight="500">
+                {t('auth.password')}
+              </FormLabel>
+              <InputGroup size="lg">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder={t('auth.placeholders.password')}
+                  value={formData.password}
+                  onChange={handleChange}
+                  autoComplete="new-password"
                   minH="44px"
-                >
-                  Sign Up
-                </Button>
-              </VStack>
-            </Box>
+                />
+                <InputRightElement width="44px" height="44px">
+                  <IconButton
+                    aria-label={showPassword ? t('auth.hidePassword', { defaultValue: 'Hide password' }) : t('auth.showPassword', { defaultValue: 'Show password' })}
+                    icon={showPassword ? <EyeOff size={ICON_SIZE_MD} /> : <Eye size={ICON_SIZE_MD} />}
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    variant="ghost"
+                    tabIndex={-1}
+                    minW="44px"
+                    minH="44px"
+                  />
+                </InputRightElement>
+              </InputGroup>
+            </FormControl>
 
-            <Text textAlign="center">
-              Already have an account?{' '}
-              <Link as={RouterLink} to="/login" color={linkBlue} minH="44px" py={2}>
-                Sign In
-              </Link>
-            </Text>
+            <Button
+              type="submit"
+              colorScheme="brand"
+              size="lg"
+              width="100%"
+              minH="44px"
+              isLoading={isSubmitting}
+              loadingText={t('auth.signUp.submitting')}
+            >
+              {t('auth.signUp.submit')}
+            </Button>
           </VStack>
-        </Container>
-      </Flex>
+        </Box>
 
-      {/* Right Panel - Branding */}
-      <Box
-        display={{ base: 'none', lg: 'flex' }}
-        flex="1"
-        bg={loginBackground}
-        alignItems="center"
-        justifyContent="center"
-        px={8}
-        className="login-right-panel"
-      >
-        <VStack spacing={4} maxW="500px" textAlign="center">
-          <Heading as="h2" size="2xl" color={rightPanelColors.text}>
-            NJ Cabinets
-          </Heading>
-          <Text fontSize="xl" color={rightPanelColors.subtitle}>
-            Dealer Portal
-          </Text>
-        </VStack>
-      </Box>
-    </Flex>
+        <Text textAlign="center">
+          {copy.alreadyHaveAccount}{' '}
+          <Link as={RouterLink} to="/login" color={linkBlue} minH="44px" py={2}>
+            {copy.signInLink}
+          </Link>
+        </Text>
+      </VStack>
+    </AuthLayout>
   )
 }
 

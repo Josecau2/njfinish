@@ -41,30 +41,57 @@ export const validateProposalSubTypeRequirements = async (items, manufacturerId)
 }
 
 /**
+ * Builds user-friendly bullet lines for missing sub-type requirements.
+ * @param {Array} missingRequirements
+ * @returns {string[]}
+ */
+export const getMissingRequirementMessages = (missingRequirements) => {
+  if (!Array.isArray(missingRequirements) || missingRequirements.length === 0) {
+    return []
+  }
+
+  return missingRequirements.map((req) => {
+    const rawName =
+      req.itemName ||
+      req.item ||
+      req.name ||
+      req.description ||
+      'Unknown item'
+    const code = req.itemCode || req.code || req.item_code
+    let requirementList = Array.isArray(req.requirements) ? req.requirements : null
+    if (!requirementList || requirementList.length === 0) {
+      requirementList = [req.requirement || req.message || 'selection required']
+    }
+    const cleaned = []
+    requirementList.forEach((entry) => {
+      if (entry && !cleaned.includes(entry)) {
+        cleaned.push(String(entry))
+      }
+    })
+    const requirementText = cleaned.join(', ') || 'selection required'
+    const suffix = code ? ` (${code})` : ''
+    return `${rawName}${suffix}: ${requirementText}`
+  })
+}
+
+/**
  * Formats missing requirements into user-friendly error messages
  * @param {Array} missingRequirements - Array of missing requirement objects
  * @returns {string} Formatted error message
  */
 export const formatSubTypeValidationErrors = (missingRequirements) => {
-  if (!missingRequirements || missingRequirements.length === 0) {
+  const messages = getMissingRequirementMessages(missingRequirements)
+  if (messages.length === 0) {
     return ''
   }
 
-  const errorMessages = missingRequirements.map((req) => {
-    const itemName = req.itemName || 'Unknown Item'
-    const itemCode = req.itemCode ? `(${req.itemCode})` : ''
-    const requirement = req.requirement || 'selection'
-
-    return `- ${itemName} ${itemCode}: ${requirement} selection required`
-  })
-
   return `The following items have missing requirements:
 
-${errorMessages.join('
-')}
+${messages.map((msg) => `\u2022 ${msg}`).join('\n')}
 
 Please complete all required selections before accepting the quote.`
 }
+
 
 /**
  * Checks if any items in the current proposal require sub-type selections

@@ -1416,7 +1416,7 @@ const GlobalModsPage = () => {
       {/* Add Modification Modal */}
       <Modal isOpen={showCreateModModal} onClose={() => setShowCreateModModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
             <ModalHeader>
               {t('globalMods.modal.add.title')}
             </ModalHeader>
@@ -2056,7 +2056,7 @@ const GlobalModsPage = () => {
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('globalMods.modal.editCategory.title')}</ModalHeader>
           <ModalBody>
             <Flex>
@@ -2136,7 +2136,7 @@ const GlobalModsPage = () => {
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('globalMods.modal.editTemplate.title')}</ModalHeader>
           <ModalBody>
             <Flex>
@@ -2231,7 +2231,7 @@ const GlobalModsPage = () => {
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('globalMods.modal.gallery.title')}</ModalHeader>
           <ModalBody>
           <Box>
@@ -2274,7 +2274,7 @@ const GlobalModsPage = () => {
 
                         >
                           <Box>
-                            <strong>{template.name}</strong>
+                            <Text as="span" fontWeight="semibold">{template.name}</Text>
                             {template.defaultPrice && (
                               <Text as="span">
                                 {' '}
@@ -2340,7 +2340,7 @@ const GlobalModsPage = () => {
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>{t('globalMods.modal.assign.title')}</ModalHeader>
           <ModalBody>
           <Flex>
@@ -2453,16 +2453,16 @@ const GlobalModsPage = () => {
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader>
             {t('globalMods.modal.deleteCategory.title', { name: deleteCategory.name })}
           </ModalHeader>
           <ModalBody>
             <Box>
               <Box bg="orange.100" p={3} borderRadius="md">
-                <strong>
+                <Text as="span" fontWeight="semibold">
                   <Trans i18nKey="globalMods.modal.deleteCategory.warning">⚠️ Warning:</Trans>
-                </strong>{' '}
+                </Text>{' '}
                 <Trans
                   i18nKey="globalMods.modal.deleteCategory.aboutToDelete"
                   values={{ name: deleteCategory.name }}
@@ -2475,7 +2475,7 @@ const GlobalModsPage = () => {
                     <Trans
                       i18nKey="globalMods.modal.deleteCategory.contains"
                       values={{ count: deleteCategory.templateCount }}
-                      components={{ strong: <strong /> }}
+                      components={{ strong: <Text as="span" fontWeight="semibold" /> }}
                     />
                   </Text>
 
@@ -2483,7 +2483,7 @@ const GlobalModsPage = () => {
                     <Stack spacing={3}>
                       <Radio value="move">
                         <Text>
-                          <strong>{t('globalMods.modal.deleteCategory.move.label')}</strong>{' '}
+                          <Text as="span" fontWeight="semibold">{t('globalMods.modal.deleteCategory.move.label')}</Text>{' '}
                           {t('globalMods.modal.deleteCategory.move.recommended')}
                         </Text>
                       </Radio>
@@ -2518,9 +2518,9 @@ const GlobalModsPage = () => {
 
                       <Radio value="withMods">
                         <Text>
-                          <strong>
+                          <Text as="span" fontWeight="semibold">
                             {t('globalMods.modal.deleteCategory.withMods.label')}
-                          </strong>{' '}
+                          </Text>{' '}
                           {t('globalMods.modal.deleteCategory.withMods.permanent')}
                         </Text>
                       </Radio>

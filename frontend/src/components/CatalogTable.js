@@ -1,4 +1,5 @@
 import StandardCard from './StandardCard'
+import { TableCard } from './TableCard'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
@@ -139,7 +140,9 @@ const CatalogTable = ({
   const modItemBg = useColorModeValue("gray.50", "gray.800")
   const modBorderColor = useColorModeValue("gray.300", "gray.600")
   const settingsIconColor = useColorModeValue("blue.500", "blue.300")
-  const warningBgColor = useColorModeValue("red.50", "red.900")
+  const bgUnavailableRow = useColorModeValue("red.50", "red.900")
+  const textUnavailable = useColorModeValue("red.600", "red.400")
+  const bgValidationWarning = useColorModeValue("orange.50", "orange.900")
 
   const [partQuery, setPartQuery] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -433,7 +436,7 @@ const CatalogTable = ({
         isCentered
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="12px" overflow="hidden">
           <ModalHeader p={0}>
             <PageHeader
               title={selectedTypeInfo?.type || 'Type Specifications'}
@@ -541,7 +544,7 @@ const CatalogTable = ({
 
       {/* Desktop Table View */}
       <Box display={{ base: 'none', lg: 'block' }}>
-        <TableContainer>
+        <TableCard>
           <Table variant="simple">
           <Thead>
             <Tr>
@@ -634,7 +637,7 @@ const CatalogTable = ({
                     </Td>
 
                     <Td
-                      color={isUnavailable ? textDanger : undefined}
+                      color={isUnavailable ? textUnavailable : undefined}
                       textDecoration={isUnavailable ? 'line-through' : undefined}
                     >
                       <Flex
@@ -789,7 +792,7 @@ const CatalogTable = ({
                     )}
 
                     <Td
-                      color={isUnavailable ? textDanger : undefined}
+                      color={isUnavailable ? textUnavailable : undefined}
                       textDecoration={isUnavailable ? 'line-through' : undefined}
                     >
                       {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
@@ -806,7 +809,7 @@ const CatalogTable = ({
                     <Td>{formatPrice(modsTotal)}</Td>
 
                     <Td
-                      color={isUnavailable ? textDanger : undefined}
+                      color={isUnavailable ? textUnavailable : undefined}
                       textDecoration={isUnavailable ? 'line-through' : undefined}
                     >
                       {formatPrice(total)}
@@ -1034,7 +1037,7 @@ const CatalogTable = ({
             })}
           </Tbody>
         </Table>
-        </TableContainer>
+        </TableCard>
       </Box>
 
       {/* Mobile Card View */}
@@ -1098,7 +1101,7 @@ const CatalogTable = ({
                   <Text fontWeight="600" color={labelColor} fontSize="sm">{t('proposalColumns.item')}</Text>
                   <Flex align="center" gap={2} minW={0} flex="1" justify="flex-end">
                     <Text
-                      color={isUnavailable ? textDanger : undefined}
+                      color={isUnavailable ? textUnavailable : undefined}
                       textDecoration={isUnavailable ? 'line-through' : undefined}
                       whiteSpace="nowrap"
                       overflow="hidden"
@@ -1142,7 +1145,7 @@ const CatalogTable = ({
                 <Flex justify="space-between" align="center" mb={2}>
                   <Text fontWeight="600" color={labelColor} fontSize="sm">{t('proposalColumns.price')}</Text>
                   <Text
-                    color={isUnavailable ? textDanger : undefined}
+                    color={isUnavailable ? textUnavailable : undefined}
                     textDecoration={isUnavailable ? 'line-through' : undefined}
                     fontSize="sm"
                   >
@@ -1157,7 +1160,7 @@ const CatalogTable = ({
                         bg={
                           subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                           (!item.hingeSide || item.hingeSide === '-')
-                            ? 'red.50'
+                            ? bgValidationWarning
                             : 'transparent'
                         }
                         p={2}
@@ -1202,7 +1205,7 @@ const CatalogTable = ({
                         bg={
                           subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                           (!item.exposedSide || item.exposedSide === '-')
-                            ? 'red.50'
+                            ? bgValidationWarning
                             : 'transparent'
                         }
                         p={2}
@@ -1245,7 +1248,7 @@ const CatalogTable = ({
                     <Flex justify="space-between" align="center" mb={2}>
                       <Text fontWeight="600" color={labelColor} fontSize="sm">{t('proposalColumns.assemblyCost')}</Text>
                       <Text
-                        color={isUnavailable ? textDanger : undefined}
+                        color={isUnavailable ? textUnavailable : undefined}
                         textDecoration={isUnavailable ? 'line-through' : undefined}
                         fontSize="sm"
                       >
@@ -1268,7 +1271,7 @@ const CatalogTable = ({
                   pt={3}
                   borderTop="2px solid"
                   borderTopColor={borderColor}
-                  color={isUnavailable ? textDanger : undefined}
+                  color={isUnavailable ? textUnavailable : undefined}
                   textDecoration={isUnavailable ? 'line-through' : undefined}
                 >
                   <Text fontWeight="bold" fontSize="md">

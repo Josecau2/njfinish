@@ -77,7 +77,7 @@ const ModificationModal = ({
   return (
     <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "lg" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent borderRadius="12px" overflow="hidden">
         <ModalHeader>{t('modificationModal.title', 'Modification')}</ModalHeader>
         <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>

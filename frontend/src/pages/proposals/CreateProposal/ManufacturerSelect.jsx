@@ -20,7 +20,17 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const { list: allManufacturers, loading } = useSelector((state) => state.manufacturers)
-  const authUser = useSelector((state) => state.auth?.user)
+  const storeAuthUser = useSelector((state) => state.auth?.user)
+  const localAuthUser = useMemo(() => {
+    if (typeof window === 'undefined') return null
+    try {
+      return JSON.parse(window.localStorage.getItem('user') || 'null')
+    } catch (error) {
+      console.error('Failed to parse local user from storage:', error)
+      return null
+    }
+  }, [])
+  const authUser = storeAuthUser || localAuthUser
   const isUserAdmin = isAdmin(authUser)
   const apiUrl = import.meta.env.VITE_API_URL
 

@@ -18,7 +18,7 @@ const EmailContractModal = ({ show, onClose }) => {
   return (
     <Modal isOpen={show} onClose={onClose} isCentered size='lg' scrollBehavior='inside'>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent borderRadius="12px" overflow="hidden">
         <ModalHeader>{t('contracts.sendTitle', 'Send contract')}</ModalHeader>
         <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>

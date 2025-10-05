@@ -134,7 +134,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
   const ModalUI = (
     <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered size={{ base: 'full', md: 'sm' }} scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent borderRadius="12px" overflow="hidden">
         <ModalHeader>{t('showroom.modal.titleExact', 'Showroom Mode Configuration')}</ModalHeader>
         <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>

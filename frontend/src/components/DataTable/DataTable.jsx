@@ -8,6 +8,7 @@ import {
   Box,
   useColorModeValue,
 } from '@chakra-ui/react'
+import { TableCard } from '../TableCard'
 
 /**
  * DataTable - Consistent table component with proper styling
@@ -25,7 +26,7 @@ export function DataTable({ columns, data, onRowClick, renderCell }) {
   const cellTextColor = useColorModeValue("gray.800", "gray.200")
 
   return (
-    <Box overflowX="auto" borderRadius="md" border="1px" borderColor={borderColor}>
+    <TableCard>
       <Table variant="simple" size="md">
         <Thead bg={headerBg}>
           <Tr>
@@ -65,6 +66,6 @@ export function DataTable({ columns, data, onRowClick, renderCell }) {
           ))}
         </Tbody>
       </Table>
-    </Box>
+    </TableCard>
   )
 }
