@@ -166,7 +166,7 @@ const PaginationComponent = ({
             }}
             title={t('pagination.firstPageTitle')}
             aria-label={t('pagination.firstPageTitle')}
-            icon={<>⇤</>}
+            icon={<Text>⇤</Text>}
           />
         )}
 
@@ -194,7 +194,7 @@ const PaginationComponent = ({
           }}
           title={t('pagination.prevPageTitle')}
           aria-label={t('pagination.prevPageTitle')}
-          icon={<>←</>}
+          icon={<Text>←</Text>}
         />
 
         {visiblePages.map((page, index) => {
@@ -235,7 +235,7 @@ const PaginationComponent = ({
                 color: isActive ? 'white' : hoverText,
               }}
               aria-label={t('pagination.pageNumberAria', { page })}
-              icon={<>{page}</>}
+              icon={<Text>{page}</Text>}
             />
           )
         })}
@@ -264,7 +264,7 @@ const PaginationComponent = ({
           }}
           title={t('pagination.nextPageTitle')}
           aria-label={t('pagination.nextPageTitle')}
-          icon={<>→</>}
+          icon={<Text>→</Text>}
         />
 
         {!isSmallMobile && (
@@ -292,7 +292,7 @@ const PaginationComponent = ({
             }}
             title={t('pagination.lastPageTitle')}
             aria-label={t('pagination.lastPageTitle')}
-            icon={<>⇥</>}
+            icon={<Text>⇥</Text>}
           />
         )}
       </Flex>

@@ -106,7 +106,68 @@ After EVERY file change:
 - Cause: Using Bootstrap props on Chakra Box (e.g., `<Box md={6}>`)
 - Fix: Use SimpleGrid with responsive columns
 
-### 7. User Preferences
+### 7. Common Runtime Errors and Fixes
+
+**Error: Invalid prop `aria-hidden` supplied to `React.Fragment`**
+- **Cause**: Using Fragment `<>...</>` as icon prop in IconButton
+- **Problem**: IconButton's `icon` prop applies props like `aria-hidden` to the element, but Fragments can't receive props
+- **Fix**: Wrap text/content in `<Text>` or `<Box>` instead of Fragment
+```javascript
+// ❌ WRONG
+<IconButton icon={<>←</>} />
+<IconButton icon={<>{page}</>} />
+
+// ✅ CORRECT
+<IconButton icon={<Text>←</Text>} />
+<IconButton icon={<Text>{page}</Text>} />
+```
+
+**Error: Raw `<small>` tags remain**
+- **Cause**: Missed during HTML → Chakra conversion
+- **Fix**: Convert ALL `<small>` to `<Text fontSize="sm">`
+```javascript
+// ❌ WRONG
+<small>Helper text</small>
+
+// ✅ CORRECT
+<Text fontSize="sm" color="gray.500">Helper text</Text>
+```
+
+**Error: Mismatched closing tags (e.g., `</small>` without opening)**
+- **Cause**: Incomplete conversion, using `Box as="small"` but closing with `</small>`
+- **Fix**: Use consistent Chakra components - `<Text fontSize="sm">...</Text>`
+```javascript
+// ❌ WRONG
+<Box as="small">text</small>
+
+// ✅ CORRECT
+<Text fontSize="sm">text</Text>
+```
+
+### 8. Complete HTML to Chakra Conversion Checklist
+
+Before declaring migration complete, verify:
+- [ ] NO raw `<div>` tags (use `<Box>`, `<Flex>`, `<VStack>`, `<HStack>`)
+- [ ] NO raw `<span>` tags (use `<Text as="span">` or `<Box as="span">`)
+- [ ] NO raw `<p>` tags (use `<Text>`)
+- [ ] NO raw `<h1>-<h6>` tags (use `<Heading as="h#" size="...">`)
+- [ ] NO raw `<small>` tags (use `<Text fontSize="sm">`)
+- [ ] NO raw `<button>` tags (use `<Button>` or `<IconButton>`)
+- [ ] NO raw `<input>` tags (use `<Input>`, `<Checkbox>`, `<Radio>`, etc.)
+- [ ] NO raw `<form>` tags (use `<Box as="form">`)
+- [ ] NO raw `<a>` tags (use `<Link>`)
+- [ ] NO raw `<ul>/<ol>/<li>` tags (use `<UnorderedList>/<OrderedList>/<ListItem>`)
+- [ ] NO raw `<img>` tags (use `<Image>`)
+- [ ] NO inline `style={{}}` attributes (use Chakra props)
+- [ ] NO Fragment `<>` as icon props in IconButton (use `<Text>` wrapper)
+- [ ] All `useColorModeValue` calls at component top level
+
+**Exceptions (acceptable):**
+- Auth pages: className preserved for customization
+- PDF builders: Raw HTML in template strings for PDF generation
+- SVG files: `<path>`, `<circle>`, etc. are SVG elements, not HTML
+
+### 9. User Preferences
 - User wants "do it manually" - commit after each file
 - User emphasizes "do not cut corners" - be thorough
 - User wants to maintain customization system - preserve auth className
