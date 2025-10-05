@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Alert, Badge, Box, Button, CardBody, Container, Grid, GridItem, HStack, Spinner, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import StandardCard from '../../../components/StandardCard'
+import { TableCard } from '../../../components/TableCard'
 import { Plus, Pencil, Users } from '@/icons-lucide'
 import { fetchUsers, updateUser } from '../../../store/slices/userGroupSlice'
 import { useNavigate } from 'react-router-dom'
@@ -178,7 +179,7 @@ const UserGroupList = () => {
 
           {/* Desktop table */}
           <Box display={{ base: 'none', md: 'block' }}>
-            <TableContainer>
+            <TableCard>
               <Table variant="simple" size="sm">
               <Thead>
                 <Tr>
@@ -241,7 +242,7 @@ const UserGroupList = () => {
                 )}
               </Tbody>
             </Table>
-            </TableContainer>
+            </TableCard>
           </Box>
 
           {/* Mobile card list */}

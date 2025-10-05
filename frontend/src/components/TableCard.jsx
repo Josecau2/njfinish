@@ -40,6 +40,15 @@ export const TableCard = ({
           borderWidth="1px"
           borderColor={borderColor}
           borderRadius="md"
+          overflowX="auto"
+          sx={{
+            // Enable smooth scrolling on touch devices
+            WebkitOverflowScrolling: 'touch',
+            // Responsive table scrolling
+            '@media (max-width: 768px)': {
+              maxWidth: '100vw',
+            },
+          }}
           {...containerProps}
         >
           {children}

@@ -1,4 +1,5 @@
 import StandardCard from '../../../components/StandardCard'
+import { TableCard } from '../../../components/TableCard'
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
@@ -443,7 +444,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
               </Box>
 
               {/* Table */}
-              <TableContainer>
+              <TableCard>
                 <Table variant="striped">
                   <Thead>
                     <Tr>
@@ -588,7 +589,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                     )}
                   </Tbody>
                 </Table>
-              </TableContainer>
+              </TableCard>
 
               {/* Pagination */}
               {pagination?.totalPages > 1 && (
@@ -870,7 +871,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                           <AccordionIcon />
                         </AccordionButton>
                         <AccordionPanel>
-                          <TableContainer>
+                          <TableCard>
                             <Table variant="striped">
                               <Thead>
                                 <Tr>
@@ -901,7 +902,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                                 ))}
                               </Tbody>
                             </Table>
-                          </TableContainer>
+                          </TableCard>
 
                           <Box>
                             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
