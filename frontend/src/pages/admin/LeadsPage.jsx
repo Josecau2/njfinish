@@ -1,4 +1,5 @@
 import StandardCard from '../../components/StandardCard'
+import { TableCard } from '../../components/TableCard'
 
 import React, { useEffect, useMemo, useState } from 'react'
 import {
@@ -419,7 +420,8 @@ const LeadsPage = () => {
             ) : (
               <>
                 {/* Desktop table view */}
-                <TableContainer display={{ base: 'none', xl: 'block' }}>
+                <Box display={{ base: 'none', xl: 'block' }}>
+                <TableCard>
                   <Table variant="simple" size="md">
                     <Thead>
                       <Tr>
@@ -484,7 +486,8 @@ const LeadsPage = () => {
                       })}
                     </Tbody>
                   </Table>
-                </TableContainer>
+                </TableCard>
+                </Box>
 
                 {/* Mobile card view */}
                 <VStack

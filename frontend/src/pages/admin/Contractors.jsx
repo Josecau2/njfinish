@@ -1,4 +1,5 @@
 import StandardCard from '../../components/StandardCard'
+import { TableCard } from '../../components/TableCard'
 
 import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -297,10 +298,8 @@ const Contractors = () => {
           </CardBody>
         </StandardCard>
 
-        <StandardCard variant="outline" borderRadius="xl" shadow="sm">
-          <CardBody>
-            <TableContainer>
-              <Table variant="simple">
+        <TableCard>
+          <Table variant="simple">
                 <Thead>
                   <Tr>
                     <Th>{t('contractorsAdmin.table.name', 'Name')}</Th>
@@ -371,7 +370,7 @@ const Contractors = () => {
                   )}
                 </Tbody>
               </Table>
-            </TableContainer>
+        </TableCard>
 
             <Box display={{ base: 'block', lg: 'none' }} mt={6}>
               <Stack spacing={4}>

@@ -1,4 +1,5 @@
 import StandardCard from '../../../components/StandardCard'
+import { TableCard } from '../../../components/TableCard'
 import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
@@ -298,7 +299,7 @@ const CustomersTab = ({ contractor, groupId }) => {
             </SimpleGrid>
 
             <Box display={{ base: 'none', md: 'block' }}>
-              <TableContainer borderWidth="1px" borderColor={borderGray100} borderRadius="lg">
+              <TableCard>
                 <Table variant="striped" size="sm">
                   <Thead>
                     <Tr>
@@ -421,7 +422,7 @@ const CustomersTab = ({ contractor, groupId }) => {
                     )}
                   </Tbody>
                 </Table>
-              </TableContainer>
+              </TableCard>
             </Box>
 
             <Box display={{ base: 'block', md: 'none' }}>
