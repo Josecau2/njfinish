@@ -12,6 +12,7 @@ import {
   Text,
   Link,
 } from '@chakra-ui/react'
+import { TableCard } from '../../../../components/TableCard'
 
 const FilesHistoryTab = ({ manufacturer }) => {
   const { t } = useTranslation()
@@ -29,7 +30,7 @@ const FilesHistoryTab = ({ manufacturer }) => {
       {files.length === 0 ? (
         <Text>{t('settings.manufacturers.filesHistory.empty')}</Text>
       ) : (
-        <Box overflowX="auto">
+        <TableCard>
           <Table variant="simple" size="md">
             <Thead>
               <Tr>
@@ -77,7 +78,7 @@ const FilesHistoryTab = ({ manufacturer }) => {
               ))}
             </Tbody>
           </Table>
-        </Box>
+        </TableCard>
       )}
     </Box>
   )

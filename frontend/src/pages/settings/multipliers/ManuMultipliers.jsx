@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Badge, Box, CardBody, Center, Container, Flex, HStack, Icon, IconButton, Input, InputGroup, InputLeftElement, SimpleGrid, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import StandardCard from '../../../components/StandardCard'
+import { TableCard } from '../../../components/TableCard'
 import { useDispatch, useSelector } from 'react-redux'
 import { Search, Settings, Users, User, Pencil } from 'lucide-react'
 import { useToast } from '@chakra-ui/react'
@@ -316,10 +317,8 @@ const ManuMultipliers = () => {
           </CardBody>
         </StandardCard>
 
-        <StandardCard variant="outline">
-          <CardBody p={0}>
-            <TableContainer>
-              <Table variant="simple">
+        <TableCard>
+          <Table variant="simple">
                 <Thead>
                   <Tr>
                     <Th>
@@ -406,7 +405,6 @@ const ManuMultipliers = () => {
                   )}
                 </Tbody>
               </Table>
-            </TableContainer>
             {totalPages > 1 && (
               <Box px={4} py={3}>
                 <PaginationComponent
@@ -417,8 +415,7 @@ const ManuMultipliers = () => {
                 />
               </Box>
             )}
-          </CardBody>
-        </StandardCard>
+        </TableCard>
 
         <EditGroupModal
           show={showModal}

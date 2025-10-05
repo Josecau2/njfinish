@@ -1,5 +1,6 @@
 import StandardCard from '../../components/StandardCard'
 import PageContainer from '../../components/PageContainer'
+import { TableCard } from '../../components/TableCard'
 import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
@@ -340,7 +341,7 @@ const PaymentsList = ({ isContractor }) => {
       </Flex>
 
       <Box display={{ base: 'none', lg: 'block' }}>
-        <TableContainer>
+        <TableCard>
           <Table size="sm" variant="simple">
           <Thead>
             <Tr>
@@ -417,7 +418,7 @@ const PaymentsList = ({ isContractor }) => {
             )}
           </Tbody>
         </Table>
-        </TableContainer>
+        </TableCard>
       </Box>
 
       <VStack display={{ base: 'flex', lg: 'none' }} spacing={4}>

@@ -5,6 +5,7 @@ import { CardBody, Flex, Box, FormControl, Textarea, Badge, Button, HStack, Text
 import StandardCard from '../../../components/StandardCard'
 import PageHeader from '../../../components/PageHeader'
 import PageContainer from '../../../components/PageContainer'
+import { TableCard } from '../../../components/TableCard'
 import { useTranslation } from 'react-i18next'
 import { getLatestTerms, saveTerms, getAcceptance } from '../../../helpers/termsApi'
 import { isAdmin as isAdminCheck } from '../../../helpers/permissions'
@@ -140,6 +141,7 @@ const TermsPage = () => {
               <Text color={iconGray500} fontSize="sm" mb={2}>
                 {t('settings.terms.version', 'Version')}: {acceptance?.version ?? '-'}
               </Text>
+              <TableCard cardProps={{ mb: 0 }}>
               <Table variant="simple">
                 <Thead>
                   <Tr>
@@ -170,6 +172,7 @@ const TermsPage = () => {
                   ))}
                 </Tbody>
               </Table>
+              </TableCard>
             </CardBody>
           </StandardCard>
         </Box>

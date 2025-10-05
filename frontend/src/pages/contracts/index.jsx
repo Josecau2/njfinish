@@ -39,6 +39,7 @@ import {
 } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
+import { TableCard } from '../../components/TableCard'
 import { Search, Calendar, Briefcase, FileText, Trash2 } from 'lucide-react'
 import { getContracts } from '../../queries/proposalQueries'
 import { useSelector } from 'react-redux'
@@ -569,10 +570,8 @@ const Contracts = () => {
             )}
           </Stack>
         ) : (
-          <StandardCard variant="outline">
-            <CardBody p={0}>
-              <TableContainer>
-                <Table variant="simple">
+          <TableCard>
+            <Table variant="simple">
                   <Thead>
                     <Tr>
                       <Th>{t('contracts.table.date')}</Th>
@@ -668,9 +667,7 @@ const Contracts = () => {
                     )}
                   </Tbody>
                 </Table>
-              </TableContainer>
-            </CardBody>
-          </StandardCard>
+          </TableCard>
         )}
         {totalPages > 1 && (
           <StandardCard variant="outline">

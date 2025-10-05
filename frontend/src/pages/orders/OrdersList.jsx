@@ -1,5 +1,6 @@
 import StandardCard from '../../components/StandardCard'
 import PageContainer from '../../components/PageContainer'
+import { TableCard } from '../../components/TableCard'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
@@ -527,7 +528,7 @@ const OrdersList = ({
 
       {/* Desktop / tablet table */}
       <Box display={{ base: 'none', lg: 'block' }}>
-        <TableContainer>
+        <TableCard>
           <Table size="sm" variant="simple">
             <Thead>
               <Tr>
@@ -650,7 +651,7 @@ const OrdersList = ({
               )}
             </Tbody>
           </Table>
-        </TableContainer>
+        </TableCard>
       </Box>
 
       {/* Mobile card list */}

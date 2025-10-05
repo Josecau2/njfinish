@@ -45,6 +45,7 @@ import {
 } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
+import { TableCard } from '../../components/TableCard'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -341,10 +342,8 @@ const CustomerTable = ({
           <>
             {/* Desktop Skeleton */}
             <Box display={{ base: 'none', lg: 'block' }}>
-              <StandardCard variant="outline">
-                <CardBody>
-                  <TableContainer>
-                    <Table variant="simple">
+              <TableCard>
+                <Table variant="simple">
                       <Thead>
                         <Tr>
                           <Th>{t('customers.location', 'Location')}</Th>
@@ -388,9 +387,7 @@ const CustomerTable = ({
                         ))}
                       </Tbody>
                     </Table>
-                  </TableContainer>
-                </CardBody>
-              </StandardCard>
+              </TableCard>
             </Box>
 
             {/* Mobile Skeleton */}
@@ -426,10 +423,8 @@ const CustomerTable = ({
         {!loading && !error && (
           <>
             <Box display={{ base: 'none', lg: 'block' }}>
-              <StandardCard variant="outline">
-                <CardBody>
-                  <TableContainer>
-                    <Table variant="simple">
+              <TableCard>
+                <Table variant="simple">
                       <Thead>
                         <Tr>
                           <Th>{t('customers.location', 'Location')}</Th>
@@ -568,9 +563,7 @@ const CustomerTable = ({
                         )}
                       </Tbody>
                     </Table>
-                  </TableContainer>
-                </CardBody>
-              </StandardCard>
+              </TableCard>
             </Box>
 
             <Stack spacing={4} display={{ base: 'flex', lg: 'none' }}>

@@ -56,6 +56,7 @@ import {
 } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
+import { TableCard } from '../../components/TableCard'
 import {
   Pencil,
   Trash2,
@@ -621,101 +622,97 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
 
       {/* Desktop Table */}
       <Box display={{ base: 'none', lg: 'block' }}>
-        <StandardCard>
-          <CardBody p={0}>
-            <TableContainer>
-              <Table variant="simple">
-                <Thead>
-                  <Tr>
-                    <Th scope="col" position="sticky" left={0} bg={cardBg} zIndex={1}>
-                      {t('proposals.headers.date')}
-                    </Th>
-                    <Th scope="col">{t('proposals.headers.quoteNumber', 'Quote #')}</Th>
-                    <Th scope="col">{t('proposals.headers.customer')}</Th>
-                    <Th scope="col">{t('proposals.headers.description')}</Th>
-                    {canAssignDesigner && <Th scope="col">{t('proposals.headers.designer')}</Th>}
-                    <Th scope="col">{t('proposals.headers.status')}</Th>
-                    <Th scope="col" textAlign="center">
-                      {t('proposals.headers.actions')}
-                    </Th>
+        <TableCard>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th scope="col" position="sticky" left={0} bg={cardBg} zIndex={1}>
+                  {t('proposals.headers.date')}
+                </Th>
+                <Th scope="col">{t('proposals.headers.quoteNumber', 'Quote #')}</Th>
+                <Th scope="col">{t('proposals.headers.customer')}</Th>
+                <Th scope="col">{t('proposals.headers.description')}</Th>
+                {canAssignDesigner && <Th scope="col">{t('proposals.headers.designer')}</Th>}
+                <Th scope="col">{t('proposals.headers.status')}</Th>
+                <Th scope="col" textAlign="center">
+                  {t('proposals.headers.actions')}
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {paginatedItems?.length === 0 ? (
+                <Tr>
+                  <Td colSpan={canAssignDesigner ? 7 : 6} textAlign="center" py={8}>
+                    <VStack spacing={4}>
+                      <Search size={48} color="gray" />
+                      <Text>{t('proposals.empty.title')}</Text>
+                      <Text fontSize="sm" color={iconGray500}>
+                        {t('proposals.empty.subtitle')}
+                      </Text>
+                    </VStack>
+                  </Td>
+                </Tr>
+              ) : (
+                paginatedItems?.map((item) => (
+                  <Tr key={item.id}>
+                    <Td>{new Date(item.date || item.createdAt).toLocaleDateString()}</Td>
+                    <Td>{item.proposal_number || '-'}</Td>
+                    <Td
+                      fontWeight="medium"
+                      cursor="pointer"
+                      color={iconBlue500}
+                      _hover={{ textDecoration: 'underline' }}
+                      onClick={() =>
+                        item.customer?.id && navigate(`/customers/edit/${item.customer.id}`)
+                      }
+                      isTruncated
+                      maxW="200px"
+                    >
+                      {item.customer?.name || t('common.na')}
+                    </Td>
+                    <Td color={borderGray600} isTruncated maxW="250px">
+                      {item.description || t('common.na')}
+                    </Td>
+                    {canAssignDesigner && <Td>{item.designerData?.name || t('common.na')}</Td>}
+                    <Td>
+                      <Badge colorScheme={getStatusColorScheme(item.status || 'Draft')}>
+                        {getTabLabel(item.status || 'Draft')}
+                      </Badge>
+                    </Td>
+                    <Td textAlign="center">
+                      <HStack spacing={4} justify="center">
+                        {renderStatusActions(item)}
+                        <PermissionGate action="update" resource="proposal" item={item}>
+                          <IconButton
+                            aria-label={t('common.edit')}
+                            icon={<Pencil size={ICON_SIZE_MD} />}
+                            variant="ghost"
+                            minW="44px"
+                            minH="44px"
+                            onClick={() => handleNavigate(item.id)}
+                          />
+                        </PermissionGate>
+                        {(isAdmin(loggedInUser) || !item.is_locked) && (
+                          <PermissionGate action="delete" resource="proposal" item={item}>
+                            <IconButton
+                              aria-label={t('common.delete')}
+                              icon={<Trash2 size={ICON_SIZE_MD} />}
+                              variant="ghost"
+                              colorScheme="red"
+                              minW="44px"
+                              minH="44px"
+                              onClick={() => handleDelete(item.id)}
+                            />
+                          </PermissionGate>
+                        )}
+                      </HStack>
+                    </Td>
                   </Tr>
-                </Thead>
-                <Tbody>
-                  {paginatedItems?.length === 0 ? (
-                    <Tr>
-                      <Td colSpan={canAssignDesigner ? 7 : 6} textAlign="center" py={8}>
-                        <VStack spacing={4}>
-                          <Search size={48} color="gray" />
-                          <Text>{t('proposals.empty.title')}</Text>
-                          <Text fontSize="sm" color={iconGray500}>
-                            {t('proposals.empty.subtitle')}
-                          </Text>
-                        </VStack>
-                      </Td>
-                    </Tr>
-                  ) : (
-                    paginatedItems?.map((item) => (
-                      <Tr key={item.id}>
-                        <Td>{new Date(item.date || item.createdAt).toLocaleDateString()}</Td>
-                        <Td>{item.proposal_number || '-'}</Td>
-                        <Td
-                          fontWeight="medium"
-                          cursor="pointer"
-                          color={iconBlue500}
-                          _hover={{ textDecoration: 'underline' }}
-                          onClick={() =>
-                            item.customer?.id && navigate(`/customers/edit/${item.customer.id}`)
-                          }
-                          isTruncated
-                          maxW="200px"
-                        >
-                          {item.customer?.name || t('common.na')}
-                        </Td>
-                        <Td color={borderGray600} isTruncated maxW="250px">
-                          {item.description || t('common.na')}
-                        </Td>
-                        {canAssignDesigner && <Td>{item.designerData?.name || t('common.na')}</Td>}
-                        <Td>
-                          <Badge colorScheme={getStatusColorScheme(item.status || 'Draft')}>
-                            {getTabLabel(item.status || 'Draft')}
-                          </Badge>
-                        </Td>
-                        <Td textAlign="center">
-                          <HStack spacing={4} justify="center">
-                            {renderStatusActions(item)}
-                            <PermissionGate action="update" resource="proposal" item={item}>
-                              <IconButton
-                                aria-label={t('common.edit')}
-                                icon={<Pencil size={ICON_SIZE_MD} />}
-                                variant="ghost"
-                                minW="44px"
-                                minH="44px"
-                                onClick={() => handleNavigate(item.id)}
-                              />
-                            </PermissionGate>
-                            {(isAdmin(loggedInUser) || !item.is_locked) && (
-                              <PermissionGate action="delete" resource="proposal" item={item}>
-                                <IconButton
-                                  aria-label={t('common.delete')}
-                                  icon={<Trash2 size={ICON_SIZE_MD} />}
-                                  variant="ghost"
-                                  colorScheme="red"
-                                  minW="44px"
-                                  minH="44px"
-                                  onClick={() => handleDelete(item.id)}
-                                />
-                              </PermissionGate>
-                            )}
-                          </HStack>
-                        </Td>
-                      </Tr>
-                    ))
-                  )}
-                </Tbody>
-              </Table>
-            </TableContainer>
-          </CardBody>
-        </StandardCard>
+                ))
+              )}
+            </Tbody>
+          </Table>
+        </TableCard>
       </Box>
 
       {/* Mobile Compact UI */}

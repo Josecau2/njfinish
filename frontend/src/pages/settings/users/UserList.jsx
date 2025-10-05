@@ -1,4 +1,5 @@
 import StandardCard from '../../../components/StandardCard'
+import { TableCard } from '../../../components/TableCard'
 import { useEffect, useState, useRef } from 'react'
 import { Alert, AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertIcon, Badge, Box, Button, CardBody, Container, Flex, Heading, Icon, Input, InputGroup, InputLeftElement, Select, SimpleGrid, Spinner, Stat, StatLabel, StatNumber, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure, useToast, useColorModeValue } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
@@ -305,7 +306,7 @@ const UsersPage = () => {
           <CardBody p={0}>
             {/* Desktop Table View */}
             <Box display={{ base: 'none', lg: 'block' }}>
-              <TableContainer>
+              <TableCard cardProps={{ mb: 0 }}>
                 <Table variant="simple" size="md">
                 <Thead bg={theadBg}>
                   <Tr>
@@ -444,7 +445,7 @@ const UsersPage = () => {
                   )}
                 </Tbody>
               </Table>
-              </TableContainer>
+              </TableCard>
             </Box>
 
             {/* Mobile Card View */}
