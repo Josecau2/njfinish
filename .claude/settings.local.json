@@ -200,7 +200,9 @@
       "Bash(if grep -q \"useTranslation\" \"$file\")",
       "Bash(else)",
       "Bash(then echo \"$file exists\")",
-      "Bash(else echo \"$file NOT FOUND\")"
+      "Bash(else echo \"$file NOT FOUND\")",
+      "Bash(git restore:*)",
+      "Bash(git grep:*)"
     ],
     "deny": [],
     "ask": []
