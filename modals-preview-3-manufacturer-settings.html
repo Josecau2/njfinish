@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufacturer/Settings Modals Preview (11-13 of 40)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .modal-section {
+            background: #2d2d2d;
+        }
+
+        body.dark-mode .modal-desktop,
+        body.dark-mode .modal-mobile {
+            background: #2d2d2d;
+        }
+
+        body.dark-mode .modal-title {
+            color: #fff;
+        }
+
+        body.dark-mode .modal-meta {
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .device-frame {
+            background: #1a1a1a;
+        }
+
+        body.dark-mode .form-input,
+        body.dark-mode .form-select {
+            background: #3d3d3d;
+            border-color: #4a4a4a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .form-label {
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .view-wrapper {
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .modal-footer {
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .alert-error {
+            background: #3d1f1f;
+            border-color: #ef4444;
+        }
+
+        body.dark-mode .warning-badge {
+            background: #3d3520;
+            border-color: #fbbf24;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dark-mode-toggle:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: #2d2d2d;
+            color: #e5e5e5;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: #cbd5e0;
+            border-radius: 13px;
+            transition: background 0.3s;
+        }
+
+        body.dark-mode .toggle-switch {
+            background: #2563eb;
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        body.dark-mode .toggle-thumb {
+            transform: translateX(22px);
+        }
+
+        .preview-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .modal-section {
+            margin-bottom: 60px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .modal-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .views-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .view-wrapper {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .view-label {
+            background: #000;
+            color: white;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .device-frame {
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay {
+            position: relative;
+            width: 100%;
+        }
+
+        .modal-desktop {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .modal-mobile {
+            background: white;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: #000000;
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-footer.desktop {
+            justify-content: flex-end;
+        }
+
+        .modal-footer.mobile {
+            flex-direction: column-reverse;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input:disabled {
+            background: #f7fafc;
+            color: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        .switch-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+        }
+
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #cbd5e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .switch.active {
+            background: #2563eb;
+        }
+
+        .switch-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .switch.active .switch-thumb {
+            transform: translateX(20px);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #cbd5e0;
+            color: #4a5568;
+        }
+
+        .btn-outline:hover {
+            border-color: #a0aec0;
+            background: #f7fafc;
+        }
+
+        .btn.mobile {
+            width: 100%;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+
+        .size-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .lg { background: #fce7f3; color: #9f1239; }
+        .md { background: #dcfce7; color: #15803d; }
+
+        .warning-badge {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            color: #92400e;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 12px; color: #000;">Manufacturer/Settings Modals Preview</h1>
+        <p style="font-size: 16px; color: #666; margin-bottom: 40px;">Modals 11-13 of 40 total button-triggered modals</p>
+
+        <!-- MODAL 11: Edit Manufacturer Modal -->
+        <div class="modal-section">
+            <div class="modal-title">11. Edit Manufacturer Modal</div>
+            <div class="modal-meta">
+                <span class="size-badge lg">lg desktop</span> <span class="size-badge">full mobile</span> |
+                isCentered | File: EditManufacturerModal.jsx
+                <span class="warning-badge">⚠️ DUPLICATE: Also exists at /components/model/EditManufacturerModal.jsx</span>
+            </div>
+
+            <div class="views-container">
+                <!-- Desktop View -->
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop View (≥768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay">
+                            <div class="modal-desktop" style="max-width: 800px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Edit Manufacturer</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Manufacturer Name *</label>
+                                        <input type="text" class="form-input" placeholder="Enter manufacturer name" value="Premium Cabinets Inc.">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address *</label>
+                                        <input type="email" class="form-input" placeholder="manufacturer@example.com" value="orders@premiumcabinets.com">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Price Multiplier</label>
+                                        <input type="text" class="form-input" placeholder="e.g., 1.25" value="1.35">
+                                        <p class="helper-text">Format: Up to 4 digits before decimal, 2 after (e.g., 1.25, 0.5, 1000, 99.99)</p>
+                                    </div>
+
+                                    <div class="switch-group">
+                                        <div class="switch active">
+                                            <div class="switch-thumb"></div>
+                                        </div>
+                                        <label style="font-weight: 600;">Enabled</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Cancel</button>
+                                    <button class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile View (<768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 375px; height: 667px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Edit Manufacturer</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Name *</label>
+                                        <input type="text" class="form-input" value="Premium Cabinets">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Email *</label>
+                                        <input type="email" class="form-input" value="orders@premium.com">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Multiplier</label>
+                                        <input type="text" class="form-input" value="1.35">
+                                        <p class="helper-text">Max: 4 digits, 2 decimals</p>
+                                    </div>
+
+                                    <div class="switch-group">
+                                        <div class="switch active">
+                                            <div class="switch-thumb"></div>
+                                        </div>
+                                        <label>Enabled</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Save</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error State Variant -->
+            <div style="margin-top: 30px; padding: 20px; background: #f7fafc; border-radius: 8px;">
+                <h4 style="font-weight: 700; margin-bottom: 16px;">With Validation Errors:</h4>
+                <div class="views-container">
+                    <div class="view-wrapper">
+                        <div class="view-label">🖥️ Desktop - Validation Error</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay">
+                                <div class="modal-desktop" style="max-width: 800px;">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Edit Manufacturer</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="alert alert-error">
+                                            <span>⚠️</span>
+                                            <div>Invalid multiplier format. Please use format: 1.25 (max 4 digits, 2 decimals)</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Manufacturer Name *</label>
+                                            <input type="text" class="form-input" value="Premium Cabinets Inc.">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Email Address *</label>
+                                            <input type="email" class="form-input" value="orders@premiumcabinets.com">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Price Multiplier</label>
+                                            <input type="text" class="form-input" placeholder="e.g., 1.25" value="12345.678" style="border-color: #ef4444;">
+                                            <p class="helper-text" style="color: #ef4444;">Invalid format</p>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer desktop">
+                                        <button class="btn btn-outline">Cancel</button>
+                                        <button class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="view-wrapper">
+                        <div class="view-label">📱 Mobile - Validation Error</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay" style="width: 375px; height: 667px;">
+                                <div class="modal-mobile">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Edit Manufacturer</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="alert alert-error">
+                                            <span>⚠️</span>
+                                            <div>Invalid multiplier format</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Name *</label>
+                                            <input type="text" class="form-input" value="Premium Cabinets">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Multiplier</label>
+                                            <input type="text" class="form-input" value="12345" style="border-color: #ef4444;">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer mobile">
+                                        <button class="btn btn-primary mobile">Save</button>
+                                        <button class="btn btn-outline mobile">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 12: Edit Group Modal -->
+        <div class="modal-section">
+            <div class="modal-title">12. Edit Group Modal</div>
+            <div class="modal-meta">
+                <span class="size-badge md">md</span> <span class="size-badge lg">lg desktop</span> <span class="size-badge">full mobile</span> |
+                isCentered | File: EditGroupModal.jsx (Similar to Edit Manufacturer)
+            </div>
+
+            <div class="views-container">
+                <!-- Desktop View -->
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop View (≥768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay">
+                            <div class="modal-desktop" style="max-width: 800px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Edit Manufacturer Group</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Group Name *</label>
+                                        <input type="text" class="form-input" placeholder="Enter group name" value="Economy Line">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Price Multiplier</label>
+                                        <input type="text" class="form-input" placeholder="e.g., 1.25" value="0.85">
+                                        <p class="helper-text">Format: Up to 4 digits before decimal, 2 after</p>
+                                    </div>
+
+                                    <div class="switch-group">
+                                        <div class="switch active">
+                                            <div class="switch-thumb"></div>
+                                        </div>
+                                        <label style="font-weight: 600;">Enabled</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Cancel</button>
+                                    <button class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile View (<768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 375px; height: 667px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Edit Group</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Group Name *</label>
+                                        <input type="text" class="form-input" value="Economy Line">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Multiplier</label>
+                                        <input type="text" class="form-input" value="0.85">
+                                    </div>
+
+                                    <div class="switch-group">
+                                        <div class="switch active">
+                                            <div class="switch-thumb"></div>
+                                        </div>
+                                        <label>Enabled</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Save</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 13: Edit User Modal -->
+        <div class="modal-section">
+            <div class="modal-title">13. Edit User Modal</div>
+            <div class="modal-meta">
+                <span class="size-badge">Default size</span> |
+                File: EditUsersModel.js
+            </div>
+
+            <div class="views-container">
+                <!-- Desktop View - Create Mode -->
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop - Create User Mode</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay">
+                            <div class="modal-desktop" style="max-width: 800px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Create New User</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Full Name *</label>
+                                        <input type="text" class="form-input" placeholder="Enter full name" value="Sarah Johnson">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address *</label>
+                                        <input type="email" class="form-input" placeholder="user@example.com" value="sarah.j@company.com">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Password *</label>
+                                        <input type="password" class="form-input" placeholder="••••••••" value="password123">
+                                        <p class="helper-text">Required when creating new user</p>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Role *</label>
+                                        <select class="form-select">
+                                            <option>Select role...</option>
+                                            <option>Admin</option>
+                                            <option selected>User</option>
+                                            <option>Manager</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Location *</label>
+                                        <select class="form-select">
+                                            <option>Select location...</option>
+                                            <option selected>Main Office - New York</option>
+                                            <option>Warehouse - New Jersey</option>
+                                            <option>Showroom - Brooklyn</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="switch-group">
+                                        <div class="switch active">
+                                            <div class="switch-thumb"></div>
+                                        </div>
+                                        <label style="font-weight: 600;">Account Enabled</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Cancel</button>
+                                    <button class="btn btn-primary">Create User</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop View - Edit Mode -->
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop - Edit User Mode</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay">
+                            <div class="modal-desktop" style="max-width: 800px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Edit User</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Full Name *</label>
+                                        <input type="text" class="form-input" value="Sarah Johnson">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address *</label>
+                                        <input type="email" class="form-input" value="sarah.j@company.com" disabled>
+                                        <p class="helper-text">Email cannot be changed after creation</p>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Password (Optional)</label>
+                                        <input type="password" class="form-input" placeholder="Leave blank to keep current">
+                                        <p class="helper-text">Only fill if changing password</p>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Role *</label>
+                                        <select class="form-select">
+                                            <option>Admin</option>
+                                            <option selected>User</option>
+                                            <option>Manager</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Location *</label>
+                                        <select class="form-select">
+                                            <option selected>Main Office - New York</option>
+                                            <option>Warehouse - New Jersey</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="switch-group">
+                                        <div class="switch active">
+                                            <div class="switch-thumb"></div>
+                                        </div>
+                                        <label style="font-weight: 600;">Account Enabled</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Cancel</button>
+                                    <button class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Views -->
+            <div style="margin-top: 30px;">
+                <h4 style="font-weight: 700; margin-bottom: 16px;">Mobile Views:</h4>
+                <div class="views-container">
+                    <div class="view-wrapper">
+                        <div class="view-label">📱 Mobile - Create User</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay" style="width: 375px; height: 667px;">
+                                <div class="modal-mobile">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Create User</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label class="form-label">Name *</label>
+                                            <input type="text" class="form-input" value="Sarah Johnson">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Email *</label>
+                                            <input type="email" class="form-input" value="sarah.j@company.com">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Password *</label>
+                                            <input type="password" class="form-input" placeholder="••••••••">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Role *</label>
+                                            <select class="form-select">
+                                                <option>Admin</option>
+                                                <option selected>User</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Location *</label>
+                                            <select class="form-select">
+                                                <option selected>Main Office</option>
+                                                <option>Warehouse</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="switch-group">
+                                            <div class="switch active">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                            <label>Enabled</label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer mobile">
+                                        <button class="btn btn-primary mobile">Create User</button>
+                                        <button class="btn btn-outline mobile">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="view-wrapper">
+                        <div class="view-label">📱 Mobile - Edit User</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay" style="width: 375px; height: 667px;">
+                                <div class="modal-mobile">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Edit User</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label class="form-label">Name *</label>
+                                            <input type="text" class="form-input" value="Sarah Johnson">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Email *</label>
+                                            <input type="email" class="form-input" value="sarah@company.com" disabled>
+                                            <p class="helper-text">Cannot change email</p>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Password</label>
+                                            <input type="password" class="form-input" placeholder="Leave blank">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Role *</label>
+                                            <select class="form-select">
+                                                <option selected>User</option>
+                                                <option>Admin</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="switch-group">
+                                            <div class="switch active">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                            <label>Enabled</label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer mobile">
+                                        <button class="btn btn-primary mobile">Save</button>
+                                        <button class="btn btn-outline mobile">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #000; color: white; border-radius: 8px; text-align: center;">
+            <p style="font-size: 14px; margin-bottom: 8px;">✅ Manufacturer/Settings Modals Complete (13 of 40)</p>
+            <p style="font-size: 12px; opacity: 0.8;">Next: Catalog Management Modals (16 modals) → modals-preview-4-catalog-management.html</p>
+        </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle" onclick="toggleDarkMode()">
+        <span id="modeText">🌙 Dark Mode</span>
+        <div class="toggle-switch">
+            <div class="toggle-thumb"></div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('modeText').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        // Load saved preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('modeText').textContent = '☀️ Light Mode';
+        }
+    </script>
+</body>
+</html>

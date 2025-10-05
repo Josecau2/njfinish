@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal/Contract Modals Preview (1-7 of 40)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .modal-section {
+            background: #2d2d2d;
+        }
+
+        body.dark-mode .modal-desktop,
+        body.dark-mode .modal-mobile {
+            background: #2d2d2d;
+        }
+
+        body.dark-mode .modal-title {
+            color: #fff;
+        }
+
+        body.dark-mode .modal-meta {
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .device-frame {
+            background: #1a1a1a;
+        }
+
+        body.dark-mode .form-input,
+        body.dark-mode .form-select,
+        body.dark-mode .form-textarea {
+            background: #3d3d3d;
+            border-color: #4a4a4a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .form-label {
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .info-box {
+            background: #2d2d2d;
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .info-label,
+        body.dark-mode .info-value {
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .view-wrapper {
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .modal-footer {
+            border-color: #4a4a4a;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dark-mode-toggle:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: #2d2d2d;
+            color: #e5e5e5;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: #cbd5e0;
+            border-radius: 13px;
+            transition: background 0.3s;
+        }
+
+        body.dark-mode .toggle-switch {
+            background: #2563eb;
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        body.dark-mode .toggle-thumb {
+            transform: translateX(22px);
+        }
+
+        .preview-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .modal-section {
+            margin-bottom: 60px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .modal-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .views-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .view-wrapper {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .view-label {
+            background: #000;
+            color: white;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .device-frame {
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Modal Base Styles */
+        .modal-overlay {
+            position: relative;
+            width: 100%;
+        }
+
+        .modal-desktop {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .modal-mobile {
+            background: white;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: #000000;
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-footer.desktop {
+            justify-content: flex-end;
+        }
+
+        .modal-footer.mobile {
+            flex-direction: column-reverse;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .form-switch {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #cbd5e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .switch.active {
+            background: #2563eb;
+        }
+
+        .switch-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .switch.active .switch-thumb {
+            transform: translateX(20px);
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #cbd5e0;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox.checked {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #cbd5e0;
+            color: #4a5568;
+        }
+
+        .btn-outline:hover {
+            border-color: #a0aec0;
+            background: #f7fafc;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #4a5568;
+        }
+
+        .btn-ghost:hover {
+            background: #f7fafc;
+        }
+
+        .btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn.mobile {
+            width: 100%;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .info-value {
+            color: #1a202c;
+        }
+
+        /* Grid for checkboxes */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .checkbox-grid.mobile {
+            grid-template-columns: 1fr;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            color: #92400e;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Desktop vs Mobile specific */
+        .desktop-only {
+            display: flex;
+        }
+
+        .mobile-only {
+            display: none;
+        }
+
+        /* Image Preview */
+        .image-preview {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 24px;
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Nested Modal Preview */
+        .nested-modal-indicator {
+            background: #fef3c7;
+            border: 2px dashed #fbbf24;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            color: #92400e;
+            font-weight: 600;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        .page-header-subtitle {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        /* Helper text */
+        .helper-text {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 4px;
+        }
+
+        /* Size indicators */
+        .size-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .xl { background: #dbeafe; color: #1e40af; }
+        .lg { background: #fce7f3; color: #9f1239; }
+        .md { background: #dcfce7; color: #15803d; }
+        .sm { background: #fef3c7; color: #92400e; }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 12px; color: #000;">Proposal/Contract Modals Preview</h1>
+        <p style="font-size: 16px; color: #666; margin-bottom: 40px;">Modals 1-7 of 40 total button-triggered modals</p>
+
+        <!-- MODAL 1: Email Proposal Modal -->
+        <div class="modal-section">
+            <div class="modal-title">1. Email Proposal Modal</div>
+            <div class="modal-meta">
+                <span class="size-badge xl">xl</span> | isCentered | scrollBehavior="inside" |
+                File: EmailProposalModal.jsx
+            </div>
+
+            <div class="views-container">
+                <!-- Desktop View -->
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop View (≥768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay">
+                            <div class="modal-desktop" style="max-width: 1000px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Email Proposal</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address</label>
+                                        <input type="email" class="form-input" placeholder="customer@example.com" value="john.doe@example.com">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Email Body</label>
+                                        <textarea class="form-textarea" rows="6" placeholder="Enter email message...">Hi John,
+
+Please find your cabinet quote attached. Let me know if you have any questions.
+
+Best regards</textarea>
+                                    </div>
+
+                                    <div class="form-switch">
+                                        <div class="switch active">
+                                            <div class="switch-thumb"></div>
+                                        </div>
+                                        <label>Send me a copy</label>
+                                    </div>
+
+                                    <div class="form-checkbox">
+                                        <div class="checkbox"></div>
+                                        <label>Update customer email</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Cancel</button>
+                                    <button class="btn btn-primary">
+                                        <span>Send Email</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile View (<768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 375px; height: 667px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Email Proposal</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Email Address</label>
+                                        <input type="email" class="form-input" placeholder="customer@example.com" value="john.doe@example.com">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Email Body</label>
+                                        <textarea class="form-textarea" rows="4">Hi John,
+
+Please find your quote attached.</textarea>
+                                    </div>
+
+                                    <div class="form-switch">
+                                        <div class="switch active">
+                                            <div class="switch-thumb"></div>
+                                        </div>
+                                        <label>Send me a copy</label>
+                                    </div>
+
+                                    <div class="form-checkbox">
+                                        <div class="checkbox"></div>
+                                        <label>Update customer email</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Send Email</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 2: Print Proposal Modal -->
+        <div class="modal-section">
+            <div class="modal-title">2. Print Proposal Modal (with Nested Preview)</div>
+            <div class="modal-meta">
+                <span class="size-badge">4xl desktop</span> <span class="size-badge">full mobile</span> |
+                NESTED: Preview Modal (6xl) | File: PrintProposalModal.jsx
+            </div>
+
+            <div class="views-container">
+                <!-- Desktop View -->
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop View (≥768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay">
+                            <div class="modal-desktop" style="max-width: 1200px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Print Proposal</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Visibility Options</label>
+                                        <div class="form-switch">
+                                            <div class="switch active">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                            <label>Show Proposal Items</label>
+                                        </div>
+                                        <div class="form-switch">
+                                            <div class="switch active">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                            <label>Show Group Items</label>
+                                        </div>
+                                        <div class="form-switch">
+                                            <div class="switch active">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                            <label>Show Price Summary</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Select Columns</label>
+                                        <div class="checkbox-grid">
+                                            <div class="form-checkbox">
+                                                <div class="checkbox checked"></div>
+                                                <label>No</label>
+                                            </div>
+                                            <div class="form-checkbox">
+                                                <div class="checkbox checked"></div>
+                                                <label>Qty (Fixed)</label>
+                                            </div>
+                                            <div class="form-checkbox">
+                                                <div class="checkbox checked"></div>
+                                                <label>Item</label>
+                                            </div>
+                                            <div class="form-checkbox">
+                                                <div class="checkbox"></div>
+                                                <label>Assembled</label>
+                                            </div>
+                                            <div class="form-checkbox">
+                                                <div class="checkbox"></div>
+                                                <label>Hinge Side</label>
+                                            </div>
+                                            <div class="form-checkbox">
+                                                <div class="checkbox checked"></div>
+                                                <label>Price (Fixed)</label>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 8px; margin-top: 8px;">
+                                            <button class="btn btn-outline" style="padding: 6px 12px; min-height: 32px; font-size: 12px;">Select All</button>
+                                            <button class="btn btn-outline" style="padding: 6px 12px; min-height: 32px; font-size: 12px;">Clear</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="nested-modal-indicator">
+                                        🔗 NESTED MODAL: Preview Modal (6xl) - Opens when clicking Preview button
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Preview 👁️</button>
+                                    <button class="btn btn-outline">Print 🖨️</button>
+                                    <button class="btn btn-primary">Download PDF 📥</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile View (<768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 375px; height: 667px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Print Proposal</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Visibility</label>
+                                        <div class="form-switch">
+                                            <div class="switch active">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                            <label>Show Proposal Items</label>
+                                        </div>
+                                        <div class="form-switch">
+                                            <div class="switch active">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                            <label>Show Price Summary</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Columns</label>
+                                        <div class="checkbox-grid mobile">
+                                            <div class="form-checkbox">
+                                                <div class="checkbox checked"></div>
+                                                <label>Qty (Fixed)</label>
+                                            </div>
+                                            <div class="form-checkbox">
+                                                <div class="checkbox checked"></div>
+                                                <label>Item</label>
+                                            </div>
+                                            <div class="form-checkbox">
+                                                <div class="checkbox checked"></div>
+                                                <label>Price (Fixed)</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Download PDF</button>
+                                    <button class="btn btn-outline mobile">Preview</button>
+                                    <button class="btn btn-outline mobile">Print</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 3: Proposal Acceptance Modal -->
+        <div class="modal-section">
+            <div class="modal-title">3. Proposal Acceptance Modal</div>
+            <div class="modal-meta">
+                <span class="size-badge lg">md/lg</span> | scrollBehavior="inside" | closeOnOverlayClick={!isSubmitting} |
+                File: ProposalAcceptanceModal.jsx
+            </div>
+
+            <div class="views-container">
+                <!-- Desktop View -->
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop View (≥768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay">
+                            <div class="modal-desktop" style="max-width: 800px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Accept Proposal</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-checkbox">
+                                        <div class="checkbox checked"></div>
+                                        <label>Use external signer</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">External Signer Name</label>
+                                        <input type="text" class="form-input" placeholder="Optional" value="Jane Smith">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">External Signer Email</label>
+                                        <input type="email" class="form-input" placeholder="email@example.com" value="jane.smith@company.com">
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-ghost">Cancel</button>
+                                    <button class="btn btn-primary">Confirm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile View (<768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 375px; height: 667px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Accept Proposal</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-checkbox">
+                                        <div class="checkbox checked"></div>
+                                        <label>Use external signer</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">External Signer Name</label>
+                                        <input type="text" class="form-input" placeholder="Optional">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">External Signer Email</label>
+                                        <input type="email" class="form-input" placeholder="email@example.com">
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Confirm</button>
+                                    <button class="btn btn-ghost mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 4: Email Contract Modal (Stub) -->
+        <div class="modal-section">
+            <div class="modal-title">4. Email Contract Modal (Placeholder)</div>
+            <div class="modal-meta">
+                <span class="size-badge lg">lg</span> | isCentered | STUB/PLACEHOLDER | File: EmailContractModal.jsx
+            </div>
+
+            <div class="views-container">
+                <!-- Desktop View -->
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop View (≥768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay">
+                            <div class="modal-desktop" style="max-width: 800px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Email Contract</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="alert alert-warning">
+                                        <span>⚠️</span>
+                                        <div>No contracts available for selection. Please go to contract settings to add one.</div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile View (<768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 375px; height: 667px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Email Contract</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="alert alert-warning">
+                                        <span>⚠️</span>
+                                        <div>No contracts available. Please go to settings to add one.</div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-outline mobile">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 5: Print Payment Receipt Modal -->
+        <div class="modal-section">
+            <div class="modal-title">5. Print Payment Receipt Modal</div>
+            <div class="modal-meta">
+                <span class="size-badge lg">lg desktop</span> <span class="size-badge">full mobile</span> |
+                isCentered | File: PrintPaymentReceiptModal.jsx
+            </div>
+
+            <div class="views-container">
+                <!-- Desktop View -->
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop View (≥768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay">
+                            <div class="modal-desktop" style="max-width: 800px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Payment Receipt</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="page-header">
+                                        <div class="page-header-title">Preview receipt details</div>
+                                        <div class="page-header-subtitle">Download a branded PDF receipt for this payment.</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-row">
+                                            <span class="info-label">Payment Amount</span>
+                                            <span class="info-value">$2,450.00</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Order</span>
+                                            <span class="info-value">#ORD-2024-1234</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Status</span>
+                                            <span class="info-value">Completed</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Payment Method</span>
+                                            <span class="info-value">Credit Card (****4242)</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Paid Date</span>
+                                            <span class="info-value">January 15, 2025</span>
+                                        </div>
+                                    </div>
+
+                                    <p class="helper-text">This receipt includes payment details, order information, and company branding.</p>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Cancel</button>
+                                    <button class="btn btn-primary">Download Receipt</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile View (<768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 375px; height: 667px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Payment Receipt</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="page-header">
+                                        <div class="page-header-title">Preview receipt</div>
+                                        <div class="page-header-subtitle">Download branded PDF receipt</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-row">
+                                            <span class="info-label">Amount</span>
+                                            <span class="info-value">$2,450.00</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Order</span>
+                                            <span class="info-value">#ORD-1234</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Status</span>
+                                            <span class="info-value">Completed</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">Date</span>
+                                            <span class="info-value">Jan 15, 2025</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Download Receipt</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 6 & 7: View Type Specifications Modal -->
+        <div class="modal-section">
+            <div class="modal-title">6-7. View Type Specifications Modal</div>
+            <div class="modal-meta">
+                <span class="size-badge">3xl desktop</span> <span class="size-badge">full mobile</span> |
+                isCentered | Files: CatalogTable.js & CatalogTableEdit.js (identical)
+            </div>
+
+            <div class="views-container">
+                <!-- Desktop View -->
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop View (≥768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay">
+                            <div class="modal-desktop" style="max-width: 1100px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Type Specifications</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="flex-row" style="align-items: flex-start;">
+                                        <div style="flex: 0 0 40%;">
+                                            <img src="data:image/svg+xml,%3Csvg width='300' height='250' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='250' fill='%23e2e8f0'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='16' fill='%23718096' text-anchor='middle' dominant-baseline='middle'%3ECabinet Image%3C/text%3E%3C/svg%3E"
+                                                 class="image-preview" alt="Type image">
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Base Cabinet - Single Door</h3>
+                                            <p style="font-size: 14px; color: #718096; margin-bottom: 16px;">
+                                                <strong>Short Name:</strong> BC-SD
+                                            </p>
+                                            <div style="background: #f7fafc; padding: 16px; border-radius: 8px;">
+                                                <p style="font-size: 14px; line-height: 1.6; color: #4a5568;">
+                                                    A standard base cabinet with a single door opening. Includes adjustable shelf, soft-close hinges,
+                                                    and reinforced bottom panel. Perfect for kitchen or bathroom installations where space is limited.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile View (<768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 375px; height: 667px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Type Specifications</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="flex-col">
+                                        <img src="data:image/svg+xml,%3Csvg width='335' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='335' height='200' fill='%23e2e8f0'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='16' fill='%23718096' text-anchor='middle' dominant-baseline='middle'%3ECabinet Image%3C/text%3E%3C/svg%3E"
+                                             style="width: 100%; border-radius: 8px;" alt="Type image">
+
+                                        <h3 style="font-size: 18px; font-weight: 700;">Base Cabinet - Single Door</h3>
+                                        <p style="font-size: 14px; color: #718096;">
+                                            <strong>Short Name:</strong> BC-SD
+                                        </p>
+                                        <div style="background: #f7fafc; padding: 12px; border-radius: 8px;">
+                                            <p style="font-size: 14px; line-height: 1.5; color: #4a5568;">
+                                                Standard base cabinet with single door. Includes adjustable shelf and soft-close hinges.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-outline mobile">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #000; color: white; border-radius: 8px; text-align: center;">
+            <p style="font-size: 14px; margin-bottom: 8px;">✅ Proposal/Contract Modals Complete (7 of 40)</p>
+            <p style="font-size: 12px; opacity: 0.8;">Next: Modification Modals (3 modals) → modals-preview-2-modifications.html</p>
+        </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle" onclick="toggleDarkMode()">
+        <span id="modeText">🌙 Dark Mode</span>
+        <div class="toggle-switch">
+            <div class="toggle-thumb"></div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('modeText').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        // Load saved preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('modeText').textContent = '☀️ Light Mode';
+        }
+    </script>
+</body>
+</html>

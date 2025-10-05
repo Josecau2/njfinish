@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalog Management Modals Preview (14-29 of 40)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .modal-section {
+            background: #2d2d2d;
+        }
+
+        body.dark-mode .modal-desktop,
+        body.dark-mode .modal-mobile {
+            background: #2d2d2d;
+        }
+
+        body.dark-mode .modal-title {
+            color: #fff;
+        }
+
+        body.dark-mode .modal-meta {
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .device-frame {
+            background: #1a1a1a;
+        }
+
+        body.dark-mode .form-input,
+        body.dark-mode .form-select,
+        body.dark-mode .form-textarea,
+        body.dark-mode .number-input {
+            background: #3d3d3d;
+            border-color: #4a4a4a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .form-label {
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .info-box {
+            background: #2d2d2d;
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .info-label,
+        body.dark-mode .info-value {
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .view-wrapper {
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .modal-footer {
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .warning-box {
+            background: #3d3d3d;
+            border-color: #fbbf24;
+        }
+
+        body.dark-mode .category-card,
+        body.dark-mode .template-card {
+            background: #3d3d3d;
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .item-row,
+        body.dark-mode .checkbox-list {
+            background: #3d3d3d;
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .file-upload,
+        body.dark-mode .file-upload-area {
+            border-color: #4a4a4a;
+            color: #a0a0a0;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dark-mode-toggle:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: #2d2d2d;
+            color: #e5e5e5;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: #cbd5e0;
+            border-radius: 13px;
+            transition: background 0.3s;
+        }
+
+        body.dark-mode .toggle-switch {
+            background: #2563eb;
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        body.dark-mode .toggle-thumb {
+            transform: translateX(22px);
+        }
+
+        .preview-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .modal-section {
+            margin-bottom: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 6px;
+        }
+
+        .modal-meta {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .views-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .view-wrapper {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .view-label {
+            background: #000;
+            color: white;
+            padding: 8px 12px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .device-frame {
+            background: #f5f5f5;
+            padding: 16px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay {
+            position: relative;
+            width: 100%;
+        }
+
+        .modal-desktop {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .modal-mobile {
+            background: white;
+            width: 100%;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: #000000;
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title-text {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-footer.desktop {
+            justify-content: flex-end;
+        }
+
+        .modal-footer.mobile {
+            flex-direction: column-reverse;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 6px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            min-height: 38px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #cbd5e0;
+            color: #4a5568;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn.mobile {
+            width: 100%;
+        }
+
+        .size-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .md { background: #dcfce7; color: #15803d; }
+        .lg { background: #fce7f3; color: #9f1239; }
+
+        .file-upload-area {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            color: #718096;
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #2563eb;
+            width: 65%;
+            transition: width 0.3s;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            color: #92400e;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .info-box {
+            background: #e0f2fe;
+            border: 1px solid #0ea5e9;
+            color: #075985;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .compact-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 6px;
+        }
+
+        .scope-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .scope-pill {
+            padding: 4px 10px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .scope-pill.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .checkbox-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px;
+        }
+
+        .checkbox-item {
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #cbd5e0;
+            border-radius: 4px;
+        }
+
+        .checkbox.checked {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 150px;
+            border-radius: 8px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 style="font-size: 28px; font-weight: 800; margin-bottom: 10px; color: #000;">Catalog Management Modals</h1>
+        <p style="font-size: 14px; color: #666; margin-bottom: 30px;">Modals 14-29 of 40 (16 modals all from CatalogMappingTab.jsx)</p>
+
+        <!-- MODAL 14: Upload Catalog File -->
+        <div class="modal-section">
+            <div class="modal-title">14. Upload Catalog File Modal</div>
+            <div class="modal-meta"><span class="size-badge md">md</span> | Lines ~3219-3245 | File: CatalogMappingTab.jsx</div>
+
+            <div class="views-container">
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Upload Catalog</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="file-upload-area">
+                                    📁 Choose file or drag here<br>
+                                    <small>Accepts .csv, .xlsx, .xls</small>
+                                </div>
+                                <div style="margin-top: 12px; font-size: 13px; color: #4a5568;">
+                                    Selected: <strong>catalog_2025.xlsx</strong>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <div style="margin-top: 8px; font-size: 12px; color: #718096; text-align: center;">
+                                    Uploading... 65%
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-primary">Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 320px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Upload</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="file-upload-area">
+                                        📁 Choose file<br>
+                                        <small>.csv, .xlsx, .xls</small>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill"></div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Upload</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 15: Assign Global Mods -->
+        <div class="modal-section">
+            <div class="modal-title">15. Assign Global Mods Modal</div>
+            <div class="modal-meta"><span class="size-badge md">md/lg</span> | Lines ~3246-3584 | Supports bulk assignment</div>
+
+            <div class="views-container">
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop" style="max-width: 800px;">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Assign Modifications</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Select Modification</label>
+                                    <select class="form-select">
+                                        <option>Choose modification...</option>
+                                        <option selected>Soft-Close Hinges - Premium</option>
+                                        <option>Crown Molding - Oak</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Assignment Scope</label>
+                                    <div class="scope-pills">
+                                        <div class="scope-pill">All Items</div>
+                                        <div class="scope-pill active">By Type</div>
+                                        <div class="scope-pill">By Style</div>
+                                        <div class="scope-pill">Single Item</div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Override Price (Optional)</label>
+                                    <input type="number" class="form-input" placeholder="Leave blank for default" value="22.50">
+                                </div>
+
+                                <div class="info-box">
+                                    Will assign to 15 items of type "Base Cabinet"
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-primary">Assign</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 320px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Assign Mods</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Modification</label>
+                                        <select class="form-select">
+                                            <option selected>Soft-Close Hinges</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Scope</label>
+                                        <div class="scope-pills">
+                                            <div class="scope-pill">All</div>
+                                            <div class="scope-pill active">Type</div>
+                                            <div class="scope-pill">Style</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Override Price</label>
+                                        <input type="number" class="form-input" value="22.50">
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Assign</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 16: Manual Entry -->
+        <div class="modal-section">
+            <div class="modal-title">16. Manual Entry Modal</div>
+            <div class="modal-meta"><span class="size-badge md">md</span> | Lines ~3585-3653 | Create single item</div>
+
+            <div class="views-container">
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Add Catalog Item</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Item Code *</label>
+                                    <input type="text" class="form-input" value="BC-2436">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Description *</label>
+                                    <input type="text" class="form-input" value="Base Cabinet 24x36">
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Type *</label>
+                                        <select class="form-select">
+                                            <option selected>Base</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Style *</label>
+                                        <select class="form-select">
+                                            <option selected>Shaker</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Price *</label>
+                                    <input type="number" class="form-input" value="485.00">
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-primary">Add Item</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 320px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Add Item</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Code *</label>
+                                        <input type="text" class="form-input" value="BC-2436">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Description *</label>
+                                        <input type="text" class="form-input" value="Base 24x36">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Type *</label>
+                                        <select class="form-select">
+                                            <option selected>Base</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Price *</label>
+                                        <input type="number" class="form-input" value="485">
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Add</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 17: Edit Item - Same structure as Manual Entry -->
+        <div class="modal-section">
+            <div class="modal-title">17. Edit Item Modal</div>
+            <div class="modal-meta"><span class="size-badge md">md</span> | Same structure as Manual Entry (#16)</div>
+            <div style="padding: 16px; background: #f7fafc; border-radius: 6px; text-align: center;">
+                ↑ Same UI as Manual Entry Modal (#16) but with "Save Changes" instead of "Add Item"
+            </div>
+        </div>
+
+        <!-- MODAL 18-19: Create & View Style -->
+        <div class="modal-section">
+            <div class="modal-title">18-19. Create/View Style Modals</div>
+            <div class="modal-meta"><span class="size-badge md">md (Create)</span> <span class="size-badge lg">lg (View)</span> | Image upload & display</div>
+
+            <div class="views-container">
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Create Style</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Create Style</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Style Name *</label>
+                                    <input type="text" class="form-input" value="Contemporary Oak">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Style Image</label>
+                                    <div class="file-upload-area">
+                                        📷 Upload style image
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-primary">Create</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ View Style Details</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Style Details</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">Contemporary Oak</h3>
+                                <div class="image-preview">
+                                    [Style Image Preview]
+                                </div>
+                                <div style="margin-top: 12px; font-size: 13px; color: #718096;">
+                                    <strong>Items using this style:</strong> 47
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 20: Hinges Config -->
+        <div class="modal-section">
+            <div class="modal-title">20. Hinges Configuration Modal</div>
+            <div class="modal-meta"><span class="size-badge md">md</span> | Set hinge options (Left/Right/None)</div>
+
+            <div class="views-container">
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Hinge Configuration</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Hinge Side Options</label>
+                                    <div class="checkbox-list">
+                                        <div class="checkbox-item">
+                                            <div class="checkbox checked"></div>
+                                            <span>Left</span>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="checkbox checked"></div>
+                                            <span>Right</span>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="checkbox"></div>
+                                            <span>None (No hinge)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 320px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Hinges</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <label class="form-label">Options</label>
+                                    <div class="checkbox-list">
+                                        <div class="checkbox-item">
+                                            <div class="checkbox checked"></div>
+                                            <span>Left</span>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="checkbox checked"></div>
+                                            <span>Right</span>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <div class="checkbox"></div>
+                                            <span>None</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Save</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 21-23: Delete Confirmations -->
+        <div class="modal-section">
+            <div class="modal-title">21-23. Delete Confirmations (Style, Item, Bulk)</div>
+            <div class="modal-meta"><span class="size-badge md">md</span> | Confirmation dialogs</div>
+
+            <div class="views-container">
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Delete Single Item</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Confirm Delete</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="warning-box">
+                                    ⚠️ Are you sure you want to delete this item?
+                                </div>
+                                <div style="margin-top: 16px; padding: 12px; background: #f7fafc; border-radius: 6px;">
+                                    <strong>BC-2436</strong> - Base Cabinet 24x36<br>
+                                    <small style="color: #718096;">This action cannot be undone</small>
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-danger">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Bulk Delete (Multiple)</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Bulk Delete</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="warning-box">
+                                    ⚠️ You are about to delete <strong>12 items</strong>
+                                </div>
+                                <div style="margin-top: 16px;">
+                                    <input type="text" class="form-input" placeholder="Type 'DELETE' to confirm">
+                                </div>
+                                <div style="margin-top: 12px; font-size: 12px; color: #718096;">
+                                    This action is permanent and cannot be undone
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-danger">Delete 12 Items</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 24: Rollback -->
+        <div class="modal-section">
+            <div class="modal-title">24. Rollback Catalog Modal</div>
+            <div class="modal-meta"><span class="size-badge md">md</span> | Revert to previous version</div>
+
+            <div class="views-container">
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Rollback Catalog</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Select Version to Restore</label>
+                                    <select class="form-select">
+                                        <option selected>Jan 15, 2025 - 3:45 PM (485 items)</option>
+                                        <option>Jan 14, 2025 - 10:22 AM (480 items)</option>
+                                        <option>Jan 10, 2025 - 2:15 PM (475 items)</option>
+                                    </select>
+                                </div>
+                                <div class="warning-box">
+                                    ⚠️ This will replace current catalog with selected version
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-primary">Rollback</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 320px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Rollback</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Version</label>
+                                        <select class="form-select">
+                                            <option selected>Jan 15 - 3:45 PM</option>
+                                            <option>Jan 14 - 10:22 AM</option>
+                                        </select>
+                                    </div>
+                                    <div class="warning-box">
+                                        Will replace current catalog
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Rollback</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 25: Bulk Edit -->
+        <div class="modal-section">
+            <div class="modal-title">25. Bulk Edit Modal</div>
+            <div class="modal-meta"><span class="size-badge lg">lg</span> | Edit multiple items at once</div>
+
+            <div class="views-container">
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop" style="max-width: 800px;">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Bulk Edit (8 items)</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Field to Update</label>
+                                    <select class="form-select">
+                                        <option selected>Price</option>
+                                        <option>Type</option>
+                                        <option>Style</option>
+                                        <option>Description</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">New Value</label>
+                                    <input type="text" class="form-input" value="525.00">
+                                </div>
+                                <div class="info-box">
+                                    This will update the price for 8 selected items
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-primary">Update Items</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 320px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Bulk Edit</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Field</label>
+                                        <select class="form-select">
+                                            <option selected>Price</option>
+                                            <option>Type</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">New Value</label>
+                                        <input type="text" class="form-input" value="525">
+                                    </div>
+                                    <div class="info-box">
+                                        Updates 8 items
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Update</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 26-29: Quick Summary -->
+        <div class="modal-section">
+            <div class="modal-title">26-29. Additional Catalog Modals (Summary)</div>
+            <div class="modal-meta">All <span class="size-badge md">md</span> size | Simple operations</div>
+
+            <div class="compact-grid">
+                <div class="item-row">
+                    <div>
+                        <strong>26. Edit Style Name</strong><br>
+                        <small>Rename style - Single input field</small>
+                    </div>
+                    <span class="size-badge md">md</span>
+                </div>
+                <div class="item-row">
+                    <div>
+                        <strong>27. Delete Category</strong><br>
+                        <small>Confirm deletion - Warning + confirm button</small>
+                    </div>
+                    <span class="size-badge md">md</span>
+                </div>
+                <div class="item-row">
+                    <div>
+                        <strong>28. Move Modification</strong><br>
+                        <small>Move mod to category - Dropdown selector</small>
+                    </div>
+                    <span class="size-badge md">md</span>
+                </div>
+                <div class="item-row">
+                    <div>
+                        <strong>29. Modification Assignment</strong><br>
+                        <small>Assign mods to item - Similar to #15</small>
+                    </div>
+                    <span class="size-badge md">md</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 16px; padding: 12px; background: #f7fafc; border-radius: 6px; text-align: center; font-size: 13px;">
+                These 4 modals follow the same desktop/mobile pattern as shown above:<br>
+                Desktop: Centered modal with horizontal footer | Mobile: Full screen with vertical footer
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; padding: 16px; background: #000; color: white; border-radius: 8px; text-align: center;">
+            <p style="font-size: 14px; margin-bottom: 6px;">✅ Catalog Management Modals Complete (29 of 40)</p>
+            <p style="font-size: 11px; opacity: 0.8;">Next: Style Pictures, Global Mods, Payments (6 modals) → modals-preview-5-misc.html</p>
+        </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle" onclick="toggleDarkMode()">
+        <span id="modeText">🌙 Dark Mode</span>
+        <div class="toggle-switch">
+            <div class="toggle-thumb"></div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('modeText').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        // Load saved preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('modeText').textContent = '☀️ Light Mode';
+        }
+    </script>
+</body>
+</html>

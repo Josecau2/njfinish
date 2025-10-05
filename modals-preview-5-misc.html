@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Pictures, Global Mods, Payments Modals (30-35 of 40)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .modal-section {
+            background: #2d2d2d;
+        }
+
+        body.dark-mode .modal-desktop,
+        body.dark-mode .modal-mobile {
+            background: #2d2d2d;
+        }
+
+        body.dark-mode .modal-title {
+            color: #fff;
+        }
+
+        body.dark-mode .modal-meta {
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .device-frame {
+            background: #1a1a1a;
+        }
+
+        body.dark-mode .form-input,
+        body.dark-mode .form-select,
+        body.dark-mode .form-textarea,
+        body.dark-mode .number-input {
+            background: #3d3d3d;
+            border-color: #4a4a4a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .form-label {
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .info-box {
+            background: #2d2d2d;
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .info-label,
+        body.dark-mode .info-value {
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .view-wrapper {
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .modal-footer {
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .warning-box {
+            background: #3d3d3d;
+            border-color: #fbbf24;
+        }
+
+        body.dark-mode .category-card,
+        body.dark-mode .template-card {
+            background: #3d3d3d;
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .item-row,
+        body.dark-mode .checkbox-list {
+            background: #3d3d3d;
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .file-upload,
+        body.dark-mode .file-upload-area {
+            border-color: #4a4a4a;
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .step-indicator {
+            background: #3d3d3d;
+            border-color: #4a4a4a;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dark-mode-toggle:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: #2d2d2d;
+            color: #e5e5e5;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: #cbd5e0;
+            border-radius: 13px;
+            transition: background 0.3s;
+        }
+
+        body.dark-mode .toggle-switch {
+            background: #2563eb;
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        body.dark-mode .toggle-thumb {
+            transform: translateX(22px);
+        }
+
+        .preview-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .modal-section {
+            margin-bottom: 50px;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .modal-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 18px;
+        }
+
+        .views-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .view-wrapper {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .view-label {
+            background: #000;
+            color: white;
+            padding: 10px 14px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .device-frame {
+            background: #f5f5f5;
+            padding: 18px;
+            min-height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay {
+            position: relative;
+            width: 100%;
+        }
+
+        .modal-desktop {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .modal-mobile {
+            background: white;
+            width: 100%;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: #000000;
+            color: white;
+            padding: 18px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title-text {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .modal-body {
+            padding: 22px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 18px 22px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-footer.desktop {
+            justify-content: flex-end;
+        }
+
+        .modal-footer.mobile {
+            flex-direction: column-reverse;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 7px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 9px 11px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 9px 11px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .btn {
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            min-height: 40px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #cbd5e0;
+            color: #4a5568;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn.mobile {
+            width: 100%;
+        }
+
+        .size-badge {
+            display: inline-block;
+            padding: 3px 7px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .md { background: #dcfce7; color: #15803d; }
+        .lg { background: #fce7f3; color: #9f1239; }
+
+        .file-upload {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            color: #718096;
+            cursor: pointer;
+        }
+
+        .file-upload:hover {
+            border-color: #2563eb;
+            background: #f7fafc;
+        }
+
+        .image-preview {
+            width: 100%;
+            max-width: 300px;
+            height: 200px;
+            border-radius: 8px;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 12px auto;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            color: #92400e;
+            padding: 14px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding: 0 16px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #718096;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto 8px;
+        }
+
+        .step.active .step-number {
+            background: #2563eb;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .step.active .step-label {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .step-connector {
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: -1;
+        }
+
+        .step.completed .step-connector {
+            background: #10b981;
+        }
+
+        .number-input {
+            width: 100%;
+            padding: 9px 11px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .slider-container {
+            margin: 16px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .slider-track {
+            height: 100%;
+            background: #2563eb;
+            border-radius: 4px;
+            width: 40%;
+        }
+
+        .slider-thumb {
+            position: absolute;
+            top: 50%;
+            left: 40%;
+            transform: translate(-50%, -50%);
+            width: 18px;
+            height: 18px;
+            background: white;
+            border: 3px solid #2563eb;
+            border-radius: 50%;
+        }
+
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #cbd5e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .switch.active {
+            background: #2563eb;
+        }
+
+        .switch-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .switch.active .switch-thumb {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 style="font-size: 30px; font-weight: 800; margin-bottom: 10px; color: #000;">Style Pictures, Global Mods, Payments Modals</h1>
+        <p style="font-size: 15px; color: #666; margin-bottom: 35px;">Modals 30-35 of 40 total button-triggered modals</p>
+
+        <!-- MODAL 30: Create Style Picture -->
+        <div class="modal-section">
+            <div class="modal-title">30. Create Style Picture Modal</div>
+            <div class="modal-meta">
+                <span class="size-badge md">md</span> | Lines ~378-435 | File: StylePicturesTab.jsx
+            </div>
+
+            <div class="views-container">
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop View (≥768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Create Style Picture</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Style Name *</label>
+                                    <input type="text" class="form-input" placeholder="Enter style name" value="Shaker White">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Upload Image *</label>
+                                    <div class="file-upload">
+                                        📷 Click to upload or drag image here<br>
+                                        <small style="font-size: 12px;">PNG, JPG, WEBP - Max 5MB</small>
+                                    </div>
+                                </div>
+
+                                <div class="image-preview">
+                                    [Image Preview]
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-primary">Upload Style</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile View (<768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 350px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Create Style</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Style Name *</label>
+                                        <input type="text" class="form-input" value="Shaker White">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Image *</label>
+                                        <div class="file-upload">
+                                            📷 Upload image<br>
+                                            <small>Max 5MB</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="image-preview" style="max-width: 100%; height: 150px;">
+                                        [Preview]
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Upload</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 31: Delete Style Picture -->
+        <div class="modal-section">
+            <div class="modal-title">31. Delete Style Picture Modal</div>
+            <div class="modal-meta">
+                <span class="size-badge md">md</span> | Lines ~436-470 | Confirmation dialog
+            </div>
+
+            <div class="views-container">
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop View (≥768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Delete Style</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="warning-box">
+                                    ⚠️ Are you sure you want to delete this style?
+                                </div>
+
+                                <div style="padding: 16px; background: #f7fafc; border-radius: 8px; text-align: center;">
+                                    <div class="image-preview" style="margin: 0 auto 12px;">
+                                        [Style Image]
+                                    </div>
+                                    <strong style="font-size: 16px;">Shaker White</strong><br>
+                                    <small style="color: #718096;">This action cannot be undone</small>
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-danger">Delete Style</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile View (<768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 350px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Delete Style</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="warning-box">
+                                        ⚠️ Delete this style?
+                                    </div>
+
+                                    <div style="text-align: center;">
+                                        <div class="image-preview" style="height: 120px; margin: 0 auto 10px;">
+                                            [Image]
+                                        </div>
+                                        <strong>Shaker White</strong><br>
+                                        <small style="color: #718096;">Cannot undo</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-danger mobile">Delete</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 32: Create Global Modification (Multi-Step) -->
+        <div class="modal-section">
+            <div class="modal-title">32. Create Global Modification Modal (Multi-Step Wizard - 3 Steps)</div>
+            <div class="modal-meta">
+                <span class="size-badge md">md/lg</span> | Lines ~1417-1600 | File: GlobalModsPage.jsx | COMPLEX
+            </div>
+
+            <!-- STEP 1: Category Selection -->
+            <div style="margin-bottom: 30px;">
+                <h4 style="font-weight: 700; margin-bottom: 16px; color: #2563eb;">STEP 1: Select/Create Category</h4>
+                <div class="views-container">
+                    <div class="view-wrapper">
+                        <div class="view-label">🖥️ Desktop - Step 1</div>
+                        <div class="device-frame">
+                            <div class="modal-desktop" style="max-width: 900px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Create Global Modification</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="step-indicator">
+                                        <div class="step active">
+                                            <div class="step-number">1</div>
+                                            <div class="step-label">Category</div>
+                                            <div class="step-connector"></div>
+                                        </div>
+                                        <div class="step">
+                                            <div class="step-number">2</div>
+                                            <div class="step-label">Details</div>
+                                            <div class="step-connector"></div>
+                                        </div>
+                                        <div class="step">
+                                            <div class="step-number">3</div>
+                                            <div class="step-label">Fields</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Select Category</label>
+                                        <select class="form-select">
+                                            <option>Choose existing category...</option>
+                                            <option>Hardware & Accessories</option>
+                                            <option>Crown Molding</option>
+                                            <option selected>+ Create New Category</option>
+                                        </select>
+                                    </div>
+
+                                    <div style="padding: 16px; background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; margin-top: 16px;">
+                                        <div class="form-group">
+                                            <label class="form-label">New Category Name *</label>
+                                            <input type="text" class="form-input" value="Custom Finishes">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Order Index</label>
+                                            <input type="number" class="form-input" value="5">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Cancel</button>
+                                    <button class="btn btn-primary">Next →</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="view-wrapper">
+                        <div class="view-label">📱 Mobile - Step 1</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay" style="width: 350px;">
+                                <div class="modal-mobile">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Create Modification (1/3)</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label class="form-label">Category</label>
+                                            <select class="form-select">
+                                                <option selected>+ New Category</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Name *</label>
+                                            <input type="text" class="form-input" value="Custom Finishes">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Order</label>
+                                            <input type="number" class="form-input" value="5">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer mobile">
+                                        <button class="btn btn-primary mobile">Next →</button>
+                                        <button class="btn btn-outline mobile">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Template Details -->
+            <div style="margin-bottom: 30px;">
+                <h4 style="font-weight: 700; margin-bottom: 16px; color: #2563eb;">STEP 2: Template Details</h4>
+                <div class="views-container">
+                    <div class="view-wrapper">
+                        <div class="view-label">🖥️ Desktop - Step 2</div>
+                        <div class="device-frame">
+                            <div class="modal-desktop" style="max-width: 900px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Create Global Modification</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="step-indicator">
+                                        <div class="step completed">
+                                            <div class="step-number">✓</div>
+                                            <div class="step-label">Category</div>
+                                            <div class="step-connector"></div>
+                                        </div>
+                                        <div class="step active">
+                                            <div class="step-number">2</div>
+                                            <div class="step-label">Details</div>
+                                            <div class="step-connector"></div>
+                                        </div>
+                                        <div class="step">
+                                            <div class="step-number">3</div>
+                                            <div class="step-label">Fields</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Template Name *</label>
+                                        <input type="text" class="form-input" value="Antique Glaze Finish">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-textarea">Premium hand-applied antique glaze with subtle distressing for a timeless appearance.</textarea>
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                        <div class="form-group">
+                                            <label class="form-label">Default Price</label>
+                                            <input type="number" class="form-input" value="125.00" step="0.01">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Lead Time (days)</label>
+                                            <input type="number" class="form-input" value="8">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Image (Optional)</label>
+                                        <div class="file-upload">
+                                            📷 Upload product image
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">← Back</button>
+                                    <button class="btn btn-primary">Next →</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="view-wrapper">
+                        <div class="view-label">📱 Mobile - Step 2</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay" style="width: 350px;">
+                                <div class="modal-mobile">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Details (2/3)</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label class="form-label">Name *</label>
+                                            <input type="text" class="form-input" value="Antique Glaze">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Description</label>
+                                            <textarea class="form-textarea" rows="3">Premium antique glaze finish</textarea>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Price</label>
+                                            <input type="number" class="form-input" value="125">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Lead Time</label>
+                                            <input type="number" class="form-input" value="8">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer mobile">
+                                        <button class="btn btn-primary mobile">Next →</button>
+                                        <button class="btn btn-outline mobile">← Back</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: Configure Fields -->
+            <div>
+                <h4 style="font-weight: 700; margin-bottom: 16px; color: #2563eb;">STEP 3: Configure Fields (Dynamic)</h4>
+                <div class="views-container">
+                    <div class="view-wrapper">
+                        <div class="view-label">🖥️ Desktop - Step 3</div>
+                        <div class="device-frame">
+                            <div class="modal-desktop" style="max-width: 900px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Create Global Modification</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="step-indicator">
+                                        <div class="step completed">
+                                            <div class="step-number">✓</div>
+                                            <div class="step-label">Category</div>
+                                            <div class="step-connector"></div>
+                                        </div>
+                                        <div class="step completed">
+                                            <div class="step-number">✓</div>
+                                            <div class="step-label">Details</div>
+                                            <div class="step-connector"></div>
+                                        </div>
+                                        <div class="step active">
+                                            <div class="step-number">3</div>
+                                            <div class="step-label">Fields</div>
+                                        </div>
+                                    </div>
+
+                                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                            <strong>Quantity Range Slider</strong>
+                                            <div class="switch active">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                        </div>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                                            <div>
+                                                <label style="font-size: 12px; color: #718096;">Min</label>
+                                                <input type="number" class="number-input" value="1" style="width: 100%;">
+                                            </div>
+                                            <div>
+                                                <label style="font-size: 12px; color: #718096;">Max</label>
+                                                <input type="number" class="number-input" value="50" style="width: 100%;">
+                                            </div>
+                                            <div>
+                                                <label style="font-size: 12px; color: #718096;">Step</label>
+                                                <input type="number" class="number-input" value="1" style="width: 100%;">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                            <strong>Side Selector</strong>
+                                            <div class="switch active">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 12px;">
+                                            <label style="display: flex; align-items: center; gap: 6px;">
+                                                <input type="checkbox" checked> Left
+                                            </label>
+                                            <label style="display: flex; align-items: center; gap: 6px;">
+                                                <input type="checkbox" checked> Right
+                                            </label>
+                                            <label style="display: flex; align-items: center; gap: 6px;">
+                                                <input type="checkbox"> Both
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                            <strong>File Upload</strong>
+                                            <div class="switch">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 12px; color: #718096;">Max Files</label>
+                                            <input type="number" class="number-input" value="5" style="width: 100px;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">← Back</button>
+                                    <button class="btn btn-primary">Create Modification</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="view-wrapper">
+                        <div class="view-label">📱 Mobile - Step 3</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay" style="width: 350px;">
+                                <div class="modal-mobile">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Fields (3/3)</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; margin-bottom: 12px;">
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                <strong style="font-size: 14px;">Quantity Range</strong>
+                                                <div class="switch active" style="transform: scale(0.8);">
+                                                    <div class="switch-thumb"></div>
+                                                </div>
+                                            </div>
+                                            <div style="font-size: 12px; color: #718096;">Min: 1, Max: 50</div>
+                                        </div>
+
+                                        <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; margin-bottom: 12px;">
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <strong style="font-size: 14px;">Side Selector</strong>
+                                                <div class="switch active" style="transform: scale(0.8);">
+                                                    <div class="switch-thumb"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px;">
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <strong style="font-size: 14px;">File Upload</strong>
+                                                <div class="switch" style="transform: scale(0.8);">
+                                                    <div class="switch-thumb"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer mobile">
+                                        <button class="btn btn-primary mobile">Create</button>
+                                        <button class="btn btn-outline mobile">← Back</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 33-35: Payments Modals (Summary) -->
+        <div class="modal-section">
+            <div class="modal-title">33-35. Payments Page Modals</div>
+            <div class="modal-meta">
+                <span class="size-badge md">All md</span> | Lines ~477-580 | File: PaymentsList.jsx
+            </div>
+
+            <div class="views-container">
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Create Payment Modal</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Create Payment</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Order *</label>
+                                    <select class="form-select">
+                                        <option selected>#ORD-2024-1234 - John Doe</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Amount *</label>
+                                    <input type="number" class="form-input" value="1250.00" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Payment Method *</label>
+                                    <select class="form-select">
+                                        <option selected>Credit Card</option>
+                                        <option>Cash</option>
+                                        <option>Check</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Status *</label>
+                                    <select class="form-select">
+                                        <option selected>Completed</option>
+                                        <option>Pending</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Notes (Optional)</label>
+                                    <textarea class="form-textarea" placeholder="Add payment notes..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-primary">Create Payment</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Gateway Configuration</div>
+                    <div class="device-frame">
+                        <div class="modal-desktop">
+                            <div class="modal-header">
+                                <div class="modal-title-text">Payment Gateway</div>
+                                <button class="modal-close">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Gateway Provider *</label>
+                                    <select class="form-select">
+                                        <option selected>Stripe</option>
+                                        <option>PayPal</option>
+                                        <option>Square</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">API Key *</label>
+                                    <input type="password" class="form-input" value="••••••••••••••••">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Secret Key *</label>
+                                    <input type="password" class="form-input" value="••••••••••••••••">
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px;">
+                                    <div class="switch active">
+                                        <div class="switch-thumb"></div>
+                                    </div>
+                                    <label style="font-weight: 600;">Test Mode Enabled</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer desktop">
+                                <button class="btn btn-outline">Cancel</button>
+                                <button class="btn btn-primary">Save Configuration</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <div class="views-container">
+                    <div class="view-wrapper">
+                        <div class="view-label">🖥️ Apply Payment Modal</div>
+                        <div class="device-frame">
+                            <div class="modal-desktop">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Apply Payment</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Select Payment *</label>
+                                        <select class="form-select">
+                                            <option selected>Payment #12345 - $1,250.00</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Apply to Order *</label>
+                                        <select class="form-select">
+                                            <option selected>#ORD-2024-1234</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Amount to Apply *</label>
+                                        <input type="number" class="form-input" value="1250.00" step="0.01">
+                                        <small style="font-size: 12px; color: #718096;">Max: $1,250.00</small>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Cancel</button>
+                                    <button class="btn btn-primary">Apply Payment</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="view-wrapper">
+                        <div class="view-label">📱 Mobile - All Payment Modals</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay" style="width: 350px;">
+                                <div style="text-align: center; color: #718096; padding: 20px;">
+                                    <div style="font-size: 14px; margin-bottom: 12px;">
+                                        All 3 payment modals follow the same mobile pattern:
+                                    </div>
+                                    <div style="background: #f7fafc; padding: 16px; border-radius: 8px;">
+                                        ✓ Full screen (100vw × 100vh)<br>
+                                        ✓ Vertical stacked footer<br>
+                                        ✓ Primary button on top<br>
+                                        ✓ Single column forms
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #000; color: white; border-radius: 8px; text-align: center;">
+            <p style="font-size: 14px; margin-bottom: 8px;">✅ Style Pictures, Global Mods, Payments Complete (35 of 40)</p>
+            <p style="font-size: 12px; opacity: 0.8;">Next: Other Action Modals (5 modals - FINAL) → modals-preview-6-other-actions.html</p>
+        </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle" onclick="toggleDarkMode()">
+        <span id="modeText">🌙 Dark Mode</span>
+        <div class="toggle-switch">
+            <div class="toggle-thumb"></div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('modeText').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        // Load saved preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('modeText').textContent = '☀️ Light Mode';
+        }
+    </script>
+</body>
+</html>

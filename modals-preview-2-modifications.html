@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modification Modals Preview (8-10 of 40)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .modal-section {
+            background: #2d2d2d;
+        }
+
+        body.dark-mode .modal-desktop,
+        body.dark-mode .modal-mobile {
+            background: #2d2d2d;
+        }
+
+        body.dark-mode .modal-title {
+            color: #fff;
+        }
+
+        body.dark-mode .modal-meta {
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .device-frame {
+            background: #1a1a1a;
+        }
+
+        body.dark-mode .form-input,
+        body.dark-mode .form-select,
+        body.dark-mode .form-textarea,
+        body.dark-mode .number-input {
+            background: #3d3d3d;
+            border-color: #4a4a4a;
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .form-label {
+            color: #e5e5e5;
+        }
+
+        body.dark-mode .view-wrapper {
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .modal-footer {
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .category-card,
+        body.dark-mode .template-card {
+            background: #3d3d3d;
+            border-color: #4a4a4a;
+        }
+
+        body.dark-mode .file-upload {
+            border-color: #4a4a4a;
+            color: #a0a0a0;
+        }
+
+        body.dark-mode .admin-note {
+            background: #3d3d3d;
+            border-color: #fbbf24;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dark-mode-toggle:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            background: #2d2d2d;
+            color: #e5e5e5;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: #cbd5e0;
+            border-radius: 13px;
+            transition: background 0.3s;
+        }
+
+        body.dark-mode .toggle-switch {
+            background: #2563eb;
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        body.dark-mode .toggle-thumb {
+            transform: translateX(22px);
+        }
+
+        .preview-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .modal-section {
+            margin-bottom: 60px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 8px;
+        }
+
+        .modal-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .views-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .view-wrapper {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .view-label {
+            background: #000;
+            color: white;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .device-frame {
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay {
+            position: relative;
+            width: 100%;
+        }
+
+        .modal-desktop {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .modal-mobile {
+            background: white;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: #000000;
+            color: white;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-footer.desktop {
+            justify-content: flex-end;
+        }
+
+        .modal-footer.mobile {
+            flex-direction: column-reverse;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radio.checked {
+            border-color: #2563eb;
+        }
+
+        .radio.checked::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: #2563eb;
+            border-radius: 50%;
+        }
+
+        .number-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .number-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .number-stepper {
+            background: #f7fafc;
+            border: 1px solid #cbd5e0;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .number-stepper:hover {
+            background: #e2e8f0;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #cbd5e0;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox.checked {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .checkbox.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #cbd5e0;
+            color: #4a5568;
+        }
+
+        .btn-outline:hover {
+            border-color: #a0aec0;
+            background: #f7fafc;
+        }
+
+        .btn.mobile {
+            width: 100%;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 4px;
+        }
+
+        .row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .row-3 .form-group {
+            margin-bottom: 0;
+        }
+
+        .size-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .lg { background: #fce7f3; color: #9f1239; }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .breadcrumb-link {
+            color: #2563eb;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .breadcrumb-link:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb-separator {
+            color: #cbd5e0;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card-grid.mobile {
+            grid-template-columns: 1fr;
+        }
+
+        .category-card {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+        }
+
+        .category-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .template-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-card:hover {
+            border-color: #2563eb;
+        }
+
+        .template-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2563eb;
+            margin: 8px 0;
+        }
+
+        .scope-badge {
+            display: inline-block;
+            background: #fbbf24;
+            color: #92400e;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            position: relative;
+            margin: 12px 0;
+        }
+
+        .slider-track {
+            height: 100%;
+            background: #2563eb;
+            border-radius: 4px;
+            width: 50%;
+        }
+
+        .slider-thumb {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 3px solid #2563eb;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            text-align: center;
+            font-weight: 600;
+            color: #2563eb;
+            margin-top: 8px;
+        }
+
+        .file-upload {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload:hover {
+            border-color: #2563eb;
+            background: #f7fafc;
+        }
+
+        .uploaded-file {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f7fafc;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .delete-file {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px 10px 40px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+        }
+
+        .admin-note {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            color: #92400e;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 12px; color: #000;">Modification Modals Preview</h1>
+        <p style="font-size: 16px; color: #666; margin-bottom: 40px;">Modals 8-10 of 40 total button-triggered modals</p>
+
+        <!-- MODAL 8 & 9: Add Modification Modal (Create & Edit - Identical) -->
+        <div class="modal-section">
+            <div class="modal-title">8-9. Add Modification Modal (Create & Edit - Identical)</div>
+            <div class="modal-meta">
+                <span class="size-badge lg">lg desktop</span> <span class="size-badge">full mobile</span> |
+                isCentered | Files: ModificationModal.jsx & ModificationModalEdit.jsx (duplicates)
+            </div>
+
+            <div class="views-container">
+                <!-- Desktop View -->
+                <div class="view-wrapper">
+                    <div class="view-label">🖥️ Desktop View (≥768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay">
+                            <div class="modal-desktop" style="max-width: 800px;">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Add Modification</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Modification Type</label>
+                                        <div class="radio-group">
+                                            <div class="radio-option">
+                                                <div class="radio checked"></div>
+                                                <span>Select existing modification</span>
+                                            </div>
+                                            <div class="radio-option">
+                                                <div class="radio"></div>
+                                                <span>Add custom modification</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Select Modification</label>
+                                        <select class="form-select">
+                                            <option>Select modification</option>
+                                            <option selected>Crown Molding - Premium Oak</option>
+                                            <option>Soft-Close Drawer Slides</option>
+                                            <option>Glass Door Insert</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Quantity</label>
+                                        <div class="number-input-group">
+                                            <button class="number-stepper">-</button>
+                                            <input type="number" class="number-input" value="2" min="1">
+                                            <button class="number-stepper">+</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Note (Optional)</label>
+                                        <input type="text" class="form-input" placeholder="If needed, provide custom instructions...">
+                                        <p class="helper-text">Add any special requirements or notes for this modification</p>
+                                    </div>
+                                </div>
+                                <div class="modal-footer desktop">
+                                    <button class="btn btn-outline">Cancel</button>
+                                    <button class="btn btn-primary">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile View -->
+                <div class="view-wrapper">
+                    <div class="view-label">📱 Mobile View (<768px)</div>
+                    <div class="device-frame">
+                        <div class="modal-overlay" style="width: 375px; height: 667px;">
+                            <div class="modal-mobile">
+                                <div class="modal-header">
+                                    <div class="modal-title-text">Add Modification</div>
+                                    <button class="modal-close">×</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="form-label">Type</label>
+                                        <div class="radio-group" style="flex-direction: column; gap: 12px;">
+                                            <div class="radio-option">
+                                                <div class="radio checked"></div>
+                                                <span>Existing modification</span>
+                                            </div>
+                                            <div class="radio-option">
+                                                <div class="radio"></div>
+                                                <span>Custom modification</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Select Modification</label>
+                                        <select class="form-select">
+                                            <option>Select...</option>
+                                            <option selected>Crown Molding</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Quantity</label>
+                                        <div class="number-input-group">
+                                            <button class="number-stepper">-</button>
+                                            <input type="number" class="number-input" value="2" min="1">
+                                            <button class="number-stepper">+</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Note</label>
+                                        <input type="text" class="form-input" placeholder="Optional notes...">
+                                    </div>
+                                </div>
+                                <div class="modal-footer mobile">
+                                    <button class="btn btn-primary mobile">Save</button>
+                                    <button class="btn btn-outline mobile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Show Custom Modification Variant -->
+            <div style="margin-top: 30px; padding: 20px; background: #f7fafc; border-radius: 8px;">
+                <h4 style="font-weight: 700; margin-bottom: 16px;">Custom Modification Variant (when "Add custom" selected):</h4>
+                <div class="views-container">
+                    <div class="view-wrapper">
+                        <div class="view-label">🖥️ Desktop - Custom Mod</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay">
+                                <div class="modal-desktop" style="max-width: 800px;">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Add Custom Modification</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label class="form-label">Modification Name *</label>
+                                            <input type="text" class="form-input" placeholder="Enter modification name" value="Custom Crown Molding">
+                                        </div>
+
+                                        <div class="row-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Qty</label>
+                                                <input type="number" class="form-input" value="1" min="1">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Price</label>
+                                                <input type="number" class="form-input" value="150.00" step="0.01" min="0">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Taxable</label>
+                                                <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                                                    <div class="checkbox checked"></div>
+                                                    <span style="font-size: 14px;">Yes</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="admin-note">
+                                            🔒 Only administrators can modify the taxable status
+                                        </div>
+
+                                        <div class="form-group" style="margin-top: 20px;">
+                                            <label class="form-label">Note (Optional)</label>
+                                            <input type="text" class="form-input" placeholder="If needed, provide custom instructions...">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer desktop">
+                                        <button class="btn btn-outline">Cancel</button>
+                                        <button class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="view-wrapper">
+                        <div class="view-label">📱 Mobile - Custom Mod</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay" style="width: 375px; height: 667px;">
+                                <div class="modal-mobile">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Add Custom Modification</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label class="form-label">Name *</label>
+                                            <input type="text" class="form-input" value="Custom Crown">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Qty</label>
+                                            <input type="number" class="form-input" value="1">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Price</label>
+                                            <input type="number" class="form-input" value="150.00">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Taxable</label>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <div class="checkbox checked"></div>
+                                                <span>Yes</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="admin-note">
+                                            🔒 Admin only
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer mobile">
+                                        <button class="btn btn-primary mobile">Save</button>
+                                        <button class="btn btn-outline mobile">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL 10: Browse Modifications Modal (COMPLEX - 3 View States) -->
+        <div class="modal-section">
+            <div class="modal-title">10. Browse Modifications Modal (Complex - 3 View States)</div>
+            <div class="modal-meta">
+                <span class="size-badge">6xl desktop (EXTRA LARGE)</span> <span class="size-badge">full mobile</span> |
+                scrollBehavior="inside" | 800+ lines | File: ModificationBrowserModal.jsx
+            </div>
+
+            <!-- VIEW STATE 1: Categories -->
+            <div style="margin-bottom: 30px;">
+                <h4 style="font-weight: 700; margin-bottom: 16px; color: #2563eb;">VIEW 1: Categories (Default)</h4>
+                <div class="views-container">
+                    <div class="view-wrapper">
+                        <div class="view-label">🖥️ Desktop - Categories</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay">
+                                <div class="modal-desktop" style="max-width: 1400px;">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Browse Modifications</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div style="margin-bottom: 24px;">
+                                            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">Select a Category</h3>
+                                            <p style="font-size: 14px; color: #718096;">Choose from available modification categories</p>
+                                        </div>
+
+                                        <div style="position: relative;">
+                                            <input type="text" class="search-input" placeholder="Search categories or modifications...">
+                                        </div>
+
+                                        <div class="card-grid">
+                                            <div class="category-card">
+                                                <div class="category-title">Hardware & Accessories</div>
+                                                <span class="category-badge">12 templates</span>
+                                            </div>
+                                            <div class="category-card">
+                                                <div class="category-title">Crown Molding</div>
+                                                <span class="category-badge">8 templates</span>
+                                            </div>
+                                            <div class="category-card">
+                                                <div class="category-title">Custom Finishes</div>
+                                                <span class="category-badge">15 templates</span>
+                                            </div>
+                                            <div class="category-card">
+                                                <div class="category-title">Door Upgrades</div>
+                                                <span class="category-badge">6 templates</span>
+                                            </div>
+                                            <div class="category-card">
+                                                <div class="category-title">Drawer Solutions</div>
+                                                <span class="category-badge">10 templates</span>
+                                            </div>
+                                            <div class="category-card">
+                                                <div class="category-title">Lighting Options</div>
+                                                <span class="category-badge">5 templates</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="view-wrapper">
+                        <div class="view-label">📱 Mobile - Categories</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay" style="width: 375px; height: 667px;">
+                                <div class="modal-mobile">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Browse Modifications</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Categories</h3>
+
+                                        <input type="text" class="search-input" placeholder="Search...">
+
+                                        <div class="card-grid mobile">
+                                            <div class="category-card">
+                                                <div class="category-title">Hardware & Accessories</div>
+                                                <span class="category-badge">12 templates</span>
+                                            </div>
+                                            <div class="category-card">
+                                                <div class="category-title">Crown Molding</div>
+                                                <span class="category-badge">8 templates</span>
+                                            </div>
+                                            <div class="category-card">
+                                                <div class="category-title">Custom Finishes</div>
+                                                <span class="category-badge">15 templates</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW STATE 2: Templates -->
+            <div style="margin-bottom: 30px;">
+                <h4 style="font-weight: 700; margin-bottom: 16px; color: #2563eb;">VIEW 2: Templates (Category Selected)</h4>
+                <div class="views-container">
+                    <div class="view-wrapper">
+                        <div class="view-label">🖥️ Desktop - Templates</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay">
+                                <div class="modal-desktop" style="max-width: 1400px;">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Hardware & Accessories</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="breadcrumb">
+                                            <a href="#" class="breadcrumb-link">Categories</a>
+                                            <span class="breadcrumb-separator">/</span>
+                                            <span>Hardware & Accessories</span>
+                                        </div>
+
+                                        <input type="text" class="search-input" placeholder="Search templates...">
+
+                                        <div class="card-grid">
+                                            <div class="template-card">
+                                                <div style="font-weight: 600; font-size: 16px;">Soft-Close Hinges</div>
+                                                <div class="template-price">$24.50 <span class="scope-badge">Type: Base</span></div>
+                                                <div style="font-size: 12px; color: #718096; margin-top: 4px;">Lead time: 5 days</div>
+                                            </div>
+                                            <div class="template-card">
+                                                <div style="font-weight: 600; font-size: 16px;">Premium Drawer Slides</div>
+                                                <div class="template-price">$35.00</div>
+                                                <div style="font-size: 12px; color: #718096; margin-top: 4px;">Lead time: 3 days</div>
+                                            </div>
+                                            <div class="template-card">
+                                                <div style="font-weight: 600; font-size: 16px;">Cabinet Handles - Brushed Nickel</div>
+                                                <div class="template-price">$8.99 <span style="font-size: 12px; color: #10b981;">(Override)</span></div>
+                                                <div style="font-size: 12px; color: #718096; margin-top: 4px;">Lead time: 7 days</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer desktop">
+                                        <button class="btn btn-outline">← Back to Categories</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="view-wrapper">
+                        <div class="view-label">📱 Mobile - Templates</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay" style="width: 375px; height: 667px;">
+                                <div class="modal-mobile">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Hardware</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="breadcrumb" style="flex-wrap: wrap;">
+                                            <a href="#" class="breadcrumb-link">Categories</a>
+                                            <span class="breadcrumb-separator">/</span>
+                                            <span style="font-size: 12px;">Hardware</span>
+                                        </div>
+
+                                        <input type="text" class="search-input" placeholder="Search...">
+
+                                        <div class="card-grid mobile">
+                                            <div class="template-card">
+                                                <div style="font-weight: 600; font-size: 15px;">Soft-Close Hinges</div>
+                                                <div class="template-price">$24.50 <span class="scope-badge">Type: Base</span></div>
+                                                <div style="font-size: 12px; color: #718096; margin-top: 4px;">Lead time: 5 days</div>
+                                            </div>
+                                            <div class="template-card">
+                                                <div style="font-weight: 600; font-size: 15px;">Premium Drawer Slides</div>
+                                                <div class="template-price">$35.00</div>
+                                                <div style="font-size: 12px; color: #718096; margin-top: 4px;">Lead time: 3 days</div>
+                                            </div>
+                                            <div class="template-card">
+                                                <div style="font-weight: 600; font-size: 15px;">Cabinet Handles - Brushed Nickel</div>
+                                                <div class="template-price">$8.99 <span style="font-size: 12px; color: #10b981;">(Override)</span></div>
+                                                <div style="font-size: 12px; color: #718096; margin-top: 4px;">Lead time: 7 days</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer mobile">
+                                        <button class="btn btn-outline mobile">← Back</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW STATE 3: Details with Dynamic Fields -->
+            <div>
+                <h4 style="font-weight: 700; margin-bottom: 16px; color: #2563eb;">VIEW 3: Details (Template Selected - Dynamic Fields)</h4>
+                <div class="views-container">
+                    <div class="view-wrapper">
+                        <div class="view-label">🖥️ Desktop - Details</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay">
+                                <div class="modal-desktop" style="max-width: 1400px;">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Modification Details</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="breadcrumb">
+                                            <a href="#" class="breadcrumb-link">Categories</a>
+                                            <span class="breadcrumb-separator">/</span>
+                                            <a href="#" class="breadcrumb-link">Hardware</a>
+                                            <span class="breadcrumb-separator">/</span>
+                                            <span>Soft-Close Hinges</span>
+                                        </div>
+
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px;">
+                                            <div>
+                                                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Soft-Close Hinges - Premium</h3>
+                                                <div class="template-price" style="margin-bottom: 8px;">$24.50</div>
+                                                <p style="font-size: 14px; color: #718096; margin-bottom: 16px;">Lead time: 5 business days</p>
+                                                <p style="font-size: 14px; line-height: 1.6; color: #4a5568;">
+                                                    High-quality soft-close hinges with smooth operation. Includes mounting hardware and installation template.
+                                                    Compatible with all standard cabinet door configurations.
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <img src="data:image/svg+xml,%3Csvg width='300' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='300' height='200' fill='%23e2e8f0'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='14' fill='%23718096' text-anchor='middle' dominant-baseline='middle'%3EProduct Image%3C/text%3E%3C/svg%3E"
+                                                     style="width: 100%; border-radius: 8px;">
+                                            </div>
+                                        </div>
+
+                                        <div style="margin-top: 24px;">
+                                            <h4 style="font-weight: 700; margin-bottom: 16px;">Configuration</h4>
+
+                                            <!-- Quantity Range Slider -->
+                                            <div class="slider-group">
+                                                <label class="form-label">Quantity</label>
+                                                <div class="slider">
+                                                    <div class="slider-track"></div>
+                                                    <div class="slider-thumb"></div>
+                                                </div>
+                                                <div class="slider-value">5 units</div>
+                                            </div>
+
+                                            <!-- Measurement Sliders -->
+                                            <div class="slider-group">
+                                                <label class="form-label">Width (inches)</label>
+                                                <div class="slider">
+                                                    <div class="slider-track" style="width: 60%;"></div>
+                                                    <div class="slider-thumb" style="left: 60%;"></div>
+                                                </div>
+                                                <div class="slider-value">18 3/4"</div>
+                                            </div>
+
+                                            <!-- Side Selector -->
+                                            <div class="form-group">
+                                                <label class="form-label">Hinge Side</label>
+                                                <div class="radio-group">
+                                                    <div class="radio-option">
+                                                        <div class="radio checked"></div>
+                                                        <span>Left</span>
+                                                    </div>
+                                                    <div class="radio-option">
+                                                        <div class="radio"></div>
+                                                        <span>Right</span>
+                                                    </div>
+                                                    <div class="radio-option">
+                                                        <div class="radio"></div>
+                                                        <span>Both</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- File Upload -->
+                                            <div class="form-group">
+                                                <label class="form-label">Upload Reference Files (Max 5)</label>
+                                                <div class="file-upload">
+                                                    <div>📁 Click to upload or drag files here</div>
+                                                    <div style="font-size: 12px; color: #718096; margin-top: 4px;">PDF, JPG, PNG up to 10MB</div>
+                                                </div>
+                                                <div class="uploaded-file">
+                                                    <span>door-template.pdf</span>
+                                                    <span class="delete-file">×</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style="background: #f7fafc; padding: 16px; border-radius: 8px; margin-top: 20px;">
+                                            <div style="font-weight: 600; margin-bottom: 8px;">Summary</div>
+                                            <div style="font-size: 14px;">5 units × $24.50 = <strong style="color: #2563eb;">$122.50</strong></div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer desktop">
+                                        <button class="btn btn-outline">← Back to Templates</button>
+                                        <button class="btn btn-primary">Apply Modification</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="view-wrapper">
+                        <div class="view-label">📱 Mobile - Details</div>
+                        <div class="device-frame">
+                            <div class="modal-overlay" style="width: 375px; height: 667px;">
+                                <div class="modal-mobile">
+                                    <div class="modal-header">
+                                        <div class="modal-title-text">Details</div>
+                                        <button class="modal-close">×</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h3 style="font-size: 18px; font-weight: 700;">Soft-Close Hinges</h3>
+                                        <div class="template-price">$24.50</div>
+                                        <p style="font-size: 12px; color: #718096; margin-bottom: 12px;">Lead: 5 days</p>
+
+                                        <div class="slider-group">
+                                            <label class="form-label">Quantity</label>
+                                            <div class="slider">
+                                                <div class="slider-track"></div>
+                                                <div class="slider-thumb"></div>
+                                            </div>
+                                            <div class="slider-value">5 units</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">Side</label>
+                                            <div class="radio-group" style="flex-direction: column; gap: 8px;">
+                                                <div class="radio-option">
+                                                    <div class="radio checked"></div>
+                                                    <span>Left</span>
+                                                </div>
+                                                <div class="radio-option">
+                                                    <div class="radio"></div>
+                                                    <span>Right</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style="background: #f7fafc; padding: 12px; border-radius: 8px;">
+                                            <strong style="color: #2563eb;">Total: $122.50</strong>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer mobile">
+                                        <button class="btn btn-primary mobile">Apply</button>
+                                        <button class="btn btn-outline mobile">← Back</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #000; color: white; border-radius: 8px; text-align: center;">
+            <p style="font-size: 14px; margin-bottom: 8px;">✅ Modification Modals Complete (10 of 40)</p>
+            <p style="font-size: 12px; opacity: 0.8;">Next: Manufacturer/Settings Modals (3 modals) → modals-preview-3-manufacturer-settings.html</p>
+        </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle" onclick="toggleDarkMode()">
+        <span id="modeText">🌙 Dark Mode</span>
+        <div class="toggle-switch">
+            <div class="toggle-thumb"></div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('modeText').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        // Load saved preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('modeText').textContent = '☀️ Light Mode';
+        }
+    </script>
+</body>
+</html>
