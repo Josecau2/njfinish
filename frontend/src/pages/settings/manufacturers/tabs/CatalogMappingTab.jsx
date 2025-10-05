@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import PageHeader from '../../../../components/PageHeader'
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Divider, Flex, FormControl, FormLabel, HStack, Heading, Icon, Image, Input, ListItem, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useColorModeValue, useToast } from '@chakra-ui/react'
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Divider, Flex, FormControl, FormLabel, HStack, Heading, Icon, Image, Input, ListItem, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Select, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, UnorderedList, VStack, useColorModeValue, useToast } from '@chakra-ui/react'
 // Use lucide icons (React components) only via centralized module
 import { Plus, ChevronDown, ChevronUp, RefreshCw, Sparkles, Upload, Wrench } from '@/icons-lucide'
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice'
