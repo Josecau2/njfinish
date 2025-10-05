@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { Trans, useTranslation } from 'react-i18next'
 import axiosInstance from '../../../helpers/axiosInstance'
 import PageHeader from '../../../components/PageHeader'
-import { Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormControl, FormLabel, Heading, Image, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormControl, FormLabel, Heading, Image, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Select, SimpleGrid, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import { AppIconButton } from '../../../components/common/AppButton'
 
@@ -2479,64 +2479,53 @@ const GlobalModsPage = () => {
                     />
                   </Text>
 
-                  <Flex flexDirection="column" gap={3}>
-                    <Box>
-                      <input
-                        type="radio"
-                        name="deleteMode"
-                        id="moveMode"
-                        checked={deleteMode === 'move'}
-                        onChange={() => setDeleteMode('move')}
-                      />
-                      <label htmlFor="moveMode">
-                        <strong>{t('globalMods.modal.deleteCategory.move.label')}</strong>{' '}
-                        {t('globalMods.modal.deleteCategory.move.recommended')}
-                      </label>
-                    </Box>
+                  <RadioGroup value={deleteMode} onChange={setDeleteMode}>
+                    <Stack spacing={3}>
+                      <Radio value="move">
+                        <Text>
+                          <strong>{t('globalMods.modal.deleteCategory.move.label')}</strong>{' '}
+                          {t('globalMods.modal.deleteCategory.move.recommended')}
+                        </Text>
+                      </Radio>
 
-                    {deleteMode === 'move' && (
-                      <Box mt={2} ml={4}>
-                        <Select
-                          value={moveToCategoryId}
-                          onChange={(e) => setMoveToCategoryId(e.target.value)}
-                        >
-                          <option value="">
-                            {t('globalMods.modal.deleteCategory.move.selectTarget')}
-                          </option>
-                          {gallery
-                            .filter((cat) => cat.id !== deleteCategory.id)
-                            .map((cat) => (
-                              <option key={cat.id} value={cat.id}>
-                                {t('globalMods.modal.deleteCategory.move.optionWithCount', {
-                                  name: cat.name,
-                                  count: (cat.templates || []).length,
-                                })}
-                              </option>
-                            ))}
-                        </Select>
-                        {!moveToCategoryId && (
-                          <Box as="small" color="gray.500" display="block" mt={1}>
-                            {t('globalMods.modal.deleteCategory.move.mustSelect')}
-                          </small>
-                        )}
-                      </Box>
-                    )}
+                      {deleteMode === 'move' && (
+                        <Box mt={2} ml={6}>
+                          <Select
+                            value={moveToCategoryId}
+                            onChange={(e) => setMoveToCategoryId(e.target.value)}
+                          >
+                            <option value="">
+                              {t('globalMods.modal.deleteCategory.move.selectTarget')}
+                            </option>
+                            {gallery
+                              .filter((cat) => cat.id !== deleteCategory.id)
+                              .map((cat) => (
+                                <option key={cat.id} value={cat.id}>
+                                  {t('globalMods.modal.deleteCategory.move.optionWithCount', {
+                                    name: cat.name,
+                                    count: (cat.templates || []).length,
+                                  })}
+                                </option>
+                              ))}
+                          </Select>
+                          {!moveToCategoryId && (
+                            <Text fontSize="sm" color="gray.500" mt={1}>
+                              {t('globalMods.modal.deleteCategory.move.mustSelect')}
+                            </Text>
+                          )}
+                        </Box>
+                      )}
 
-                    <Box>
-                      <input
-                        type="radio"
-                        name="deleteMode"
-                        id="withModsMode"
-                        checked={deleteMode === 'withMods'}
-                        onChange={() => setDeleteMode('withMods')}
-                      />
-                      <label htmlFor="withModsMode">
-                        <strong>
-                          {t('globalMods.modal.deleteCategory.withMods.label')}
-                        </strong>{' '}
-                        {t('globalMods.modal.deleteCategory.withMods.permanent')}
-                      </label>
-                    </Box>
+                      <Radio value="withMods">
+                        <Text>
+                          <strong>
+                            {t('globalMods.modal.deleteCategory.withMods.label')}
+                          </strong>{' '}
+                          {t('globalMods.modal.deleteCategory.withMods.permanent')}
+                        </Text>
+                      </Radio>
+                    </Stack>
+                  </RadioGroup>
 
                     {deleteMode === 'withMods' && (
                       <Box bg="red.100" p={3} borderRadius="md" mt={2} ml={4}>
