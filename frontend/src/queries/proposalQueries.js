@@ -263,7 +263,7 @@ export const useContracts = (groupId = null) => {
   return useQuery({
     queryKey: ['contracts', { groupId }],
     queryFn: async () => {
-      let url = '/api/contracts'
+      let url = '/api/get-contracts'
       if (groupId) {
         url += `?group_id=${groupId}`
       }
@@ -285,7 +285,7 @@ export const sendFormDataToBackend = (payload) => {
 }
 
 export const getContracts = (groupId = null) => {
-  let url = '/api/contracts'
+  let url = '/api/get-contracts'
   if (groupId) {
     url += `?group_id=${groupId}`
   }
