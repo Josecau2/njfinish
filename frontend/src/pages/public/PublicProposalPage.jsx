@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Badge, Box, Container, Flex, Text, CardBody, CardHeader, Alert, AlertIcon, Spinner, Button } from '@chakra-ui/react'
+import { Badge, Box, Container, Flex, Text, CardBody, CardHeader, Alert, AlertIcon, Spinner, Button, Heading, UnorderedList, ListItem } from '@chakra-ui/react'
 import StandardCard from '../../components/StandardCard'
 import { notifyError, notifySuccess } from '../../helpers/notify'
 import { useTranslation } from 'react-i18next'
@@ -103,7 +103,7 @@ export default function PublicProposalPage() {
         <CardHeader>
           <Flex justify="space-between" align="center">
             <Box>
-              <h5>{t('publicQuote.titleNumber', { id: proposal.id })}</h5>
+              <Heading as="h5" size="md">{t('publicQuote.titleNumber', { id: proposal.id })}</Heading>
               {proposal?.customer?.name && (
                 <Text fontSize="sm">
                   {t('publicQuote.forCustomer', { name: proposal.customer.name })}
@@ -116,14 +116,14 @@ export default function PublicProposalPage() {
         <CardBody>
           {proposal.description && (
             <Box>
-              <h6>{t('publicQuote.description')}</h6>
-              <p>{proposal.description}</p>
+              <Heading as="h6" size="sm">{t('publicQuote.description')}</Heading>
+              <Text>{proposal.description}</Text>
             </Box>
           )}
 
           {typeof total === 'number' && (
             <Box>
-              <h6>{t('publicQuote.total')}</h6>
+              <Heading as="h6" size="sm">{t('publicQuote.total')}</Heading>
               <Text fontSize="xl" fontWeight="bold">
                 $
                 {total.toLocaleString(undefined, {
@@ -137,16 +137,16 @@ export default function PublicProposalPage() {
           {/* Minimal summary of items if present */}
           {proposal.manufacturersData?.items?.length > 0 && (
             <Box>
-              <h6>{t('publicQuote.summary')}</h6>
-              <ul>
+              <Heading as="h6" size="sm">{t('publicQuote.summary')}</Heading>
+              <UnorderedList>
                 {proposal.manufacturersData.items.slice(0, 10).map((it, idx) => (
-                  <li key={idx}>
+                  <ListItem key={idx}>
                     {it.description || it.code || 'Item'}
                     {it.qty ? ` × ${it.qty}` : ''}
-                  </li>
+                  </ListItem>
                 ))}
-                {proposal.manufacturersData.items.length > 10 && <li>…</li>}
-              </ul>
+                {proposal.manufacturersData.items.length > 10 && <ListItem>…</ListItem>}
+              </UnorderedList>
             </Box>
           )}
 

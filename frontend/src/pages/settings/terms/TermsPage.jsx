@@ -1,7 +1,7 @@
 import { Table, Tbody, Td, Th, Thead, Tr, useColorModeValue, useToast } from '@chakra-ui/react';
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { CardBody, Flex, Box, FormControl, Textarea, Badge, Button, HStack, Text } from '@chakra-ui/react'
+import { CardBody, Flex, Box, FormControl, Textarea, Badge, Button, HStack, Text, Heading } from '@chakra-ui/react'
 import StandardCard from '../../../components/StandardCard'
 import PageHeader from '../../../components/PageHeader'
 import PageContainer from '../../../components/PageContainer'
@@ -102,7 +102,7 @@ const TermsPage = () => {
         <Box lg={6}>
           <StandardCard>
             <CardBody>
-              <h6>{t('settings.terms.editor', 'Editor')}</h6>
+              <Heading as="h6" size="sm" mb={3}>{t('settings.terms.editor', 'Editor')}</Heading>
               <FormControl>
                 <Textarea
                   rows={16}
@@ -136,7 +136,7 @@ const TermsPage = () => {
         <Box lg={6}>
           <StandardCard>
             <CardBody>
-              <h6>{t('settings.terms.acceptance', 'Acceptance')}</h6>
+              <Heading as="h6" size="sm" mb={3}>{t('settings.terms.acceptance', 'Acceptance')}</Heading>
               <Text color={iconGray500} fontSize="sm" mb={2}>
                 {t('settings.terms.version', 'Version')}: {acceptance?.version ?? '-'}
               </Text>

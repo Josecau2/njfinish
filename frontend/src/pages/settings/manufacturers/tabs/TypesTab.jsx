@@ -1,6 +1,6 @@
 import StandardCard from '../../../../components/StandardCard'
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Alert, Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormLabel, HStack, IconButton, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue } from '@chakra-ui/react'
+import { Alert, Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormLabel, HStack, IconButton, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue, Heading } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import axiosInstance from '../../../../helpers/axiosInstance'
@@ -1046,12 +1046,12 @@ const TypesTab = ({ manufacturer }) => {
               {/* Left Column - Image Management */}
               <Box>
                 <Box>
-                  <strong>{t('types.meta.type', 'Type')}:</strong> {selectedType.type}
+                  <Text as="strong">{t('types.meta.type', 'Type')}:</Text> {selectedType.type}
                 </Box>
 
                 {/* Current Image Preview */}
                 <Box>
-                  <h6>{t('types.meta.currentImage', 'Current Image')}:</h6>
+                  <Heading as="h6" size="sm" mb={2}>{t('types.meta.currentImage', 'Current Image')}:</Heading>
                   <Box
                     display="flex"
                     justifyContent="center"

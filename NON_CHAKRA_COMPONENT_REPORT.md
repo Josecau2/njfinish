@@ -1,126 +1,130 @@
-# Non-Chakra Component Scan
+# Chakra Component Conversion Backlog
 
-Command: python scripts/find_non_chakra_components.py --root frontend/src
+Generated via `scripts/find_non_chakra_components.py --root frontend/src --json`, filtering out non-component modules (stores, utils, API clients, etc.).
 
-```
-Chakra UI component audit summary
-----------------------------------------
-total               : 260
-chakra_only         : 41
-mixed               : 111
-no_chakra           : 108
-components_flagged  : 110
+## Summary
 
-Flagged components:
-----------------------------------------
-mixed      | components/AppContent.js | reasons: inline_style_usage
-mixed      | components/AppFooter.js | reasons: raw_html_tags
-mixed      | components/AppSidebar.js | reasons: raw_html_tags
-mixed      | components/AppSidebarNav.js | reasons: inline_style_usage
-mixed      | components/CatalogTable.js | reasons: raw_html_tags, inline_style_usage
-mixed      | components/CatalogTableEdit.js | reasons: raw_html_tags, inline_style_usage
-mixed      | components/DocsComponents.js | reasons: raw_html_tags
-mixed      | components/DocsIcons.js | reasons: raw_html_tags
-mixed      | components/EditManufacturerModal.jsx | reasons: raw_html_tags
-mixed      | components/EditUsersModel.js | reasons: raw_html_tags
-mixed      | components/FileViewerModal.jsx | reasons: raw_html_tags
-mixed      | components/ItemSelectionContent.jsx | reasons: raw_html_tags
-mixed      | components/ItemSelectionContentEdit.jsx | reasons: raw_html_tags
-mixed      | components/LanguageSwitcher.jsx | reasons: raw_html_tags
-mixed      | components/LoginPreview.jsx | reasons: raw_html_tags
-mixed      | components/NotificationBell.js | reasons: raw_html_tags
-mixed      | components/PageErrorBoundary.jsx | reasons: raw_html_tags
-mixed      | components/ProposalAcceptanceModal.jsx | reasons: raw_html_tags
-mixed      | components/ResponsiveTable.jsx | reasons: raw_html_tags
-mixed      | components/StyleCarousel.jsx | reasons: raw_html_tags
-mixed      | components/StyleMerger.jsx | reasons: raw_html_tags
-mixed      | components/TermsModal.jsx | reasons: raw_html_tags
-mixed      | components/contact/ContactInfoEditor.jsx | reasons: raw_html_tags
-mixed      | components/contact/MessageComposer.jsx | reasons: raw_html_tags
-mixed      | components/contact/MessageHistory.jsx | reasons: raw_html_tags
-mixed      | components/contact/ThreadView.jsx | reasons: raw_html_tags
-mixed      | components/DataTable/DataTable.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | components/model/EditGroupModal.jsx | reasons: raw_html_tags
-mixed      | components/model/EditManufacturerModal.jsx | reasons: raw_html_tags
-mixed      | components/model/EmailContractModal.jsx | reasons: raw_html_tags
-mixed      | components/model/EmailProposalModal.jsx | reasons: raw_html_tags
-mixed      | components/model/ModificationBrowserModal.jsx | reasons: raw_html_tags
-mixed      | components/model/ModificationModal.jsx | reasons: raw_html_tags
-mixed      | components/model/ModificationModalEdit.jsx | reasons: raw_html_tags
-mixed      | components/model/PrintPaymentReceiptModal.jsx | reasons: raw_html_tags
-mixed      | components/model/PrintProposalModal.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | components/pdf/DesktopPdfViewer.jsx | reasons: raw_html_tags
-mixed      | components/pdf/MobilePdfViewer.jsx | reasons: raw_html_tags
-mixed      | components/showroom/ShowroomModeToggle.jsx | reasons: raw_html_tags
-mixed      | components/ui/CButton.jsx | reasons: raw_html_tags
-mixed      | pages/3dkitchen/ComingSoon.jsx | reasons: raw_html_tags
-mixed      | pages/admin/ContractorDetail.jsx | reasons: raw_html_tags
-mixed      | pages/admin/Contractors.jsx | reasons: raw_html_tags
-mixed      | pages/admin/LeadsPage.jsx | reasons: raw_html_tags
-mixed      | pages/admin/ContractorDetail/CustomersTab.jsx | reasons: raw_html_tags
-mixed      | pages/admin/ContractorDetail/ProposalsTab.jsx | reasons: raw_html_tags
-mixed      | pages/admin/ContractorDetail/SettingsTab.jsx | reasons: raw_html_tags
-mixed      | pages/auth/ForgotPasswordPage.jsx | reasons: raw_html_tags, className_usage
-mixed      | pages/auth/LoginPage.jsx | reasons: raw_html_tags, className_usage
-mixed      | pages/auth/RequestAccessPage.jsx | reasons: raw_html_tags, className_usage
-mixed      | pages/auth/ResetPasswordPage.jsx | reasons: raw_html_tags, className_usage
-mixed      | pages/auth/SignupPage.jsx | reasons: raw_html_tags, className_usage
-mixed      | pages/calender/index.jsx | reasons: raw_html_tags
-mixed      | pages/contractor/ContractorDashboard.jsx | reasons: raw_html_tags
-mixed      | pages/contracts/index.jsx | reasons: raw_html_tags
-mixed      | pages/customers/AddCustomerForm.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/customers/CustomerForm.jsx | reasons: raw_html_tags
-mixed      | pages/customers/Customers.jsx | reasons: raw_html_tags
-mixed      | pages/customers/EditCustomerPage.jsx | reasons: raw_html_tags
-mixed      | pages/dashboard/Dashboard.jsx | reasons: raw_html_tags
-no_chakra  | pages/orders/AdminOrders.jsx | reasons: missing @chakra-ui/react import
-no_chakra  | pages/orders/MyOrders.jsx | reasons: missing @chakra-ui/react import
-mixed      | pages/orders/OrderDetails.jsx | reasons: raw_html_tags
-mixed      | pages/orders/OrdersList.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/payments/PaymentCancel.jsx | reasons: raw_html_tags
-mixed      | pages/payments/PaymentConfiguration.jsx | reasons: raw_html_tags
-mixed      | pages/payments/PaymentPage.jsx | reasons: raw_html_tags
-mixed      | pages/payments/PaymentsList.jsx | reasons: raw_html_tags
-mixed      | pages/payments/PaymentSuccess.jsx | reasons: raw_html_tags
-mixed      | pages/payments/PaymentTest.jsx | reasons: raw_html_tags
-mixed      | pages/profile/index.jsx | reasons: raw_html_tags
-mixed      | pages/proposals/CreateProposalForm.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/proposals/EditProposal.jsx | reasons: raw_html_tags
-mixed      | pages/proposals/Proposals.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/proposals/CreateProposal/CustomerInfo.jsx | reasons: raw_html_tags
-mixed      | pages/proposals/CreateProposal/DesignUpload.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/proposals/CreateProposal/FileUploadSection.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/proposals/CreateProposal/ManufacturerSelect.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/proposals/CreateProposal/ProposalSummary.jsx | reasons: raw_html_tags
-mixed      | pages/public/PublicProposalPage.jsx | reasons: raw_html_tags
-mixed      | pages/Resources/index.jsx | reasons: raw_html_tags
-mixed      | pages/settings/customization/CustomizationPage.jsx | reasons: raw_html_tags
-mixed      | pages/settings/customization/LoginCustomizerPage.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/settings/customization/PdfLayoutCustomization.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/settings/globalMods/GlobalModsPage.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/settings/locations/CreateLocation.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/settings/locations/EditLocation.jsx | reasons: raw_html_tags
-mixed      | pages/settings/locations/LocationList.jsx | reasons: raw_html_tags
-mixed      | pages/settings/manufacturers/ManufacturersForm.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/settings/manufacturers/ManufacturersList.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/settings/manufacturers/tabs/CatalogMappingTab.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/settings/manufacturers/tabs/EditManufacturerTab.jsx | reasons: raw_html_tags
-mixed      | pages/settings/manufacturers/tabs/FilesHistoryTab.jsx | reasons: raw_html_tags
-mixed      | pages/settings/manufacturers/tabs/SettingsTab.jsx | reasons: raw_html_tags
-mixed      | pages/settings/manufacturers/tabs/StylePicturesTab.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/settings/manufacturers/tabs/TypesTab.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/settings/multipliers/EditManuMultiplier.jsx | reasons: raw_html_tags, inline_style_usage
-mixed      | pages/settings/multipliers/ManuMultipliers.jsx | reasons: raw_html_tags
-mixed      | pages/settings/taxes/TaxesPage.jsx | reasons: raw_html_tags
-mixed      | pages/settings/terms/TermsPage.jsx | reasons: raw_html_tags, non_chakra_library_import
-mixed      | pages/settings/users/CreateUser.jsx | reasons: raw_html_tags
-mixed      | pages/settings/users/EditUser.jsx | reasons: raw_html_tags
-mixed      | pages/settings/users/UserList.jsx | reasons: raw_html_tags
-mixed      | pages/settings/usersGroup/CreateUserGroup.jsx | reasons: raw_html_tags
-mixed      | pages/settings/usersGroup/EditUserGroup.jsx | reasons: raw_html_tags
-mixed      | pages/settings/usersGroup/UserGroupList.jsx | reasons: raw_html_tags
-mixed      | routes/__audit__/index.jsx | reasons: raw_html_tags
-mixed      | views/notifications/NotificationsPage.js | reasons: raw_html_tags
-mixed      | views/pages/page404/Page404.jsx | reasons: raw_html_tags
-mixed      | views/proposals/AdminProposalView.js | reasons: raw_html_tags
-```
+- Total React-like files scanned: 257
+- Files identified as components: 145
+- Components already Chakra-only: 39
+- Components needing cleanup: 106
+
+### Issues by Reason (components only)
+
+- **raw_html_tags**: 104
+- **className_usage**: 5
+- **missing @chakra-ui/react import**: 2
+- **inline_style_usage**: 1
+
+## Component Findings
+
+- `components/AppFooter.js` — status: mixed; reasons: raw_html_tags
+- `components/AppSidebar.js` — status: mixed; reasons: raw_html_tags
+- `components/CatalogTable.js` — status: mixed; reasons: raw_html_tags
+- `components/CatalogTableEdit.js` — status: mixed; reasons: raw_html_tags, inline_style_usage
+- `components/DataTable/DataTable.jsx` — status: mixed; reasons: raw_html_tags
+- `components/DocsComponents.js` — status: mixed; reasons: raw_html_tags
+- `components/DocsIcons.js` — status: mixed; reasons: raw_html_tags
+- `components/EditManufacturerModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/EditUsersModel.js` — status: mixed; reasons: raw_html_tags
+- `components/FileViewerModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/ItemSelectionContent.jsx` — status: mixed; reasons: raw_html_tags
+- `components/ItemSelectionContentEdit.jsx` — status: mixed; reasons: raw_html_tags
+- `components/LanguageSwitcher.jsx` — status: mixed; reasons: raw_html_tags
+- `components/LoginPreview.jsx` — status: mixed; reasons: raw_html_tags
+- `components/NotificationBell.js` — status: mixed; reasons: raw_html_tags
+- `components/PageErrorBoundary.jsx` — status: mixed; reasons: raw_html_tags
+- `components/ProposalAcceptanceModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/ResponsiveTable.jsx` — status: mixed; reasons: raw_html_tags
+- `components/StyleCarousel.jsx` — status: mixed; reasons: raw_html_tags
+- `components/StyleMerger.jsx` — status: mixed; reasons: raw_html_tags
+- `components/TermsModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/contact/ContactInfoEditor.jsx` — status: mixed; reasons: raw_html_tags
+- `components/contact/MessageComposer.jsx` — status: mixed; reasons: raw_html_tags
+- `components/contact/MessageHistory.jsx` — status: mixed; reasons: raw_html_tags
+- `components/contact/ThreadView.jsx` — status: mixed; reasons: raw_html_tags
+- `components/model/EditGroupModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/model/EditManufacturerModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/model/EmailContractModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/model/EmailProposalModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/model/ModificationBrowserModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/model/ModificationModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/model/ModificationModalEdit.jsx` — status: mixed; reasons: raw_html_tags
+- `components/model/PrintPaymentReceiptModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/model/PrintProposalModal.jsx` — status: mixed; reasons: raw_html_tags
+- `components/showroom/ShowroomModeToggle.jsx` — status: mixed; reasons: raw_html_tags
+- `components/ui/CButton.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/3dkitchen/ComingSoon.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/Resources/index.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/admin/ContractorDetail.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/admin/ContractorDetail/CustomersTab.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/admin/ContractorDetail/ProposalsTab.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/admin/ContractorDetail/SettingsTab.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/admin/Contractors.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/admin/LeadsPage.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/auth/ForgotPasswordPage.jsx` — status: mixed; reasons: raw_html_tags, className_usage
+- `pages/auth/LoginPage.jsx` — status: mixed; reasons: raw_html_tags, className_usage
+- `pages/auth/RequestAccessPage.jsx` — status: mixed; reasons: raw_html_tags, className_usage
+- `pages/auth/ResetPasswordPage.jsx` — status: mixed; reasons: raw_html_tags, className_usage
+- `pages/auth/SignupPage.jsx` — status: mixed; reasons: raw_html_tags, className_usage
+- `pages/calender/index.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/contractor/ContractorDashboard.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/contracts/index.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/customers/AddCustomerForm.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/customers/CustomerForm.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/customers/Customers.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/customers/EditCustomerPage.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/dashboard/Dashboard.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/orders/OrderDetails.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/orders/OrdersList.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/payments/PaymentCancel.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/payments/PaymentConfiguration.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/payments/PaymentPage.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/payments/PaymentSuccess.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/payments/PaymentTest.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/payments/PaymentsList.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/profile/index.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/proposals/CreateProposal/CustomerInfo.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/proposals/CreateProposal/DesignUpload.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/proposals/CreateProposal/FileUploadSection.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/proposals/CreateProposal/ManufacturerSelect.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/proposals/CreateProposal/ProposalSummary.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/proposals/CreateProposalForm.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/proposals/EditProposal.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/proposals/Proposals.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/public/PublicProposalPage.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/customization/CustomizationPage.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/customization/LoginCustomizerPage.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/customization/PdfLayoutCustomization.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/globalMods/GlobalModsPage.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/locations/CreateLocation.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/locations/EditLocation.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/locations/LocationList.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/manufacturers/ManufacturersForm.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/manufacturers/ManufacturersList.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/manufacturers/tabs/CatalogMappingTab.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/manufacturers/tabs/EditManufacturerTab.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/manufacturers/tabs/FilesHistoryTab.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/manufacturers/tabs/SettingsTab.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/manufacturers/tabs/StylePicturesTab.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/manufacturers/tabs/TypesTab.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/multipliers/EditManuMultiplier.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/multipliers/ManuMultipliers.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/taxes/TaxesPage.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/terms/TermsPage.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/users/CreateUser.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/users/EditUser.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/users/UserList.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/usersGroup/CreateUserGroup.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/usersGroup/EditUserGroup.jsx` — status: mixed; reasons: raw_html_tags
+- `pages/settings/usersGroup/UserGroupList.jsx` — status: mixed; reasons: raw_html_tags
+- `routes/__audit__/index.jsx` — status: mixed; reasons: raw_html_tags
+- `views/notifications/NotificationsPage.js` — status: mixed; reasons: raw_html_tags
+- `views/pages/page404/Page404.jsx` — status: mixed; reasons: raw_html_tags
+- `views/proposals/AdminProposalView.js` — status: mixed; reasons: raw_html_tags
+- `pages/orders/AdminOrders.jsx` — status: no_chakra; reasons: missing @chakra-ui/react import
+- `pages/orders/MyOrders.jsx` — status: no_chakra; reasons: missing @chakra-ui/react import
+
+## Components Importing Non-Chakra UI Libraries
+
+- None detected

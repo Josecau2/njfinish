@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import PageHeader from '../../../../components/PageHeader'
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Divider, Flex, FormControl, FormLabel, Heading, HStack, Icon, Image, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue } from '@chakra-ui/react'
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Divider, Flex, FormControl, FormLabel, HStack, Heading, Icon, Image, Input, ListItem, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, Spinner, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useColorModeValue, useToast } from '@chakra-ui/react'
 // Use lucide icons (React components) only via centralized module
 import { Plus, ChevronDown, ChevronUp, RefreshCw, Sparkles, Upload, Wrench } from '@/icons-lucide'
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice'
@@ -2526,7 +2526,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       {/* Sub-Types Management Section */}
       <StandardCard>
         <CardHeader>
-          <h6>{t('settings.manufacturers.catalogMapping.subTypes.header')}</h6>
+          <Heading as="h6" size="sm">{t('settings.manufacturers.catalogMapping.subTypes.header')}</Heading>
           <Button
             colorScheme="blue"
             size="sm"
@@ -2547,16 +2547,16 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </CardHeader>
         <CardBody>
           {subTypes.length === 0 ? (
-            <p>
+            <Text>
               {t('settings.manufacturers.catalogMapping.subTypes.empty')}
-            </p>
+            </Text>
           ) : (
             <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap={3}>
               {subTypes.map((subType) => (
                 <Box key={subType.id}>
                   <StandardCard>
                     <CardBody>
-                      <h6>{subType.name}</h6>
+                      <Heading as="h6" size="sm">{subType.name}</Heading>
                       {subType.description && (
                         <Text fontSize="sm" color={borderGray600}>{subType.description}</Text>
                       )}
@@ -2766,7 +2766,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 >
                   {isEditingStyleName ? (
                     <>
-                      <span role="status"></span>
+                      <Spinner size="sm" mr={2} />
                       Saving...
                     </>
                   ) : (
@@ -2781,7 +2781,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 >
                   {isDeleting ? (
                     <>
-                      <span role="status"></span>
+                      <Spinner size="sm" mr={2} />
                       Processing...
                     </>
                   ) : (
@@ -2810,7 +2810,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {isBulkEditing ? (
                   <>
-                    <span role="status"></span>
+                    <Spinner size="sm" mr={2} />
                     Editing...
                   </>
                 ) : (
@@ -2825,7 +2825,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               >
                 {isBulkDeleting ? (
                   <>
-                    <span role="status"></span>
+                    <Spinner size="sm" mr={2} />
                     {t('settings.manufacturers.catalogMapping.bulk.deleting')}
                   </>
                 ) : (
@@ -2839,7 +2839,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
       {/* Table - Desktop and Mobile Views */}
       {catalogData.length === 0 ? (
-        <p>{t('settings.manufacturers.catalogMapping.empty')}</p>
+        <Text>{t('settings.manufacturers.catalogMapping.empty')}</Text>
       ) : (
         <>
           {/* Desktop Table View - Hidden on mobile */}
@@ -3350,7 +3350,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             )}
             <hr />
             <Box>
-              <h6>Existing assignments</h6>
+              <Heading as="h6" size="sm">Existing assignments</Heading>
               {assignLoading ? (
                 <Flex justify="center" py={4}>
                   <Spinner size="sm" />
@@ -3778,9 +3778,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </Text>
             ) : styleForm.image ? (
               <Box>
-                <p>
+                <Text>
                   <strong>{t('settings.manufacturers.catalogMapping.style.currentImage')}</strong>
-                </p>
+                </Text>
                 <Image
                   src={styleForm.image ? `${api_url}/uploads/images/${styleForm.image}` : undefined}
                   alt={t('settings.manufacturers.catalogMapping.style.previewAlt', 'Style preview')}
@@ -3881,7 +3881,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 )}
               </Box>
             ) : (
-              <p>{t('settings.manufacturers.catalogMapping.style.noData')}</p>
+              <Text>{t('settings.manufacturers.catalogMapping.style.noData')}</Text>
             )}
           </ModalBody>
           <ModalFooter>
@@ -4062,9 +4062,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                     return (
                       <Flex key={typeItem.type} align="start" mb={2}>
-                        <input
-
-                          type="radio"
+                        <Radio
                           name="singleTypeSelection"
                           id={`single-type-${typeItem.type}`}
                           checked={isSelected}
@@ -4123,9 +4121,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                     return (
                       <Flex key={typeItem.type} align="start" mb={2}>
-                        <input
-
-                          type="checkbox"
+                        <Checkbox
                           id={`type-${typeItem.type}`}
                           checked={isSelected}
                           onChange={(event) => {
@@ -4227,11 +4223,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             >
               {isAssemblyCostSaving ? (
                 <>
-                  <span
-
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
+                  <Spinner size="sm" mr={2} />
                   Applying...
                 </>
               ) : (
@@ -4387,20 +4379,18 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           />
           <ModalBody>
             <Box>
-              <p>
+              <Text>
                 You are about to delete the style "<strong>{styleToDelete}</strong>". This will
                 affect{' '}
                 <strong>{catalogData.filter((item) => item.style === styleToDelete).length}</strong>{' '}
                 catalog items.
-              </p>
+              </Text>
 
-              <p>What would you like to do with the items that currently have this style?</p>
+              <Text>What would you like to do with the items that currently have this style?</Text>
 
               <VStack align="start" spacing={2}>
                 <Flex align="start" mb={2}>
-                  <input
-
-                    type="radio"
+                  <Radio
                     name="deleteOption"
                     id="deleteItems"
                     checked={!mergeToStyle}
@@ -4412,9 +4402,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </Flex>
 
                 <Flex align="start">
-                  <input
-
-                    type="radio"
+                  <Radio
                     name="deleteOption"
                     id="mergeItems"
                     checked={!!mergeToStyle}
@@ -4455,8 +4443,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       {catalogData.filter((item) => item.style === styleToDelete).length} items with
                       style "{styleToDelete}" will be processed:
                       <Box as="ul" mt={1} mb={0}>
-                        <li>Items with unique codes will be merged to style "{mergeToStyle}"</li>
-                        <li>Duplicate items (same code + style) will be automatically removed</li>
+                        <ListItem>Items with unique codes will be merged to style "{mergeToStyle}"</ListItem>
+                        <ListItem>Duplicate items (same code + style) will be automatically removed</ListItem>
                       </Box>
                     </>
                   ) : (
@@ -4486,11 +4474,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             >
               {isDeleting ? (
                 <>
-                  <span
-
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
+                  <Spinner size="sm" mr={2} />
                   Processing...
                 </>
               ) : mergeToStyle ? (
@@ -4538,11 +4522,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <Button colorScheme="red" onClick={handleDeleteItem} disabled={isDeletingItem}>
               {isDeletingItem ? (
                 <>
-                  <span
-
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
+                  <Spinner size="sm" mr={2} />
                   Deleting...
                 </>
               ) : (
@@ -4572,14 +4552,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     .filter((item) => selectedItems.includes(item.id))
                     .slice(0, 10) // Show first 10 items
                     .map((item) => (
-                      <li key={item.id}>
+                      <ListItem key={item.id}>
                         {item.code} - {item.description || 'N/A'}
-                      </li>
+                      </ListItem>
                     ))}
                   {selectedItems.length > 10 && (
-                    <li>
+                    <ListItem>
                       <em>... and {selectedItems.length - 10} more items</em>
-                    </li>
+                    </ListItem>
                   )}
                 </Box>
               </Box>
@@ -4600,11 +4580,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <Button colorScheme="red" onClick={handleBulkDelete} disabled={isBulkDeleting}>
               {isBulkDeleting ? (
                 <>
-                  <span
-
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
+                  <Spinner size="sm" mr={2} />
                   Deleting {selectedItems.length} items...
                 </>
               ) : (
@@ -4637,9 +4613,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <VStack align="start" spacing={2}>
                   {availableBackups.map((backup) => (
                     <Flex key={backup.uploadSessionId} align="start" mb={2}>
-                      <input
-
-                        type="radio"
+                      <Radio
                         name="backupSelection"
                         id={`backup-${backup.uploadSessionId}`}
                         value={backup.uploadSessionId}
@@ -4693,11 +4667,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             >
               {isRollingBack ? (
                 <>
-                  <span
-
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
+                  <Spinner size="sm" mr={2} />
                   {t('settings.manufacturers.catalogMapping.rollback.rolling')}
                 </>
               ) : (
@@ -4794,11 +4764,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <Button colorScheme="blue" onClick={handleBulkEdit} disabled={isBulkEditing}>
               {isBulkEditing ? (
                 <>
-                  <span
-
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
+                  <Spinner size="sm" mr={2} />
                   Updating {selectedItems.length} Items...
                 </>
               ) : (
@@ -4874,11 +4840,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             >
               {isEditingStyleName ? (
                 <>
-                  <span
-
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
+                  <Spinner size="sm" mr={2} />
                   Renaming Style...
                 </>
               ) : (
@@ -5003,7 +4965,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 })
                                 setShowEditCategoryModal(true)
                               }}
-                              leftIcon={<span>✏️</span>}
+                              leftIcon={<Text as="span">✏️</Text>}
                             >
                               <Text display={{ base: "none", sm: "inline" }}>{t('common.edit')}</Text>
                             </Button>
@@ -5016,7 +4978,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                 setCategoryToDelete(category)
                                 setShowDeleteCategoryModal(true)
                               }}
-                              leftIcon={<span>🗑️</span>}
+                              leftIcon={<Text as="span">🗑️</Text>}
                             >
                               <Text display={{ base: "none", sm: "inline" }}>{t('common.delete')}</Text>
                             </Button>
@@ -5195,7 +5157,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <Box>
                 {modificationStep === 1 && (
                   <Box>
-                    <h5>{t('globalMods.modal.add.step1Title')}</h5>
+                    <Heading as="h5" size="md">{t('globalMods.modal.add.step1Title')}</Heading>
                     <Box>
                       <Select
                         value={selectedModificationCategory}
@@ -5216,7 +5178,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                     {selectedModificationCategory === 'new' && (
                       <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
-                        <h6>{t('globalMods.modal.add.createNew')}</h6>
+                        <Heading as="h6" size="sm">{t('globalMods.modal.add.createNew')}</Heading>
                         <Box>
                           <Box>
                             <Input
@@ -5264,11 +5226,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                 {modificationStep === 2 && (
                   <Box>
-                    <h5>Step 2: Build Modification Template</h5>
+                    <Heading as="h5" size="md">Step 2: Build Modification Template</Heading>
 
                     {/* Default Required Fields */}
                     <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
-                      <h6>Required Fields</h6>
+                      <Heading as="h6" size="sm">Required Fields</Heading>
                       <Box>
                         <Box>
                           <Input
@@ -5302,7 +5264,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
                     {/* Optional Field Builder */}
                     <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
-                      <h6>Optional Field Builder (Building Blocks)</h6>
+                      <Heading as="h6" size="sm">Optional Field Builder (Building Blocks)</Heading>
 
                       {/* Slider Controls */}
                       <Box mb={3}>
@@ -5798,11 +5760,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         <Box>
                           <Box>
                             <Box>
-                              <h6>
+                              <Heading as="h6" size="sm">
                                 {t(
                                   'settings.manufacturers.catalogMapping.builder.descriptions.header',
                                 )}
-                              </h6>
+                              </Heading>
                             </Box>
                             <Box>
                               <Box>
@@ -6022,11 +5984,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         >
                           {creatingModification ? (
                             <>
-                              <span
-
-                                role="status"
-                                aria-hidden="true"
-                              ></span>
+                              <Spinner size="sm" mr={2} />
                               {t('common.saving')}
                             </>
                           ) : (
@@ -6091,11 +6049,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         >
                           {creatingModification ? (
                             <>
-                              <span
-
-                                role="status"
-                                aria-hidden="true"
-                              ></span>
+                              <Spinner size="sm" mr={2} />
                               {t('common.creating')}
                             </>
                           ) : (
@@ -6112,7 +6066,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             {modificationView === 'gallery' && (
               <Box>
                 <Flex justify="space-between" align="center" mb={3}>
-                  <h5>{t('settings.manufacturers.catalogMapping.gallery.title')}</h5>
+                  <Heading as="h5" size="md">{t('settings.manufacturers.catalogMapping.gallery.title')}</Heading>
                   <Button colorScheme="gray" onClick={() => setModificationView('cards')}>
                     {t('settings.manufacturers.catalogMapping.gallery.back')}
                   </Button>
@@ -6123,7 +6077,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     <Box key={category.id}>
                       <Box>
                         <Box>
-                          <h6>{category.name}</h6>
+                          <Heading as="h6" size="sm">{category.name}</Heading>
                           <Box>
                             <Button
                               size="sm"
@@ -6167,10 +6121,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   <Box>
                                     <strong>{template.name}</strong>
                                     {template.defaultPrice && (
-                                      <span>
+                                      <Text as="span">
                                         {' '}
                                         - ${Number(template.defaultPrice).toFixed(2)}
-                                      </span>
+                                      </Text>
                                     )}
                                     <Box>
                                       <Badge color={template.isReady ? 'success' : 'warning'}>
@@ -6313,9 +6267,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               </Box>
                             ))
                           ) : (
-                            <p>
+                            <Text>
                               {t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}
-                            </p>
+                            </Text>
                           )}
                         </Box>
                       </Box>
@@ -6441,12 +6395,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <ModalBody>
             {categoryToDelete && (
               <>
-                <p>
+                <Text>
                   <strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong>{' '}
                   {t('globalMods.modal.deleteCategory.aboutToDelete', {
                     name: categoryToDelete.name,
                   })}
-                </p>
+                </Text>
                 {categoryToDelete.templates?.length > 0 && (
                   <Box p={3} bg={colorOrange50} borderRadius="md">
                     <strong>{t('globalMods.modal.deleteCategory.warning', '⚠️ Warning:')}</strong>{' '}
@@ -6455,9 +6409,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     })}
                     <Box>
                       <Box>
-                        <input
-
-                          type="radio"
+                        <Radio
                           name="deleteMode"
                           id="deleteCancel"
                           value="cancel"
@@ -6468,9 +6420,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         </label>
                       </Box>
                       <Box>
-                        <input
-
-                          type="radio"
+                        <Radio
                           name="deleteMode"
                           id="deleteWithMods"
                           value="withMods"
@@ -6527,10 +6477,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <ModalBody>
             {modificationToMove && (
               <>
-                <p>
+                <Text>
                   {t('common.move', 'Move')} <strong>"{modificationToMove.name}"</strong>{' '}
                   {t('common.to', 'to')} {t('common.whichCategory', 'which category?')}
-                </p>
+                </Text>
                 <FormControl>
                   <FormLabel>
                     {t(
@@ -6606,7 +6556,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           <ModalBody>
             {/* Basic Information */}
             <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
-              <h6>{t('common.basicInformation', 'Basic Information')}</h6>
+              <Heading as="h6" size="sm">{t('common.basicInformation', 'Basic Information')}</Heading>
               <VStack spacing={3} align="stretch">
                 <FormControl>
                   <FormLabel>{t('globalMods.modal.editTemplate.nameLabel', 'Name')}</FormLabel>
@@ -6655,9 +6605,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 </FormControl>
                 <FormControl>
                   <Flex align="center" mt={4}>
-                    <input
-
-                      type="checkbox"
+                    <Checkbox
                       id="showToBoth"
                       checked={editTemplate.showToBoth || false}
                       onChange={(event) =>
@@ -6715,7 +6663,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
             {/* Advanced Field Configuration */}
             <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
-              <h6>{t('common.advancedFieldConfiguration', 'Advanced Field Configuration')}</h6>
+              <Heading as="h6" size="sm">{t('common.advancedFieldConfiguration', 'Advanced Field Configuration')}</Heading>
 
               {/* Slider Controls */}
               <Box mb={3}>
@@ -7127,7 +7075,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               {/* Descriptions */}
               <Box>
                 <Box>
-                  <h6>{t('globalMods.builder.title', 'Guided Builder')}</h6>
+                  <Heading as="h6" size="sm">{t('globalMods.builder.title', 'Guided Builder')}</Heading>
                 </Box>
                 <Box>
                   <Box>

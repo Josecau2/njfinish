@@ -38,6 +38,15 @@ NON_CHAKRA_PACKAGES = [
     'yet-another-react-lightbox',
     'react-lazy-load-image-component',
     'react-data-table-component',
+    'react-icons',
+    '@heroicons/',
+    '@fortawesome/',
+    '@phosphor-icons/',
+    'phosphor-react',
+    'tabler-icons-react',
+    'ionicons',
+    '@iconify/',
+    'feather-icons',
 ]
 NON_CHAKRA_IMPORT_PATTERN = re.compile(
     r"import[^;]+from\s+['\"]([^'\"]+)['\"]|require\(\s*['\"]([^'\"]+)['\"]\s*\)"
@@ -52,6 +61,9 @@ RETURN_JSX_PATTERN = re.compile(r'return\s*\(.*<', re.DOTALL)
 
 SUPPORTED_EXTENSIONS = ('.js', '.jsx', '.ts', '.tsx')
 
+EXCLUDED_PATH_PREFIXES = [
+    'components/pdf/',
+]
 
 @dataclass
 class FileAnalysis:
@@ -90,6 +102,9 @@ def detect_non_chakra_components(root: str) -> List[FileAnalysis]:
                 continue
             full_path = os.path.join(dirpath, filename)
             rel_path = os.path.relpath(full_path, root)
+            rel_path = rel_path.replace('\\', '/')
+            if any(rel_path.startswith(prefix) for prefix in EXCLUDED_PATH_PREFIXES):
+                continue
             try:
                 with open(full_path, 'r', encoding='utf-8') as fh:
                     text = fh.read()
@@ -203,3 +218,7 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+
+
+
+

@@ -9,6 +9,7 @@ import {
   ModalFooter,
   ModalCloseButton,
   Button,
+  Text,
 } from '@chakra-ui/react'
 
 const EmailContractModal = ({ show, onClose }) => {
@@ -21,12 +22,12 @@ const EmailContractModal = ({ show, onClose }) => {
         <ModalHeader>{t('contracts.sendTitle', 'Send contract')}</ModalHeader>
         <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>
-          <p>
+          <Text>
             {t(
               'contracts.noContractsMsg',
               'No contracts available for selection. Please go to contract settings to add one.',
             )}
-          </p>
+          </Text>
         </ModalBody>
         <ModalFooter>
           <Button

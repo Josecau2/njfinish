@@ -1,0 +1,3846 @@
+{
+  "summary": {
+    "total": 257,
+    "chakra_only": 43,
+    "mixed": 107,
+    "no_chakra": 107,
+    "components_flagged": 106
+  },
+  "files": [
+    {
+      "path": "App.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "icons-lucide.ts",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "icons.ts",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "icons.tsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "index.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "routes.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "ui-tokens.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "_nav.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "_nav_new.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "api/orders.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "api/quotes.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "api/quotes.ts",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "assets/brand/logo.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "assets/brand/sygnet.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "audit/routeRegistrar.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "brand/useBrand.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/AppBreadcrumb.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/AppContent.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/AppFooter.js",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/AppHeader.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/AppInitializer.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/AppModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/AppSidebar.js",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/AppSidebarNav.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/BrandLogo.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/CatalogTable.js",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "strong",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/CatalogTableEdit.js",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "strong",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 7,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags",
+        "inline_style_usage"
+      ]
+    },
+    {
+      "path": "components/DocsComponents.js",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/DocsExample.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/DocsIcons.js",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/DocsLink.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/EditManufacturerModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/EditUsersModel.js",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/EmbeddedPaymentForm.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/ErrorBoundary.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/FileViewerModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/index.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/ItemSelectionContent.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/ItemSelectionContentEdit.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/LanguageSwitcher.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/Loader.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/LoadingSkeleton.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/LoginPreview.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/NeutralModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/NoisyRedirects.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/NotificationBell.js",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/PageContainer.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/PageErrorBoundary.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/PageHeader.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/PaginationControls.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/PaymentModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/PdfViewer.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/PermissionGate.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/PermissionGate.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/ProposalAcceptanceModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/ProtectedRoute.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/PublicRoute.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/ResponsiveTable.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/RouteGuard.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/RouteGuard.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/SecondaryToolbar.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/SessionRefresher.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/StandardCard.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/StyleCarousel.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/StyleMerger.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/TermsModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "strong"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/TileCard.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/withAuth.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/withAuthGuard.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/withContractorScope.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/withDynamicContrast.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/common/AppButton.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/common/EmptyState.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/common/PaginationComponent.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/contact/ContactInfoCard.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/contact/ContactInfoEditor.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/contact/MessageComposer.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/contact/MessageHistory.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/contact/ThreadView.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/ContentTile/index.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/DataTable/DataTable.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/DataTable/index.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/DataTable/ResponsiveTable.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/FileViewerModal/index.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/form/CreatableCombobox.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/header/AppHeaderDropdown.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/header/index.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/model/EditGroupModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/model/EditManufacturerModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/model/EmailContractModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/model/EmailProposalModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "br",
+        "input",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/model/ModificationBrowserModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/model/ModificationModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/model/ModificationModalEdit.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/model/PrintPaymentReceiptModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "div",
+        "h1",
+        "h2",
+        "p",
+        "span",
+        "strong"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/model/PrintProposalModal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/PageLayout/index.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "components/PageLayout/PageLayout.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "components/showroom/ShowroomModeToggle.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "components/ui/CButton.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "config/customization.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "config/customization.template.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "config/index.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "config/loginCustomization.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "config/zIndex.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "constants/iconSizes.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "constants/spacing.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "helpers/axiosInstance.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "helpers/contactApi.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "helpers/dateUtils.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "helpers/notify.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "helpers/paymentReceiptTemplateGenerator.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "helpers/pdfTemplateGenerator.js",
+      "has_chakra_import": false,
+      "raw_tags": [
+        "div",
+        "img",
+        "strong",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "helpers/permissions.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "helpers/proposalPdfBuilder.js",
+      "has_chakra_import": false,
+      "raw_tags": [
+        "div",
+        "h4",
+        "img",
+        "strong",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "helpers/proposalPdfGenerator.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "helpers/subTypeValidation.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "helpers/termsApi.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "helpers/tokenValidator.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "hooks/useBreakpoint.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "hooks/useBreakpoint.ts",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "hooks/usePaginatedCatalog.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "hooks/useRealTimeCalculations.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "i18n/index.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "layout/AppShell.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "layout/DefaultLayout.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "pages/3dkitchen/ComingSoon.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/admin/ContractorDetail.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/admin/Contractors.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/admin/LeadsPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select",
+        "table",
+        "tbody",
+        "td",
+        "textarea",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/admin/contact/AdminContactSettings.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "pages/admin/contact/AdminMessages.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "pages/admin/ContractorDetail/CustomersTab.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "input",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/admin/ContractorDetail/OverviewTab.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "pages/admin/ContractorDetail/ProposalsTab.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/admin/ContractorDetail/SettingsTab.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "code"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/auth/ForgotPasswordPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 3,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags",
+        "className_usage"
+      ]
+    },
+    {
+      "path": "pages/auth/LoginPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 3,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags",
+        "className_usage"
+      ]
+    },
+    {
+      "path": "pages/auth/RequestAccessPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "span",
+        "textarea"
+      ],
+      "classnames": 3,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags",
+        "className_usage"
+      ]
+    },
+    {
+      "path": "pages/auth/ResetPasswordPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 3,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags",
+        "className_usage"
+      ]
+    },
+    {
+      "path": "pages/auth/SignupPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 1,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags",
+        "className_usage"
+      ]
+    },
+    {
+      "path": "pages/calender/index.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/contact/ContactUs.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "pages/contractor/ContractorDashboard.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/contracts/index.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "div",
+        "input",
+        "option",
+        "select",
+        "strong",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/customers/AddCustomerForm.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/customers/CustomerForm.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/customers/Customers.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/customers/EditCustomerPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/dashboard/Dashboard.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/orders/AdminOrders.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "pages/orders/MyOrders.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "pages/orders/OrderDetails.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/orders/OrdersList.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/payments/PaymentCancel.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/payments/PaymentConfiguration.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/payments/PaymentPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/payments/PaymentsList.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/payments/PaymentSuccess.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "code"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/payments/PaymentTest.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/profile/index.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/proposals/CreateProposalForm.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/proposals/EditProposal.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/proposals/ProposalEditor.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "pages/proposals/Proposals.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/proposals/CreateProposal/CustomerInfo.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "input",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/proposals/CreateProposal/DesignUpload.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/proposals/CreateProposal/FileUploadSection.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/proposals/CreateProposal/ManufacturerSelect.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/proposals/CreateProposal/ProposalEditor.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "pages/proposals/CreateProposal/ProposalSummary.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/proposals/EditProposal/EditProposal.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "pages/public/PublicProposalPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/quotes/Create/CreateQuote.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "pages/quotes/Create/QuoteEditor.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "pages/quotes/Create/step4Snapshot.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "pages/quotes/CreateQuote/QuoteEditorWrapper.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "pages/Resources/index.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select",
+        "textarea",
+        "video"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/customization/CustomizationPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/customization/index.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "pages/settings/customization/LoginCustomizerPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "input",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/customization/PdfLayoutCustomization.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "table",
+        "tbody",
+        "td",
+        "textarea",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/globalMods/GlobalModsPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "h6",
+        "input",
+        "label",
+        "option",
+        "p",
+        "select",
+        "small",
+        "span",
+        "strong",
+        "table",
+        "tbody",
+        "td",
+        "textarea",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/locations/CreateLocation.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/locations/EditLocation.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/locations/LocationList.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/manufacturers/EditManufacturer.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "pages/settings/manufacturers/ManufacturersForm.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/manufacturers/ManufacturersList.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "br",
+        "button",
+        "em",
+        "h5",
+        "h6",
+        "hr",
+        "input",
+        "label",
+        "li",
+        "option",
+        "p",
+        "select",
+        "small",
+        "span",
+        "strong",
+        "table",
+        "tbody",
+        "td",
+        "textarea",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/manufacturers/tabs/EditManufacturerTab.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "textarea"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/manufacturers/tabs/FilesHistoryTab.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/manufacturers/tabs/SettingsTab.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "input",
+        "option",
+        "select",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/manufacturers/tabs/StylePicturesTab.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "strong"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/manufacturers/tabs/TypesTab.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "datalist",
+        "h6",
+        "input",
+        "option",
+        "strong",
+        "table",
+        "tbody",
+        "td",
+        "textarea",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/multipliers/AddManuMultiplier.jsx",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "pages/settings/multipliers/EditManuMultiplier.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/multipliers/ManuMultipliers.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "input",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/taxes/TaxesPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/terms/TermsPage.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "h6",
+        "table",
+        "tbody",
+        "td",
+        "textarea",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/users/CreateUser.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/users/EditUser.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/users/UserList.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/usersGroup/CreateUserGroup.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/usersGroup/EditUserGroup.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "input",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "pages/settings/usersGroup/UserGroupList.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "queries/contractQueries.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "queries/notificationQueries.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "queries/paymentsQueries.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "queries/proposalQueries.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "queries/proposalsQueries.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "routes/__audit__/index.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "code"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "store/index.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/authSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/contractorSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/customerSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/customizationSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/dashboardSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/locationSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/manufacturersMultiplierSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/manufacturersSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/ordersSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/paymentsSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/selectedVersionEditSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/selectedVersionSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/selectVersionNewEditSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/selectVersionNewSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/sidebarSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/taxSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/userGroupSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "store/slices/userSlice.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "theme/index.js",
+      "has_chakra_import": true,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "chakra_only",
+      "reasons": []
+    },
+    {
+      "path": "utils/assetUtils.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/authToken.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/brandAssets.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/browserCleanup.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/cacheUtils.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/colorUtils.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/dateHelpers.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/generateHTMLTemplate.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/iconMapping.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/logoUtils.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/obfuscate.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/opaqueRoute.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/performanceMonitor.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/pricing.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/protectedAssets.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/security.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/showroomUtils.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/statusColors.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/uploads.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/pricing/calc.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "utils/pricing/normalizeProposal.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "views/notifications/index.js",
+      "has_chakra_import": false,
+      "raw_tags": [],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": false,
+      "status": "no_chakra",
+      "reasons": [
+        "missing @chakra-ui/react import"
+      ]
+    },
+    {
+      "path": "views/notifications/NotificationsPage.js",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "option",
+        "select"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "views/pages/page404/Page404.jsx",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "input"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    },
+    {
+      "path": "views/proposals/AdminProposalView.js",
+      "has_chakra_import": true,
+      "raw_tags": [
+        "button",
+        "table",
+        "tbody",
+        "td",
+        "th",
+        "thead",
+        "tr"
+      ],
+      "classnames": 0,
+      "inline_styles": 0,
+      "non_chakra_imports": [],
+      "looks_like_component": true,
+      "status": "mixed",
+      "reasons": [
+        "raw_html_tags"
+      ]
+    }
+  ]
+}

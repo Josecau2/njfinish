@@ -8,6 +8,9 @@ import {
   Tr,
   Th,
   Td,
+  Heading,
+  Text,
+  Link,
 } from '@chakra-ui/react'
 
 const FilesHistoryTab = ({ manufacturer }) => {
@@ -21,10 +24,10 @@ const FilesHistoryTab = ({ manufacturer }) => {
 
   return (
     <Box>
-      <h5>{t('settings.manufacturers.filesHistory.title')}</h5>
+      <Heading as="h5" size="md" mb={4}>{t('settings.manufacturers.filesHistory.title')}</Heading>
 
       {files.length === 0 ? (
-        <p>{t('settings.manufacturers.filesHistory.empty')}</p>
+        <Text>{t('settings.manufacturers.filesHistory.empty')}</Text>
       ) : (
         <Box overflowX="auto">
           <Table variant="simple" size="md">
@@ -59,14 +62,16 @@ const FilesHistoryTab = ({ manufacturer }) => {
                   <Td>{(file.file_size / 1024).toFixed(2)}</Td>
                   <Td>{new Date(file.createdAt).toLocaleString()}</Td>
                   <Td>
-                    <a
+                    <Link
                       href={`${downloadBaseUrl}/uploads/manufacturer_catalogs/${file.filename}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${t('settings.manufacturers.filesHistory.table.download')} ${file.original_name}`}
+                      color="blue.500"
+                      textDecoration="underline"
                     >
                       {t('settings.manufacturers.filesHistory.table.download')}
-                    </a>
+                    </Link>
                   </Td>
                 </Tr>
               ))}
