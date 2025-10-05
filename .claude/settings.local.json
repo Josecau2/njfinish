@@ -202,7 +202,8 @@
       "Bash(then echo \"$file exists\")",
       "Bash(else echo \"$file NOT FOUND\")",
       "Bash(git restore:*)",
-      "Bash(git grep:*)"
+      "Bash(git grep:*)",
+      "Bash(start table-card-preview.html)"
     ],
     "deny": [],
     "ask": []

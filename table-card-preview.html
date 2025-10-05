@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TableCard Component Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      background: #f7fafc;
+      padding: 40px 20px;
+      color: #2d3748;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #1a202c;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #718096;
+      margin-bottom: 40px;
+    }
+
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #2d3748;
+    }
+
+    /* TableCard Component Styles */
+    .table-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .table-card-body {
+      padding: 0;
+    }
+
+    .table-container {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    /* Table Styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f7fafc;
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #4a5568;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: #f7fafc;
+    }
+
+    /* Badge Styles */
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .badge-gray {
+      background: #edf2f7;
+      color: #4a5568;
+    }
+
+    .badge-blue {
+      background: #ebf8ff;
+      color: #2b6cb0;
+    }
+
+    .badge-green {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+
+    .badge-orange {
+      background: #feebc8;
+      color: #c05621;
+    }
+
+    /* Button Styles */
+    .btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.2s;
+    }
+
+    .btn-blue:hover {
+      background: #ebf8ff;
+      color: #2b6cb0;
+    }
+
+    .btn-red:hover {
+      background: #fff5f5;
+      color: #c53030;
+    }
+
+    /* Code Block */
+    .code-block {
+      background: #1a202c;
+      color: #e2e8f0;
+      padding: 24px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .code-comment {
+      color: #68d391;
+    }
+
+    /* Comparison Styles */
+    .plain-table {
+      margin-bottom: 32px;
+    }
+
+    .plain-table table {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+    }
+
+    .label {
+      font-size: 14px;
+      color: #718096;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .feature-card {
+      background: #edf2f7;
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 4px solid #3182ce;
+    }
+
+    .feature-card h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2d3748;
+    }
+
+    .feature-card p {
+      font-size: 13px;
+      color: #4a5568;
+      line-height: 1.5;
+    }
+
+    .icon {
+      width: 16px;
+      height: 16px;
+      vertical-align: middle;
+    }
+
+    .dark-mode-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #2d3748;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* Dark Mode */
+    body.dark {
+      background: #1a202c;
+      color: #e2e8f0;
+    }
+
+    body.dark h1,
+    body.dark .section-title {
+      color: #f7fafc;
+    }
+
+    body.dark .subtitle,
+    body.dark .label {
+      color: #a0aec0;
+    }
+
+    body.dark .table-card {
+      background: #2d3748;
+    }
+
+    body.dark .table-container {
+      border-color: #4a5568;
+    }
+
+    body.dark th {
+      background: #1a202c;
+      color: #a0aec0;
+      border-color: #4a5568;
+    }
+
+    body.dark td {
+      border-color: #4a5568;
+    }
+
+    body.dark tr:hover {
+      background: #1a202c;
+    }
+
+    body.dark .feature-card {
+      background: #2d3748;
+      border-left-color: #4299e1;
+    }
+
+    body.dark .feature-card h4 {
+      color: #e2e8f0;
+    }
+
+    body.dark .feature-card p {
+      color: #a0aec0;
+    }
+  </style>
+</head>
+<body>
+  <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
+
+  <div class="container">
+    <h1>TableCard Component Preview</h1>
+    <p class="subtitle">Reusable table wrapper with consistent styling and theme support</p>
+
+    <!-- Features Overview -->
+    <div class="section">
+      <h2 class="section-title">What TableCard Provides</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h4>🎨 Card Elevation</h4>
+          <p>Automatic shadow for depth (boxShadow="sm" by default)</p>
+        </div>
+        <div class="feature-card">
+          <h4>🔲 Border & Radius</h4>
+          <p>1px border with rounded corners (borderRadius="lg")</p>
+        </div>
+        <div class="feature-card">
+          <h4>🌓 Dark Mode Support</h4>
+          <p>Theme-aware colors (white/gray.800 background)</p>
+        </div>
+        <div class="feature-card">
+          <h4>📏 Consistent Spacing</h4>
+          <p>mb={6} for uniform vertical spacing between tables</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example 1: Standard TableCard -->
+    <div class="section">
+      <h2 class="section-title">Example 1: Standard TableCard (Your App Theme)</h2>
+      <div class="table-card">
+        <div class="table-card-body">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th style="text-align: center;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="badge badge-gray">1</span></td>
+                  <td style="font-weight: 600;">John Doe</td>
+                  <td style="color: #718096;">john@example.com</td>
+                  <td><span class="badge badge-blue">Admin</span></td>
+                  <td><span class="badge badge-green">Active</span></td>
+                  <td style="text-align: center;">
+                    <button class="btn btn-blue">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                    </button>
+                    <button class="btn btn-blue">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                      </svg>
+                    </button>
+                    <button class="btn btn-red">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-gray">2</span></td>
+                  <td style="font-weight: 600;">Jane Smith</td>
+                  <td style="color: #718096;">jane@example.com</td>
+                  <td><span class="badge badge-blue">User</span></td>
+                  <td><span class="badge badge-green">Active</span></td>
+                  <td style="text-align: center;">
+                    <button class="btn btn-blue">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                    </button>
+                    <button class="btn btn-blue">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                      </svg>
+                    </button>
+                    <button class="btn btn-red">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="badge badge-gray">3</span></td>
+                  <td style="font-weight: 600;">Bob Johnson</td>
+                  <td style="color: #718096;">bob@example.com</td>
+                  <td><span class="badge badge-blue">Manager</span></td>
+                  <td><span class="badge badge-orange">Pending</span></td>
+                  <td style="text-align: center;">
+                    <button class="btn btn-blue">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                    </button>
+                    <button class="btn btn-blue">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                      </svg>
+                    </button>
+                    <button class="btn btn-red">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison -->
+    <div class="section">
+      <h2 class="section-title">Comparison: Without vs With TableCard</h2>
+
+      <div class="label">❌ WITHOUT TableCard (Plain Table - Looks Flat):</div>
+      <div class="plain-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Column 1</th>
+              <th>Column 2</th>
+              <th>Column 3</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>No container</td>
+              <td>No elevation</td>
+              <td>Hard to see boundaries</td>
+            </tr>
+            <tr>
+              <td>Looks naked</td>
+              <td>No visual depth</td>
+              <td>Unprofessional</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="label">✅ WITH TableCard (Professional Look - Has Depth):</div>
+      <div class="table-card">
+        <div class="table-card-body">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Column 1</th>
+                  <th>Column 2</th>
+                  <th>Column 3</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Has container</td>
+                  <td>Has elevation/shadow</td>
+                  <td>Clear boundaries</td>
+                </tr>
+                <tr>
+                  <td>Visual depth</td>
+                  <td>Professional look</td>
+                  <td>Better UX</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usage Code -->
+    <div class="section">
+      <h2 class="section-title">How to Use TableCard</h2>
+      <div class="code-block">
+<span class="code-comment">// Import the component</span>
+import TableCard from '../../components/TableCard'
+
+<span class="code-comment">// Basic usage - wraps any Chakra Table</span>
+&lt;TableCard&gt;
+  &lt;Table variant="simple"&gt;
+    &lt;Thead&gt;...&lt;/Thead&gt;
+    &lt;Tbody&gt;...&lt;/Tbody&gt;
+  &lt;/Table&gt;
+&lt;/TableCard&gt;
+
+<span class="code-comment">// With custom props</span>
+&lt;TableCard
+  cardProps={{ boxShadow: "md", mb: 8 }}
+  containerProps={{ maxH: "400px", overflowY: "auto" }}
+&gt;
+  &lt;Table&gt;...&lt;/Table&gt;
+&lt;/TableCard&gt;
+
+<span class="code-comment">// What you get automatically:</span>
+<span class="code-comment">// ✅ Card elevation (boxShadow="sm")</span>
+<span class="code-comment">// ✅ Border with theme colors (gray.200/gray.700)</span>
+<span class="code-comment">// ✅ Rounded corners (borderRadius="lg")</span>
+<span class="code-comment">// ✅ Dark mode support</span>
+<span class="code-comment">// ✅ Consistent spacing (mb={6})</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+  </script>
+</body>
+</html>
