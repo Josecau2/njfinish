@@ -356,10 +356,10 @@ const AddUserGroupForm = () => {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onCancelClose}>
+              <Button ref={cancelRef} onClick={onCancelClose} minH="44px">
                 {t('settings.userGroups.alerts.stayOnPage')}
               </Button>
-              <Button colorScheme="red" onClick={() => { onCancelClose(); navigate('/settings/users/groups'); }} ml={3}>
+              <Button colorScheme="red" onClick={() => { onCancelClose(); navigate('/settings/users/groups'); }} ml={3} minH="44px">
                 {t('settings.userGroups.alerts.leaveAnyway')}
               </Button>
             </AlertDialogFooter>

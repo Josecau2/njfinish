@@ -9,25 +9,16 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import PageHeader from '../../../components/PageHeader'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
+import { getContrastColor } from '../../../utils/colorUtils'
 
 const PdfLayoutCustomization = () => {
   const api_url = import.meta.env.VITE_API_URL
   const { t } = useTranslation()
-  const customization = useSelector((state) => state.customization)
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
   const fileInputRef = useRef(null)
-
-  const getContrastColor = (backgroundColor) => {
-    if (!backgroundColor) return "white"
-    const hex = backgroundColor.replace('#', '')
-    const r = parseInt(hex.substr(0, 2), 16)
-    const g = parseInt(hex.substr(2, 2), 16)
-    const b = parseInt(hex.substr(4, 2), 16)
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000
-    return brightness > 128 ? "black" : "white"
-  }
-
-  const headerBgColor = customization?.headerBg || "purple.500"
-  const textColor = getContrastColor(headerBgColor)
 
   // Color mode values
   const color1 = useColorModeValue('white', 'gray.800')
@@ -292,7 +283,7 @@ const PdfLayoutCustomization = () => {
     <Box
       bg={color1}
       borderRadius="2xl"
-      overflow="hidden"
+      
       boxShadow="0 10px 40px rgba(0,0,0,0.1)"
       fontFamily="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
     >
@@ -762,16 +753,15 @@ const PdfLayoutCustomization = () => {
         </SimpleGrid>
       </Stack>
 
-      <Modal isOpen={previewOpen} onClose={() => setPreviewOpen(false)} size={{ base: 'full', md: 'xl', lg: '6xl' }} scrollBehavior="inside">
+      <Modal isOpen={previewOpen} onClose={() => setPreviewOpen(false)} size={{ base: 'full', md: 'xl', lg: '6xl' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent maxH="90vh" overflow="hidden" borderRadius="12px">
-          <ModalHeader bg={formData.headerBgColor} color={getContrastColor(formData.headerBgColor)}>
-            <HStack spacing={4} align="center">
-              <Icon as={Settings} />
-              <Text>{t('settings.customization.pdf.preview.title')}</Text>
-            </HStack>
+        <ModalContent maxH="90vh"  borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.customization.pdf.preview.title')}
+            </Text>
           </ModalHeader>
-          <ModalCloseButton color={getContrastColor(formData.headerBgColor)} />
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody bg={bgGray50} p={8}>
             <PreviewContent />
           </ModalBody>

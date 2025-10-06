@@ -9,11 +9,16 @@ import {
   BreadcrumbLink,
   Text,
   useColorModeValue,
-  Container,
 } from '@chakra-ui/react'
 import { ChevronRight } from 'lucide-react'
 import { Link as RouterLink } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+
+const DEFAULT_HEADER_CONTAINER_PROPS = {
+  px: { base: 4, md: 6 },
+  width: '100%',
+  maxW: '100%',
+  mx: 'auto',
+}
 
 const PageHeader = ({
   title,
@@ -26,7 +31,6 @@ const PageHeader = ({
   noContainer = false,
   containerProps = {},
 }) => {
-  const { t } = useTranslation()
   const borderColor = useColorModeValue('gray.200', 'gray.600')
   const subtitleColor = useColorModeValue('gray.600', 'gray.400')
   const iconBg = useColorModeValue('brand.50', 'brand.900')
@@ -42,13 +46,12 @@ const PageHeader = ({
       as="header"
       role="banner"
     >
-      {/* Breadcrumbs */}
       {breadcrumbs.length > 0 && (
         <Breadcrumb
           spacing="8px"
           separator={<ChevronRight size={14} />}
           fontSize="sm"
-          color={useColorModeValue("gray.500","gray.400")}
+          color={useColorModeValue('gray.500', 'gray.400')}
           mb={4}
         >
           {breadcrumbs.map((crumb, index) => (
@@ -73,14 +76,12 @@ const PageHeader = ({
         </Breadcrumb>
       )}
 
-      {/* Header Content */}
       <Flex
         direction={{ base: 'column', md: 'row' }}
         justify="space-between"
         align={{ base: 'flex-start', md: 'flex-end' }}
         gap={4}
       >
-        {/* Title Section */}
         <Box flex="1" minW="0">
           <Flex align="center" gap={4} mb={2}>
             {Icon && (
@@ -111,7 +112,6 @@ const PageHeader = ({
           )}
         </Box>
 
-        {/* Actions Section */}
         {(actions.length > 0 || rightContent || children) && (
           <Box flexShrink={0}>
             <HStack
@@ -131,16 +131,15 @@ const PageHeader = ({
     </Box>
   )
 
-  // If noContainer is true, return content directly (parent has container)
-  // Otherwise, wrap in Container for standalone usage
   if (noContainer) {
     return content
   }
 
-  return (
-    <Container maxW="1320px" px={{ base: 4, md: 6 }} {...containerProps}>
-      {content}
-    </Container>
-  )
+  const mergedContainerProps = {
+    ...DEFAULT_HEADER_CONTAINER_PROPS,
+    ...containerProps,
+  }
+
+  return <Box {...mergedContainerProps}>{content}</Box>
 }
 export default PageHeader

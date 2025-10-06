@@ -23,6 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
 } from '@chakra-ui/react'
+import { getContrastColor } from '../../utils/colorUtils'
 import PageContainer from '../../components/PageContainer'
 import {
   ClipboardList,
@@ -119,6 +120,10 @@ const ProposalForm = ({
   const [isFormDirty, setIsFormDirty] = useState(false)
 
   const manufacturerData = useSelector((state) => state.manufacturers.selected)
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   const userInteractedRef = useRef(false)
 
@@ -278,10 +283,7 @@ const ProposalForm = ({
             : actionType === '0'
             ? t('proposals.toast.successSave', 'Quote saved successfully')
             : t('proposals.toast.successSend', 'Quote sent successfully')
-        const onConfirm =
-          actionType === '2'
-            ? () => window.location.reload()
-            : () => navigate('/quotes')
+        const onConfirm = () => navigate('/quotes')
 
         showAlert(t('common.success', 'Success'), successMessage, onConfirm)
       } else {
@@ -461,7 +463,7 @@ const ProposalForm = ({
   }
 
   return (
-    <PageContainer>
+    <PageContainer maxW="100%" px={{ base: 3, md: 4 }}>
       <Stack spacing={6}>
         <PageHeader
           title={currentStepInfo.title}
@@ -587,13 +589,15 @@ const ProposalForm = ({
           isCentered
         >
           <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                {alertState.title}
+            <AlertDialogContent borderRadius="12px" overflow="hidden">
+              <AlertDialogHeader bg={resolvedHeaderBg} color={headerTextColor}>
+                <Text fontSize="lg" fontWeight="semibold">
+                  {alertState.title}
+                </Text>
               </AlertDialogHeader>
               <AlertDialogBody>{alertState.message}</AlertDialogBody>
               <AlertDialogFooter>
-                <Button ref={alertCancelRef} colorScheme='brand' onClick={closeAlert}>
+                <Button ref={alertCancelRef} colorScheme='brand' onClick={closeAlert} minH="44px">
                   {t('common.ok', 'OK')}
                 </Button>
               </AlertDialogFooter>
@@ -606,3 +610,4 @@ const ProposalForm = ({
 }
 
 export default withContractorScope(ProposalForm, 'proposals', ['proposals:create'])
+

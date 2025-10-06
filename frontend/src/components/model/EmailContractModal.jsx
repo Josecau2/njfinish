@@ -1,5 +1,6 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import {
   Modal,
   ModalOverlay,
@@ -10,17 +11,27 @@ import {
   ModalCloseButton,
   Button,
   Text,
+  useColorModeValue,
 } from '@chakra-ui/react'
+import { getContrastColor } from '../../utils/colorUtils'
 
 const EmailContractModal = ({ show, onClose }) => {
   const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   return (
-    <Modal isOpen={show} onClose={onClose} isCentered size='lg' scrollBehavior='inside'>
+    <Modal isOpen={show} onClose={onClose} isCentered size={{ base: 'full', md: 'xl', lg: '3xl' }} scrollBehavior='inside'>
       <ModalOverlay />
-      <ModalContent borderRadius="12px" overflow="hidden">
-        <ModalHeader>{t('contracts.sendTitle', 'Send contract')}</ModalHeader>
-        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+      <ModalContent borderRadius="12px">
+        <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+          <Text fontSize="lg" fontWeight="semibold">
+            {t('contracts.sendTitle', 'Send contract')}
+          </Text>
+        </ModalHeader>
+        <ModalCloseButton color={headerTextColor} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>
           <Text>
             {t(

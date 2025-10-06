@@ -36,7 +36,7 @@ const AppContent = () => {
   return (
     <Box
       w="full"
-      maxW={{ base: '100%', xl: '1180px', '2xl': '1320px' }}
+      maxW="100%"
       mx="auto"
       px={{ base: 2, md: 3, lg: 4, xl: 6 }}
       overflowX="hidden"
@@ -84,11 +84,9 @@ const AppContent = () => {
                 )
               )
             })}
-            {/* Dev-only audit routes */}
             {import.meta.env.DEV && (
               <Route path="__audit__/*" element={<AuditRoutes />} />
             )}
-            {/* Fallback route for unauthorized access */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AnimatePresence>

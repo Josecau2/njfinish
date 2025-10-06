@@ -693,10 +693,10 @@ const CustomerTable = ({
                 {t('customers.confirmText', 'This action cannot be undone!')}
               </AlertDialogBody>
               <AlertDialogFooter>
-                <Button ref={cancelRef} onClick={handleCancelDelete}>
+                <Button ref={cancelRef} onClick={handleCancelDelete} minH="44px">
                   {t('customers.confirmNo', 'No, cancel!')}
                 </Button>
-                <Button colorScheme="red" onClick={confirmDelete} ml={3}>
+                <Button colorScheme="red" onClick={confirmDelete} ml={3} minH="44px">
                   {t('customers.confirmYes', 'Yes, delete it!')}
                 </Button>
               </AlertDialogFooter>

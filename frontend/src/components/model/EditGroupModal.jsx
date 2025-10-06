@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import {
   Modal,
   ModalOverlay,
@@ -6,6 +7,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  ModalCloseButton,
   FormControl,
   FormLabel,
   Input,
@@ -14,8 +16,11 @@ import {
   AlertIcon,
   Stack,
   Button,
+  Text,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
+import { getContrastColor } from '../../utils/colorUtils'
 
 const DEFAULT_FORM = {
   name: '',
@@ -27,6 +32,11 @@ const multiplierRegex = /^(?:\d{0,4})(?:\.\d{0,2})?$/
 
 const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
   const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
+
   const [formData, setFormData] = useState(DEFAULT_FORM)
   const [error, setError] = useState(null)
 
@@ -69,8 +79,13 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
   return (
     <Modal isOpen={show} onClose={onClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent as='form' onSubmit={handleSubmit} borderRadius="12px" overflow="hidden">
-        <ModalHeader>{t('settings.userGroups.multipliers.modal.title')}</ModalHeader>
+      <ModalContent as='form' onSubmit={handleSubmit} borderRadius="12px" >
+        <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+          <Text fontSize="lg" fontWeight="semibold">
+            {t('settings.userGroups.multipliers.modal.title')}
+          </Text>
+        </ModalHeader>
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
         <ModalBody>
           <Stack spacing={4}>
             {error ? (
@@ -124,7 +139,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
           </Stack>
         </ModalBody>
         <ModalFooter gap={4}>
-          <Button variant='outline' onClick={onClose}>
+          <Button variant='outline' onClick={onClose} minH="44px">
             {t('common.cancel')}
           </Button>
           <Button colorScheme='brand' type='submit' minH='44px'>

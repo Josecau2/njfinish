@@ -7,6 +7,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  ModalCloseButton,
   FormControl,
   FormLabel,
   Input,
@@ -73,6 +74,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
       <ModalOverlay />
       <ModalContent as='form' onSubmit={handleSubmit}>
         <ModalHeader>{t('manufacturer.editTitle')}</ModalHeader>
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>
           <Stack spacing={4}>
             {error ? (
@@ -135,7 +137,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
           </Stack>
         </ModalBody>
         <ModalFooter gap={4}>
-          <Button variant='outline' onClick={onClose} aria-label={t('manufacturers.actions.cancelEdit', 'Cancel editing manufacturer')}>
+          <Button variant='outline' onClick={onClose} aria-label={t('manufacturers.actions.cancelEdit', 'Cancel editing manufacturer')} minH="44px">
             {t('common.cancel')}
           </Button>
           <Button colorScheme='brand' type='submit' minH='44px' aria-label={t('manufacturers.actions.saveChanges', 'Save manufacturer changes')}>

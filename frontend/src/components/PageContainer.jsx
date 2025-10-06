@@ -1,7 +1,11 @@
 import React from 'react'
 import { Box } from '@chakra-ui/react'
 
-const DEFAULT_MAX_WIDTH = { base: "100%", xl: "1320px", "2xl": "1480px", "3xl": "1600px" }
+export const PAGE_CONTAINER_CONSTRAINED_WIDTH = { base: "100%", xl: "1320px", "2xl": "1480px", "3xl": "1600px" }
+
+const DEFAULT_MAX_WIDTH = "100%"
+const DEFAULT_PADDING_X = { base: 4, md: 6 }
+const DEFAULT_PADDING_Y = { base: 4, md: 6 }
 
 /**
  * PageContainer - Consistent container wrapper for page content
@@ -12,19 +16,19 @@ const DEFAULT_MAX_WIDTH = { base: "100%", xl: "1320px", "2xl": "1480px", "3xl": 
  * When using with PageHeader, pass noContainer={true} to PageHeader to avoid double padding.
  *
  * @param {ReactNode} children - Page content
- * @param {object|string} maxW - Max width (default: responsive 1320px-1600px)
+ * @param {object|string} maxW - Max width (default: 100%)
  * @param {object|number} px - Horizontal padding (default: 4 on mobile, 6 on desktop)
  * @param {object|number} py - Vertical padding (default: 4 on mobile, 6 on desktop)
  */
-const PageContainer = ({ children, maxW = DEFAULT_MAX_WIDTH, px = { base: 4, md: 6 }, py = { base: 4, md: 6 }, ...props }) => {
+const PageContainer = ({ children, maxW = DEFAULT_MAX_WIDTH, px = DEFAULT_PADDING_X, py = DEFAULT_PADDING_Y, ...props }) => {
   return (
     <Box
       px={px}
       py={py}
       maxW={maxW}
+      width="100%"
       mx="auto"
       data-page-container
-      width="100%"
       {...props}
     >
       {children}

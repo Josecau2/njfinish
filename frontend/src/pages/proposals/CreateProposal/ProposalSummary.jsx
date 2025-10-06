@@ -27,6 +27,7 @@ import {
   SimpleGrid,
   Stack,
   VStack,
+  HStack,
   Tab,
   TabList,
   TabPanel,
@@ -39,6 +40,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  ModalCloseButton,
   UnorderedList,
   ListItem,
   useColorModeValue,
@@ -54,6 +56,7 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 import FileUploadSection from './FileUploadSection'
 import { setSelectVersionNew } from '../../../store/slices/selectVersionNewSlice'
 import { validateProposalSubTypeRequirements, getMissingRequirementMessages } from '../../../helpers/subTypeValidation'
+import { getContrastColor } from '../../../utils/colorUtils'
 
 const ItemSelectionStep = ({
   setFormData,
@@ -70,6 +73,10 @@ const ItemSelectionStep = ({
   const dispatch = useDispatch()
   const alertCancelRef = useRef(null)
   const [alertState, setAlertState] = useState({ isOpen: false, title: '', body: null, onConfirm: null })
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   const showAlert = (title, body, onConfirm) => {
     setAlertState({
@@ -677,8 +684,13 @@ const ItemSelectionStep = ({
 
       <Modal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('proposals.create.summary.editVersionTitle')}</ModalHeader>
+        <ModalContent borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('proposals.create.summary.editVersionTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Input
               value={editedVersionName}
@@ -699,8 +711,13 @@ const ItemSelectionStep = ({
 
       <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('customers.confirmTitle')}</ModalHeader>
+        <ModalContent borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('customers.confirmTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>{t('proposals.create.summary.confirmDeleteVersion')}</ModalBody>
           <ModalFooter>
             <Button variant="ghost" colorScheme="gray" onClick={() => setDeleteModalOpen(false)} mr={3} minH="44px">
@@ -720,15 +737,17 @@ const ItemSelectionStep = ({
         isCentered
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              {alertState.title}
+          <AlertDialogContent borderRadius="12px" overflow="hidden">
+            <AlertDialogHeader bg={resolvedHeaderBg} color={headerTextColor}>
+              <Text fontSize="lg" fontWeight="semibold">
+                {alertState.title}
+              </Text>
             </AlertDialogHeader>
             <AlertDialogBody>
               {typeof alertState.body === 'string' ? <Text>{alertState.body}</Text> : alertState.body}
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={alertCancelRef} colorScheme='brand' onClick={closeAlert}>
+              <Button ref={alertCancelRef} colorScheme='brand' onClick={closeAlert} minH="44px">
                 {t('common.ok', 'OK')}
               </Button>
             </AlertDialogFooter>
@@ -743,9 +762,11 @@ const ItemSelectionStep = ({
         isCentered
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              {t('proposals.confirm.submitTitle', 'Confirm Quote Submission')}
+          <AlertDialogContent borderRadius="12px" overflow="hidden">
+            <AlertDialogHeader bg={resolvedHeaderBg} color={headerTextColor}>
+              <Text fontSize="lg" fontWeight="semibold">
+                {t('proposals.confirm.submitTitle', 'Confirm Quote Submission')}
+              </Text>
             </AlertDialogHeader>
 
             <AlertDialogBody>

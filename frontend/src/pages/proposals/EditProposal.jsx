@@ -25,6 +25,7 @@ import {
   MenuList,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -670,11 +671,11 @@ const EditProposal = ({
         </HStack>
       </Box>
 
-      <PageContainer maxW="100%" bg={pageBg} minH="100vh">
+      <PageContainer maxW="100%" px={{ base: 3, md: 4 }} bg={pageBg} minH="100vh">
         <Box as="form" onSubmit={handleSubmit}>
           {/* Basic Information Card */}
           <StandardCard mb={4}>
-            <CardBody>
+            <CardBody p={{ base: 3, md: 4 }}>
               <Text fontSize="lg" fontWeight="medium" mb={4}>
                 Basic Information
               </Text>
@@ -865,7 +866,7 @@ const EditProposal = ({
 
           {/* Dates Card */}
           <StandardCard mb={4}>
-            <CardBody>
+            <CardBody p={{ base: 3, md: 4 }}>
               <Text fontSize="lg" fontWeight="medium" mb={4}>
                 Important Dates
               </Text>
@@ -1163,6 +1164,7 @@ const EditProposal = ({
         <ModalOverlay>
           <ModalContent>
             <ModalHeader>{t('common.editVersionName', 'Edit Version Name')}</ModalHeader>
+            <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
             <ModalBody>
               <Input
                 mb={3}
@@ -1180,7 +1182,7 @@ const EditProposal = ({
               >
                 {t('common.cancel', 'Cancel')}
               </Button>
-              <Button colorScheme="brand" onClick={saveEditVersionName}>
+              <Button colorScheme="brand" onClick={saveEditVersionName} minH="44px">
                 {t('common.save', 'Save')}
               </Button>
             </ModalFooter>
@@ -1198,6 +1200,7 @@ const EditProposal = ({
         <ModalOverlay>
           <ModalContent>
             <ModalHeader>{t('common.confirmDelete', 'Confirm Delete')}</ModalHeader>
+            <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
             <ModalBody>
               {t('common.areYouSureDelete', 'Are you sure you want to delete this version?')}
             </ModalBody>
@@ -1210,7 +1213,7 @@ const EditProposal = ({
               >
                 {t('common.cancel', 'Cancel')}
               </Button>
-              <Button colorScheme="red" onClick={confirmDelete}>
+              <Button colorScheme="red" onClick={confirmDelete} minH="44px">
                 {t('common.delete', 'Delete')}
               </Button>
             </ModalFooter>

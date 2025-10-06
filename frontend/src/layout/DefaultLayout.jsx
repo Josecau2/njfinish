@@ -173,7 +173,6 @@ const DefaultLayout = () => {
           data-page-container
           maxW="100%"
           mx="auto"
-          px={{ base: 4, md: 6, xl: 8, "2xl": 10 }}
           w="100%"
         >
           <AppContent />

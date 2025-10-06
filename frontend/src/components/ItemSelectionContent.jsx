@@ -816,6 +816,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             const total = finalPrice * qty + assemblyFee * qty;
             const newItem = {
                 id: item.id,
+                catalogDataId: item.id, // Reference to original catalog item for sub-type validation
                 code: item.code,
                 description: item.description,
                 type: item.type, // Add the type field so Specs badges can work
@@ -2089,28 +2090,28 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             <Tbody>
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalDoc.priceSummary.cabinets')}</Th>
-                                    <Td textAlign="center" fontWeight="semibold">
+                                    <Td textAlign="right" fontWeight="semibold">
                                         {money(selectedResult?.partsCents)}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalDoc.priceSummary.assembly')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {money(selectedResult?.assemblyCents)}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalDoc.priceSummary.modifications')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {money(selectedResult?.modsCents)}
                                     </Td>
                                 </Tr>
 
                                 <Tr bg={tableRowBg}>
                                     <Th>{t('proposalDoc.priceSummary.styleTotal')}</Th>
-                                    <Td textAlign="center" fontWeight="semibold">
+                                    <Td textAlign="right" fontWeight="semibold">
                                         {money(selectedResult?.subtotalBeforeDiscountCents)}
                                     </Td>
                                 </Tr>
@@ -2147,35 +2148,35 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalDoc.priceSummary.total')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {money((selectedResult?.subtotalBeforeDiscountCents || 0) - (selectedResult?.discountCents || 0))}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('settings.manufacturers.edit.deliveryFee')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {money(selectedResult?.deliveryCents)}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalUI.summary.taxRate')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {(selectedResult?.taxRatePct ?? defaultTaxValue) || 0}%
                                     </Td>
                                 </Tr>
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalDoc.priceSummary.tax')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {money(selectedResult?.taxCents)}
                                     </Td>
                                 </Tr>
 
                                 <Tr bg={tableTotalRowBg}>
                                     <Th>{t('proposalDoc.priceSummary.grandTotal')}</Th>
-                                    <Td textAlign="center" fontWeight="bold">
+                                    <Td textAlign="right" fontWeight="bold">
                                         {money(selectedResult?.grandTotalCents)}
                                     </Td>
                                 </Tr>

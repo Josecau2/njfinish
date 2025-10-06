@@ -164,6 +164,9 @@ const generateReceiptHtml = ({ payment, order, customization, t }) => {
 const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
   const { t } = useTranslation()
   const customization = useSelector((state) => state.customization)
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization?.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization?.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   // Color mode values
   const bgGray50 = useColorModeValue('gray.50', 'gray.800')
@@ -217,9 +220,13 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
   return (
     <Modal isOpen={show} onClose={onClose} size={{ base: "full", lg: "lg" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent borderRadius="12px" overflow="hidden">
-        <ModalHeader>{t('paymentReceipt.modal.title', 'Payment receipt')}</ModalHeader>
-        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} isDisabled={isLoading} />
+      <ModalContent borderRadius="12px">
+        <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+          <Text fontSize="lg" fontWeight="semibold">
+            {t('paymentReceipt.modal.title', 'Payment receipt')}
+          </Text>
+        </ModalHeader>
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} isDisabled={isLoading} color={headerTextColor} />
         <ModalBody>
           <Stack spacing={6}>
             <PageHeader
@@ -277,10 +284,10 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
           </Stack>
         </ModalBody>
         <ModalFooter>
-          <Button variant="outline" mr={3} onClick={onClose} isDisabled={isLoading}>
+          <Button variant="outline" mr={3} onClick={onClose} isDisabled={isLoading} minH="44px">
             {t('common.cancel', 'Cancel')}
           </Button>
-          <Button colorScheme="brand" onClick={downloadReceipt} isDisabled={isLoading}>
+          <Button colorScheme="brand" onClick={downloadReceipt} isDisabled={isLoading} minH="44px">
             {isLoading ? (
               <HStack spacing={4}>
                 <Spinner size="sm" />

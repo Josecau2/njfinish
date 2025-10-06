@@ -692,10 +692,10 @@ const AddUserForm = () => {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={restoreRef} onClick={onRestoreClose}>
+              <Button ref={restoreRef} onClick={onRestoreClose} minH="44px">
                 {t('common.no')}
               </Button>
-              <Button colorScheme="blue" onClick={confirmRestore} ml={3}>
+              <Button colorScheme="blue" onClick={confirmRestore} ml={3} minH="44px">
                 {t('settings.users.alerts.restoreYes')}
               </Button>
             </AlertDialogFooter>
@@ -720,10 +720,10 @@ const AddUserForm = () => {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onCancelClose}>
+              <Button ref={cancelRef} onClick={onCancelClose} minH="44px">
                 {t('settings.users.form.alerts.stayOnPage')}
               </Button>
-              <Button colorScheme="red" onClick={() => { onCancelClose(); navigate('/settings/users'); }} ml={3}>
+              <Button colorScheme="red" onClick={() => { onCancelClose(); navigate('/settings/users'); }} ml={3} minH="44px">
                 {t('settings.users.form.alerts.leaveAnyway')}
               </Button>
             </AlertDialogFooter>

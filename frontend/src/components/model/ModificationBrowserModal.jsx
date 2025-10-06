@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, IconButton, Input, Spinner, Breadcrumb, BreadcrumbItem, SimpleGrid, Box, Text, Tag, Stack, HStack, VStack, Divider, Image, Slider, SliderTrack, SliderFilledTrack, SliderThumb, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Alert, AlertIcon, useToast, Textarea, useColorModeValue } from '@chakra-ui/react'
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, ModalCloseButton, Button, IconButton, Input, Spinner, Breadcrumb, BreadcrumbItem, SimpleGrid, Box, Text, Tag, Stack, HStack, VStack, Divider, Image, Slider, SliderTrack, SliderFilledTrack, SliderThumb, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Alert, AlertIcon, useToast, Textarea, useColorModeValue } from '@chakra-ui/react'
 import { ArrowLeft, Search, X } from 'lucide-react'
 import { useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import axiosInstance from '../../helpers/axiosInstance'
 import PageHeader from '../PageHeader'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
+import { getContrastColor } from '../../utils/colorUtils'
 
 const FALLBACK_LEAD_TIME_DAYS = 8
 
@@ -50,6 +51,11 @@ const ModificationBrowserModal = ({
   const { t } = useTranslation()
   const toast = useToast()
   const prefersReducedMotion = useReducedMotion()
+
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   // Color mode values
   const iconGray500 = useColorModeValue('gray.500', 'gray.400')
@@ -656,10 +662,10 @@ const ModificationBrowserModal = ({
   const showBackButton = currentView !== 'categories'
 
   return (
-    <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "6xl" }} scrollBehavior="inside">
+    <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "full" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent borderRadius="12px" overflow="hidden">
-        <ModalHeader px={6} py={4} borderBottomWidth="1px" borderColor={bgGray100}>
+      <ModalContent borderRadius="12px">
+        <ModalHeader px={6} py={4} bg={resolvedHeaderBg} color={headerTextColor}>
           <HStack justify="space-between" align="center">
             <HStack spacing={4} align="center">
               {showBackButton && (
@@ -670,6 +676,8 @@ const ModificationBrowserModal = ({
                   variant="ghost"
                   aria-label={t('modificationBrowser.buttons.back', 'Back')}
                   onClick={handleBack}
+                  color={headerTextColor}
+                  _hover={{ bg: 'whiteAlpha.200' }}
                 />
               )}
               <Text fontWeight="semibold" fontSize="lg">
@@ -683,9 +691,12 @@ const ModificationBrowserModal = ({
               variant="ghost"
               aria-label={t('modificationBrowser.buttons.close', 'Close')}
               onClick={onClose}
+              color={headerTextColor}
+              _hover={{ bg: 'whiteAlpha.200' }}
             />
           </HStack>
         </ModalHeader>
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
 
         <ModalBody px={6} py={4} bg={bgGray50}>
           <Stack spacing={6}>
@@ -764,7 +775,7 @@ const ModificationBrowserModal = ({
 
         <ModalFooter px={6} py={4} bg={color6}>
           <HStack spacing={4} justify="flex-end" w="full">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} minH="44px">
               {t('common.cancel', 'Cancel')}
             </Button>
             {currentView === 'details' && (
@@ -775,7 +786,7 @@ const ModificationBrowserModal = ({
                 minW="160px"
                 transition={prefersReducedMotion ? undefined : 'transform 0.1s ease'}
                 _active={prefersReducedMotion ? undefined : { transform: 'scale(0.98)' }}
-              >
+               minH="44px">
                 {t('modificationBrowser.actions.addModification', 'Add modification')}
               </Button>
             )}

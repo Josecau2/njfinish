@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
-import { Button, Box, Flex, Text, Badge, Checkbox, Image, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, TableContainer, Thead, Tbody, Tr, Th, Td, useColorModeValue } from '@chakra-ui/react'
+import { Button, Box, Flex, Text, Badge, Checkbox, Image, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, Table, TableContainer, Thead, Tbody, Tr, Th, Td, VStack, HStack, useColorModeValue } from '@chakra-ui/react'
 import { Copy, Settings, Trash, Wrench } from 'lucide-react'
 import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
@@ -104,6 +104,10 @@ const CatalogTableEdit = ({
 
   const headerBg = customization.headerBg || 'brand.500'
   const textColor = getContrastColor(headerBg)
+
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   const [partQuery, setPartQuery] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -298,14 +302,13 @@ const CatalogTableEdit = ({
         isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader p={0}>
-            <PageHeader
-              title={selectedTypeInfo?.type || 'Type Specifications'}
-              onClose={() => setShowTypeModal(false)}
-            />
+        <ModalContent borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {selectedTypeInfo?.type || 'Type Specifications'}
+            </Text>
           </ModalHeader>
-          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody p={{ base: 3, md: 4 }}>
           {selectedTypeInfo ? (
             <Flex flexDir={{ base: "column", md: "row" }} gap={4}>
@@ -540,7 +543,7 @@ const CatalogTableEdit = ({
       {/* Desktop table view */}
       <Box display={{ base: 'none', lg: 'block' }}>
         <TableCard>
-          <Table variant="simple">
+          <Table variant="simple" layout="auto" w="full">
           <Thead>
             <Tr>
               <Th>{t('proposalColumns.no')}</Th>
@@ -564,12 +567,12 @@ const CatalogTableEdit = ({
                   {t('proposalColumns.exposedSide')}
                 </Th>
               )}
-              <Th>{t('proposalColumns.price')}</Th>
-              <Th>{t('proposalColumns.assemblyCost')}</Th>
-              <Th>
+              <Th textAlign="right">{t('proposalColumns.price')}</Th>
+              <Th textAlign="right">{t('proposalColumns.assemblyCost')}</Th>
+              <Th textAlign="right">
                 {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
               </Th>
-              <Th>{t('proposalColumns.total')}</Th>
+              <Th textAlign="right">{t('proposalColumns.total')}</Th>
               <Th>{t('proposals.headers.actions')}</Th>
             </Tr>
           </Thead>
@@ -683,40 +686,41 @@ const CatalogTableEdit = ({
                         }
                       >
                         {assembled ? (
-                          <Box>
+                          <VStack align="stretch" spacing={1}>
                             {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                               (!item.hingeSide || item.hingeSide === '-') && (
-                                <Box
+                                <Text
                                   color={textRed500}
+                                  fontSize="2xs"
+                                  fontWeight="medium"
+                                  lineHeight="1.2"
                                   mb={1}
-                                  fontSize="12px"
-                                  fontWeight="bold"
                                 >
                                   {t('validation.selectHingeSide', {
                                     defaultValue: 'Select hinge side',
                                   })}
-                                </Box>
+                                </Text>
                               )}
-                            <Flex gap={1}>
+                            <HStack spacing={1} flexWrap="wrap">
                               {hingeOptions.map((opt) => (
-                                <Button
+                                <Badge
                                   key={opt}
-                                  size="sm"
+                                  px={2}
+                                  py={1}
+                                  borderRadius="md"
+                                  fontSize="xs"
+                                  cursor={readOnly ? 'not-allowed' : 'pointer'}
                                   variant={item.hingeSide === opt ? 'solid' : 'outline'}
-                                  colorScheme={item.hingeSide === opt ? undefined : 'gray'}
-                                  bg={item.hingeSide === opt ? headerBg : undefined}
-                                  color={item.hingeSide === opt ? textColor : undefined}
-                                  borderColor={item.hingeSide === opt ? headerBg : undefined}
+                                  colorScheme={item.hingeSide === opt ? 'brand' : 'gray'}
                                   onClick={() => !readOnly && updateHingeSide(idx, opt)}
-                                  isDisabled={readOnly}
                                   opacity={readOnly ? 0.6 : 1}
-                                  pointerEvents={readOnly ? 'none' : 'auto'}
+                                  _hover={!readOnly ? { opacity: 0.8 } : undefined}
                                 >
                                   {codeToLabel(opt)}
-                                </Button>
+                                </Badge>
                               ))}
-                            </Flex>
-                          </Box>
+                            </HStack>
+                          </VStack>
                         ) : (
                           t('common.na')
                         )}
@@ -733,51 +737,52 @@ const CatalogTableEdit = ({
                         }
                       >
                         {assembled ? (
-                          <Box>
+                          <VStack align="stretch" spacing={1}>
                             {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                               (!item.exposedSide || item.exposedSide === '-') && (
-                                <Box
+                                <Text
                                   color={textRed500}
+                                  fontSize="2xs"
+                                  fontWeight="medium"
+                                  lineHeight="1.2"
                                   mb={1}
-                                  fontSize="12px"
-                                  fontWeight="bold"
                                 >
                                   {t('validation.selectExposedSide', {
                                     defaultValue: 'Select exposed finished side',
                                   })}
-                                </Box>
+                                </Text>
                               )}
-                            <Flex gap={1}>
+                            <HStack spacing={1} flexWrap="wrap">
                               {exposedOptions.map((opt) => (
-                                <Button
+                                <Badge
                                   key={opt}
-                                  size="sm"
+                                  px={2}
+                                  py={1}
+                                  borderRadius="md"
+                                  fontSize="xs"
+                                  cursor={readOnly ? 'not-allowed' : 'pointer'}
                                   variant={item.exposedSide === opt ? 'solid' : 'outline'}
-                                  colorScheme={item.exposedSide === opt ? undefined : 'gray'}
-                                  bg={item.exposedSide === opt ? headerBg : undefined}
-                                  color={item.exposedSide === opt ? textColor : undefined}
-                                  borderColor={item.exposedSide === opt ? headerBg : undefined}
+                                  colorScheme={item.exposedSide === opt ? 'brand' : 'gray'}
                                   onClick={() => !readOnly && updateExposedSide(idx, opt)}
-                                  isDisabled={readOnly}
                                   opacity={readOnly ? 0.6 : 1}
-                                  pointerEvents={readOnly ? 'none' : 'auto'}
+                                  _hover={!readOnly ? { opacity: 0.8 } : undefined}
                                 >
                                   {codeToLabel(opt)}
-                                </Button>
+                                </Badge>
                               ))}
-                            </Flex>
-                          </Box>
+                            </HStack>
+                          </VStack>
                         ) : (
                           t('common.na')
                         )}
                       </Td>
                     )}
 
-                    <Td {...rowTextProps}>
+                    <Td textAlign="right" {...rowTextProps}>
                       {formatPrice(item.unavailable ? 0 : item.price)}
                     </Td>
 
-                    <Td>
+                    <Td textAlign="right">
                       {assembled ? (
                         <Text as="span" {...rowTextProps}>
                           {formatPrice(item.unavailable ? 0 : assemblyFee)}
@@ -787,8 +792,8 @@ const CatalogTableEdit = ({
                       )}
                     </Td>
 
-                    <Td>{formatPrice(modsTotal)}</Td>
-                    <Td {...rowTextProps}>
+                    <Td textAlign="right">{formatPrice(modsTotal)}</Td>
+                    <Td textAlign="right" {...rowTextProps}>
                       {formatPrice(item.unavailable ? 0 : total)}
                     </Td>
 
@@ -925,16 +930,16 @@ const CatalogTableEdit = ({
                                           })()}
                                         </Flex>
                                       </Td>
-                                      <Td color={textGreen500} fontWeight="medium">
+                                      <Td textAlign="right" color={textGreen500} fontWeight="medium">
                                         {formatPrice(mod.price || 0)}
                                       </Td>
-                                      <Td color={textGray500}>
+                                      <Td textAlign="right" color={textGray500}>
                                         -
                                       </Td>
-                                      <Td>
+                                      <Td textAlign="right">
                                         {/* Modifications column (per-item summary) not applicable on sub-rows */}
                                       </Td>
-                                      <Td color={textGreen500} fontWeight="semibold">
+                                      <Td textAlign="right" color={textGreen500} fontWeight="semibold">
                                         {formatPrice((mod.price || 0) * (mod.qty || 1))}
                                       </Td>
                                       <Td textAlign="center">

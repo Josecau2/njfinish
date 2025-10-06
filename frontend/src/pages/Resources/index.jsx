@@ -2105,10 +2105,10 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={closeCategoryModal}>
+            <Button variant="ghost" mr={3} onClick={closeCategoryModal} minH="44px">
               {t('common.cancel', 'Cancel')}
             </Button>
-            <Button colorScheme="brand" onClick={handleSaveCategory} isLoading={actionLoading}>
+            <Button colorScheme="brand" onClick={handleSaveCategory} isLoading={actionLoading} minH="44px">
               {t('common.save', 'Save')}
             </Button>
           </ModalFooter>
@@ -2342,7 +2342,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={closeLinkModal}>
+            <Button variant="ghost" mr={3} onClick={closeLinkModal} minH="44px">
               {t('common.cancel', 'Cancel')}
             </Button>
             <Button
@@ -2386,6 +2386,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 }
               }}
               isLoading={actionLoading}
+              minH="44px"
             >
               {t('common.save', 'Save')}
             </Button>
@@ -2625,7 +2626,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={closeFileModal}>
+            <Button variant="ghost" mr={3} onClick={closeFileModal} minH="44px">
               {t('common.cancel', 'Cancel')}
             </Button>
             <Button
@@ -2703,6 +2704,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 }
               }}
               isLoading={actionLoading}
+              minH="44px"
             >
               {t('common.save', 'Save')}
             </Button>
@@ -2919,7 +2921,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={closeAnnouncementModal}>
+            <Button variant="ghost" mr={3} onClick={closeAnnouncementModal} minH="44px">
               {t('common.cancel', 'Cancel')}
             </Button>
             <Button
@@ -2969,6 +2971,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                 }
               }}
               isLoading={actionLoading}
+              minH="44px"
             >
               {t('common.save', 'Save')}
             </Button>

@@ -11,7 +11,8 @@ export const validateProposalSubTypeRequirements = async (items, manufacturerId)
   try {
     // Transform items to match backend expectation
     const catalogItems = items.map((item) => ({
-      id: item.catalogDataId || item.id,
+      id: item.catalogDataId || item.catalog_data_id || item.id,
+      catalog_data_id: item.catalogDataId || item.catalog_data_id || item.id,
       name: item.name || item.description,
       code: item.code,
       hingeSide: item.hingeSide,
@@ -111,7 +112,8 @@ export const checkSubTypeRequirements = async (items, manufacturerId) => {
 
     // Transform items to match backend expectation
     const catalogItems = items.map((item) => ({
-      id: item.catalogDataId || item.id,
+      id: item.catalogDataId || item.catalog_data_id || item.id,
+      catalog_data_id: item.catalogDataId || item.catalog_data_id || item.id,
       name: item.name || item.description,
       code: item.code,
       hingeSide: item.hingeSide,

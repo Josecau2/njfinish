@@ -958,6 +958,7 @@ const LoginCustomizerPage = () => {
               {t('settings.customization.login.closePreview')}
             </MotionButton>
           </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
           <ModalBody p={0}>
             <LoginPreview config={settings} />
           </ModalBody>

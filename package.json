@@ -18,6 +18,7 @@
     "start": "node index.js",
     "dev": "node index.js",
     "dev:frontend": "vite --config frontend/vite.config.mjs",
+    "dev:monitor": "node monitor-errors.js",
     "test:pricing": "node frontend/scripts/simulatePricingTest.mjs",
     "seed:dev": "node scripts/seed-dev.js",
     "db:sync": "node scripts/sync-db.js",

@@ -28,6 +28,7 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react'
+import { getContrastColor } from '../../utils/colorUtils'
 import { isAdmin } from '../../helpers/permissions'
 
 const ModificationModalEdit = ({
@@ -58,6 +59,10 @@ const ModificationModalEdit = ({
   const { t } = useTranslation()
   const authUser = useSelector((state) => state.auth?.user)
   const isUserAdmin = isAdmin(authUser)
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   const existingModificationsOptions = Array.isArray(existingModifications)
     ? existingModifications
@@ -77,9 +82,13 @@ const ModificationModalEdit = ({
   return (
     <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "lg" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent borderRadius="12px" overflow="hidden">
-        <ModalHeader>{t('modificationModal.title', 'Modification')}</ModalHeader>
-        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+      <ModalContent borderRadius="12px">
+        <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+          <Text fontSize="lg" fontWeight="semibold">
+            {t('modificationModal.title', 'Modification')}
+          </Text>
+        </ModalHeader>
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
         <ModalBody>
           <Stack spacing={6}>
             <FormControl>
@@ -246,10 +255,10 @@ const ModificationModalEdit = ({
         </ModalBody>
         <ModalFooter>
           <HStack spacing={4}>
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} minH="44px">
               {t('common.cancel', 'Cancel')}
             </Button>
-            <Button colorScheme="brand" onClick={onSave}>
+            <Button colorScheme="brand" onClick={onSave} minH="44px">
               {t('modificationModal.actions.save', 'Save')}
             </Button>
           </HStack>

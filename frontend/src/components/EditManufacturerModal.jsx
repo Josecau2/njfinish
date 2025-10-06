@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import {
   Modal,
@@ -7,6 +8,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  ModalCloseButton,
   FormControl,
   FormLabel,
   Input,
@@ -15,7 +17,10 @@ import {
   Switch,
   Stack,
   Button,
+  Text,
+  useColorModeValue,
 } from '@chakra-ui/react'
+import { getContrastColor } from '../utils/colorUtils'
 
 const DEFAULT_FORM = {
   name: '',
@@ -28,6 +33,11 @@ const multiplierRegex = /^(?:\d{0,4})(?:\.\d{0,2})?$/
 
 const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
   const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
+
   const [formData, setFormData] = useState(DEFAULT_FORM)
   const [error, setError] = useState(null)
 
@@ -71,8 +81,13 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
   return (
     <Modal isOpen={show} onClose={onClose} size={{ base: "full", lg: "lg" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent as="form" onSubmit={handleSubmit} borderRadius="12px" overflow="hidden">
-        <ModalHeader>{t('editManufacturerModal.title')}</ModalHeader>
+      <ModalContent as="form" onSubmit={handleSubmit} borderRadius="12px" >
+        <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+          <Text fontSize="lg" fontWeight="semibold">
+            {t('editManufacturerModal.title')}
+          </Text>
+        </ModalHeader>
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
         <ModalBody pb={6}>
           <Stack spacing={4}>
             {error ? (
@@ -137,7 +152,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
           </Stack>
         </ModalBody>
         <ModalFooter gap={4}>
-          <Button variant="outline" onClick={onClose} aria-label="Cancel editing manufacturer">
+          <Button variant="outline" onClick={onClose} aria-label="Cancel editing manufacturer" minH="44px">
             {t('editManufacturerModal.actions.cancel')}
           </Button>
           <Button colorScheme="brand" type="submit" minH="44px" aria-label="Save manufacturer changes">

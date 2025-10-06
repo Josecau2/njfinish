@@ -607,10 +607,10 @@ const LocationForm = () => {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onCancelClose}>
+              <Button ref={cancelRef} onClick={onCancelClose} minH="44px">
                 {t('settings.locations.alerts.stayOnPage')}
               </Button>
-              <Button colorScheme="red" onClick={confirmCancel} ml={3}>
+              <Button colorScheme="red" onClick={confirmCancel} ml={3} minH="44px">
                 {t('settings.locations.alerts.leaveAnyway')}
               </Button>
             </AlertDialogFooter>

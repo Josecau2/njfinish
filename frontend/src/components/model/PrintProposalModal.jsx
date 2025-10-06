@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import {
   Box,
   Button,
@@ -32,12 +33,17 @@ import {
   DEFAULT_PROPOSAL_PDF_COLUMNS,
 } from '../../helpers/proposalPdfBuilder'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
+import { getContrastColor } from '../../utils/colorUtils'
 
 const BASE_PAGE_WIDTH_PX = 794
 const MotionButton = motion.create(Button)
 
 const PrintProposalModal = ({ show, onClose, formData }) => {
   const { t, i18n } = useTranslation()
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   // Color mode values - MUST be before useState
   const iconGray = useColorModeValue('gray.500', 'gray.400')
@@ -80,8 +86,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
   }, [show, defaultValues, reset])
 
   const isMobile = useBreakpointValue({ base: true, md: false })
-  const mainModalSize = useBreakpointValue({ base: 'full', md: '4xl' })
-  const previewModalSize = useBreakpointValue({ base: 'full', md: '6xl' })
+  const mainModalSize = useBreakpointValue({ base: 'full', md: '6xl' })
+  const previewModalSize = useBreakpointValue({ base: 'full', md: 'full' })
   const previewPadding = useBreakpointValue({ base: 3, md: 6 })
   const previewMaxHeight = useBreakpointValue({
     base: 'calc(100vh - 180px)',
@@ -359,13 +365,13 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
             <Text fontSize="lg" fontWeight="semibold">
               {t('proposalCommon.printTitle')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+          <ModalCloseButton color={headerTextColor} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
           <ModalBody>
             <Stack spacing={6}>
               <Box borderWidth="1px" borderRadius="lg" p={4}>
@@ -609,13 +615,13 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
             <Text fontSize="lg" fontWeight="semibold">
               {t('proposalCommon.previewTitle', 'Quote Preview')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+          <ModalCloseButton color={headerTextColor} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
           <ModalBody p={0}>
             <Box px={previewPadding} py={4} bg={previewContainerBg}>
               <Box

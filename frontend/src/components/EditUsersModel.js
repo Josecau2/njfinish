@@ -14,18 +14,25 @@ import {
   Button,
   VStack,
   HStack,
+  Text,
   useToast,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchLocations } from '../store/slices/locationSlice'
 import { useTranslation } from 'react-i18next'
+import { getContrastColor } from '../utils/colorUtils'
 
 const EditUserModal = ({ visible, onClose, user }) => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const toast = useToast()
   const { list: locations } = useSelector((state) => state.locations)
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -89,9 +96,13 @@ const EditUserModal = ({ visible, onClose, user }) => {
       isCentered
     >
       <ModalOverlay />
-      <ModalContent borderRadius="12px" overflow="hidden">
-        <ModalHeader>{t('users.edit.modalHeader', 'Edit User')}</ModalHeader>
-        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+      <ModalContent borderRadius="12px">
+        <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+          <Text fontSize="lg" fontWeight="semibold">
+            {t('users.edit.modalHeader', 'Edit User')}
+          </Text>
+        </ModalHeader>
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
         <ModalBody>
           <VStack spacing={4} align="stretch">
             <FormControl isRequired>

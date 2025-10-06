@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import {
   AlertDialog,
   AlertDialogBody,
@@ -28,6 +29,7 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react'
+import { getContrastColor } from '../../../utils/colorUtils'
 import StandardCard from '../../../components/StandardCard'
 import FileViewerModal from '../../../components/FileViewerModal'
 import { motion } from 'framer-motion'
@@ -106,6 +108,11 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
   const { isOpen: isDeleteDialogOpen, onOpen: onOpenDeleteDialog, onClose: onCloseDeleteDialog } = useDisclosure()
   const deleteCancelRef = useRef(null)
   const [pendingDelete, setPendingDelete] = useState(null)
+
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   // Dark mode colors
   const borderGray100 = useColorModeValue('gray.100', 'gray.700')
@@ -468,9 +475,11 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
         isCentered
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              {t('files.deleteTitle', 'Delete file')}
+          <AlertDialogContent borderRadius="12px" overflow="hidden">
+            <AlertDialogHeader bg={resolvedHeaderBg} color={headerTextColor}>
+              <Text fontSize="lg" fontWeight="semibold">
+                {t('files.deleteTitle', 'Delete file')}
+              </Text>
             </AlertDialogHeader>
             <AlertDialogCloseButton />
             <AlertDialogBody>
@@ -479,10 +488,10 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
               })}
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={deleteCancelRef} onClick={handleCloseDeleteDialog} variant="outline">
+              <Button ref={deleteCancelRef} onClick={handleCloseDeleteDialog} variant="outline" minH="44px">
                 {t('common.cancel')}
               </Button>
-              <Button colorScheme="red" ml={3} onClick={handleConfirmDelete} isLoading={deleting}>
+              <Button colorScheme="red" ml={3} onClick={handleConfirmDelete} isLoading={deleting} minH="44px">
                 {t('common.delete')}
               </Button>
             </AlertDialogFooter>

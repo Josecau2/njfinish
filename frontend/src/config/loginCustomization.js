@@ -29,7 +29,7 @@ export const LOGIN_CUSTOMIZATION = {
   "id": 1,
   "createdAt": "2025-09-22T19:51:15.000Z",
   "updatedAt": "2025-10-05T05:10:10.000Z",
-  "_generated": "2025-10-05T16:24:44.104Z",
+  "_generated": "2025-10-06T03:36:45.174Z",
   "_version": "1.0.0"
 }
 

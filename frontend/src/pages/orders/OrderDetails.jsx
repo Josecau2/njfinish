@@ -1180,7 +1180,7 @@ const OrderDetails = () => {
             </Alert>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme={mapButtonScheme(notice.variant)} onClick={closeNotice}>
+            <Button colorScheme={mapButtonScheme(notice.variant)} onClick={closeNotice} minH="44px">
               {t('common.ok', 'OK')}
             </Button>
           </ModalFooter>
@@ -1205,10 +1205,10 @@ const OrderDetails = () => {
               )}
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={deleteDisclosure.onClose}>
+              <Button ref={cancelRef} onClick={deleteDisclosure.onClose} minH="44px">
                 {t('common.cancel', 'Cancel')}
               </Button>
-              <Button colorScheme="red" onClick={confirmDeleteOrder} ml={3}>
+              <Button colorScheme="red" onClick={confirmDeleteOrder} ml={3} minH="44px">
                 {t('common.delete', 'Delete')}
               </Button>
             </AlertDialogFooter>

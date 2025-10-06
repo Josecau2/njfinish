@@ -115,6 +115,10 @@ const CatalogTable = ({
   const headerBg = customization.headerBg || 'brand.500'
   const textColor = getContrastColor(headerBg)
 
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
+
   // Dark mode colors
   const descriptionColor = useColorModeValue("gray.600", "gray.400")
   const textRed500 = useColorModeValue("red.500", "red.300")
@@ -436,14 +440,13 @@ const CatalogTable = ({
         isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader p={0}>
-            <PageHeader
-              title={selectedTypeInfo?.type || 'Type Specifications'}
-              onClose={() => setShowTypeModal(false)}
-            />
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {selectedTypeInfo?.type || 'Type Specifications'}
+            </Text>
           </ModalHeader>
-          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody p={{ base: 3, md: 4 }}>
           {selectedTypeInfo ? (
             <Flex flexDir={{ base: "column", md: "row" }} gap={4}>
@@ -545,7 +548,7 @@ const CatalogTable = ({
       {/* Desktop Table View */}
       <Box display={{ base: 'none', lg: 'block' }}>
         <TableCard>
-          <Table variant="simple">
+          <Table variant="simple" layout="auto" w="full">
           <Thead>
             <Tr>
               <Th>{t('proposalColumns.no')}</Th>
@@ -569,12 +572,12 @@ const CatalogTable = ({
                   {t('proposalColumns.exposedSide')}
                 </Th>
               )}
-              <Th>{t('proposalColumns.price')}</Th>
-              <Th>{t('proposalColumns.assemblyCost')}</Th>
-              <Th>
+              <Th textAlign="right">{t('proposalColumns.price')}</Th>
+              <Th textAlign="right">{t('proposalColumns.assemblyCost')}</Th>
+              <Th textAlign="right">
                 {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
               </Th>
-              <Th>{t('proposalColumns.total')}</Th>
+              <Th textAlign="right">{t('proposalColumns.total')}</Th>
               <Th>{t('proposals.headers.actions')}</Th>
             </Tr>
           </Thead>
@@ -700,43 +703,47 @@ const CatalogTable = ({
                         bg={
                           subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                           (!item.hingeSide || item.hingeSide === '-')
-                            ? warningBgColor
+                            ? bgValidationWarning
                             : 'transparent'
                         }
+                        px={2}
+                        py={2}
                       >
                         {assembled ? (
-                          <Box>
+                          <VStack align="stretch" spacing={1}>
                             {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                               (!item.hingeSide || item.hingeSide === '-') && (
                                 <Text
                                   color={textRed500}
+                                  fontSize="2xs"
+                                  fontWeight="medium"
+                                  lineHeight="1.2"
                                   mb={1}
-                                  fontSize="xs"
-                                  fontWeight="bold"
                                 >
                                   {t('validation.selectHingeSide', {
                                     defaultValue: 'Select hinge side',
                                   })}
                                 </Text>
                               )}
-                            <Flex gap={1}>
+                            <HStack spacing={1} flexWrap="wrap">
                               {hingeOptions.map((opt) => (
-                                <Button
+                                <Badge
                                   key={opt}
-                                  size="sm"
+                                  px={2}
+                                  py={1}
+                                  borderRadius="md"
+                                  fontSize="xs"
+                                  cursor="pointer"
                                   variant={item.hingeSide === opt ? 'solid' : 'outline'}
-                                  colorScheme={item.hingeSide === opt ? undefined : 'gray'}
-                                  bg={item.hingeSide === opt ? headerBg : undefined}
-                                  color={item.hingeSide === opt ? textColor : undefined}
-                                  borderColor={item.hingeSide === opt ? headerBg : undefined}
+                                  colorScheme={item.hingeSide === opt ? 'brand' : 'gray'}
                                   onClick={() => updateHingeSide(idx, opt)}
+                                  _hover={{ opacity: 0.8 }}
                                 >
                                   {codeToLabel(opt)}
-                                </Button>
+                                </Badge>
                               ))}
-                            </Flex>
-                          {/* close assembled wrapper */}
-                          </Box>
+                            </HStack>
+                          </VStack>
                         ) : (
                           t('common.na')
                         )}
@@ -745,46 +752,50 @@ const CatalogTable = ({
 
                     {subTypeRequirements.requiresExposed && (
                       <Td
+                        px={2}
+                        py={2}
                         bg={
                           subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                           (!item.exposedSide || item.exposedSide === '-')
-                            ? warningBgColor
+                            ? bgValidationWarning
                             : 'transparent'
                         }
                       >
                         {assembled ? (
-                          <Box>
+                          <VStack align="stretch" spacing={1}>
                             {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                               (!item.exposedSide || item.exposedSide === '-') && (
                                 <Text
                                   color={textRed500}
+                                  fontSize="2xs"
+                                  fontWeight="medium"
+                                  lineHeight="1.2"
                                   mb={1}
-                                  fontSize="xs"
-                                  fontWeight="bold"
                                 >
                                   {t('validation.selectExposedSide', {
-                                    defaultValue: 'Select exposed finished side',
+                                    defaultValue: 'Select exposed side',
                                   })}
                                 </Text>
                               )}
-                            <Flex gap={1}>
+                            <HStack spacing={1} flexWrap="wrap">
                               {exposedOptions.map((opt) => (
-                                <Button
+                                <Badge
                                   key={opt}
-                                  size="sm"
+                                  px={2}
+                                  py={1}
+                                  borderRadius="md"
+                                  fontSize="xs"
+                                  cursor="pointer"
                                   variant={item.exposedSide === opt ? 'solid' : 'outline'}
-                                  colorScheme={item.exposedSide === opt ? undefined : 'gray'}
-                                  bg={item.exposedSide === opt ? headerBg : undefined}
-                                  color={item.exposedSide === opt ? textColor : undefined}
-                                  borderColor={item.exposedSide === opt ? headerBg : undefined}
+                                  colorScheme={item.exposedSide === opt ? 'brand' : 'gray'}
                                   onClick={() => updateExposedSide(idx, opt)}
+                                  _hover={{ opacity: 0.8 }}
                                 >
                                   {codeToLabel(opt)}
-                                </Button>
+                                </Badge>
                               ))}
-                            </Flex>
-                          {/* close assembled wrapper */}
-                          </Box>
+                            </HStack>
+                          </VStack>
                         ) : (
                           t('common.na')
                         )}
@@ -792,13 +803,14 @@ const CatalogTable = ({
                     )}
 
                     <Td
+                      textAlign="right"
                       color={isUnavailable ? textUnavailable : undefined}
                       textDecoration={isUnavailable ? 'line-through' : undefined}
                     >
                       {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
                     </Td>
 
-                    <Td>
+                    <Td textAlign="right">
                       {assembled ? (
                         <Text as="span">{formatPrice(assemblyFee)}</Text>
                       ) : (
@@ -806,9 +818,10 @@ const CatalogTable = ({
                       )}
                     </Td>
 
-                    <Td>{formatPrice(modsTotal)}</Td>
+                    <Td textAlign="right">{formatPrice(modsTotal)}</Td>
 
                     <Td
+                      textAlign="right"
                       color={isUnavailable ? textUnavailable : undefined}
                       textDecoration={isUnavailable ? 'line-through' : undefined}
                     >
@@ -991,16 +1004,16 @@ const CatalogTable = ({
                                             </Flex>
                                           )}
                                       </Td>
-                                      <Td fontWeight="medium" color={textGreen500}>
+                                      <Td textAlign="right" fontWeight="medium" color={textGreen500}>
                                         {formatPrice(mod.price || 0)}
                                       </Td>
-                                      <Td color={cellTextColor}>
+                                      <Td textAlign="right" color={cellTextColor}>
                                         -
                                       </Td>
-                                      <Td>
+                                      <Td textAlign="right">
                                         {/* Modifications column (per-item summary) not applicable on sub-rows */}
                                       </Td>
-                                      <Td fontWeight="semibold" color={textGreen500}>
+                                      <Td textAlign="right" fontWeight="semibold" color={textGreen500}>
                                         {formatPrice((mod.price || 0) * (mod.qty || 1))}
                                       </Td>
                                       <Td textAlign="center">

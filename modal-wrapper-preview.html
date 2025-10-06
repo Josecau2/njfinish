@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal Wrapper System - NJ Contractors</title>
+    <style>
+        :root {
+            /* Brand Colors from brand.json */
+            --header-bg: #000000;
+            --header-text: #808080;
+            --accent: #2563eb;
+            --text: #0f172a;
+            --surface: #f8fafc;
+            --border: #e2e8f0;
+
+            /* Modal System Colors */
+            --overlay: rgba(0, 0, 0, 0.48);
+            --modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --input-focus-ring: rgba(37, 99, 235, 0.15);
+
+            /* Spacing System (8px base) */
+            --space-1: 0.25rem;  /* 4px */
+            --space-2: 0.5rem;   /* 8px */
+            --space-3: 0.75rem;  /* 12px */
+            --space-4: 1rem;     /* 16px */
+            --space-5: 1.25rem;  /* 20px */
+            --space-6: 1.5rem;   /* 24px */
+            --space-8: 2rem;     /* 32px */
+
+            /* Modal Sizes */
+            --modal-sm: 400px;
+            --modal-md: 600px;
+            --modal-lg: 800px;
+            --modal-xl: 1000px;
+            --modal-6xl: 1400px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #f1f5f9;
+            padding: var(--space-6);
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        h1 {
+            margin-bottom: var(--space-8);
+            color: var(--header-bg);
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            margin-top: var(--space-8);
+            margin-bottom: var(--space-4);
+            color: var(--text);
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        h3 {
+            margin-top: var(--space-6);
+            margin-bottom: var(--space-3);
+            color: var(--text);
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .category-section {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .category-badge {
+            background: var(--accent);
+            color: white;
+            padding: var(--space-2) var(--space-4);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* ==================== MODAL OVERLAY ==================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--overlay);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: var(--space-4);
+            overflow-y: auto;
+        }
+
+        /* ==================== MODAL BASE ==================== */
+        .modal {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--modal-shadow);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            width: 100%;
+            max-height: 90vh;
+            margin: auto;
+        }
+
+        /* Modal Size Variants */
+        .modal-sm { max-width: var(--modal-sm); }
+        .modal-md { max-width: var(--modal-md); }
+        .modal-lg { max-width: var(--modal-lg); }
+        .modal-xl { max-width: var(--modal-xl); }
+        .modal-6xl { max-width: var(--modal-6xl); }
+
+        /* ==================== MODAL HEADER ==================== */
+        .modal-header {
+            background: var(--header-bg);
+            color: white;
+            padding: var(--space-5) var(--space-6);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--header-text);
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: var(--space-2);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .modal-close:active {
+            transform: scale(0.95);
+        }
+
+        /* ==================== MODAL BODY ==================== */
+        .modal-body {
+            padding: var(--space-6);
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Scrollbar styling */
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* ==================== MODAL FOOTER ==================== */
+        .modal-footer {
+            padding: var(--space-4) var(--space-6);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: var(--space-3);
+            justify-content: flex-end;
+            flex-shrink: 0;
+        }
+
+        /* ==================== BUTTONS ==================== */
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            min-height: 40px;
+            line-height: 1;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-primary:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #64748b;
+        }
+
+        .btn-ghost:hover {
+            background: #f1f5f9;
+        }
+
+        /* ==================== FORM ELEMENTS ==================== */
+        .form-group {
+            margin-bottom: var(--space-5);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: var(--space-2);
+            color: var(--text);
+        }
+
+        .form-label.required::after {
+            content: " *";
+            color: #dc2626;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--input-focus-ring);
+        }
+
+        .form-input:disabled,
+        .form-textarea:disabled,
+        .form-select:disabled {
+            background: #f1f5f9;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-helper {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: var(--space-2);
+        }
+
+        .form-error {
+            font-size: 0.75rem;
+            color: #dc2626;
+            margin-top: var(--space-2);
+        }
+
+        /* ==================== CHECKBOXES & SWITCHES ==================== */
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+
+        .form-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        /* ==================== ALERTS ==================== */
+        .alert {
+            padding: var(--space-4);
+            border-radius: 6px;
+            margin-bottom: var(--space-4);
+            display: flex;
+            gap: var(--space-3);
+            align-items: flex-start;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+        }
+
+        /* ==================== MOBILE STYLES ==================== */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+
+            .modal-overlay {
+                padding: 0;
+                align-items: stretch;
+            }
+
+            .modal {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+                margin: 0;
+            }
+
+            .modal-header {
+                border-radius: 0;
+                padding: var(--space-4) var(--space-5);
+            }
+
+            .modal-title {
+                font-size: 1rem;
+            }
+
+            .modal-body {
+                padding: var(--space-5);
+            }
+
+            .modal-footer {
+                flex-direction: column-reverse;
+                padding: var(--space-5);
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ==================== DEMO STYLES ==================== */
+        .demo-container {
+            position: relative;
+            background: white;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+            min-height: 300px;
+        }
+
+        .demo-label {
+            position: absolute;
+            top: var(--space-3);
+            right: var(--space-3);
+            background: var(--accent);
+            color: white;
+            padding: var(--space-2) var(--space-3);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .specs-table {
+            width: 100%;
+            margin: var(--space-4) 0;
+            border-collapse: collapse;
+        }
+
+        .specs-table th,
+        .specs-table td {
+            padding: var(--space-3);
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .specs-table th {
+            background: var(--surface);
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .code-badge {
+            background: #f1f5f9;
+            padding: var(--space-1) var(--space-2);
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            color: #475569;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: var(--space-4);
+            margin: var(--space-4) 0;
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+            color: var(--text);
+        }
+
+        .info-box ul {
+            margin: var(--space-2) 0;
+            padding-left: var(--space-5);
+        }
+
+        .info-box li {
+            margin: var(--space-2) 0;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Modal Wrapper System - Categorical Best Practices</h1>
+
+    <!-- ==================== CATEGORY 1: FORM MODALS ==================== -->
+    <div class="category-section">
+        <div class="category-header">
+            <div>
+                <h2 style="margin: 0;">Category 1: Form Modals</h2>
+                <p style="color: #64748b; margin-top: var(--space-2);">Email, Edit, Create, Configure operations</p>
+            </div>
+            <span class="category-badge">23 Modals</span>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">📋 Use Cases</div>
+            <ul>
+                <li>Email Proposal, Email Contract</li>
+                <li>Edit Manufacturer, Edit Group, Edit User</li>
+                <li>Create Payment, Configure Gateway</li>
+                <li>Add/Edit Catalog Items, Custom Modifications</li>
+            </ul>
+        </div>
+
+        <table class="specs-table">
+            <tr>
+                <th>Property</th>
+                <th>Desktop</th>
+                <th>Mobile</th>
+            </tr>
+            <tr>
+                <td>Size</td>
+                <td><span class="code-badge">md (600px)</span> or <span class="code-badge">lg (800px)</span></td>
+                <td><span class="code-badge">full (100vw/vh)</span></td>
+            </tr>
+            <tr>
+                <td>Scroll</td>
+                <td><span class="code-badge">inside</span> (header/footer fixed)</td>
+                <td><span class="code-badge">inside</span> (header/footer fixed)</td>
+            </tr>
+            <tr>
+                <td>Footer Layout</td>
+                <td>Horizontal, right-aligned</td>
+                <td>Vertical stack, full-width buttons</td>
+            </tr>
+            <tr>
+                <td>Focus Trap</td>
+                <td>✅ Yes (tab navigation within modal)</td>
+                <td>✅ Yes</td>
+            </tr>
+        </table>
+
+        <h3>Desktop Example (md - 600px)</h3>
+        <div class="demo-container">
+            <span class="demo-label">Desktop</span>
+            <div class="modal modal-md">
+                <div class="modal-header">
+                    <h3 class="modal-title">Email Proposal</h3>
+                    <button class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label required">Recipient Email</label>
+                        <input type="email" class="form-input" placeholder="customer@example.com" value="john.doe@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Subject</label>
+                        <input type="text" class="form-input" value="Your Cabinet Proposal - #PRO-12345">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">Message</label>
+                        <textarea class="form-textarea" placeholder="Enter your message...">Hi John,
+
+Please find attached your cabinet proposal...</textarea>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="send-copy" checked>
+                        <label for="send-copy">Send me a copy</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="update-email">
+                        <label for="update-email">Update customer email</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary">Cancel</button>
+                    <button class="btn btn-primary">Send Email</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">✅ Best Practices - Form Modals</div>
+            <ul>
+                <li><strong>Validation:</strong> Inline error messages below fields, not alerts</li>
+                <li><strong>Required Fields:</strong> Mark with * and validate on blur</li>
+                <li><strong>Primary Action:</strong> Always on the right, colored (accent)</li>
+                <li><strong>Cancel Action:</strong> Always on the left, neutral (gray)</li>
+                <li><strong>Loading States:</strong> Disable all inputs, show spinner in button</li>
+                <li><strong>Tab Order:</strong> Input → Input → Checkbox → Cancel → Submit</li>
+                <li><strong>Mobile:</strong> Buttons stack vertically (primary on top)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ==================== CATEGORY 2: CONFIRMATION MODALS ==================== -->
+    <div class="category-section">
+        <div class="category-header">
+            <div>
+                <h2 style="margin: 0;">Category 2: Confirmation Modals</h2>
+                <p style="color: #64748b; margin-top: var(--space-2);">Delete, Rollback, Accept operations</p>
+            </div>
+            <span class="category-badge">8 Modals</span>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">⚠️ Use Cases</div>
+            <ul>
+                <li>Delete Style, Delete Item, Delete Category</li>
+                <li>Bulk Delete, Rollback Catalog</li>
+                <li>Accept Proposal, Enable Showroom Mode</li>
+            </ul>
+        </div>
+
+        <table class="specs-table">
+            <tr>
+                <th>Property</th>
+                <th>Desktop</th>
+                <th>Mobile</th>
+            </tr>
+            <tr>
+                <td>Size</td>
+                <td><span class="code-badge">sm (400px)</span> or <span class="code-badge">md (600px)</span></td>
+                <td><span class="code-badge">full (100vw/vh)</span></td>
+            </tr>
+            <tr>
+                <td>Scroll</td>
+                <td>Usually no scroll needed (minimal content)</td>
+                <td><span class="code-badge">inside</span></td>
+            </tr>
+            <tr>
+                <td>Close on Overlay</td>
+                <td>⚠️ Disabled (force explicit choice)</td>
+                <td>⚠️ Disabled</td>
+            </tr>
+            <tr>
+                <td>Danger Action</td>
+                <td>Red/destructive styling</td>
+                <td>Red/destructive styling</td>
+            </tr>
+        </table>
+
+        <h3>Desktop Example (sm - 400px)</h3>
+        <div class="demo-container">
+            <span class="demo-label">Desktop</span>
+            <div class="modal modal-sm">
+                <div class="modal-header">
+                    <h3 class="modal-title">Delete Style</h3>
+                    <button class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <span>⚠️</span>
+                        <div>
+                            <strong>Warning:</strong> This action cannot be undone.
+                        </div>
+                    </div>
+                    <p style="margin-bottom: var(--space-4);">
+                        Are you sure you want to delete the style <strong>"Shaker White"</strong>?
+                    </p>
+                    <p style="color: #64748b; font-size: 0.875rem;">
+                        This will remove the style and all associated catalog items.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary">Cancel</button>
+                    <button class="btn btn-primary" style="background: #dc2626;">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">✅ Best Practices - Confirmation Modals</div>
+            <ul>
+                <li><strong>Warning Alert:</strong> Always show with yellow/red indicator</li>
+                <li><strong>Explicit Message:</strong> State exactly what will happen</li>
+                <li><strong>Destructive Action:</strong> Red button, on the right</li>
+                <li><strong>Cancel Always Available:</strong> Easy way out on the left</li>
+                <li><strong>No Auto-Close:</strong> User must explicitly click Cancel or Confirm</li>
+                <li><strong>Context:</strong> Show item name/count being affected</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ==================== CATEGORY 3: PREVIEW/VIEWER MODALS ==================== -->
+    <div class="category-section">
+        <div class="category-header">
+            <div>
+                <h2 style="margin: 0;">Category 3: Preview/Viewer Modals</h2>
+                <p style="color: #64748b; margin-top: var(--space-2);">Print, PDF, File viewing</p>
+            </div>
+            <span class="category-badge">6 Modals</span>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">🖼️ Use Cases</div>
+            <ul>
+                <li>Print Proposal (with nested preview modal)</li>
+                <li>PDF Layout Preview</li>
+                <li>View File (images, PDFs, videos, text)</li>
+                <li>Type Specifications (with image)</li>
+            </ul>
+        </div>
+
+        <table class="specs-table">
+            <tr>
+                <th>Property</th>
+                <th>Desktop</th>
+                <th>Mobile</th>
+            </tr>
+            <tr>
+                <td>Size</td>
+                <td><span class="code-badge">xl (1000px)</span> to <span class="code-badge">6xl (1400px)</span></td>
+                <td><span class="code-badge">full (100vw/vh)</span></td>
+            </tr>
+            <tr>
+                <td>Body Padding</td>
+                <td>Minimal or none (maximize content area)</td>
+                <td>Minimal</td>
+            </tr>
+            <tr>
+                <td>Action Buttons</td>
+                <td>Download, Print, Close</td>
+                <td>Download, Close (print hidden)</td>
+            </tr>
+            <tr>
+                <td>Nested Modal</td>
+                <td>✅ Supported (Print → Preview)</td>
+                <td>Use same modal, switch content</td>
+            </tr>
+        </table>
+
+        <h3>Desktop Example (xl - 1000px)</h3>
+        <div class="demo-container" style="min-height: 500px;">
+            <span class="demo-label">Desktop</span>
+            <div class="modal modal-xl">
+                <div class="modal-header">
+                    <h3 class="modal-title">Kitchen Design - Floor Plan.pdf</h3>
+                    <button class="modal-close">×</button>
+                </div>
+                <div class="modal-body" style="padding: var(--space-6); background: #f8fafc;">
+                    <div style="background: white; padding: var(--space-8); text-align: center; border-radius: 8px; min-height: 400px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: var(--space-4); border: 1px solid var(--border);">
+                        <div style="font-size: 4rem;">📄</div>
+                        <div style="color: #64748b; font-size: 1.25rem; font-weight: 500;">PDF Viewer</div>
+                        <div style="color: #94a3b8;">Kitchen Design - Floor Plan.pdf (2.4 MB)</div>
+                        <div style="color: #94a3b8; font-size: 0.875rem;">794 × 1123 pixels (A4 size)</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary">
+                        <span>⬇</span>
+                        <span>Download</span>
+                    </button>
+                    <button class="btn btn-primary">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">✅ Best Practices - Preview/Viewer Modals</div>
+            <ul>
+                <li><strong>Large Size:</strong> Use xl or 6xl to maximize viewing area</li>
+                <li><strong>Minimal Padding:</strong> Let content fill the space</li>
+                <li><strong>Gray Background:</strong> Helps white content stand out</li>
+                <li><strong>Download Always Available:</strong> User can save file</li>
+                <li><strong>Lazy Loading:</strong> Load heavy viewers (Monaco, PDF) on demand</li>
+                <li><strong>Responsive Images:</strong> Scale to fit on mobile</li>
+                <li><strong>Keyboard Nav:</strong> Escape to close, arrows for gallery</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ==================== CATEGORY 4: BROWSER/SELECTION MODALS ==================== -->
+    <div class="category-section">
+        <div class="category-header">
+            <div>
+                <h2 style="margin: 0;">Category 4: Browser/Selection Modals</h2>
+                <p style="color: #64748b; margin-top: var(--space-2);">Browse, search, select from catalogs</p>
+            </div>
+            <span class="category-badge">3 Modals</span>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">🔍 Use Cases</div>
+            <ul>
+                <li>Browse Modifications (3 view states: categories → templates → details)</li>
+                <li>Assign Global Modifications</li>
+                <li>Select Multiple Items</li>
+            </ul>
+        </div>
+
+        <table class="specs-table">
+            <tr>
+                <th>Property</th>
+                <th>Desktop</th>
+                <th>Mobile</th>
+            </tr>
+            <tr>
+                <td>Size</td>
+                <td><span class="code-badge">6xl (1400px)</span> - Maximum width</td>
+                <td><span class="code-badge">full (100vw/vh)</span></td>
+            </tr>
+            <tr>
+                <td>Header</td>
+                <td>Search bar + breadcrumb navigation</td>
+                <td>Stacked: breadcrumb, then search</td>
+            </tr>
+            <tr>
+                <td>Body Layout</td>
+                <td>Grid: 3-4 columns</td>
+                <td>Single column list</td>
+            </tr>
+            <tr>
+                <td>Navigation</td>
+                <td>Breadcrumb + Back button</td>
+                <td>Back button (larger tap target)</td>
+            </tr>
+        </table>
+
+        <h3>Desktop Example (6xl - 1400px)</h3>
+        <div class="demo-container" style="min-height: 600px;">
+            <span class="demo-label">Desktop</span>
+            <div class="modal modal-6xl">
+                <div class="modal-header">
+                    <h3 class="modal-title">Browse Modifications</h3>
+                    <button class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Breadcrumb -->
+                    <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4); padding-bottom: var(--space-4); border-bottom: 1px solid var(--border);">
+                        <span style="color: var(--accent); cursor: pointer; font-size: 0.875rem;">Categories</span>
+                        <span style="color: #94a3b8;">›</span>
+                        <span style="color: #64748b; font-size: 0.875rem;">Hardware</span>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="form-group">
+                        <input type="text" class="form-input" placeholder="🔍 Search modifications..." value="">
+                    </div>
+
+                    <!-- Grid of Items -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4);">
+                        <div style="border: 1px solid var(--border); border-radius: 8px; padding: var(--space-4); cursor: pointer; transition: all 0.2s;">
+                            <div style="font-weight: 600; margin-bottom: var(--space-2);">Crown Molding</div>
+                            <div style="color: #64748b; font-size: 0.875rem; margin-bottom: var(--space-3);">Premium finish</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 500; color: var(--accent);">$125.00</span>
+                                <span style="background: #f1f5f9; padding: var(--space-1) var(--space-2); border-radius: 4px; font-size: 0.75rem;">8 days</span>
+                            </div>
+                        </div>
+                        <div style="border: 1px solid var(--border); border-radius: 8px; padding: var(--space-4); cursor: pointer;">
+                            <div style="font-weight: 600; margin-bottom: var(--space-2);">Soft-Close Hinges</div>
+                            <div style="color: #64748b; font-size: 0.875rem; margin-bottom: var(--space-3);">Blum Blumotion</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 500; color: var(--accent);">$45.00</span>
+                                <span style="background: #f1f5f9; padding: var(--space-1) var(--space-2); border-radius: 4px; font-size: 0.75rem;">5 days</span>
+                            </div>
+                        </div>
+                        <div style="border: 1px solid var(--border); border-radius: 8px; padding: var(--space-4); cursor: pointer;">
+                            <div style="font-weight: 600; margin-bottom: var(--space-2);">Pull-Out Shelves</div>
+                            <div style="color: #64748b; font-size: 0.875rem; margin-bottom: var(--space-3);">Full extension</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 500; color: var(--accent);">$89.00</span>
+                                <span style="background: #f1f5f9; padding: var(--space-1) var(--space-2); border-radius: 4px; font-size: 0.75rem;">10 days</span>
+                            </div>
+                        </div>
+                        <div style="border: 1px solid var(--border); border-radius: 8px; padding: var(--space-4); cursor: pointer;">
+                            <div style="font-weight: 600; margin-bottom: var(--space-2);">Glass Door Insert</div>
+                            <div style="color: #64748b; font-size: 0.875rem; margin-bottom: var(--space-3);">Frosted glass</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 500; color: var(--accent);">$210.00</span>
+                                <span style="background: #f1f5f9; padding: var(--space-1) var(--space-2); border-radius: 4px; font-size: 0.75rem;">12 days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary">
+                        <span>←</span>
+                        <span>Back</span>
+                    </button>
+                    <button class="btn btn-primary">Select</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">✅ Best Practices - Browser/Selection Modals</div>
+            <ul>
+                <li><strong>Extra Large:</strong> Use 6xl to show 3-4 items per row</li>
+                <li><strong>Breadcrumb Nav:</strong> Show navigation path, make clickable</li>
+                <li><strong>Search Prominent:</strong> Always visible, filters current view</li>
+                <li><strong>Grid Layout:</strong> 4 columns desktop, 2 tablet, 1 mobile</li>
+                <li><strong>Card Hover:</strong> Visual feedback on hover/focus</li>
+                <li><strong>Lazy Load:</strong> Load items as user scrolls</li>
+                <li><strong>Keyboard Nav:</strong> Arrow keys to navigate grid</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ==================== CATEGORY 5: MULTI-STEP WIZARD MODALS ==================== -->
+    <div class="category-section">
+        <div class="category-header">
+            <div>
+                <h2 style="margin: 0;">Category 5: Multi-Step Wizard Modals</h2>
+                <p style="color: #64748b; margin-top: var(--space-2);">Step-by-step processes with navigation</p>
+            </div>
+            <span class="category-badge">1 Modal</span>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">🪄 Use Cases</div>
+            <ul>
+                <li>Create Global Modification (3 steps: category → template → fields)</li>
+                <li>Future: Onboarding, Complex Setup</li>
+            </ul>
+        </div>
+
+        <table class="specs-table">
+            <tr>
+                <th>Property</th>
+                <th>Desktop</th>
+                <th>Mobile</th>
+            </tr>
+            <tr>
+                <td>Size</td>
+                <td><span class="code-badge">lg (800px)</span></td>
+                <td><span class="code-badge">full (100vw/vh)</span></td>
+            </tr>
+            <tr>
+                <td>Progress Indicator</td>
+                <td>Step dots or numbers in header</td>
+                <td>Step numbers (larger tap target)</td>
+            </tr>
+            <tr>
+                <td>Footer Buttons</td>
+                <td>Back, Cancel, Next/Finish</td>
+                <td>Stacked: Next/Finish, Back, Cancel</td>
+            </tr>
+            <tr>
+                <td>Validation</td>
+                <td>Per-step before allowing Next</td>
+                <td>Per-step before allowing Next</td>
+            </tr>
+        </table>
+
+        <h3>Desktop Example (lg - 800px) - Step 2 of 3</h3>
+        <div class="demo-container">
+            <span class="demo-label">Desktop</span>
+            <div class="modal modal-lg">
+                <div class="modal-header">
+                    <div>
+                        <h3 class="modal-title">Create Global Modification</h3>
+                        <div style="display: flex; gap: var(--space-2); margin-top: var(--space-2); align-items: center;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600;">✓</div>
+                            <div style="width: 40px; height: 2px; background: var(--accent);"></div>
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600;">2</div>
+                            <div style="width: 40px; height: 2px; background: #cbd5e1;"></div>
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: #e2e8f0; color: #94a3b8; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 600;">3</div>
+                        </div>
+                    </div>
+                    <button class="modal-close">×</button>
+                </div>
+                <div class="modal-body">
+                    <h3 style="margin-bottom: var(--space-4);">Template Details</h3>
+                    <div class="form-group">
+                        <label class="form-label required">Template Name</label>
+                        <input type="text" class="form-input" placeholder="e.g., Crown Molding - Premium">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" placeholder="Describe this modification..."></textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+                        <div class="form-group">
+                            <label class="form-label">Default Price</label>
+                            <input type="number" class="form-input" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Lead Time (days)</label>
+                            <input type="number" class="form-input" placeholder="8" min="1">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-ghost">Cancel</button>
+                    <div style="flex: 1;"></div>
+                    <button class="btn btn-secondary">Back</button>
+                    <button class="btn btn-primary">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">✅ Best Practices - Multi-Step Wizard Modals</div>
+            <ul>
+                <li><strong>Progress Indicator:</strong> Show current step and total steps</li>
+                <li><strong>Step Validation:</strong> Validate each step before allowing Next</li>
+                <li><strong>Back Button:</strong> Always allow going back to edit previous steps</li>
+                <li><strong>Cancel Anywhere:</strong> User can exit wizard at any step</li>
+                <li><strong>Step Labels:</strong> Clear titles for each step in header</li>
+                <li><strong>Save Draft:</strong> Option to save incomplete wizards (if applicable)</li>
+                <li><strong>Mobile:</strong> Progress indicator as numbers, not dots</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ==================== RESPONSIVE COMPARISON ==================== -->
+    <div class="category-section">
+        <div class="category-header">
+            <div>
+                <h2 style="margin: 0;">Mobile vs Desktop Comparison</h2>
+                <p style="color: #64748b; margin-top: var(--space-2);">Side-by-side responsive behavior</p>
+            </div>
+        </div>
+
+        <table class="specs-table">
+            <tr>
+                <th>Feature</th>
+                <th>Desktop (≥768px)</th>
+                <th>Mobile (<768px)</th>
+            </tr>
+            <tr>
+                <td>Modal Size</td>
+                <td>sm (400px) to 6xl (1400px)</td>
+                <td>Always 100vw × 100vh</td>
+            </tr>
+            <tr>
+                <td>Border Radius</td>
+                <td>12px rounded corners</td>
+                <td>0 (square corners)</td>
+            </tr>
+            <tr>
+                <td>Overlay Padding</td>
+                <td>16px on all sides</td>
+                <td>0 (edge-to-edge)</td>
+            </tr>
+            <tr>
+                <td>Header Padding</td>
+                <td>20px × 24px</td>
+                <td>16px × 20px</td>
+            </tr>
+            <tr>
+                <td>Body Padding</td>
+                <td>24px</td>
+                <td>20px</td>
+            </tr>
+            <tr>
+                <td>Footer Layout</td>
+                <td>Horizontal row, right-aligned</td>
+                <td>Vertical stack, primary on top</td>
+            </tr>
+            <tr>
+                <td>Button Width</td>
+                <td>Auto (content-based)</td>
+                <td>100% full width</td>
+            </tr>
+            <tr>
+                <td>Grid Columns</td>
+                <td>2-4 columns</td>
+                <td>1 column (list)</td>
+            </tr>
+            <tr>
+                <td>Close on Overlay Click</td>
+                <td>✅ Yes (except confirmations)</td>
+                <td>❌ No (explicit close only)</td>
+            </tr>
+            <tr>
+                <td>Scroll Behavior</td>
+                <td>Body scrolls, header/footer fixed</td>
+                <td>Same (inside scroll)</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ==================== GLOBAL STYLING RULES ==================== -->
+    <div class="category-section">
+        <div class="category-header">
+            <div>
+                <h2 style="margin: 0;">Global Styling Rules</h2>
+                <p style="color: #64748b; margin-top: var(--space-2);">Consistent patterns across all modals</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">🎨 Color System</div>
+            <ul>
+                <li><strong>Header Background:</strong> <span class="code-badge">#000000</span> (brand.headerBg)</li>
+                <li><strong>Header Text:</strong> <span class="code-badge">#ffffff</span> with <span class="code-badge">#808080</span> for close button</li>
+                <li><strong>Primary Action:</strong> <span class="code-badge">#2563eb</span> (brand.accent)</li>
+                <li><strong>Destructive Action:</strong> <span class="code-badge">#dc2626</span> (red-600)</li>
+                <li><strong>Text:</strong> <span class="code-badge">#0f172a</span> (slate-900)</li>
+                <li><strong>Border:</strong> <span class="code-badge">#e2e8f0</span> (slate-200)</li>
+                <li><strong>Overlay:</strong> <span class="code-badge">rgba(0, 0, 0, 0.48)</span></li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">📐 Spacing System</div>
+            <ul>
+                <li><strong>Base Unit:</strong> 8px (0.5rem)</li>
+                <li><strong>Header Padding:</strong> 20px × 24px (desktop), 16px × 20px (mobile)</li>
+                <li><strong>Body Padding:</strong> 24px (desktop), 20px (mobile)</li>
+                <li><strong>Footer Padding:</strong> 16px × 24px (desktop), 20px (mobile)</li>
+                <li><strong>Button Gap:</strong> 12px between buttons</li>
+                <li><strong>Form Group Margin:</strong> 20px between form groups</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">⌨️ Keyboard Accessibility</div>
+            <ul>
+                <li><strong>Escape Key:</strong> Closes modal (except confirmations)</li>
+                <li><strong>Tab Key:</strong> Cycles through focusable elements</li>
+                <li><strong>Enter Key:</strong> Submits form (on primary button)</li>
+                <li><strong>Focus Trap:</strong> Prevents tabbing outside modal</li>
+                <li><strong>Auto-Focus:</strong> First input gets focus on open</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">🔧 Component Patterns</div>
+            <ul>
+                <li><strong>Loading State:</strong> Disable all inputs, show spinner in button, gray out</li>
+                <li><strong>Error State:</strong> Red border on input, error message below, shake animation</li>
+                <li><strong>Success State:</strong> Green checkmark, brief confirmation, auto-close after 2s</li>
+                <li><strong>Disabled State:</strong> Gray background, 60% opacity, cursor: not-allowed</li>
+                <li><strong>Required Fields:</strong> Red asterisk (*) after label</li>
+                <li><strong>Helper Text:</strong> Gray text, 12px font, below input</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ==================== IMPLEMENTATION CHECKLIST ==================== -->
+    <div class="category-section">
+        <div class="category-header">
+            <div>
+                <h2 style="margin: 0;">Implementation Checklist</h2>
+                <p style="color: #64748b; margin-top: var(--space-2);">Apply these patterns to Chakra UI modals</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">✅ For Every Modal</div>
+            <ul>
+                <li>✅ Use <span class="code-badge">scrollBehavior="inside"</span> to fix header/footer</li>
+                <li>✅ Set <span class="code-badge">size={{ base: 'full', md: 'md/lg/xl/6xl' }}</span> for responsive sizing</li>
+                <li>✅ Use <span class="code-badge">isCentered</span> for desktop centering</li>
+                <li>✅ Apply <span class="code-badge">customization.headerBg</span> to ModalHeader</li>
+                <li>✅ Calculate contrast color for header text via <span class="code-badge">getContrastColor()</span></li>
+                <li>✅ Mobile: Footer buttons stack vertically with <span class="code-badge">flex-direction: column-reverse</span></li>
+                <li>✅ Desktop: Footer buttons inline with <span class="code-badge">justify-content: flex-end</span></li>
+                <li>✅ Primary button uses <span class="code-badge">customization.primaryColor</span> or <span class="code-badge">accent</span></li>
+                <li>✅ Add <span class="code-badge">aria-label="Close modal"</span> to close button</li>
+                <li>✅ Disable close on overlay click for confirmations: <span class="code-badge">closeOnOverlayClick={false}</span></li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">🚫 Common Mistakes to Avoid</div>
+            <ul>
+                <li>❌ Hardcoded colors (use theme variables)</li>
+                <li>❌ Fixed pixel sizes (use responsive breakpoints)</li>
+                <li>❌ Scroll entire modal (use <span class="code-badge">scrollBehavior="inside"</span>)</li>
+                <li>❌ Same button order on mobile/desktop (reverse on mobile)</li>
+                <li>❌ Missing loading states (always show spinner in buttons)</li>
+                <li>❌ No keyboard support (add focus trap and Escape key)</li>
+                <li>❌ Inconsistent padding (use spacing system)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div style="text-align: center; padding: var(--space-8); color: #64748b;">
+        <p style="font-size: 0.875rem;">
+            This preview demonstrates best practices for modal organization by category.<br>
+            Apply these patterns to all 40 button-triggered modals for consistency.
+        </p>
+        <p style="margin-top: var(--space-4); font-weight: 500;">
+            Brand Colors: <span class="code-badge">#000000</span> (header) ·
+            <span class="code-badge">#2563eb</span> (accent) ·
+            <span class="code-badge">#f8fafc</span> (surface)
+        </p>
+    </div>
+</body>
+</html>

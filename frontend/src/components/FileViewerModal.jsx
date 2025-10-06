@@ -1,5 +1,6 @@
-  import React, { useEffect, useMemo, useState, Suspense, lazy } from 'react'
+import React, { useEffect, useMemo, useState, Suspense, lazy } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import {
   Alert,
   AlertDescription,
@@ -28,6 +29,7 @@ import { Download, File, Link2Off, ZoomIn, X } from '@/icons-lucide'
 import axiosInstance from '../helpers/axiosInstance'
 import NeutralModal from './NeutralModal'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
+import { getContrastColor } from '../utils/colorUtils'
 
 const Editor = lazy(() => import('@monaco-editor/react'))
 const ReactXmlViewer = lazy(() => import('react-xml-viewer'))
@@ -60,6 +62,10 @@ export default function FileViewerModal({
   size = 'xl',
 }) {
   const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   // Color mode values
   const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
@@ -407,30 +413,13 @@ export default function FileViewerModal({
         motionPreset="slideInBottom"
       >
         <ModalOverlay bg="blackAlpha.900" />
-        <ModalContent bg={isFullscreen ? 'black' : modalBg} maxW={isFullscreen ? '100vw' : undefined} borderRadius="12px" overflow="hidden">
-          <ModalHeader display="flex" justifyContent="space-between" alignItems="center" p={4}>
-            <Text fontSize="lg" fontWeight="bold" noOfLines={1}>
+        <ModalContent bg={isFullscreen ? 'black' : modalBg} maxW={isFullscreen ? '100vw' : undefined} borderRadius="12px" >
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
               {file?.name || 'Preview'}
             </Text>
-            <HStack spacing={2}>
-              <Button
-                size="sm"
-                colorScheme="brand"
-                onClick={handleDownload}
-                leftIcon={<Icon as={Download} boxSize={ICON_BOX_MD} />}
-              >
-                Download
-              </Button>
-              <IconButton
-                size="sm"
-                aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-                icon={<Icon as={ZoomIn} boxSize={ICON_BOX_MD} />}
-                onClick={() => setIsFullscreen(!isFullscreen)}
-                variant="ghost"
-              />
-            </HStack>
           </ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody p={0} display="flex" alignItems="center" justifyContent="center">
             {detectedType === 'image' ? (
               <Box w="100%" h="100%" display="flex" alignItems="center" justifyContent="center" p={4}>

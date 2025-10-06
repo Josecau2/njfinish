@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import {
   Modal,
   ModalOverlay,
@@ -19,10 +20,12 @@ import {
   Text,
   useToast,
   Box,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import { useAcceptProposal } from '../queries/proposalQueries'
+import { getContrastColor } from '../utils/colorUtils'
 
 const defaultValues = {
   isExternalAcceptance: false,
@@ -38,6 +41,10 @@ const ProposalAcceptanceModal = ({
   isContractor = false,
 }) => {
   const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
   const acceptProposalMutation = useAcceptProposal()
   const toast = useToast({ duration: 2500, isClosable: true })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -153,12 +160,16 @@ const ProposalAcceptanceModal = ({
       }
 
   return (
-    <Modal isOpen={show} onClose={handleClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" closeOnOverlayClick={!isSubmitting}>
+    <Modal isOpen={show} onClose={handleClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" closeOnOverlayClick={!isSubmitting} isCentered>
       <ModalOverlay as={motion.div} {...overlayMotionProps} />
-      <ModalContent as={motion.div} {...contentMotionProps} borderRadius="12px" overflow="hidden">
+      <ModalContent as={motion.div} {...contentMotionProps} borderRadius="12px" >
         <Box as="form" onSubmit={submitProposal}>
-          <ModalHeader>{t('proposalAcceptance.title')}</ModalHeader>
-          <ModalCloseButton disabled={isSubmitting} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('proposalAcceptance.title')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton color={headerTextColor} disabled={isSubmitting} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
 
           <ModalBody>
             <Stack spacing={4}>
@@ -208,10 +219,10 @@ const ProposalAcceptanceModal = ({
               variant='ghost'
               onClick={handleClose}
               isDisabled={isSubmitting}
-            >
+             minH="44px">
               {t('common.cancel')}
             </Button>
-            <Button colorScheme='brand' type='submit' isLoading={isSubmitting}>
+            <Button colorScheme='brand' type='submit' isLoading={isSubmitting} minH="44px">
               {t('proposalAcceptance.confirm')}
             </Button>
           </ModalFooter>

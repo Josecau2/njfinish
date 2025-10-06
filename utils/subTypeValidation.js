@@ -20,7 +20,7 @@ async function validateSubTypeRequirements(items, manufacturerId) {
       .filter(id => id);
 
     if (catalogItemIds.length === 0) {
-      return { isValid: true, missingRequirements: [] };
+      return { isValid: true, missingRequirements: [], allRequirements: [] };
     }
 
     // Find all sub-type assignments for these catalog items

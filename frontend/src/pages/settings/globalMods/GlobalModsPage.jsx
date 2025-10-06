@@ -3,12 +3,17 @@ import { useSelector } from 'react-redux'
 import { Trans, useTranslation } from 'react-i18next'
 import axiosInstance from '../../../helpers/axiosInstance'
 import PageHeader from '../../../components/PageHeader'
-import { Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormControl, FormLabel, Heading, Image, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Select, SimpleGrid, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react'
+import { Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormControl, FormLabel, Heading, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Select, SimpleGrid, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react'
+import { getContrastColor } from '../../../utils/colorUtils'
 import StandardCard from '../../../components/StandardCard'
 import { AppIconButton } from '../../../components/common/AppButton'
 
 const GlobalModsPage = () => {
   const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   // Color mode values
   const borderColor = useColorModeValue('gray.200', 'gray.600')
@@ -80,6 +85,7 @@ const GlobalModsPage = () => {
   const [showAssignModal, setShowAssignModal] = useState(false)
   const [showEditCategoryModal, setShowEditCategoryModal] = useState(false)
   const [selectedManufacturer, setSelectedManufacturer] = useState('')
+  const [selectedTemplate, setSelectedTemplate] = useState('')
   const [createStep, setCreateStep] = useState(1) // 1: submenu, 2: template builder
   const [selectedSubmenu, setSelectedSubmenu] = useState('')
   const [editCategory, setEditCategory] = useState({ id: '', name: '', orderIndex: 0, image: '' })
@@ -1414,12 +1420,15 @@ const GlobalModsPage = () => {
       </Flex>
 
       {/* Add Modification Modal */}
-      <Modal isOpen={showCreateModModal} onClose={() => setShowCreateModModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside">
+      <Modal isOpen={showCreateModModal} onClose={() => setShowCreateModModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-            <ModalHeader>
-              {t('globalMods.modal.add.title')}
+        <ModalContent borderRadius="12px">
+            <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+              <Text fontSize="lg" fontWeight="semibold">
+                {t('globalMods.modal.add.title')}
+              </Text>
             </ModalHeader>
+            <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
         <ModalBody>
           {createStep === 1 && (
             <Box>
@@ -2054,10 +2063,16 @@ const GlobalModsPage = () => {
         onClose={() => setShowEditCategoryModal(false)}
         size={{ base: 'full', md: 'md' }}
         scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('globalMods.modal.editCategory.title')}</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('globalMods.modal.editCategory.title')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Flex>
               <Box md={8}>
@@ -2114,6 +2129,7 @@ const GlobalModsPage = () => {
               colorScheme="gray"
               variant="outline"
               onClick={() => setShowEditCategoryModal(false)}
+              minH="44px"
             >
               {t('globalMods.modal.editCategory.cancel')}
             </Button>
@@ -2121,6 +2137,7 @@ const GlobalModsPage = () => {
               colorScheme="brand"
               onClick={saveEditCategory}
               isDisabled={!editCategory.name.trim()}
+              minH="44px"
             >
               {t('globalMods.modal.editCategory.save')}
             </Button>
@@ -2133,11 +2150,16 @@ const GlobalModsPage = () => {
         isOpen={showEditTemplateModal}
         onClose={() => setShowEditTemplateModal(false)}
         size={{ base: 'full', md: 'md', lg: 'lg' }}
-        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('globalMods.modal.editTemplate.title')}</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('globalMods.modal.editTemplate.title')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Flex>
               <Box md={6}>
@@ -2209,13 +2231,14 @@ const GlobalModsPage = () => {
             </Flex>
           </ModalBody>
           <ModalFooter display="flex" gap={2} justifyContent="flex-end">
-            <Button colorScheme="gray" onClick={() => setShowEditTemplateModal(false)}>
+            <Button colorScheme="gray" onClick={() => setShowEditTemplateModal(false)} minH="44px">
               {t('common.cancel')}
             </Button>
             <Button
               colorScheme="brand"
               onClick={saveEditTemplate}
               disabled={!editTemplate.name.trim()}
+              minH="44px"
             >
               {t('globalMods.modal.editTemplate.saveChanges')}
             </Button>
@@ -2229,10 +2252,16 @@ const GlobalModsPage = () => {
         onClose={() => setShowGalleryModal(false)}
         size={{ base: 'full', md: 'lg', lg: 'xl' }}
         scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('globalMods.modal.gallery.title')}</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('globalMods.modal.gallery.title')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
           <Box>
             {gallery.map((category) => (
@@ -2338,10 +2367,16 @@ const GlobalModsPage = () => {
         onClose={() => setShowAssignModal(false)}
         size={{ base: 'full', md: 'md', lg: 'lg' }}
         scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('globalMods.modal.assign.title')}</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('globalMods.modal.assign.title')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
           <Flex>
             <Box md={6}>
@@ -2427,17 +2462,36 @@ const GlobalModsPage = () => {
 
           </ModalBody>
           <ModalFooter display="flex" gap={2} justifyContent="flex-end">
-            <Button colorScheme="gray" onClick={() => setShowAssignModal(false)}>
+            <Button colorScheme="gray" onClick={() => setShowAssignModal(false)} minH="44px">
               {t('globalMods.modal.assign.cancel')}
             </Button>
             <Button
               colorScheme="brand"
               onClick={async () => {
-                setAssignForm((prev) => ({ ...prev, manufacturerId: selectedManufacturer }))
-                await assignTemplate()
+                // Update assignForm with selected values and call assignTemplate directly
+                const updatedForm = {
+                  ...assignForm,
+                  templateId: selectedTemplate,
+                  manufacturerId: selectedManufacturer
+                }
+                setAssignForm(updatedForm)
+
+                // Call assignment API directly with updated values
+                const payload = { ...updatedForm }
+                if (!payload.templateId || !payload.manufacturerId || !payload.scope) return
+                payload.overridePrice = payload.overridePrice === '' ? null : Number(payload.overridePrice)
+                payload.catalogDataId = payload.catalogDataId === '' ? null : Number(payload.catalogDataId)
+                payload.targetStyle = payload.scope === 'style' ? payload.targetStyle || null : null
+                payload.targetType = payload.scope === 'type' ? payload.targetType || null : null
+
+                await axiosInstance.post('/api/global-mods/assignments', payload)
+                await loadAll(selectedManufacturer)
+
                 setShowAssignModal(false)
+                setSelectedTemplate('')
               }}
-              disabled={!assignForm.templateId || !selectedManufacturer}
+              disabled={!selectedTemplate || !selectedManufacturer}
+              minH="44px"
             >
               {t('globalMods.modal.assign.assign')}
             </Button>
@@ -2451,12 +2505,16 @@ const GlobalModsPage = () => {
         onClose={() => setShowDeleteCategoryModal(false)}
         size={{ base: 'full', md: 'md', lg: 'lg' }}
         scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>
-            {t('globalMods.modal.deleteCategory.title', { name: deleteCategory.name })}
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('globalMods.modal.deleteCategory.title', { name: deleteCategory.name })}
+            </Text>
           </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Box>
               <Box bg="orange.100" p={3} borderRadius="md">
@@ -2545,13 +2603,14 @@ const GlobalModsPage = () => {
             </Box>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="gray" onClick={() => setShowDeleteCategoryModal(false)}>
+            <Button colorScheme="gray" onClick={() => setShowDeleteCategoryModal(false)} minH="44px">
               {t('globalMods.modal.deleteCategory.cancel')}
             </Button>
             <Button
               colorScheme="red"
               onClick={confirmDeleteCategory}
               disabled={deleteMode === 'move' && !moveToCategoryId}
+              minH="44px"
             >
               {deleteMode === 'only'
                 ? t('globalMods.modal.deleteCategory.deleteOnly')

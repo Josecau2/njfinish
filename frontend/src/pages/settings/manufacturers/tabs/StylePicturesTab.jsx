@@ -1,13 +1,19 @@
 import StandardCard from '../../../../components/StandardCard'
 import React, { useState, useEffect, useCallback } from 'react'
-import { Alert, Badge, Box, Button, CardBody, CardHeader, Flex, FormLabel, HStack, Image, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spinner, Text, useColorModeValue } from '@chakra-ui/react'
+import { Alert, Badge, Box, Button, CardBody, CardHeader, Flex, FormLabel, HStack, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spinner, Text, useColorModeValue } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import { Upload, Pencil, Trash, Plus } from '@/icons-lucide'
 import axiosInstance from '../../../../helpers/axiosInstance'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../../constants/iconSizes'
+import { getContrastColor } from '../../../../utils/colorUtils'
 
 const StylePicturesTab = ({ manufacturer }) => {
   const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
   const api_url = import.meta.env.VITE_API_URL
 
   // Color mode values
@@ -375,10 +381,15 @@ const StylePicturesTab = ({ manufacturer }) => {
       </StandardCard>
 
       {/* Create Style Modal */}
-      <Modal isOpen={createModal} onClose={() => setCreateModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={createModal} onClose={() => setCreateModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('styles.createHeader', 'Add Style')}</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('styles.createHeader', 'Add Style')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Flex direction="column" gap={4}>
               <Box>
@@ -425,7 +436,7 @@ const StylePicturesTab = ({ manufacturer }) => {
             <Button variant="ghost" mr={3} onClick={() => setCreateModal(false)} disabled={createBusy}>
               {t('common.cancel', 'Cancel')}
             </Button>
-            <Button colorScheme="brand" onClick={handleCreateStyle} isLoading={createBusy}>
+            <Button colorScheme="brand" onClick={handleCreateStyle} isLoading={createBusy} minH="44px">
               {t('common.save', 'Save')}
             </Button>
           </ModalFooter>
@@ -433,10 +444,15 @@ const StylePicturesTab = ({ manufacturer }) => {
       </Modal>
 
       {/* Delete Confirm Modal */}
-      <Modal isOpen={deleteAsk.open} onClose={() => setDeleteAsk({ open: false, styleName: '' })} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={deleteAsk.open} onClose={() => setDeleteAsk({ open: false, styleName: '' })} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('styles.deleteHeader', 'Delete Style')}</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('styles.deleteHeader', 'Delete Style')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Text>
               {t('styles.deleteConfirm', 'Delete style')}{' '}
@@ -457,7 +473,7 @@ const StylePicturesTab = ({ manufacturer }) => {
             <Button variant="ghost" mr={3} onClick={() => setDeleteAsk({ open: false, styleName: '' })}>
               {t('common.cancel', 'Cancel')}
             </Button>
-            <Button colorScheme="red" onClick={handleDeleteStyle}>
+            <Button colorScheme="red" onClick={handleDeleteStyle} minH="44px">
               {t('common.delete', 'Delete')}
             </Button>
           </ModalFooter>
@@ -474,10 +490,16 @@ const StylePicturesTab = ({ manufacturer }) => {
         }}
         size={{ base: 'full', md: 'md', lg: 'lg' }}
         scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('styles.editImage', 'Edit Style Image')}</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('styles.editImage', 'Edit Style Image')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             {selectedStyle && (
               <>

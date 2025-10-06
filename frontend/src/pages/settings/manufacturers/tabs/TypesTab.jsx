@@ -1,13 +1,14 @@
 import StandardCard from '../../../../components/StandardCard'
 import { TableCard } from '../../../../components/TableCard'
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Alert, Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormLabel, HStack, IconButton, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue, Heading, chakra } from '@chakra-ui/react'
+import { Alert, Badge, Box, Button, CardBody, CardHeader, Checkbox, Flex, FormLabel, HStack, IconButton, Image, Input, InputGroup, InputLeftElement, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useToast, useColorModeValue, Heading, chakra } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import axiosInstance from '../../../../helpers/axiosInstance'
 import PageHeader from '../../../../components/PageHeader'
 import { Pencil, Trash, Search, Plus, ChevronDown } from '@/icons-lucide'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../../constants/iconSizes'
+import { getContrastColor } from '../../../../utils/colorUtils'
 
 // Helper function to get auth headers
 
@@ -20,6 +21,12 @@ const TypesTab = ({ manufacturer }) => {
   const api_url = import.meta.env.VITE_API_URL
   const loggedInUser = useSelector((state) => state.user?.user)
   const isContractor = loggedInUser?.group?.group_type === 'contractor'
+
+  // Customization hooks for modal headers
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   // Color mode values
   const bgGray50 = useColorModeValue('gray.50', 'gray.800')
@@ -1023,16 +1030,6 @@ const TypesTab = ({ manufacturer }) => {
       </StandardCard>
 
       {/* Image Edit Modal */}
-      <style>{`
-        .no-gradient-modal .modal-header {
-          background: var(--chakra-colors-white) !important;
-          border-bottom: 1px solid var(--chakra-colors-gray-200) !important;
-          color: var(--chakra-colors-gray-800) !important;
-        }
-        .no-gradient-modal .modal-title {
-          color: var(--chakra-colors-gray-800) !important;
-        }
-      `}</style>
       <Modal
         isOpen={editModalVisible}
         onClose={() => {
@@ -1040,11 +1037,16 @@ const TypesTab = ({ manufacturer }) => {
           setSelectedType(null)
           setSelectedFile(null)
         }}
-        size="xl"
+        size={{ base: 'full', md: 'xl' }}
+        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent>
-        <PageHeader title="Edit Type" />
+        <ModalContent borderRadius="12px">
+        <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+          <Text fontSize="lg" fontWeight="semibold">{t('types.meta.editType', 'Edit Type')}</Text>
+        </ModalHeader>
+        <ModalCloseButton color={headerTextColor} aria-label="Close modal" />
         <ModalBody>
           {selectedType && (
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
@@ -1368,7 +1370,7 @@ const TypesTab = ({ manufacturer }) => {
             isDisabled={!selectedFile || uploadingImage}
             isLoading={uploadingImage}
             loadingText={t('common.uploading', 'Uploading...')}
-          >
+           minH="44px">
             {t('types.assign.uploadImage', 'Upload Image')}
           </Button>
         </ModalFooter>
@@ -1379,10 +1381,16 @@ const TypesTab = ({ manufacturer }) => {
       <Modal
         isOpen={deleteTypeAsk.open}
         onClose={() => setDeleteTypeAsk({ open: false, typeName: '' })}
+        size={{ base: 'full', md: 'md' }}
+        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{t('types.delete.header', 'Delete Type')}</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">{t('types.delete.header', 'Delete Type')}</Text>
+          </ModalHeader>
+          <ModalCloseButton color={headerTextColor} aria-label="Close modal" />
           <ModalBody>
             <Text mb={4}>
               {t('types.delete.confirm', 'Delete type')} <Text as="strong">{deleteTypeAsk.typeName}</Text>?
@@ -1432,10 +1440,16 @@ const TypesTab = ({ manufacturer }) => {
       <Modal
         isOpen={createModalVisible}
         onClose={() => setCreateModalVisible(false)}
+        size={{ base: 'full', md: 'md' }}
+        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{t('types.create.header', 'Create New Type')}</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">{t('types.create.header', 'Create New Type')}</Text>
+          </ModalHeader>
+          <ModalCloseButton color={headerTextColor} aria-label="Close modal" />
           <ModalBody>
             {createError && (
               <Alert status="error" mb={4} borderRadius="md">
@@ -1555,11 +1569,16 @@ const TypesTab = ({ manufacturer }) => {
       <Modal
         isOpen={bulkEditModalVisible}
         onClose={() => setBulkEditModalVisible(false)}
-        size="lg"
+        size={{ base: 'full', md: 'lg' }}
+        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Bulk Edit {selectedItems.length} Types</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">Bulk Edit {selectedItems.length} Types</Text>
+          </ModalHeader>
+          <ModalCloseButton color={headerTextColor} aria-label="Close modal" />
           <ModalBody>
             <VStack spacing={4} align="stretch">
               <Text>
@@ -1612,7 +1631,7 @@ const TypesTab = ({ manufacturer }) => {
               isDisabled={isBulkEditing}
               isLoading={isBulkEditing}
               loadingText={`Updating ${selectedItems.length} Types...`}
-            >
+             minH="44px">
               Update {selectedItems.length} Types
             </Button>
           </ModalFooter>
@@ -1623,10 +1642,16 @@ const TypesTab = ({ manufacturer }) => {
       <Modal
         isOpen={renameModalVisible}
         onClose={() => setRenameModalVisible(false)}
+        size={{ base: 'full', md: 'md' }}
+        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Rename Type Globally</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">Rename Type Globally</Text>
+          </ModalHeader>
+          <ModalCloseButton color={headerTextColor} aria-label="Close modal" />
           <ModalBody>
             <VStack spacing={4} align="stretch">
               <Text>
@@ -1676,7 +1701,7 @@ const TypesTab = ({ manufacturer }) => {
               isDisabled={isRenamingType || !typeNameEditForm.newTypeName.trim()}
               isLoading={isRenamingType}
               loadingText="Renaming..."
-            >
+             minH="44px">
               Rename Type
             </Button>
           </ModalFooter>
@@ -1690,10 +1715,16 @@ const TypesTab = ({ manufacturer }) => {
           setBulkTypeChangeModalVisible(false)
           setNewTypeCategory('')
         }}
+        size={{ base: 'full', md: 'md' }}
+        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Change Type Category</ModalHeader>
+        <ModalContent borderRadius="12px">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">Change Type Category</Text>
+          </ModalHeader>
+          <ModalCloseButton color={headerTextColor} aria-label="Close modal" />
           <ModalBody>
             <VStack spacing={4} align="stretch">
               <Text>
@@ -1740,7 +1771,7 @@ const TypesTab = ({ manufacturer }) => {
               isDisabled={isChangingType || !newTypeCategory.trim()}
               isLoading={isChangingType}
               loadingText="Changing..."
-            >
+             minH="44px">
               Change Type Category
             </Button>
           </ModalFooter>

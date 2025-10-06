@@ -95,6 +95,12 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
   const infoBorderColor = useColorModeValue('blue.200', 'blue.600')
   const infoHeadingColor = useColorModeValue('blue.700', 'blue.200')
 
+  const gridSpacing = useBreakpointValue({ base: 4, md: 6 }) || 6
+  const cardWidth = useBreakpointValue({ base: '100%', sm: '200px', xl: '220px' }) || '100%'
+  const cardImageHeight = useBreakpointValue({ base: 120, md: 140, xl: 150 }) || 140
+  const cardPadding = useBreakpointValue({ base: 3, md: 4 }) || 4
+  const cardSpacing = useBreakpointValue({ base: 2, md: 3 }) || 3
+
   const handleManufacturerSelect = useCallback(
     (manufacturer) => {
       const manufacturerId = String(manufacturer.id)
@@ -247,7 +253,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                           {t('proposals.create.manufacturer.empty', 'No manufacturers available.')}
                         </Text>
                       ) : (
-                        <SimpleGrid columns={gridColumns} spacing={6}>
+                        <SimpleGrid columns={gridColumns} spacing={gridSpacing} justifyItems="center" alignItems="stretch">
                           {enabledManufacturers.map((manufacturer) => {
                             const isSelected = String(manufacturer.id) === field.value
                             const imageStatus = cardImageState[manufacturer.id]
@@ -262,6 +268,12 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                 overflow="hidden"
                                 bg={cardBg}
                                 cursor="pointer"
+                                maxW={cardWidth}
+                                w="full"
+                                mx="auto"
+                                display="flex"
+                                flexDirection="column"
+                                data-selected={isSelected}
                                 onClick={() => {
                                   field.onChange(String(manufacturer.id))
                                   handleManufacturerSelect(manufacturer)
@@ -289,7 +301,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                 whileTap={{ scale: 0.98 }}
                                 transition="all 0.2s ease"
                               >
-                                <Box position="relative" bg={imageBg} overflow="hidden" height="180px">
+                                <Box position="relative" bg={imageBg} overflow="hidden" height={`${cardImageHeight}px`}>
                                   {!imageStatus && (
                                     <Box
                                       position="absolute"
@@ -307,7 +319,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                     alt={manufacturer.name}
                                     w="100%"
                                     h="100%"
-                                    objectFit="cover"
+                                    objectFit="contain"
                                     onLoad={() => handleImageLoaded(manufacturer.id)}
                                     onError={(event) => {
                                       if (cardImageState[manufacturer.id] === 'fallback') {
@@ -337,7 +349,7 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                     </Box>
                                   )}
                                 </Box>
-                                <Stack spacing={4} p={4} align="center">
+                                <Stack spacing={cardSpacing} p={cardPadding} align="center">
                                   <Heading as="h3" size="sm" textAlign="center" color={headingColor}>
                                     {manufacturer.name}
                                   </Heading>
@@ -402,4 +414,5 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
   )
 }
 export default ManufacturerStep
+
 

@@ -51,6 +51,7 @@ import PaginationComponent from '../../components/common/PaginationComponent'
 import withContractorScope from '../../components/withContractorScope'
 import { usePayments, useCreatePayment, useApplyPayment } from '../../queries/paymentsQueries'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
+import { getContrastColor } from '../../utils/colorUtils'
 
 const STATUS_OPTIONS = ['all', 'pending', 'processing', 'completed', 'failed', 'cancelled']
 
@@ -61,6 +62,10 @@ const formatCurrency = (amountCents = 0, currency = 'USD') => {
 
 const PaymentsList = ({ isContractor }) => {
   const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -474,11 +479,15 @@ const PaymentsList = ({ isContractor }) => {
       ) : null}
 
       {/* Create Payment Modal */}
-      <Modal isOpen={isCreateModalOpen} onClose={onCreateModalClose} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={isCreateModalOpen} onClose={onCreateModalClose} isCentered size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={createPaymentForm.handleSubmit(onCreatePaymentSubmit)} borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('payments.create.title', 'Create Payment')}</ModalHeader>
-          <ModalCloseButton />
+        <ModalContent as="form" onSubmit={createPaymentForm.handleSubmit(onCreatePaymentSubmit)} borderRadius="12px" >
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('payments.create.title', 'Create Payment')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <FormControl isInvalid={!!createPaymentForm.formState.errors.orderId}>
               <FormLabel>{t('payments.create.orderIdLabel', 'Order ID')}</FormLabel>
@@ -506,11 +515,15 @@ const PaymentsList = ({ isContractor }) => {
       </Modal>
 
       {/* Gateway Selection Modal */}
-      <Modal isOpen={isGatewayModalOpen} onClose={onGatewayModalClose} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={isGatewayModalOpen} onClose={onGatewayModalClose} isCentered size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={gatewayForm.handleSubmit(onGatewaySubmit)} borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('payments.create.gatewayTitle', 'Select payment type')}</ModalHeader>
-          <ModalCloseButton />
+        <ModalContent as="form" onSubmit={gatewayForm.handleSubmit(onGatewaySubmit)} borderRadius="12px" >
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('payments.create.gatewayTitle', 'Select payment type')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <FormControl isInvalid={!!gatewayForm.formState.errors.gateway}>
               <Controller
@@ -539,11 +552,15 @@ const PaymentsList = ({ isContractor }) => {
       </Modal>
 
       {/* Apply Payment Modal */}
-      <Modal isOpen={isApplyModalOpen} onClose={onApplyModalClose} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={isApplyModalOpen} onClose={onApplyModalClose} isCentered size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
         <ModalOverlay />
-        <ModalContent as="form" onSubmit={applyPaymentForm.handleSubmit(onApplyPaymentSubmit)} borderRadius="12px" overflow="hidden">
-          <ModalHeader>{t('payments.apply.title', 'Apply Payment')}</ModalHeader>
-          <ModalCloseButton />
+        <ModalContent as="form" onSubmit={applyPaymentForm.handleSubmit(onApplyPaymentSubmit)} borderRadius="12px" >
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('payments.apply.title', 'Apply Payment')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Stack spacing={4}>
               <FormControl isInvalid={!!applyPaymentForm.formState.errors.method}>

@@ -11,6 +11,15 @@ const ProposalSectionItem = sequelize.define('ProposalSectionItem', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    catalog_data_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'manufacturer_catalog_data',
+            key: 'id'
+        },
+        comment: 'Reference to the original catalog item for sub-type validation'
+    },
     code: {
         type: DataTypes.STRING,
         allowNull: true

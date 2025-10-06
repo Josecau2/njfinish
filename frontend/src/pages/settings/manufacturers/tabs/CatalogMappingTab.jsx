@@ -4,12 +4,14 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import PageHeader from '../../../../components/PageHeader'
-import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Divider, Flex, FormControl, FormLabel, HStack, Heading, Icon, Image, Input, ListItem, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Select, SimpleGrid, Spinner, Stack, Table, Tbody, Td, Text, Textarea, Th, Thead, Tr, UnorderedList, VStack, useColorModeValue, useToast } from '@chakra-ui/react'
+import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Badge, Box, Button, CardBody, CardHeader, Checkbox, Divider, Flex, FormControl, FormLabel, Grid, GridItem, HStack, Heading, Icon, Image, Input, ListItem, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Select, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, UnorderedList, VStack, useColorModeValue, useToast } from '@chakra-ui/react'
+import { getContrastColor } from '../../../../utils/colorUtils'
 // Use lucide icons (React components) only via centralized module
 import { Plus, ChevronDown, ChevronUp, RefreshCw, Sparkles, Upload, Wrench } from '@/icons-lucide'
 import { fetchManufacturerById } from '../../../../store/slices/manufacturersSlice'
 import axiosInstance from '../../../../helpers/axiosInstance'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../../constants/iconSizes'
+import ModificationTemplateBuilder from './ModificationTemplateBuilder'
 // Removed Swal - using Chakra useToast
 // Removed CreatableSelect - using Chakra Select
 
@@ -17,9 +19,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const { t } = useTranslation()
   const toast = useToast()
   const api_url = import.meta.env.VITE_API_URL
-  const customization = useSelector((state) => state.customization)
-  const headerBg = customization?.headerBg || "blue.600"
-  const textColor = customization?.headerTextColor || "white"
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
+
+  // Legacy variable names for existing button references
+  const headerBg = resolvedHeaderBg
+  const textColor = headerTextColor
 
   // AlertDialog confirmation system (replaces SweetAlert)
 
@@ -34,6 +41,8 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const iconRed500 = useColorModeValue('red.500', 'red.300')
   const colorOrange50 = useColorModeValue('orange.50', 'orange.900')
   const textSecondary = useColorModeValue('gray.600', 'gray.400')
+  const bgWhite = useColorModeValue('white', 'gray.800')
+  const bgGray50Dark = useColorModeValue('gray.50', 'gray.700')
 
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
@@ -47,7 +56,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   const cancelRef = React.useRef()
 
   // Helper function for confirmations (replaces Swal.fire with confirm)
-  const askConfirm = (title, description, confirmText = t('common.confirm', 'Confirm'), cancelText = t('common.cancel', 'Cancel')) => {
+  const askConfirm = ({
+    title = '',
+    description = '',
+    confirmText = t('common.confirm', 'Confirm'),
+    cancelText = t('common.cancel', 'Cancel'),
+  } = {}) => {
     return new Promise((resolve) => {
       setConfirmDialog({
         isOpen: true,
@@ -56,11 +70,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         confirmText,
         cancelText,
         onConfirm: () => {
-          setConfirmDialog(prev => ({ ...prev, isOpen: false }))
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false }))
           resolve(true)
         },
         onCancel: () => {
-          setConfirmDialog(prev => ({ ...prev, isOpen: false }))
+          setConfirmDialog((prev) => ({ ...prev, isOpen: false }))
           resolve(false)
         },
       })
@@ -1162,7 +1176,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
 
   const [errors, setErrors] = useState({})
   const handleManualChange = (event) => {
-    setManualForm({ ...manualForm, [event.currentTarget.name]: event.currentTarget.value })
+    setManualForm({ ...manualForm, [event.target.name]: event.target.value })
   }
 
   const validateManualForm = () => {
@@ -1669,7 +1683,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   }
 
   const handleFileChange = (event) => {
-    const selectedFile = event.currentTarget.files[0]
+    const selectedFile = event.target.files[0]
     if (selectedFile) {
       const allowedTypes = [
         'text/csv',
@@ -1860,7 +1874,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   }
 
   const handleStyleFormChange = (event) => {
-    const { name, value } = event.currentTarget
+    const { name, value } = event.target
     setStyleForm((prev) => ({
       ...prev,
       [name]: value,
@@ -2525,94 +2539,120 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
   `}</style>
 
       {/* Sub-Types Management Section */}
-      <StandardCard>
-        <CardHeader>
-          <Heading as="h6" size="sm">{t('settings.manufacturers.catalogMapping.subTypes.header')}</Heading>
-          <Button
-            colorScheme="blue"
-            size="sm"
-            onClick={() => {
-              setSubTypeForm({
-                name: '',
-                description: '',
-                requires_hinge_side: false,
-                requires_exposed_side: false,
-              })
-              setEditingSubType(null)
-              setShowSubTypeModal(true)
-            }}
-          >
-            <Plus size={ICON_SIZE_MD} aria-hidden="true" />{' '}
-            {t('settings.manufacturers.catalogMapping.subTypes.create')}
-          </Button>
+      <StandardCard mb={2}>
+        <CardHeader py={1.5} px={2.5}>
+          <Flex justify="space-between" align="center" w="100%">
+            <Heading as="h6" size="xs" fontWeight="semibold">{t('settings.manufacturers.catalogMapping.subTypes.header')}</Heading>
+            <Button
+              colorScheme="blue"
+              size="xs"
+              fontSize="xs"
+              onClick={() => {
+                setSubTypeForm({
+                  name: '',
+                  description: '',
+                  requires_hinge_side: false,
+                  requires_exposed_side: false,
+                })
+                setEditingSubType(null)
+                setShowSubTypeModal(true)
+              }}
+            >
+              <Plus size={14} aria-hidden="true" />{' '}
+              {t('settings.manufacturers.catalogMapping.subTypes.create')}
+            </Button>
+          </Flex>
         </CardHeader>
-        <CardBody>
+        <CardBody py={1.5} px={2.5}>
           {subTypes.length === 0 ? (
-            <Text>
+            <Text color={borderGray600} fontSize="xs">
               {t('settings.manufacturers.catalogMapping.subTypes.empty')}
             </Text>
           ) : (
-            <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap={3}>
+            <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap={1.5}>
               {subTypes.map((subType) => (
                 <Box key={subType.id}>
                   <StandardCard>
-                    <CardBody>
-                      <Heading as="h6" size="sm">{subType.name}</Heading>
-                      {subType.description && (
-                        <Text fontSize="sm" color={borderGray600}>{subType.description}</Text>
-                      )}
-                      <Box>
-                        {subType.requires_hinge_side && (
-                          <Badge colorScheme="blue">
-                            {t('settings.manufacturers.catalogMapping.subTypes.requiresHinge')}
-                          </Badge>
-                        )}
-                        {subType.requires_exposed_side && (
-                          <Badge colorScheme="orange">
-                            {t('settings.manufacturers.catalogMapping.subTypes.requiresExposed')}
-                          </Badge>
-                        )}
-                      </Box>
-                      <Box>
-                        <Button
-                          colorScheme="blue"
-                          size="sm"
-                          onClick={() => {
-                            setSubTypeForm({
-                              name: subType.name,
-                              description: subType.description || '',
-                              requires_hinge_side: subType.requires_hinge_side,
-                              requires_exposed_side: subType.requires_exposed_side,
-                            })
-                            setEditingSubType(subType)
-                            setShowSubTypeModal(true)
-                          }}
-                          aria-label={t('common.edit')}
-                        >
-                          {t('common.edit')}
-                        </Button>
-                        <Button
-                          colorScheme="green"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedSubType(subType.id)
-                            setShowAssignSubTypeModal(true)
-                          }}
-                          aria-label={t(
-                            'settings.manufacturers.catalogMapping.subTypes.assignItems',
+                    <CardBody p={1.5}>
+                      <VStack align="stretch" spacing={1.5}>
+                        <Box>
+                          <Heading as="h6" size="xs" fontWeight="semibold" mb={0.5}>{subType.name}</Heading>
+                          {subType.description && (
+                            <Text fontSize="xs" color={borderGray600} lineHeight="short">{subType.description}</Text>
                           )}
-                        >
-                          {t('settings.manufacturers.catalogMapping.subTypes.assignItems')}
-                        </Button>
-                        <Button
-                          colorScheme="red"
-                          size="sm"
-                          onClick={() => handleSubTypeDelete(subType)}
-                          aria-label={t('common.delete')}
-                        >
-                          {t('common.delete')}
-                        </Button>
-                      </Box>
+                        </Box>
+
+                        {(subType.requires_hinge_side || subType.requires_exposed_side) && (
+                          <HStack spacing={1} flexWrap="wrap">
+                            {subType.requires_hinge_side && (
+                              <Badge colorScheme="blue" fontSize="2xs" py={0} px={1.5}>
+                                {t('settings.manufacturers.catalogMapping.subTypes.requiresHinge')}
+                              </Badge>
+                            )}
+                            {subType.requires_exposed_side && (
+                              <Badge colorScheme="orange" fontSize="2xs" py={0} px={1.5}>
+                                {t('settings.manufacturers.catalogMapping.subTypes.requiresExposed')}
+                              </Badge>
+                            )}
+                          </HStack>
+                        )}
+
+                        <Flex gap={1} flexWrap="wrap">
+                          <Button
+                            colorScheme="blue"
+                            size="xs"
+                            fontSize="2xs"
+                            h="auto"
+                            py={1}
+                            px={2}
+                            minH="unset"
+                            onClick={() => {
+                              setSubTypeForm({
+                                name: subType.name,
+                                description: subType.description || '',
+                                requires_hinge_side: subType.requires_hinge_side,
+                                requires_exposed_side: subType.requires_exposed_side,
+                              })
+                              setEditingSubType(subType)
+                              setShowSubTypeModal(true)
+                            }}
+                            aria-label={t('common.edit')}
+                          >
+                            {t('common.edit')}
+                          </Button>
+                          <Button
+                            colorScheme="green"
+                            size="xs"
+                            fontSize="2xs"
+                            h="auto"
+                            py={1}
+                            px={2}
+                            minH="unset"
+                            onClick={() => {
+                              setSelectedSubType(subType.id)
+                              setShowAssignSubTypeModal(true)
+                            }}
+                            aria-label={t(
+                              'settings.manufacturers.catalogMapping.subTypes.assignItems',
+                            )}
+                          >
+                            {t('settings.manufacturers.catalogMapping.subTypes.assignItems')}
+                          </Button>
+                          <Button
+                            colorScheme="red"
+                            size="xs"
+                            fontSize="2xs"
+                            h="auto"
+                            py={1}
+                            px={2}
+                            minH="unset"
+                            onClick={() => handleSubTypeDelete(subType)}
+                            aria-label={t('common.delete')}
+                          >
+                            {t('common.delete')}
+                          </Button>
+                        </Flex>
+                      </VStack>
                     </CardBody>
                   </StandardCard>
                 </Box>
@@ -2635,7 +2675,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 'Items per page',
               )}
               onChange={(event) => {
-                const value = parseInt(event.currentTarget.value, 10)
+                const value = parseInt(event.target.value, 10)
                 setItemsPerPage(value)
                 localStorage.setItem('catalogItemsPerPage', value)
                 setCurrentPage(1)
@@ -2667,7 +2707,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               aria-label={t('settings.manufacturers.catalogMapping.search', 'Search styles')}
               placeholder="🔍 Search styles..."
               value={searchFilter}
-              onChange={(event) => setSearchFilter(event.currentTarget.value)}
+              onChange={(event) => setSearchFilter(event.target.value)}
               pr={searchFilter ? "35px" : "12px"}
               name="catalog-search"
               id="catalog-search"
@@ -2701,7 +2741,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             value={typeFilter}
             onChange={(event) => {
               setCurrentPage(1)
-              setTypeFilter(event.currentTarget.value)
+              setTypeFilter(event.target.value)
             }}
             name="catalog-type-filter"
             id="catalog-type-filter"
@@ -2723,7 +2763,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             value={styleFilter}
             onChange={(event) => {
               setCurrentPage(1)
-              setStyleFilter(event.currentTarget.value)
+              setStyleFilter(event.target.value)
             }}
             name="catalog-style-filter"
             id="catalog-style-filter"
@@ -3061,7 +3101,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <Flex align="center" mb={3} p={3} bg={bgGray50} borderRadius="md">
               <Checkbox
                 isChecked={isSelectAll}
-                onChange={(event) => handleSelectAll(event.currentTarget.checked)}
+                onChange={(event) => handleSelectAll(event.target.checked)}
                 mr={2}
                 id="mobile-select-all"
               />
@@ -3216,26 +3256,28 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       )}
 
       {/* File Upload Modal */}
-      <Modal isOpen={fileModalVisible} onClose={() => setFileModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={fileModalVisible} onClose={() => setFileModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={t('settings.manufacturers.catalogMapping.file.modalTitle')} />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.file.modalTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <FormControl>
               <Input type="file" name="catalogFiles" onChange={handleFileChange} />
             </FormControl>
           </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="gray" onClick={() => setFileModalVisible(false)}>
+          <ModalFooter flexShrink={0}>
+            <Button variant="outline" mr={3} onClick={() => setFileModalVisible(false)}>
               {t('common.cancel')}
             </Button>
             <Button
-              bg={headerBg}
-              color={textColor}
-              borderColor={headerBg}
-              _hover={{ opacity: 0.8 }}
+              colorScheme="brand"
               onClick={handleUpload}
-            >
+             minH="44px">
               {t('settings.manufacturers.catalogMapping.file.uploadBtn')}
             </Button>
           </ModalFooter>
@@ -3243,21 +3285,23 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Assign Global Mods Modal */}
-      <Modal isOpen={showAssignGlobalModsModal} onClose={() => setShowAssignGlobalModsModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside"
-      >
+      <Modal isOpen={showAssignGlobalModsModal} onClose={() => setShowAssignGlobalModsModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" isCentered zIndex={1500}>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader
-            title={t(
-              'settings.manufacturers.catalogMapping.assign.header',
-              'Assign Global Modifications',
-            )}
-          />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t(
+                'settings.manufacturers.catalogMapping.assign.header',
+                'Assign Global Modifications',
+              )}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Flex mb={3} align="center" gap={2}>
               <Checkbox
                 isChecked={includeDraftTemplates}
-                onChange={(event) => setIncludeDraftTemplates(event.currentTarget.checked)}
+                onChange={(event) => setIncludeDraftTemplates(event.target.checked)}
               >
                 Include drafts
               </Checkbox>
@@ -3268,7 +3312,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <Select
                   value={assignFormGM.templateId}
                   onChange={(event) =>
-                    setAssignFormGM((f) => ({ ...f, templateId: event.currentTarget.value }))
+                    setAssignFormGM((f) => ({ ...f, templateId: event.target.value }))
                   }
                 >
                   <option value="">Select template…</option>
@@ -3288,7 +3332,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <Select
                   value={assignFormGM.scope}
                   onChange={(event) =>
-                    setAssignFormGM((f) => ({ ...f, scope: event.currentTarget.value }))
+                    setAssignFormGM((f) => ({ ...f, scope: event.target.value }))
                   }
                 >
                   <option value="all">All</option>
@@ -3303,7 +3347,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   type="number"
                   value={assignFormGM.overridePrice}
                   onChange={(event) =>
-                    setAssignFormGM((f) => ({ ...f, overridePrice: event.currentTarget.value }))
+                    setAssignFormGM((f) => ({ ...f, overridePrice: event.target.value }))
                   }
                   placeholder="optional"
                   name="assign-override-price"
@@ -3316,7 +3360,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <Select
                     value={assignFormGM.targetStyle}
                     onChange={(event) =>
-                      setAssignFormGM((f) => ({ ...f, targetStyle: event.currentTarget.value }))
+                      setAssignFormGM((f) => ({ ...f, targetStyle: event.target.value }))
                     }
                   >
                     <option value="">Select style…</option>
@@ -3334,7 +3378,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <Select
                     value={assignFormGM.targetType}
                     onChange={(event) =>
-                      setAssignFormGM((f) => ({ ...f, targetType: event.currentTarget.value }))
+                      setAssignFormGM((f) => ({ ...f, targetType: event.target.value }))
                     }
                   >
                     <option value="">Select type…</option>
@@ -3416,18 +3460,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               )}
             </Box>
           </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="gray" onClick={() => setShowAssignGlobalModsModal(false)}>
+          <ModalFooter flexShrink={0}>
+            <Button variant="outline" mr={3} onClick={() => setShowAssignGlobalModsModal(false)}>
               {t('common.cancel')}
             </Button>
             <Button
-              bg={headerBg}
-              color={textColor}
-              borderColor={headerBg}
-              _hover={{ opacity: 0.8 }}
+              colorScheme="brand"
               onClick={submitAssignGlobal}
-              disabled={!assignFormGM.templateId}
-            >
+              isDisabled={!assignFormGM.templateId}
+             minH="44px">
               Assign
             </Button>
           </ModalFooter>
@@ -3439,10 +3480,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         isOpen={showItemGlobalModsModal}
         onClose={() => setShowItemGlobalModsModal(false)}
         size={{ base: 'full', md: 'md', lg: 'lg' }}
+        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={`Global Mods — ${selectedCatalogItem?.code || ''}`} />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {`Global Mods — ${selectedCatalogItem?.code || ''}`}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <TableCard>
               <Table size="sm" variant="simple">
@@ -3516,7 +3564,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <Select
                   value={assignFormGM.templateId}
                   onChange={(event) =>
-                    setAssignFormGM((f) => ({ ...f, templateId: event.currentTarget.value }))
+                    setAssignFormGM((f) => ({ ...f, templateId: event.target.value }))
                   }
                 >
                   <option value="">Select template…</option>
@@ -3537,7 +3585,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   type="number"
                   value={assignFormGM.overridePrice}
                   onChange={(event) =>
-                    setAssignFormGM((f) => ({ ...f, overridePrice: event.currentTarget.value }))
+                    setAssignFormGM((f) => ({ ...f, overridePrice: event.target.value }))
                   }
                   placeholder="optional"
                   name="item-assign-override-price"
@@ -3573,7 +3621,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </Flex>
             </VStack>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button colorScheme="gray" onClick={() => setShowItemGlobalModsModal(false)}>
               {t('common.close', 'Close')}
             </Button>
@@ -3582,10 +3630,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Manual Upload Modal */}
-      <Modal isOpen={manualModalVisible} onClose={() => setManualModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={manualModalVisible} onClose={() => setManualModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={t('settings.manufacturers.catalogMapping.manual.modalTitle')} />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.manual.modalTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Select
               placeholder={t(
@@ -3634,27 +3687,29 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <Input name="type" value={manualForm.type} onChange={handleManualChange} />
             </FormControl>
           </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="gray" onClick={() => setManualModalVisible(false)}>
+          <ModalFooter flexShrink={0}>
+            <Button variant="outline" mr={3} onClick={() => setManualModalVisible(false)}>
               {t('common.cancel')}
             </Button>
             <Button
-              bg={headerBg}
-              color={textColor}
-              borderColor={headerBg}
-              _hover={{ opacity: 0.8 }}
+              colorScheme="brand"
               onClick={handleSaveManualItem}
-            >
+             minH="44px">
               {t('common.save')}
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={editModalVisible} onClose={() => setEditModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={editModalVisible} onClose={() => setEditModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={t('settings.manufacturers.catalogMapping.edit.modalTitle')} />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.edit.modalTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Select
               placeholder={t(
@@ -3689,7 +3744,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   name={field}
                   value={editForm[field]}
                   onChange={(event) =>
-                    setEditForm({ ...editForm, [field]: event.currentTarget.value })
+                    setEditForm({ ...editForm, [field]: event.target.value })
                   }
                 />
               </FormControl>
@@ -3704,24 +3759,21 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 name="price"
                 value={editForm.price}
                 onChange={(event) => {
-                  const val = event.currentTarget.value
+                  const val = event.target.value
                   setEditForm({ ...editForm, price: val })
                 }}
               />
             </FormControl>
           </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="gray" onClick={() => setEditModalVisible(false)}>
+          <ModalFooter flexShrink={0}>
+            <Button variant="outline" mr={3} onClick={() => setEditModalVisible(false)}>
               {t('common.cancel')}
             </Button>
             <Button
-              bg={headerBg}
-              color={textColor}
-              borderColor={headerBg}
-              _hover={{ opacity: 0.8 }}
+              colorScheme="brand"
               onClick={handleUpdateItem}
-              disabled={isUpdating}
-            >
+              isDisabled={isUpdating}
+             minH="44px">
               {isUpdating
                 ? t('settings.manufacturers.catalogMapping.edit.updating')
                 : t('settings.manufacturers.catalogMapping.edit.update')}
@@ -3731,14 +3783,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Style Modal */}
-      <Modal isOpen={showStyleModal} onClose={() => setShowStyleModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={showStyleModal} onClose={() => setShowStyleModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader
-            title={t('settings.manufacturers.catalogMapping.style.manageTitle', {
-              style: selectedStyle,
-            })}
-          />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.style.manageTitle', {
+                style: selectedStyle,
+              })}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
 
           <ModalBody>
             {/* Short Name */}
@@ -3769,7 +3824,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 type="file"
                 accept="image/*"
                 id="styleImage"
-                onChange={(event) => setStyleImage(event.currentTarget.files[0])}
+                onChange={(event) => setStyleImage(event.target.files[0])}
               />
             </FormControl>
 
@@ -3796,11 +3851,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   display="block"
                   mx="auto"
                   onError={(event) => {
-                    if (styleForm.image && !event.currentTarget.dataset.fallbackTried) {
-                      event.currentTarget.dataset.fallbackTried = '1'
-                      event.currentTarget.src = `${api_url}/uploads/manufacturer_catalogs/${styleForm.image}`
+                    if (styleForm.image && !event.target.dataset.fallbackTried) {
+                      event.target.dataset.fallbackTried = '1'
+                      event.target.src = `${api_url}/uploads/manufacturer_catalogs/${styleForm.image}`
                     } else {
-                      event.currentTarget.src = '/images/nologo.png'
+                      event.target.src = '/images/nologo.png'
                     }
                   }}
                 />
@@ -3808,14 +3863,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             ) : null}
           </ModalBody>
 
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button
               bg={headerBg}
               color={textColor}
               borderColor={headerBg}
               _hover={{ opacity: 0.8 }}
               onClick={handleSaveStyle}
-            >
+             minH="44px">
               {t('common.save')}
             </Button>
             <Button colorScheme="gray" onClick={() => setShowStyleModal(false)}>
@@ -3826,12 +3881,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Style View Modal */}
-      <Modal isOpen={showStyleViewModal} onClose={() => setShowStyleViewModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside">
+      <Modal isOpen={showStyleViewModal} onClose={() => setShowStyleViewModal(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader
-            title={`📝 ${t('settings.manufacturers.catalogMapping.style.detailsTitle')}`}
-          />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.style.detailsTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             {styleDetails ? (
               <Box p="10px 5px">
@@ -3869,11 +3927,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       borderRadius="8px"
                       boxShadow="0 2px 8px rgba(0, 0, 0, 0.15)"
                       onError={(event) => {
-                        if (styleDetails.image && !event.currentTarget.dataset.fallbackTried) {
-                          event.currentTarget.dataset.fallbackTried = '1'
-                          event.currentTarget.src = `${api_url}/uploads/manufacturer_catalogs/${styleDetails.image}`
+                        if (styleDetails.image && !event.target.dataset.fallbackTried) {
+                          event.target.dataset.fallbackTried = '1'
+                          event.target.src = `${api_url}/uploads/manufacturer_catalogs/${styleDetails.image}`
                         } else {
-                          event.currentTarget.src = '/images/nologo.png'
+                          event.target.src = '/images/nologo.png'
                         }
                       }}
                     />
@@ -3888,7 +3946,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <Text>{t('settings.manufacturers.catalogMapping.style.noData')}</Text>
             )}
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button colorScheme="gray" onClick={() => setShowStyleViewModal(false)}>
               {t('common.cancel')}
             </Button>
@@ -3899,10 +3957,18 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       <Modal
         isOpen={showAssemblyModal}
         onClose={() => !isAssemblyCostSaving && setShowAssemblyModal(false)}
+        size={{ base: 'full', md: 'md', lg: 'lg' }}
+        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={t('settings.manufacturers.catalogMapping.assembly.modalTitle')} />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.assembly.modalTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody position="relative">
             {isAssemblyCostSaving && (
               <Flex
@@ -3927,7 +3993,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <Select
               value={assemblyData.type}
               onChange={(event) =>
-                setAssemblyData({ ...assemblyData, type: event.currentTarget.value })
+                setAssemblyData({ ...assemblyData, type: event.target.value })
               }
               disabled={isAssemblyCostSaving}
             >
@@ -3951,7 +4017,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               step="0.01"
               value={assemblyData.price}
               onChange={(event) =>
-                setAssemblyData({ ...assemblyData, price: event.currentTarget.value })
+                setAssemblyData({ ...assemblyData, price: event.target.value })
               }
               placeholder="Enter price (0 for no assembly cost)"
               disabled={isAssemblyCostSaving}
@@ -3963,7 +4029,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <Select
               value={assemblyData.applyTo}
               onChange={(event) =>
-                setAssemblyData({ ...assemblyData, applyTo: event.currentTarget.value })
+                setAssemblyData({ ...assemblyData, applyTo: event.target.value })
               }
               disabled={isAssemblyCostSaving}
             >
@@ -4129,7 +4195,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           id={`type-${typeItem.type}`}
                           checked={isSelected}
                           onChange={(event) => {
-                            if (event.currentTarget.checked) {
+                            if (event.target.checked) {
                               setAssemblyData((prev) => ({
                                 ...prev,
                                 selectedTypes: [...prev.selectedTypes, typeItem.type],
@@ -4209,7 +4275,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             )}
           </ModalBody>
 
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button
               colorScheme="gray"
               onClick={() => setShowAssemblyModal(false)}
@@ -4224,7 +4290,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               _hover={{ opacity: 0.8 }}
               onClick={saveAssemblyCost}
               disabled={isAssemblyCostSaving}
-            >
+             minH="44px">
               {isAssemblyCostSaving ? (
                 <>
                   <Spinner size="sm" mr={2} />
@@ -4238,17 +4304,22 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={showHingesModal} onClose={() => setShowHingesModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={showHingesModal} onClose={() => setShowHingesModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={t('settings.manufacturers.catalogMapping.hinges.modalTitle')} />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.hinges.modalTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <FormLabel>{t('settings.manufacturers.catalogMapping.hinges.left')}</FormLabel>
             <Input
               type="number"
               value={hingesData.leftHingePrice}
               onChange={(event) =>
-                setHingesData({ ...hingesData, leftHingePrice: event.currentTarget.value })
+                setHingesData({ ...hingesData, leftHingePrice: event.target.value })
               }
               placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderLeft')}
             />
@@ -4260,7 +4331,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               type="number"
               value={hingesData.rightHingePrice}
               onChange={(event) =>
-                setHingesData({ ...hingesData, rightHingePrice: event.currentTarget.value })
+                setHingesData({ ...hingesData, rightHingePrice: event.target.value })
               }
               placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderRight')}
             />
@@ -4272,7 +4343,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               type="number"
               value={hingesData.bothHingePrice}
               onChange={(event) =>
-                setHingesData({ ...hingesData, bothHingePrice: event.currentTarget.value })
+                setHingesData({ ...hingesData, bothHingePrice: event.target.value })
               }
               placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderBoth')}
             />
@@ -4284,12 +4355,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               type="number"
               value={hingesData.exposedSidePrice}
               onChange={(event) =>
-                setHingesData({ ...hingesData, exposedSidePrice: event.currentTarget.value })
+                setHingesData({ ...hingesData, exposedSidePrice: event.target.value })
               }
               placeholder={t('settings.manufacturers.catalogMapping.hinges.placeholderExposed')}
             />
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button colorScheme="gray" onClick={() => setShowHingesModal(false)}>
               {t('common.cancel')}
             </Button>
@@ -4299,17 +4370,22 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               borderColor={headerBg}
               _hover={{ opacity: 0.8 }}
               onClick={saveHingesDetails}
-            >
+             minH="44px">
               {t('common.save')}
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      <Modal isOpen={showModificationModal} onClose={() => setShowModificationModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={showModificationModal} onClose={() => setShowModificationModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={t('settings.manufacturers.catalogMapping.mod.modalTitle')} />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.mod.modalTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <FormLabel>{t('settings.manufacturers.catalogMapping.mod.name')}</FormLabel>
             <Input
@@ -4317,7 +4393,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               onChange={(event) =>
                 setModificationData({
                   ...modificationData,
-                  modificationName: event.currentTarget.value,
+                  modificationName: event.target.value,
                 })
               }
             />
@@ -4328,7 +4404,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <Textarea
               value={modificationData.description}
               onChange={(event) =>
-                setModificationData({ ...modificationData, description: event.currentTarget.value })
+                setModificationData({ ...modificationData, description: event.target.value })
               }
               rows={3}
             />
@@ -4339,7 +4415,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             <Textarea
               value={modificationData.notes}
               onChange={(event) =>
-                setModificationData({ ...modificationData, notes: event.currentTarget.value })
+                setModificationData({ ...modificationData, notes: event.target.value })
               }
               rows={2}
             />
@@ -4351,11 +4427,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               type="number"
               value={modificationData.price}
               onChange={(event) =>
-                setModificationData({ ...modificationData, price: event.currentTarget.value })
+                setModificationData({ ...modificationData, price: event.target.value })
               }
             />
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button colorScheme="gray" onClick={() => setShowModificationModal(false)}>
               {t('common.cancel')}
             </Button>
@@ -4365,7 +4441,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               borderColor={headerBg}
               _hover={{ opacity: 0.8 }}
               onClick={saveModificationDetails}
-            >
+             minH="44px">
               {t('common.save')}
             </Button>
           </ModalFooter>
@@ -4373,14 +4449,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Delete Style Modal */}
-      <Modal isOpen={deleteStyleModalVisible} onClose={() => setDeleteStyleModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={deleteStyleModalVisible} onClose={() => setDeleteStyleModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader
-            title={t('settings.manufacturers.catalogMapping.deleteStyle.modalTitle', {
-              style: styleToDelete,
-            })}
-          />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.deleteStyle.modalTitle', {
+                style: styleToDelete,
+              })}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Box>
               <Text>
@@ -4425,7 +4504,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <FormLabel>Select target style:</FormLabel>
                   <Select
                     value={mergeToStyle}
-                    onChange={(event) => setMergeToStyle(event.currentTarget.value)}
+                    onChange={(event) => setMergeToStyle(event.target.value)}
                   >
                     <option value="">Select a style...</option>
                     {sortedUniqueStyles
@@ -4463,7 +4542,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </Box>
             </Box>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button
               colorScheme="gray"
               onClick={() => setDeleteStyleModalVisible(false)}
@@ -4475,7 +4554,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               color={mergeToStyle ? 'primary' : 'danger'}
               onClick={handleDeleteStyle}
               disabled={isDeleting || (mergeToStyle !== '' && !mergeToStyle)}
-            >
+             minH="44px">
               {isDeleting ? (
                 <>
                   <Spinner size="sm" mr={2} />
@@ -4492,10 +4571,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Individual Delete Item Modal */}
-      <Modal isOpen={deleteItemModalVisible} onClose={() => setDeleteItemModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={deleteItemModalVisible} onClose={() => setDeleteItemModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={t('settings.manufacturers.catalogMapping.deleteItem.modalTitle')} />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.deleteItem.modalTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             {itemToDelete && (
               <Box>
@@ -4520,7 +4604,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </Box>
             )}
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button
               colorScheme="gray"
               onClick={() => setDeleteItemModalVisible(false)}
@@ -4528,7 +4612,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             >
               {t('common.cancel')}
             </Button>
-            <Button colorScheme="red" onClick={handleDeleteItem} disabled={isDeletingItem}>
+            <Button colorScheme="red" onClick={handleDeleteItem} disabled={isDeletingItem} minH="44px">
               {isDeletingItem ? (
                 <>
                   <Spinner size="sm" mr={2} />
@@ -4543,10 +4627,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Bulk Delete Modal */}
-      <Modal isOpen={bulkDeleteModalVisible} onClose={() => setBulkDeleteModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={bulkDeleteModalVisible} onClose={() => setBulkDeleteModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={t('settings.manufacturers.catalogMapping.bulk.deleteModalTitle')} />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.bulk.deleteModalTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Box>
               <Text>
@@ -4578,7 +4667,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </Text>
             </Box>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button
               colorScheme="gray"
               onClick={() => setBulkDeleteModalVisible(false)}
@@ -4586,7 +4675,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             >
               {t('common.cancel')}
             </Button>
-            <Button colorScheme="red" onClick={handleBulkDelete} disabled={isBulkDeleting}>
+            <Button colorScheme="red" onClick={handleBulkDelete} disabled={isBulkDeleting} minH="44px">
               {isBulkDeleting ? (
                 <>
                   <Spinner size="sm" mr={2} />
@@ -4601,10 +4690,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Rollback Modal */}
-      <Modal isOpen={rollbackModalVisible} onClose={() => setRollbackModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={rollbackModalVisible} onClose={() => setRollbackModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={t('settings.manufacturers.catalogMapping.rollback.modalTitle')} />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.rollback.modalTitle')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Box>
               <Text>{t('settings.manufacturers.catalogMapping.rollback.selectBackup')}</Text>
@@ -4627,7 +4721,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         id={`backup-${backup.uploadSessionId}`}
                         value={backup.uploadSessionId}
                         checked={selectedBackup === backup.uploadSessionId}
-                        onChange={(event) => setSelectedBackup(event.currentTarget.value)}
+                        onChange={(event) => setSelectedBackup(event.target.value)}
                       />
                       <Box
                         as="label"
@@ -4653,7 +4747,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </Box>
             )}
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button
               colorScheme="gray"
               onClick={() => {
@@ -4668,7 +4762,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               colorScheme="orange"
               onClick={handleRollback}
               disabled={!selectedBackup || isRollingBack}
-            >
+             minH="44px">
               {isRollingBack ? (
                 <>
                   <Spinner size="sm" mr={2} />
@@ -4683,14 +4777,17 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Bulk Edit Modal */}
-      <Modal isOpen={bulkEditModalVisible} onClose={() => setBulkEditModalVisible(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside">
+      <Modal isOpen={bulkEditModalVisible} onClose={() => setBulkEditModalVisible(false)} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader
-            title={t('settings.manufacturers.catalogMapping.bulkEdit.header', {
-              count: selectedItems.length,
-            })}
-          />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('settings.manufacturers.catalogMapping.bulkEdit.header', {
+                count: selectedItems.length,
+              })}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Box>
               <Text>
@@ -4705,7 +4802,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     type="text"
                     value={bulkEditForm.style}
                     onChange={(event) =>
-                      setBulkEditForm({ ...bulkEditForm, style: event.currentTarget.value })
+                      setBulkEditForm({ ...bulkEditForm, style: event.target.value })
                     }
                     placeholder="Leave empty to keep existing"
                   />
@@ -4717,7 +4814,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     type="text"
                     value={bulkEditForm.type}
                     onChange={(event) =>
-                      setBulkEditForm({ ...bulkEditForm, type: event.currentTarget.value })
+                      setBulkEditForm({ ...bulkEditForm, type: event.target.value })
                     }
                     placeholder="Leave empty to keep existing"
                   />
@@ -4728,7 +4825,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <Textarea
                     value={bulkEditForm.description}
                     onChange={(event) =>
-                      setBulkEditForm({ ...bulkEditForm, description: event.currentTarget.value })
+                      setBulkEditForm({ ...bulkEditForm, description: event.target.value })
                     }
                     placeholder="Leave empty to keep existing"
                     rows={3}
@@ -4742,7 +4839,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     step="0.01"
                     value={bulkEditForm.price}
                     onChange={(event) =>
-                      setBulkEditForm({ ...bulkEditForm, price: event.currentTarget.value })
+                      setBulkEditForm({ ...bulkEditForm, price: event.target.value })
                     }
                     placeholder="Leave empty to keep existing"
                   />
@@ -4757,7 +4854,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </Box>
             </Box>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button
               colorScheme="gray"
               onClick={() => setBulkEditModalVisible(false)}
@@ -4765,7 +4862,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             >
               Cancel
             </Button>
-            <Button colorScheme="blue" onClick={handleBulkEdit} disabled={isBulkEditing}>
+            <Button colorScheme="blue" onClick={handleBulkEdit} disabled={isBulkEditing} minH="44px">
               {isBulkEditing ? (
                 <>
                   <Spinner size="sm" mr={2} />
@@ -4780,10 +4877,15 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Edit Style Name Modal */}
-      <Modal isOpen={editStyleNameModalVisible} onClose={() => setEditStyleNameModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={editStyleNameModalVisible} onClose={() => setEditStyleNameModalVisible(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title="Edit Style Name" />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              Edit Style Name
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <Box>
               <Text>
@@ -4809,7 +4911,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   onChange={(event) =>
                     setStyleNameEditForm({
                       ...styleNameEditForm,
-                      newStyleName: event.currentTarget.value,
+                      newStyleName: event.target.value,
                     })
                   }
                   placeholder="Enter new style name"
@@ -4829,7 +4931,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               </Box>
             </Box>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button
               colorScheme="gray"
               onClick={() => setEditStyleNameModalVisible(false)}
@@ -4841,7 +4943,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               colorScheme="blue"
               onClick={handleEditStyleName}
               disabled={isEditingStyleName || !styleNameEditForm.newStyleName.trim()}
-            >
+             minH="44px">
               {isEditingStyleName ? (
                 <>
                   <Spinner size="sm" mr={2} />
@@ -4859,16 +4961,21 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       <Modal
         isOpen={showMainModificationModal}
         onClose={() => setShowMainModificationModal(false)}
-        size="xl"
+        size={{ base: 'full', md: '6xl' }}
+        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader
-            title={t(
-              'settings.manufacturers.catalogMapping.modManagement.title',
-              'Modification Management',
-            )}
-          />
+        <ModalContent borderRadius="12px" maxW="95vw">
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t(
+                'settings.manufacturers.catalogMapping.modManagement.title',
+                'Modification Management',
+              )}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             {modificationView === 'cards' && (
               <Box>
@@ -4933,7 +5040,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   borderWidth="1px"
                                   borderColor="gray.100"
                                   onError={(event) => {
-                                    event.currentTarget.src = '/images/nologo.png'
+                                    event.target.src = '/images/nologo.png'
                                   }}
                                 />
                                 <Badge
@@ -5013,7 +5120,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       borderWidth="1px"
                                       borderColor="gray.100"
                                       onError={(event) => {
-                                        event.currentTarget.src = '/images/nologo.png'
+                                        event.target.src = '/images/nologo.png'
                                       }}
                                       flexShrink={0}
                                     />
@@ -5166,7 +5273,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       <Select
                         value={selectedModificationCategory}
                         onChange={(event) =>
-                          setSelectedModificationCategory(event.currentTarget.value)
+                          setSelectedModificationCategory(event.target.value)
                         }
                       >
                         <option value="">{t('globalMods.modal.add.selectExisting')}</option>
@@ -5188,9 +5295,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                             <Input
                               placeholder={t('globalMods.modal.add.newSubmenuName')}
                               value={newCategory.name}
-                              onChange={(event) =>
-                                setNewCategory((n) => ({ ...n, name: event.currentTarget.value }))
-                              }
+                              onChange={(event) => {
+                                const value = event.target.value
+                                setNewCategory((n) => ({ ...n, name: value }))
+                              }}
                             />
                           </Box>
                           <Box>
@@ -5198,12 +5306,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               type="number"
                               placeholder={t('globalMods.modal.add.orderIndex')}
                               value={newCategory.orderIndex}
-                              onChange={(event) =>
+                              onChange={(event) => {
+                                const value = event.target.value
                                 setNewCategory((n) => ({
                                   ...n,
-                                  orderIndex: event.currentTarget.value,
+                                  orderIndex: value,
                                 }))
-                              }
+                              }}
                             />
                           </Box>
                         </Box>
@@ -5229,840 +5338,21 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 )}
 
                 {modificationStep === 2 && (
-                  <Box>
-                    <Heading as="h5" size="md">Step 2: Build Modification Template</Heading>
-
-                    {/* Default Required Fields */}
-                    <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
-                      <Heading as="h6" size="sm">Required Fields</Heading>
-                      <Box>
-                        <Box>
-                          <Input
-                            placeholder="Modification name *"
-                            value={newTemplate.name}
-                            onChange={(event) =>
-                              setNewTemplate((n) => ({ ...n, name: event.currentTarget.value }))
-                            }
-                          />
-                        </Box>
-                        <Box>
-                          <Input
-                            type="number"
-                            placeholder={
-                              newTemplate.saveAsBlueprint
-                                ? "Blueprints don't have prices"
-                                : 'Default price *'
-                            }
-                            value={newTemplate.saveAsBlueprint ? '' : newTemplate.defaultPrice}
-                            onChange={(event) =>
-                              setNewTemplate((n) => ({
-                                ...n,
-                                defaultPrice: event.currentTarget.value,
-                              }))
-                            }
-                            disabled={newTemplate.saveAsBlueprint}
-                          />
-                        </Box>
-                      </Box>
-                    </Box>
-
-                    {/* Optional Field Builder */}
-                    <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
-                      <Heading as="h6" size="sm">Optional Field Builder (Building Blocks)</Heading>
-
-                      {/* Slider Controls */}
-                      <Box mb={3}>
-                        <Box>
-                          <Box>
-                            <Box>
-                              <Checkbox
-                                label="Height Slider"
-                                isChecked={guidedBuilder.sliders.height.enabled}
-                                onChange={(event) =>
-                                  setGuidedBuilder((g) => ({
-                                    ...g,
-                                    sliders: {
-                                      ...g.sliders,
-                                      height: {
-                                        ...g.sliders.height,
-                                        enabled: event.currentTarget.checked,
-                                      },
-                                    },
-                                  }))
-                                }
-                              />
-                            </Box>
-                            {guidedBuilder.sliders.height.enabled && (
-                              <Box>
-                                <Box>
-                                  <Input
-                                    type="number"
-                                    placeholder="Min height"
-                                    value={guidedBuilder.sliders.height.min}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        sliders: {
-                                          ...g.sliders,
-                                          height: {
-                                            ...g.sliders.height,
-                                            min: event.currentTarget.value,
-                                          },
-                                        },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                                <Box>
-                                  <Input
-                                    type="number"
-                                    placeholder="Max height"
-                                    value={guidedBuilder.sliders.height.max}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        sliders: {
-                                          ...g.sliders,
-                                          height: {
-                                            ...g.sliders.height,
-                                            max: event.currentTarget.value,
-                                          },
-                                        },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                                <Select
-                                  value={
-                                    guidedBuilder.sliders.height.useCustomIncrements
-                                      ? 'custom'
-                                      : guidedBuilder.sliders.height.step
-                                  }
-                                  onChange={(event) =>
-                                    setGuidedBuilder((g) => ({
-                                      ...g,
-                                      sliders: {
-                                        ...g.sliders,
-                                        height: {
-                                          ...g.sliders.height,
-                                          step:
-                                            event.currentTarget.value === 'custom'
-                                              ? 1
-                                              : event.currentTarget.value,
-                                          useCustomIncrements:
-                                            event.currentTarget.value === 'custom',
-                                        },
-                                      },
-                                    }))
-                                  }
-                                >
-                                  <option value="1">1 inch increments</option>
-                                  <option value="0.5">0.5 inch increments</option>
-                                  <option value="0.25">0.25 inch increments</option>
-                                  <option value="custom">
-                                    Custom fractions (1/8, 1/4, 3/8, etc.)
-                                  </option>
-                                </Select>
-                              </Box>
-                            )}
-                          </Box>
-                        </Box>
-
-                        <Box>
-                          <Box>
-                            <Box>
-                              <Checkbox
-                                label="Width Slider"
-                                isChecked={guidedBuilder.sliders.width.enabled}
-                                onChange={(event) =>
-                                  setGuidedBuilder((g) => ({
-                                    ...g,
-                                    sliders: {
-                                      ...g.sliders,
-                                      width: {
-                                        ...g.sliders.width,
-                                        enabled: event.currentTarget.checked,
-                                      },
-                                    },
-                                  }))
-                                }
-                              />
-                            </Box>
-                            {guidedBuilder.sliders.width.enabled && (
-                              <Box>
-                                <Box>
-                                  <Input
-                                    type="number"
-                                    placeholder="Min width"
-                                    value={guidedBuilder.sliders.width.min}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        sliders: {
-                                          ...g.sliders,
-                                          width: {
-                                            ...g.sliders.width,
-                                            min: event.currentTarget.value,
-                                          },
-                                        },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                                <Box>
-                                  <Input
-                                    type="number"
-                                    placeholder="Max width"
-                                    value={guidedBuilder.sliders.width.max}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        sliders: {
-                                          ...g.sliders,
-                                          width: {
-                                            ...g.sliders.width,
-                                            max: event.currentTarget.value,
-                                          },
-                                        },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                                <Select
-                                  value={
-                                    guidedBuilder.sliders.width.useCustomIncrements
-                                      ? 'custom'
-                                      : guidedBuilder.sliders.width.step
-                                  }
-                                  onChange={(event) =>
-                                    setGuidedBuilder((g) => ({
-                                      ...g,
-                                      sliders: {
-                                        ...g.sliders,
-                                        width: {
-                                          ...g.sliders.width,
-                                          step:
-                                            event.currentTarget.value === 'custom'
-                                              ? 1
-                                              : event.currentTarget.value,
-                                          useCustomIncrements:
-                                            event.currentTarget.value === 'custom',
-                                        },
-                                      },
-                                    }))
-                                  }
-                                >
-                                  <option value="1">1 inch increments</option>
-                                  <option value="0.5">0.5 inch increments</option>
-                                  <option value="0.25">0.25 inch increments</option>
-                                  <option value="custom">
-                                    Custom fractions (1/8, 1/4, 3/8, etc.)
-                                  </option>
-                                </Select>
-                              </Box>
-                            )}
-                          </Box>
-                        </Box>
-
-                        <Box>
-                          <Box>
-                            <Box>
-                              <Checkbox
-                                label="Depth Slider"
-                                isChecked={guidedBuilder.sliders.depth.enabled}
-                                onChange={(event) =>
-                                  setGuidedBuilder((g) => ({
-                                    ...g,
-                                    sliders: {
-                                      ...g.sliders,
-                                      depth: {
-                                        ...g.sliders.depth,
-                                        enabled: event.currentTarget.checked,
-                                      },
-                                    },
-                                  }))
-                                }
-                              />
-                            </Box>
-                            {guidedBuilder.sliders.depth.enabled && (
-                              <Box>
-                                <Box>
-                                  <Input
-                                    type="number"
-                                    placeholder="Min depth"
-                                    value={guidedBuilder.sliders.depth.min}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        sliders: {
-                                          ...g.sliders,
-                                          depth: {
-                                            ...g.sliders.depth,
-                                            min: event.currentTarget.value,
-                                          },
-                                        },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                                <Box>
-                                  <Input
-                                    type="number"
-                                    placeholder="Max depth"
-                                    value={guidedBuilder.sliders.depth.max}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        sliders: {
-                                          ...g.sliders,
-                                          depth: {
-                                            ...g.sliders.depth,
-                                            max: event.currentTarget.value,
-                                          },
-                                        },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                                <Select
-                                  value={
-                                    guidedBuilder.sliders.depth.useCustomIncrements
-                                      ? 'custom'
-                                      : guidedBuilder.sliders.depth.step
-                                  }
-                                  onChange={(event) =>
-                                    setGuidedBuilder((g) => ({
-                                      ...g,
-                                      sliders: {
-                                        ...g.sliders,
-                                        depth: {
-                                          ...g.sliders.depth,
-                                          step:
-                                            event.currentTarget.value === 'custom'
-                                              ? 1
-                                              : event.currentTarget.value,
-                                          useCustomIncrements:
-                                            event.currentTarget.value === 'custom',
-                                        },
-                                      },
-                                    }))
-                                  }
-                                >
-                                  <option value="1">1 inch increments</option>
-                                  <option value="0.5">0.5 inch increments</option>
-                                  <option value="0.25">0.25 inch increments</option>
-                                  <option value="custom">
-                                    Custom fractions (1/8, 1/4, 3/8, etc.)
-                                  </option>
-                                </Select>
-                              </Box>
-                            )}
-                          </Box>
-                        </Box>
-                      </Box>
-
-                      {/* Additional Controls */}
-                      <Box mb={3}>
-                        <Box>
-                          <Box>
-                            <Box>
-                              <Checkbox
-                                label="Side Selector"
-                                isChecked={guidedBuilder.sideSelector.enabled}
-                                onChange={(event) =>
-                                  setGuidedBuilder((g) => ({
-                                    ...g,
-                                    sideSelector: {
-                                      ...g.sideSelector,
-                                      enabled: event.currentTarget.checked,
-                                    },
-                                  }))
-                                }
-                              />
-                            </Box>
-                            {guidedBuilder.sideSelector.enabled && (
-                              <Box>
-                                <Text fontSize="sm" color="gray.500">
-                                  Limited to Left/Right options
-                                </Text>
-                                <Input
-                                  placeholder="L,R"
-                                  value={guidedBuilder.sideSelector.options?.join(',')}
-                                  onChange={(event) =>
-                                    setGuidedBuilder((g) => ({
-                                      ...g,
-                                      sideSelector: {
-                                        ...g.sideSelector,
-                                        options: event.currentTarget.value
-                                          .split(',')
-                                          .map((s) => s.trim())
-                                          .filter(Boolean),
-                                      },
-                                    }))
-                                  }
-                                  disabled
-                                />
-                              </Box>
-                            )}
-                          </Box>
-                        </Box>
-
-                        <Box>
-                          <Box>
-                            <Box>
-                              <Checkbox
-                                label="Quantity Limits"
-                                isChecked={guidedBuilder.qtyRange.enabled}
-                                onChange={(event) =>
-                                  setGuidedBuilder((g) => ({
-                                    ...g,
-                                    qtyRange: {
-                                      ...g.qtyRange,
-                                      enabled: event.currentTarget.checked,
-                                    },
-                                  }))
-                                }
-                              />
-                            </Box>
-                            {guidedBuilder.qtyRange.enabled && (
-                              <Box>
-                                <Box>
-                                  <Input
-                                    type="number"
-                                    placeholder="Min qty"
-                                    value={guidedBuilder.qtyRange.min}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        qtyRange: { ...g.qtyRange, min: event.currentTarget.value },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                                <Input
-                                  type="number"
-                                  placeholder="Max qty"
-                                  value={guidedBuilder.qtyRange.max}
-                                  onChange={(event) =>
-                                    setGuidedBuilder((g) => ({
-                                      ...g,
-                                      qtyRange: { ...g.qtyRange, max: event.currentTarget.value },
-                                    }))
-                                  }
-                                />
-                              </Box>
-                            )}
-                          </Box>
-                        </Box>
-
-                        <Box>
-                          <Box>
-                            <Box>
-                              <Checkbox
-                                label="Customer Notes"
-                                isChecked={guidedBuilder.notes.enabled}
-                                onChange={(event) =>
-                                  setGuidedBuilder((g) => ({
-                                    ...g,
-                                    notes: { ...g.notes, enabled: event.currentTarget.checked },
-                                  }))
-                                }
-                              />
-                            </Box>
-                            {guidedBuilder.notes.enabled && (
-                              <Box>
-                                <Box>
-                                  <Input
-                                    placeholder="Notes placeholder"
-                                    value={guidedBuilder.notes.placeholder}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        notes: {
-                                          ...g.notes,
-                                          placeholder: event.currentTarget.value,
-                                        },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                                <Checkbox
-                                  label="Show in red for customer warning"
-                                  isChecked={guidedBuilder.notes.showInRed}
-                                  onChange={(event) =>
-                                    setGuidedBuilder((g) => ({
-                                      ...g,
-                                      notes: { ...g.notes, showInRed: event.currentTarget.checked },
-                                    }))
-                                  }
-                                />
-                              </Box>
-                            )}
-                          </Box>
-                        </Box>
-
-                        <Box>
-                          <Box>
-                            <Box>
-                              <Checkbox
-                                label="Customer Upload"
-                                isChecked={guidedBuilder.customerUpload.enabled}
-                                onChange={(event) =>
-                                  setGuidedBuilder((g) => ({
-                                    ...g,
-                                    customerUpload: {
-                                      ...g.customerUpload,
-                                      enabled: event.currentTarget.checked,
-                                    },
-                                  }))
-                                }
-                              />
-                            </Box>
-                            {guidedBuilder.customerUpload.enabled && (
-                              <Box>
-                                <Box>
-                                  <Input
-                                    placeholder={t(
-                                      'settings.manufacturers.catalogMapping.builder.uploadTitlePh',
-                                    )}
-                                    value={guidedBuilder.customerUpload.title}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        customerUpload: {
-                                          ...g.customerUpload,
-                                          title: event.currentTarget.value,
-                                        },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                                <Checkbox
-                                  isChecked={guidedBuilder.customerUpload.required}
-                                  onChange={(event) =>
-                                    setGuidedBuilder((g) => ({
-                                      ...g,
-                                      customerUpload: {
-                                        ...g.customerUpload,
-                                        required: event.currentTarget.checked,
-                                      },
-                                    }))
-                                  }
-                                >
-                                  {t(
-                                    'settings.manufacturers.catalogMapping.builder.requiredUpload',
-                                  )}
-                                </Checkbox>
-                              </Box>
-                            )}
-                          </Box>
-                        </Box>
-                      </Box>
-
-                      {/* Description and Sample Image */}
-                      <Box mb={3}>
-                        <Box>
-                          <Box>
-                            <Box>
-                              <Heading as="h6" size="sm">
-                                {t(
-                                  'settings.manufacturers.catalogMapping.builder.descriptions.header',
-                                )}
-                              </Heading>
-                            </Box>
-                            <Box>
-                              <Box>
-                                <Box>
-                                  <Input
-                                    placeholder={t(
-                                      'settings.manufacturers.catalogMapping.builder.descriptions.internal',
-                                    )}
-                                    value={guidedBuilder.descriptions.internal}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        descriptions: {
-                                          ...g.descriptions,
-                                          internal: event.currentTarget.value,
-                                        },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                                <Box>
-                                  <Input
-                                    placeholder={t(
-                                      'settings.manufacturers.catalogMapping.builder.descriptions.customer',
-                                    )}
-                                    value={guidedBuilder.descriptions.customer}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        descriptions: {
-                                          ...g.descriptions,
-                                          customer: event.currentTarget.value,
-                                        },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                                <Box>
-                                  <Input
-                                    placeholder={t(
-                                      'settings.manufacturers.catalogMapping.builder.descriptions.installer',
-                                    )}
-                                    value={guidedBuilder.descriptions.installer}
-                                    onChange={(event) =>
-                                      setGuidedBuilder((g) => ({
-                                        ...g,
-                                        descriptions: {
-                                          ...g.descriptions,
-                                          installer: event.currentTarget.value,
-                                        },
-                                      }))
-                                    }
-                                  />
-                                </Box>
-                              </Box>
-                              <Box>
-                                <Checkbox
-                                  isChecked={guidedBuilder.descriptions.both}
-                                  onChange={(event) =>
-                                    setGuidedBuilder((g) => ({
-                                      ...g,
-                                      descriptions: {
-                                        ...g.descriptions,
-                                        both: event.currentTarget.checked,
-                                      },
-                                    }))
-                                  }
-                                >
-                                  {t(
-                                    'settings.manufacturers.catalogMapping.builder.descriptions.showBoth',
-                                  )}
-                                </Checkbox>
-                              </Box>
-                            </Box>
-                          </Box>
-                        </Box>
-                        <Box>
-                          <Box>
-                            <Box>
-                              <Checkbox
-                                isChecked={guidedBuilder.modSampleImage.enabled}
-                                onChange={(event) =>
-                                  setGuidedBuilder((g) => ({
-                                    ...g,
-                                    modSampleImage: {
-                                      ...g.modSampleImage,
-                                      enabled: event.currentTarget.checked,
-                                    },
-                                  }))
-                                }
-                              >
-                                {t(
-                                  'settings.manufacturers.catalogMapping.builder.sampleImage.label',
-                                )}
-                              </Checkbox>
-                            </Box>
-                            {guidedBuilder.modSampleImage.enabled && (
-                              <Box>
-                                <Box>
-                                  <FormLabel>
-                                    {t(
-                                      'settings.manufacturers.catalogMapping.builder.sampleImage.upload',
-                                    )}
-                                  </FormLabel>
-                                  <Input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={async (event) => {
-                                      const file = event.currentTarget.files?.[0]
-                                      const fname = await uploadImageFile(file)
-                                      if (fname)
-                                        setNewTemplate((n) => ({ ...n, sampleImage: fname }))
-                                    }}
-                                  />
-                                </Box>
-                                {newTemplate.sampleImage && (
-                                  <Box
-                                    p={2}
-                                    bg={bgGray50}
-                                    border="1px solid"
-                                    borderColor={iconGray300}
-                                    borderRadius="md"
-                                    h="200px"
-                                    display="flex"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                  >
-                                    <Image
-                                      src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${newTemplate.sampleImage}`}
-                                      alt={t(
-                                        'settings.manufacturers.catalogMapping.builder.sampleImage.alt',
-                                      )}
-                                      maxH="100%"
-                                      maxW="100%"
-                                      objectFit="contain"
-                                      onError={(event) => {
-                                        event.currentTarget.src = '/images/nologo.png'
-                                      }}
-                                    />
-                                  </Box>
-                                )}
-                              </Box>
-                            )}
-                          </Box>
-                        </Box>
-                      </Box>
-
-                      {/* Ready Checkbox */}
-                      <Box borderTop="1px solid" borderColor={iconGray300} pt={3}>
-                        <Checkbox
-                          isChecked={newTemplate.isReady}
-                          onChange={(event) =>
-                            setNewTemplate((n) => ({ ...n, isReady: event.currentTarget.checked }))
-                          }
-                        >
-                          {t('settings.manufacturers.catalogMapping.builder.ready.markAsReady')}
-                        </Checkbox>
-                        {/* Task 5: Blueprint checkbox for saving to gallery */}
-                        <Checkbox
-                          isChecked={newTemplate.saveAsBlueprint}
-                          onChange={(event) =>
-                            setNewTemplate((n) => ({
-                              ...n,
-                              saveAsBlueprint: event.currentTarget.checked,
-                            }))
-                          }
-
-                        >
-                          {t('settings.manufacturers.catalogMapping.builder.ready.saveAsBlueprint')}
-                        </Checkbox>
-                        <Text fontSize="sm" color={iconGray500} display="block" mt={1}>
-                          {t('settings.manufacturers.catalogMapping.builder.ready.blueprintHint')}
-                        </Text>
-                      </Box>
-                    </Box>
-
-                    <Box>
-                      <Button colorScheme="gray" onClick={() => setModificationStep(1)}>
-                        {t('settings.manufacturers.catalogMapping.builder.buttons.back')}
-                      </Button>
-                      <Button colorScheme="gray" onClick={() => setModificationView('cards')}>
-                        {t('settings.manufacturers.catalogMapping.builder.buttons.cancel')}
-                      </Button>
-                      {editingTemplateId ? (
-                        <Button
-                          colorScheme="blue"
-                          onClick={async () => {
-                            setCreatingModification(true)
-                            try {
-                              let categoryIdToUse = selectedModificationCategory
-                              if (selectedModificationCategory === 'new') {
-                                const newCat = await createModificationCategory()
-                                categoryIdToUse = newCat.id
-                              }
-                              await updateModificationTemplate(editingTemplateId, categoryIdToUse)
-                              resetModificationForm()
-                              toast({
-                                title: t('common.success', 'Success'),
-                                description: t('settings.manufacturers.catalogMapping.builder.toast.updateSuccess'),
-                                status: 'success',
-                                duration: 4000,
-                                isClosable: true,
-                              })
-                            } catch (error) {
-                              toast({
-                                title: t('common.error', 'Error'),
-                                description: error.response?.data?.message || t('settings.manufacturers.catalogMapping.builder.toast.updateFailed'),
-                                status: 'error',
-                                duration: 4000,
-                                isClosable: true,
-                              })
-                            } finally {
-                              setCreatingModification(false)
-                            }
-                          }}
-                          disabled={!newTemplate.name || creatingModification}
-                        >
-                          {creatingModification ? (
-                            <>
-                              <Spinner size="sm" mr={2} />
-                              {t('common.saving')}
-                            </>
-                          ) : (
-                            t('settings.manufacturers.catalogMapping.builder.buttons.saveChanges')
-                          )}
-                        </Button>
-                      ) : (
-                        <Button
-                          colorScheme="blue"
-                          onClick={async () => {
-                            // Task 5: Block creation if manufacturerId is missing
-                            if (!id) {
-                              toast({
-                                title: t('settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingTitle'),
-                                description: t('settings.manufacturers.catalogMapping.builder.toast.manufacturerMissingText'),
-                                status: 'error',
-                                duration: 5000,
-                                isClosable: true,
-                              })
-                              return
-                            }
-
-                            setCreatingModification(true)
-                            try {
-                              let categoryIdToUse = selectedModificationCategory
-
-                              // Create new category if needed
-                              if (selectedModificationCategory === 'new') {
-                                const newCat = await createModificationCategory()
-                                categoryIdToUse = newCat.id
-                              }
-
-                              // Create the template
-                              await createModificationTemplate(categoryIdToUse)
-
-                              // Reset form and go back to cards view
-                              resetModificationForm()
-
-                              // Show success message
-                              toast({
-                                title: t('settings.manufacturers.catalogMapping.builder.toast.createSuccessTitle'),
-                                description: t('settings.manufacturers.catalogMapping.builder.toast.createSuccessText'),
-                                status: 'success',
-                                duration: 4000,
-                                isClosable: true,
-                              })
-                            } catch (error) {
-                              toast({
-                                title: t('settings.manufacturers.catalogMapping.builder.toast.createFailedTitle'),
-                                description: error.response?.data?.message || t('settings.manufacturers.catalogMapping.builder.toast.createFailedText'),
-                                status: 'error',
-                                duration: 5000,
-                                isClosable: true,
-                              })
-                            } finally {
-                              setCreatingModification(false)
-                            }
-                          }}
-                          disabled={
-                            !newTemplate.name || !newTemplate.defaultPrice || creatingModification
-                          }
-                        >
-                          {creatingModification ? (
-                            <>
-                              <Spinner size="sm" mr={2} />
-                              {t('common.creating')}
-                            </>
-                          ) : (
-                            t('settings.manufacturers.catalogMapping.builder.buttons.create')
-                          )}
-                        </Button>
-                      )}
-                    </Box>
-                  </Box>
+                  <ModificationTemplateBuilder
+                    guidedBuilder={guidedBuilder}
+                    setGuidedBuilder={setGuidedBuilder}
+                    newTemplate={newTemplate}
+                    setNewTemplate={setNewTemplate}
+                    modificationStep={modificationStep}
+                    setModificationStep={setModificationStep}
+                    setModificationView={setModificationView}
+                    editingTemplateId={editingTemplateId}
+                    creatingModification={creatingModification}
+                    uploadImageFile={uploadImageFile}
+                    createModificationTemplate={createModificationTemplate}
+                    updateModificationTemplate={updateModificationTemplate}
+                    t={t}
+                  />
                 )}
               </Box>
             )}
@@ -6071,42 +5361,49 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <Box>
                 <Flex justify="space-between" align="center" mb={3}>
                   <Heading as="h5" size="md">{t('settings.manufacturers.catalogMapping.gallery.title')}</Heading>
-                  <Button colorScheme="gray" onClick={() => setModificationView('cards')}>
+                  <Button colorScheme="gray" onClick={() => setModificationView('cards')} minH="44px">
                     {t('settings.manufacturers.catalogMapping.gallery.back')}
                   </Button>
                 </Flex>
 
-                <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={4}>
+                <Box display="grid" gridTemplateColumns={{ base: "1fr", md: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" }} gap={4}>
                   {globalGallery.map((category) => (
-                    <Box key={category.id}>
-                      <Box>
-                        <Box>
-                          <Heading as="h6" size="sm">{category.name}</Heading>
-                          <Box>
-                            <Button
-                              size="sm"
-                              colorScheme="red"
-                              variant="outline"
-                              title={t(
-                                'settings.manufacturers.catalogMapping.gallery.tooltips.deleteCategory',
-                              )}
-                              onClick={() => {
-                                setCategoryToDelete(category)
-                                setShowDeleteCategoryModal(true)
-                              }}
-                            >
-                              {t('settings.manufacturers.catalogMapping.gallery.actions.delete')}
-                            </Button>
-                          </Box>
-                        </Box>
-                        <Box>
+                    <Box
+                      key={category.id}
+                      p={4}
+                      borderWidth="1px"
+                      borderRadius="md"
+                      bg={bgWhite}
+                    >
+                      <Flex justify="space-between" align="center" mb={3}>
+                        <Heading as="h6" size="sm">{category.name}</Heading>
+                        <Button
+                          size="sm"
+                          colorScheme="red"
+                          variant="outline"
+                          minH="44px"
+                          title={t(
+                            'settings.manufacturers.catalogMapping.gallery.tooltips.deleteCategory',
+                          )}
+                          onClick={() => {
+                            setCategoryToDelete(category)
+                            setShowDeleteCategoryModal(true)
+                          }}
+                        >
+                          {t('settings.manufacturers.catalogMapping.gallery.actions.delete')}
+                        </Button>
+                      </Flex>
+                      <VStack align="stretch" spacing={3}>
                           {category.templates?.length ? (
                             category.templates.map((template) => (
                               <Box
                                 key={template.id}
-
+                                p={3}
+                                borderWidth="1px"
+                                borderRadius="md"
+                                bg={bgGray50Dark}
                               >
-                                <Box>
+                                <Flex gap={3} mb={2}>
                                   {template.sampleImage && (
                                     <Image
                                       src={`${import.meta.env.VITE_API_URL || ''}/uploads/images/${template.sampleImage}`}
@@ -6118,20 +5415,21 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       borderWidth="1px"
                                       borderColor="gray.100"
                                       onError={(event) => {
-                                        event.currentTarget.src = '/images/nologo.png'
+                                        event.target.src = '/images/nologo.png'
                                       }}
                                     />
                                   )}
-                                  <Box>
-                                    <Text as="span" fontWeight="semibold">{template.name}</Text>
-                                    {template.defaultPrice && (
-                                      <Text as="span">
-                                        {' '}
-                                        - ${Number(template.defaultPrice).toFixed(2)}
-                                      </Text>
-                                    )}
-                                    <Box>
-                                      <Badge color={template.isReady ? 'success' : 'warning'}>
+                                  <VStack align="flex-start" spacing={1} flex={1}>
+                                    <Text fontWeight="semibold">
+                                      {template.name}
+                                      {template.defaultPrice && (
+                                        <Text as="span" fontWeight="normal" ml={2}>
+                                          - ${Number(template.defaultPrice).toFixed(2)}
+                                        </Text>
+                                      )}
+                                    </Text>
+                                    <Flex gap={2} flexWrap="wrap">
+                                      <Badge colorScheme={template.isReady ? 'green' : 'yellow'}>
                                         {template.isReady
                                           ? t(
                                               'settings.manufacturers.catalogMapping.gallery.badges.ready',
@@ -6142,7 +5440,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                       </Badge>
                                       {template.sampleImage && (
                                         <Badge
-                                          colorScheme="info"
+                                          colorScheme="blue"
                                           title={t(
                                             'settings.manufacturers.catalogMapping.gallery.tooltips.sampleUploaded',
                                           )}
@@ -6152,19 +5450,21 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                           )}
                                         </Badge>
                                       )}
-                                    </Box>
-                                    <Box>
+                                    </Flex>
+                                    <Text fontSize="sm" color={textSecondary}>
                                       {template.fieldsConfig?.descriptions?.customer ||
                                         t(
                                           'settings.manufacturers.catalogMapping.gallery.noDescription',
                                         )}
-                                    </Box>
-                                  </Box>
-                                </Box>
-                                <Box>
+                                    </Text>
+                                  </VStack>
+                                </Flex>
+                                <Flex gap={2} flexWrap="wrap" mt={2}>
                                   <Button
                                     size="sm"
-                                    color="outline-primary"
+                                    colorScheme="blue"
+                                    variant="outline"
+                                    minH="44px"
                                     title={t(
                                       'settings.manufacturers.catalogMapping.gallery.tooltips.edit',
                                     )}
@@ -6193,7 +5493,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   </Button>
                                   <Button
                                     size="sm"
-                                    color="outline-danger"
+                                    colorScheme="red"
+                                    variant="outline"
+                                    minH="44px"
                                     title={t(
                                       'settings.manufacturers.catalogMapping.gallery.tooltips.delete',
                                     )}
@@ -6213,7 +5515,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   </Button>
                                   <Button
                                     size="sm"
-                                    color="outline-warning"
+                                    colorScheme="orange"
+                                    variant="outline"
+                                    minH="44px"
                                     title={t(
                                       'settings.manufacturers.catalogMapping.gallery.tooltips.move',
                                     )}
@@ -6229,6 +5533,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   <Button
                                     size="sm"
                                     colorScheme="blue"
+                                    minH="44px"
                                     title={t(
                                       'settings.manufacturers.catalogMapping.gallery.tooltips.useAsBlueprint',
                                     )}
@@ -6253,6 +5558,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   <Button
                                     size="sm"
                                     colorScheme="green"
+                                    minH="44px"
                                     title={t(
                                       'settings.manufacturers.catalogMapping.gallery.tooltips.assignToManufacturer',
                                     )}
@@ -6267,7 +5573,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                                   >
                                     🎯
                                   </Button>
-                                </Box>
+                                </Flex>
                               </Box>
                             ))
                           ) : (
@@ -6275,15 +5581,14 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               {t('settings.manufacturers.catalogMapping.gallery.emptyCategory')}
                             </Text>
                           )}
-                        </Box>
-                      </Box>
+                      </VStack>
                     </Box>
                   ))}
                 </Box>
               </Box>
             )}
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter flexShrink={0}>
             <Button colorScheme="gray" onClick={() => setShowMainModificationModal(false)}>
               {t('common.close', 'Close')}
             </Button>
@@ -6298,8 +5603,13 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
         size={{ base: 'full', md: 'md', lg: 'lg' }}
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={t('globalMods.modal.editCategory.title', 'Edit Category')} />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('globalMods.modal.editCategory.title', 'Edit Category')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
           <ModalBody>
             <VStack spacing={3} align="stretch">
               <FormControl>
@@ -6309,7 +5619,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 <Input
                   value={editCategory.name}
                   onChange={(event) =>
-                    setEditCategory((c) => ({ ...c, name: event.currentTarget.value }))
+                    setEditCategory((c) => ({ ...c, name: event.target.value }))
                   }
                 />
               </FormControl>
@@ -6319,7 +5629,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   type="number"
                   value={editCategory.orderIndex}
                   onChange={(event) =>
-                    setEditCategory((c) => ({ ...c, orderIndex: event.currentTarget.value }))
+                    setEditCategory((c) => ({ ...c, orderIndex: event.target.value }))
                   }
                 />
               </FormControl>
@@ -6331,7 +5641,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   type="file"
                   accept="image/*"
                   onChange={async (event) => {
-                    const file = event.currentTarget.files?.[0]
+                    const file = event.target.files?.[0]
                     const fname = await uploadImageFile(file)
                     if (fname) setEditCategory((c) => ({ ...c, image: fname }))
                   }}
@@ -6356,7 +5666,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       maxW="100%"
                       objectFit="contain"
                       onError={(event) => {
-                        event.currentTarget.src = '/images/nologo.png'
+                        event.target.src = '/images/nologo.png'
                       }}
                     />
                   </Box>
@@ -6388,9 +5698,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Delete Category Modal */}
-      <Modal isOpen={showDeleteCategoryModal} onClose={() => setShowDeleteCategoryModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={showDeleteCategoryModal} onClose={() => setShowDeleteCategoryModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
           <PageHeader
             title={t('globalMods.modal.deleteCategory.title', {
               name: categoryToDelete?.name || '',
@@ -6474,9 +5784,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       </Modal>
 
       {/* Move Modification Modal */}
-      <Modal isOpen={showMoveModificationModal} onClose={() => setShowMoveModificationModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside">
+      <Modal isOpen={showMoveModificationModal} onClose={() => setShowMoveModificationModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered zIndex={1500}>
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
           <PageHeader title={t('common.move', 'Move Modification')} />
           <ModalBody>
             {modificationToMove && (
@@ -6552,12 +5862,20 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
       <Modal
         isOpen={showQuickEditTemplateModal}
         onClose={() => setShowQuickEditTemplateModal(false)}
-        size="xl"
+        size={{ base: 'full', md: '2xl', lg: '4xl' }}
+        zIndex={1500}
+        scrollBehavior="inside"
+        isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px" overflow="hidden">
-          <PageHeader title={t('globalMods.modal.editTemplate.title', 'Edit Modification')} />
-          <ModalBody>
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            <Text fontSize="lg" fontWeight="semibold">
+              {t('globalMods.modal.editTemplate.title', 'Edit Modification')}
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
+          <ModalBody pb={4} overflowY="auto" sx={{ WebkitOverflowScrolling: 'touch' }}>
             {/* Basic Information */}
             <Box border="1px solid" borderColor={iconGray300} borderRadius="md" p={3} mb={3}>
               <Heading as="h6" size="sm">{t('common.basicInformation', 'Basic Information')}</Heading>
@@ -6567,8 +5885,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                   <Input
                     value={editTemplate.name}
                     onChange={(event) =>
-                      setEditTemplate((t) => ({ ...t, name: event.currentTarget.value }))
+                      setEditTemplate((t) => ({ ...t, name: event.target.value }))
                     }
+                    minH="44px"
                   />
                 </FormControl>
                 <FormControl>
@@ -6582,7 +5901,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     step="0.01"
                     value={editTemplate.saveAsBlueprint ? '' : editTemplate.defaultPrice}
                     onChange={(event) =>
-                      setEditTemplate((t) => ({ ...t, defaultPrice: event.currentTarget.value }))
+                      setEditTemplate((t) => ({ ...t, defaultPrice: event.target.value }))
                     }
                     disabled={editTemplate.saveAsBlueprint}
                     placeholder={
@@ -6590,6 +5909,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         ? t('common.blueprintsNoPrice', "Blueprints don't have prices")
                         : t('globalMods.template.defaultPricePlaceholder', 'Enter default price')
                     }
+                    minH="44px"
                   />
                 </FormControl>
                 <FormControl>
@@ -6599,9 +5919,10 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     onChange={(event) =>
                       setEditTemplate((t) => ({
                         ...t,
-                        isReady: event.currentTarget.value === 'ready',
+                        isReady: event.target.value === 'ready',
                       }))
                     }
+                    minH="44px"
                   >
                     <option value="draft">{t('globalMods.template.status.draft', 'Draft')}</option>
                     <option value="ready">{t('globalMods.template.status.ready', 'Ready')}</option>
@@ -6613,8 +5934,9 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       id="showToBoth"
                       checked={editTemplate.showToBoth || false}
                       onChange={(event) =>
-                        setEditTemplate((t) => ({ ...t, showToBoth: event.currentTarget.checked }))
+                        setEditTemplate((t) => ({ ...t, showToBoth: event.target.checked }))
                       }
+                      minH="44px"
                     />
                     <Text as="label" htmlFor="showToBoth" ml={2}>
                       {t('globalMods.builder.descriptions.customer', 'Customer description')} &{' '}
@@ -6631,10 +5953,11 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                     type="file"
                     accept="image/*"
                     onChange={async (event) => {
-                      const file = event.currentTarget.files?.[0]
+                      const file = event.target.files?.[0]
                       const fname = await uploadImageFile(file)
                       if (fname) setEditTemplate((t) => ({ ...t, sampleImage: fname }))
                     }}
+                    minH="44px"
                   />
                   {editTemplate.sampleImage && (
                     <Box
@@ -6656,7 +5979,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                         maxW="100%"
                         objectFit="contain"
                         onError={(event) => {
-                          event.currentTarget.src = '/images/nologo.png'
+                          event.target.src = '/images/nologo.png'
                         }}
                       />
                     </Box>
@@ -6670,224 +5993,203 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
               <Heading as="h6" size="sm">{t('common.advancedFieldConfiguration', 'Advanced Field Configuration')}</Heading>
 
               {/* Slider Controls */}
-              <Box mb={3}>
+              <VStack spacing={3} align="stretch" mb={3}>
                 <Box>
-                  <Box>
-                    <Box>
-                      <Checkbox
-                        isChecked={editGuidedBuilder.sliders.height.enabled}
+                  <Checkbox
+                    isChecked={editGuidedBuilder.sliders.height.enabled}
+                    onChange={(event) =>
+                      setEditGuidedBuilder((g) => ({
+                        ...g,
+                        sliders: {
+                          ...g.sliders,
+                          height: { ...g.sliders.height, enabled: event.target.checked },
+                        },
+                      }))
+                    }
+                    minH="44px"
+                  >
+                    {t('globalMods.builder.heightSlider', 'Height Slider')}
+                  </Checkbox>
+                  {editGuidedBuilder.sliders.height.enabled && (
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3} mt={2}>
+                      <Input
+                        placeholder={t('globalMods.builder.min', 'Min')}
+                        type="number"
+                        value={editGuidedBuilder.sliders.height.min}
                         onChange={(event) =>
                           setEditGuidedBuilder((g) => ({
                             ...g,
                             sliders: {
                               ...g.sliders,
-                              height: { ...g.sliders.height, enabled: event.currentTarget.checked },
+                              height: {
+                                ...g.sliders.height,
+                                min: Number(event.target.value) || 0,
+                              },
                             },
                           }))
                         }
-                      >
-                        {t('globalMods.builder.heightSlider', 'Height Slider')}
-                      </Checkbox>
-                    </Box>
-                    {editGuidedBuilder.sliders.height.enabled && (
-                      <Box>
-                        <Box>
-                          <Box>
-                            <Input
-                              placeholder={t('globalMods.builder.min', 'Min')}
-                              type="number"
-                              value={editGuidedBuilder.sliders.height.min}
-                              onChange={(event) =>
-                                setEditGuidedBuilder((g) => ({
-                                  ...g,
-                                  sliders: {
-                                    ...g.sliders,
-                                    height: {
-                                      ...g.sliders.height,
-                                      min: Number(event.currentTarget.value) || 0,
-                                    },
-                                  },
-                                }))
-                              }
-                            />
-                          </Box>
-                          <Box>
-                            <Input
-                              placeholder={t('globalMods.builder.max', 'Max')}
-                              type="number"
-                              value={editGuidedBuilder.sliders.height.max}
-                              onChange={(event) =>
-                                setEditGuidedBuilder((g) => ({
-                                  ...g,
-                                  sliders: {
-                                    ...g.sliders,
-                                    height: {
-                                      ...g.sliders.height,
-                                      max: Number(event.currentTarget.value) || 0,
-                                    },
-                                  },
-                                }))
-                              }
-                            />
-                          </Box>
-                        </Box>
-                      </Box>
-                    )}
-                  </Box>
-                </Box>
-                <Box>
-                  <Box>
-                    <Box>
-                      <Checkbox
-                        isChecked={editGuidedBuilder.sliders.width.enabled}
+                        minH="44px"
+                      />
+                      <Input
+                        placeholder={t('globalMods.builder.max', 'Max')}
+                        type="number"
+                        value={editGuidedBuilder.sliders.height.max}
                         onChange={(event) =>
                           setEditGuidedBuilder((g) => ({
                             ...g,
                             sliders: {
                               ...g.sliders,
-                              width: { ...g.sliders.width, enabled: event.currentTarget.checked },
+                              height: {
+                                ...g.sliders.height,
+                                max: Number(event.target.value) || 0,
+                              },
                             },
                           }))
                         }
-                      >
-                        {t('globalMods.builder.widthSlider', 'Width Slider')}
-                      </Checkbox>
-                    </Box>
-                    {editGuidedBuilder.sliders.width.enabled && (
-                      <Box>
-                        <Box>
-                          <Box>
-                            <Input
-                              placeholder={t('globalMods.builder.min', 'Min')}
-                              type="number"
-                              value={editGuidedBuilder.sliders.width.min}
-                              onChange={(event) =>
-                                setEditGuidedBuilder((g) => ({
-                                  ...g,
-                                  sliders: {
-                                    ...g.sliders,
-                                    width: {
-                                      ...g.sliders.width,
-                                      min: Number(event.currentTarget.value) || 0,
-                                    },
-                                  },
-                                }))
-                              }
-                            />
-                          </Box>
-                          <Box>
-                            <Input
-                              placeholder={t('globalMods.builder.max', 'Max')}
-                              type="number"
-                              value={editGuidedBuilder.sliders.width.max}
-                              onChange={(event) =>
-                                setEditGuidedBuilder((g) => ({
-                                  ...g,
-                                  sliders: {
-                                    ...g.sliders,
-                                    width: {
-                                      ...g.sliders.width,
-                                      max: Number(event.currentTarget.value) || 0,
-                                    },
-                                  },
-                                }))
-                              }
-                            />
-                          </Box>
-                        </Box>
-                      </Box>
-                    )}
-                  </Box>
+                        minH="44px"
+                      />
+                    </SimpleGrid>
+                  )}
                 </Box>
                 <Box>
-                  <Box>
-                    <Box>
-                      <Checkbox
-                        isChecked={editGuidedBuilder.sliders.depth.enabled}
+                  <Checkbox
+                    isChecked={editGuidedBuilder.sliders.width.enabled}
+                    onChange={(event) =>
+                      setEditGuidedBuilder((g) => ({
+                        ...g,
+                        sliders: {
+                          ...g.sliders,
+                          width: { ...g.sliders.width, enabled: event.target.checked },
+                        },
+                      }))
+                    }
+                    minH="44px"
+                  >
+                    {t('globalMods.builder.widthSlider', 'Width Slider')}
+                  </Checkbox>
+                  {editGuidedBuilder.sliders.width.enabled && (
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3} mt={2}>
+                      <Input
+                        placeholder={t('globalMods.builder.min', 'Min')}
+                        type="number"
+                        value={editGuidedBuilder.sliders.width.min}
                         onChange={(event) =>
                           setEditGuidedBuilder((g) => ({
                             ...g,
                             sliders: {
                               ...g.sliders,
-                              depth: { ...g.sliders.depth, enabled: event.currentTarget.checked },
+                              width: {
+                                ...g.sliders.width,
+                                min: Number(event.target.value) || 0,
+                              },
                             },
                           }))
                         }
-                      >
-                        {t('globalMods.builder.depthSlider', 'Depth Slider')}
-                      </Checkbox>
-                    </Box>
-                    {editGuidedBuilder.sliders.depth.enabled && (
-                      <Box>
-                        <Box>
-                          <Box>
-                            <Input
-                              placeholder={t('globalMods.builder.min', 'Min')}
-                              type="number"
-                              value={editGuidedBuilder.sliders.depth.min}
-                              onChange={(event) =>
-                                setEditGuidedBuilder((g) => ({
-                                  ...g,
-                                  sliders: {
-                                    ...g.sliders,
-                                    depth: {
-                                      ...g.sliders.depth,
-                                      min: Number(event.currentTarget.value) || 0,
-                                    },
-                                  },
-                                }))
-                              }
-                            />
-                          </Box>
-                          <Box>
-                            <Input
-                              placeholder={t('globalMods.builder.max', 'Max')}
-                              type="number"
-                              value={editGuidedBuilder.sliders.depth.max}
-                              onChange={(event) =>
-                                setEditGuidedBuilder((g) => ({
-                                  ...g,
-                                  sliders: {
-                                    ...g.sliders,
-                                    depth: {
-                                      ...g.sliders.depth,
-                                      max: Number(event.currentTarget.value) || 0,
-                                    },
-                                  },
-                                }))
-                              }
-                            />
-                          </Box>
-                        </Box>
-                      </Box>
-                    )}
-                  </Box>
+                        minH="44px"
+                      />
+                      <Input
+                        placeholder={t('globalMods.builder.max', 'Max')}
+                        type="number"
+                        value={editGuidedBuilder.sliders.width.max}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            sliders: {
+                              ...g.sliders,
+                              width: {
+                                ...g.sliders.width,
+                                max: Number(event.target.value) || 0,
+                              },
+                            },
+                          }))
+                        }
+                        minH="44px"
+                      />
+                    </SimpleGrid>
+                  )}
                 </Box>
-              </Box>
+                <Box>
+                  <Checkbox
+                    isChecked={editGuidedBuilder.sliders.depth.enabled}
+                    onChange={(event) =>
+                      setEditGuidedBuilder((g) => ({
+                        ...g,
+                        sliders: {
+                          ...g.sliders,
+                          depth: { ...g.sliders.depth, enabled: event.target.checked },
+                        },
+                      }))
+                    }
+                    minH="44px"
+                  >
+                    {t('globalMods.builder.depthSlider', 'Depth Slider')}
+                  </Checkbox>
+                  {editGuidedBuilder.sliders.depth.enabled && (
+                    <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3} mt={2}>
+                      <Input
+                        placeholder={t('globalMods.builder.min', 'Min')}
+                        type="number"
+                        value={editGuidedBuilder.sliders.depth.min}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            sliders: {
+                              ...g.sliders,
+                              depth: {
+                                ...g.sliders.depth,
+                                min: Number(event.target.value) || 0,
+                              },
+                            },
+                          }))
+                        }
+                        minH="44px"
+                      />
+                      <Input
+                        placeholder={t('globalMods.builder.max', 'Max')}
+                        type="number"
+                        value={editGuidedBuilder.sliders.depth.max}
+                        onChange={(event) =>
+                          setEditGuidedBuilder((g) => ({
+                            ...g,
+                            sliders: {
+                              ...g.sliders,
+                              depth: {
+                                ...g.sliders.depth,
+                                max: Number(event.target.value) || 0,
+                              },
+                            },
+                          }))
+                        }
+                        minH="44px"
+                      />
+                    </SimpleGrid>
+                  )}
+                </Box>
+              </VStack>
 
               {/* Additional Controls */}
               <Box mb={3}>
-                <Box>
+                <VStack align="stretch" spacing={3}>
                   <Box>
-                    <Box>
-                      <Checkbox
-                        isChecked={editGuidedBuilder.sideSelector.enabled}
-                        onChange={(event) =>
-                          setEditGuidedBuilder((g) => ({
-                            ...g,
-                            sideSelector: {
-                              ...g.sideSelector,
-                              enabled: event.currentTarget.checked,
-                            },
-                          }))
-                        }
-                      >
-                        {t('globalMods.builder.sideSelector.label', 'Side Selector')}
-                      </Checkbox>
-                    </Box>
+                    <Checkbox
+                      minH="44px"
+                      isChecked={editGuidedBuilder.sideSelector.enabled}
+                      onChange={(event) =>
+                        setEditGuidedBuilder((g) => ({
+                          ...g,
+                          sideSelector: {
+                            ...g.sideSelector,
+                            enabled: event.target.checked,
+                          },
+                        }))
+                      }
+                    >
+                      {t('globalMods.builder.sideSelector.label', 'Side Selector')}
+                    </Checkbox>
                     {editGuidedBuilder.sideSelector.enabled && (
-                      <Box>
+                      <Box mt={2}>
                         <Input
+                          minH="44px"
                           placeholder={t(
                             'globalMods.builder.sideSelector.placeholder',
                             'Options (comma-separated: L,R)',
@@ -6902,7 +6204,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               ...g,
                               sideSelector: {
                                 ...g.sideSelector,
-                                options: event.currentTarget.value
+                                options: event.target.value
                                   .split(',')
                                   .map((s) => s.trim())
                                   .filter(Boolean),
@@ -6913,84 +6215,77 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                       </Box>
                     )}
                   </Box>
-                </Box>
-                <Box>
                   <Box>
-                    <Box>
-                      <Checkbox
-                        isChecked={editGuidedBuilder.qtyRange.enabled}
-                        onChange={(event) =>
-                          setEditGuidedBuilder((g) => ({
-                            ...g,
-                            qtyRange: { ...g.qtyRange, enabled: event.currentTarget.checked },
-                          }))
-                        }
-                      >
-                        {t('globalMods.builder.quantityLimits.label', 'Quantity Range')}
-                      </Checkbox>
-                    </Box>
+                    <Checkbox
+                      minH="44px"
+                      isChecked={editGuidedBuilder.qtyRange.enabled}
+                      onChange={(event) =>
+                        setEditGuidedBuilder((g) => ({
+                          ...g,
+                          qtyRange: { ...g.qtyRange, enabled: event.target.checked },
+                        }))
+                      }
+                    >
+                      {t('globalMods.builder.quantityLimits.label', 'Quantity Range')}
+                    </Checkbox>
                     {editGuidedBuilder.qtyRange.enabled && (
-                      <Box>
-                        <Box>
-                          <Box>
-                            <Input
-                              placeholder={t('globalMods.builder.quantityLimits.minQty', 'Min qty')}
-                              type="number"
-                              value={editGuidedBuilder.qtyRange.min}
-                              onChange={(event) =>
-                                setEditGuidedBuilder((g) => ({
-                                  ...g,
-                                  qtyRange: {
-                                    ...g.qtyRange,
-                                    min: Number(event.currentTarget.value) || 1,
-                                  },
-                                }))
-                              }
-                            />
-                          </Box>
-                          <Box>
-                            <Input
-                              placeholder={t('globalMods.builder.quantityLimits.maxQty', 'Max qty')}
-                              type="number"
-                              value={editGuidedBuilder.qtyRange.max}
-                              onChange={(event) =>
-                                setEditGuidedBuilder((g) => ({
-                                  ...g,
-                                  qtyRange: {
-                                    ...g.qtyRange,
-                                    max: Number(event.currentTarget.value) || 10,
-                                  },
-                                }))
-                              }
-                            />
-                          </Box>
-                        </Box>
-                      </Box>
+                      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2} mt={2}>
+                        <Input
+                          minH="44px"
+                          placeholder={t('globalMods.builder.quantityLimits.minQty', 'Min qty')}
+                          type="number"
+                          value={editGuidedBuilder.qtyRange.min}
+                          onChange={(event) =>
+                            setEditGuidedBuilder((g) => ({
+                              ...g,
+                              qtyRange: {
+                                ...g.qtyRange,
+                                min: Number(event.target.value) || 1,
+                              },
+                            }))
+                          }
+                        />
+                        <Input
+                          minH="44px"
+                          placeholder={t('globalMods.builder.quantityLimits.maxQty', 'Max qty')}
+                          type="number"
+                          value={editGuidedBuilder.qtyRange.max}
+                          onChange={(event) =>
+                            setEditGuidedBuilder((g) => ({
+                              ...g,
+                              qtyRange: {
+                                ...g.qtyRange,
+                                max: Number(event.target.value) || 10,
+                              },
+                            }))
+                          }
+                        />
+                      </SimpleGrid>
                     )}
                   </Box>
-                </Box>
+                </VStack>
               </Box>
 
               {/* Notes and Upload Controls */}
               <Box mb={3}>
-                <Box>
+                <VStack align="stretch" spacing={3}>
                   <Box>
-                    <Box>
-                      <Checkbox
-                        isChecked={editGuidedBuilder.notes.enabled}
-                        onChange={(event) =>
-                          setEditGuidedBuilder((g) => ({
-                            ...g,
-                            notes: { ...g.notes, enabled: event.currentTarget.checked },
-                          }))
-                        }
-                      >
-                        {t('globalMods.builder.customerNotes.label', 'Customer Notes Field')}
-                      </Checkbox>
-                    </Box>
+                    <Checkbox
+                      minH="44px"
+                      isChecked={editGuidedBuilder.notes.enabled}
+                      onChange={(event) =>
+                        setEditGuidedBuilder((g) => ({
+                          ...g,
+                          notes: { ...g.notes, enabled: event.target.checked },
+                        }))
+                      }
+                    >
+                      {t('globalMods.builder.customerNotes.label', 'Customer Notes Field')}
+                    </Checkbox>
                     {editGuidedBuilder.notes.enabled && (
-                      <Box>
+                      <VStack align="stretch" spacing={2} mt={2}>
                         <Input
+                          minH="44px"
                           placeholder={t(
                             'globalMods.builder.customerNotes.placeholder',
                             'Placeholder text',
@@ -6999,47 +6294,45 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                           onChange={(event) =>
                             setEditGuidedBuilder((g) => ({
                               ...g,
-                              notes: { ...g.notes, placeholder: event.currentTarget.value },
+                              notes: { ...g.notes, placeholder: event.target.value },
                             }))
                           }
                         />
                         <Checkbox
-
+                          minH="44px"
                           isChecked={editGuidedBuilder.notes.showInRed}
                           onChange={(event) =>
                             setEditGuidedBuilder((g) => ({
                               ...g,
-                              notes: { ...g.notes, showInRed: event.currentTarget.checked },
+                              notes: { ...g.notes, showInRed: event.target.checked },
                             }))
                           }
                         >
                           {t('globalMods.builder.customerNotes.showInRed', 'Show in red')}
                         </Checkbox>
-                      </Box>
+                      </VStack>
                     )}
                   </Box>
-                </Box>
-                <Box>
                   <Box>
-                    <Box>
-                      <Checkbox
-                        isChecked={editGuidedBuilder.customerUpload.enabled}
-                        onChange={(event) =>
-                          setEditGuidedBuilder((g) => ({
-                            ...g,
-                            customerUpload: {
-                              ...g.customerUpload,
-                              enabled: event.currentTarget.checked,
-                            },
-                          }))
-                        }
-                      >
-                        {t('globalMods.builder.customerUpload.label', 'Customer File Upload')}
-                      </Checkbox>
-                    </Box>
+                    <Checkbox
+                      minH="44px"
+                      isChecked={editGuidedBuilder.customerUpload.enabled}
+                      onChange={(event) =>
+                        setEditGuidedBuilder((g) => ({
+                          ...g,
+                          customerUpload: {
+                            ...g.customerUpload,
+                            enabled: event.target.checked,
+                          },
+                        }))
+                      }
+                    >
+                      {t('globalMods.builder.customerUpload.label', 'Customer File Upload')}
+                    </Checkbox>
                     {editGuidedBuilder.customerUpload.enabled && (
-                      <Box>
+                      <VStack align="stretch" spacing={2} mt={2}>
                         <Input
+                          minH="44px"
                           placeholder={t(
                             'globalMods.builder.customerUpload.titlePlaceholder',
                             'Upload title',
@@ -7050,104 +6343,99 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                               ...g,
                               customerUpload: {
                                 ...g.customerUpload,
-                                title: event.currentTarget.value,
+                                title: event.target.value,
                               },
                             }))
                           }
                         />
                         <Checkbox
-
+                          minH="44px"
                           isChecked={editGuidedBuilder.customerUpload.required}
                           onChange={(event) =>
                             setEditGuidedBuilder((g) => ({
                               ...g,
                               customerUpload: {
                                 ...g.customerUpload,
-                                required: event.currentTarget.checked,
+                                required: event.target.checked,
                               },
                             }))
                           }
                         >
                           {t('globalMods.builder.customerUpload.required', 'Required')}
                         </Checkbox>
-                      </Box>
+                      </VStack>
                     )}
                   </Box>
-                </Box>
+                </VStack>
               </Box>
 
               {/* Descriptions */}
               <Box>
-                <Box>
-                  <Heading as="h6" size="sm">{t('globalMods.builder.title', 'Guided Builder')}</Heading>
-                </Box>
-                <Box>
-                  <Box>
-                    <Box>
-                      <Input
-                        placeholder={t(
-                          'globalMods.builder.descriptions.internal',
-                          'Internal description',
-                        )}
-                        value={editGuidedBuilder.descriptions.internal}
-                        onChange={(event) =>
-                          setEditGuidedBuilder((g) => ({
-                            ...g,
-                            descriptions: {
-                              ...g.descriptions,
-                              internal: event.currentTarget.value,
-                            },
-                          }))
-                        }
-                      />
-                    </Box>
-                    <Box>
-                      <Input
-                        placeholder={t(
-                          'globalMods.builder.descriptions.customer',
-                          'Customer description',
-                        )}
-                        value={editGuidedBuilder.descriptions.customer}
-                        onChange={(event) =>
-                          setEditGuidedBuilder((g) => ({
-                            ...g,
-                            descriptions: {
-                              ...g.descriptions,
-                              customer: event.currentTarget.value,
-                            },
-                          }))
-                        }
-                      />
-                    </Box>
-                    <Box>
-                      <Input
-                        placeholder={t(
-                          'globalMods.builder.descriptions.installer',
-                          'Installer description',
-                        )}
-                        value={editGuidedBuilder.descriptions.installer}
-                        onChange={(event) =>
-                          setEditGuidedBuilder((g) => ({
-                            ...g,
-                            descriptions: {
-                              ...g.descriptions,
-                              installer: event.currentTarget.value,
-                            },
-                          }))
-                        }
-                      />
-                    </Box>
-                  </Box>
-                </Box>
+                <Heading as="h6" size="sm" mb={3}>{t('globalMods.builder.title', 'Guided Builder')}</Heading>
+                <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={2}>
+                  <Input
+                    minH="44px"
+                    placeholder={t(
+                      'globalMods.builder.descriptions.internal',
+                      'Internal description',
+                    )}
+                    value={editGuidedBuilder.descriptions.internal}
+                    onChange={(event) =>
+                      setEditGuidedBuilder((g) => ({
+                        ...g,
+                        descriptions: {
+                          ...g.descriptions,
+                          internal: event.target.value,
+                        },
+                      }))
+                    }
+                  />
+                  <Input
+                    minH="44px"
+                    placeholder={t(
+                      'globalMods.builder.descriptions.customer',
+                      'Customer description',
+                    )}
+                    value={editGuidedBuilder.descriptions.customer}
+                    onChange={(event) =>
+                      setEditGuidedBuilder((g) => ({
+                        ...g,
+                        descriptions: {
+                          ...g.descriptions,
+                          customer: event.target.value,
+                        },
+                      }))
+                    }
+                  />
+                  <Input
+                    minH="44px"
+                    placeholder={t(
+                      'globalMods.builder.descriptions.installer',
+                      'Installer description',
+                    )}
+                    value={editGuidedBuilder.descriptions.installer}
+                    onChange={(event) =>
+                      setEditGuidedBuilder((g) => ({
+                        ...g,
+                        descriptions: {
+                          ...g.descriptions,
+                          installer: event.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </SimpleGrid>
               </Box>
             </Box>
-
-            <Flex gap={2} justify="flex-end" mt={3}>
-              <Button colorScheme="gray" onClick={() => setShowQuickEditTemplateModal(false)}>
+          </ModalBody>
+          <ModalFooter flexShrink={0}>
+            <Flex gap={2} justify="flex-end" w="100%">
+              <Button colorScheme="gray" onClick={() => setShowQuickEditTemplateModal(false)} minH="44px">
                 {t('globalMods.modal.add.cancel', 'Cancel')}
               </Button>
               <Button
                 colorScheme="blue"
+                minH="44px"
                 onClick={async () => {
                   if (!editTemplate.id || !editTemplate.name.trim()) return
                   // Build fieldsConfig from edit guided builder
@@ -7170,7 +6458,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 {t('globalMods.modal.editTemplate.saveChanges', 'Save Changes')}
               </Button>
             </Flex>
-          </ModalBody>
+          </ModalFooter>
         </ModalContent>
       </Modal>
 
@@ -7187,25 +6475,26 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           })
           setEditingSubType(null)
         }}
-        size="lg"
+        size={{ base: 'full', md: 'md', lg: 'lg' }}
+        isCentered
+        scrollBehavior="inside"
       >
-        <PageHeader
-          title={
-            editingSubType
+        <ModalOverlay />
+        <ModalContent borderRadius="12px" display="flex" flexDirection="column" maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+            {editingSubType
               ? t('settings.manufacturers.catalogMapping.subTypes.editTitle')
-              : t('settings.manufacturers.catalogMapping.subTypes.create')
-          }
-          borderRadius="0"
-          borderWidth="0"
-        />
-        <ModalBody>
+              : t('settings.manufacturers.catalogMapping.subTypes.create')}
+          </ModalHeader>
+          <ModalCloseButton color={headerTextColor} />
+          <ModalBody>
           <Box>
             <Box>
               <FormLabel>{t('common.name', 'Name')} *</FormLabel>
               <Input
                 value={subTypeForm.name}
                 onChange={(event) =>
-                  setSubTypeForm((prev) => ({ ...prev, name: event.currentTarget.value }))
+                  setSubTypeForm((prev) => ({ ...prev, name: event.target.value }))
                 }
                 placeholder={t(
                   'settings.manufacturers.catalogMapping.subTypes.namePlaceholder',
@@ -7219,7 +6508,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 rows={3}
                 value={subTypeForm.description}
                 onChange={(event) =>
-                  setSubTypeForm((prev) => ({ ...prev, description: event.currentTarget.value }))
+                  setSubTypeForm((prev) => ({ ...prev, description: event.target.value }))
                 }
                 placeholder={t(
                   'settings.manufacturers.catalogMapping.subTypes.descriptionPlaceholder',
@@ -7234,7 +6523,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 onChange={(event) =>
                   setSubTypeForm((prev) => ({
                     ...prev,
-                    requires_hinge_side: event.currentTarget.checked,
+                    requires_hinge_side: event.target.checked,
                   }))
                 }
               >
@@ -7251,7 +6540,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
                 onChange={(event) =>
                   setSubTypeForm((prev) => ({
                     ...prev,
-                    requires_exposed_side: event.currentTarget.checked,
+                    requires_exposed_side: event.target.checked,
                   }))
                 }
               >
@@ -7263,7 +6552,7 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             </Box>
           </Box>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter flexShrink={0}>
           <Button
             colorScheme="gray"
             onClick={() => {
@@ -7283,11 +6572,12 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
             colorScheme="blue"
             onClick={handleSubTypeSave}
             disabled={!subTypeForm.name.trim()}
-          >
+           minH="44px">
             {editingSubType ? t('common.update', 'Update') : t('common.create', 'Create')}{' '}
             {t('settings.manufacturers.catalogMapping.subTypes.singular', 'Sub-Type')}
           </Button>
         </ModalFooter>
+        </ModalContent>
       </Modal>
 
       {/* Assign Items to Sub-Type Modal */}
@@ -7299,134 +6589,256 @@ const CatalogMappingTab = ({ manufacturer, id }) => {
           setSelectedCatalogItem([])
           setSelectedCatalogCodes([])
         }}
-        size="xl"
+        size={{ base: 'full', md: '6xl' }}
+        isCentered
+        scrollBehavior="inside"
       >
-        <PageHeader
-          title={t(
-            'settings.manufacturers.catalogMapping.subTypes.assignModal.title',
-            'Assign Catalog Items to Sub-Type',
-          )}
-          borderRadius="0"
-          borderWidth="0"
-        />
-        <ModalBody>
-          <Box>
-            <FormLabel>
+        <ModalOverlay />
+        <ModalContent borderRadius="12px" overflow="hidden" maxW={{ base: '100%', md: '90vw' }}>
+          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor} py={5} px={8}>
+            <Text fontSize="lg" fontWeight="semibold">
               {t(
-                'settings.manufacturers.catalogMapping.subTypes.assignModal.selectLabel',
-                'Select catalog items to assign to this sub-type:',
+                'settings.manufacturers.catalogMapping.assignModal.title',
+                'Assign Catalog Items to Sub-Type',
               )}
-            </FormLabel>
-            <Text fontSize="sm" display="block" color={iconGray500} mb={3}>
-              {t('settings.manufacturers.catalogMapping.subTypes.assignModal.selectedSummary', {
-                codes: selectedCatalogCodes.length,
-                items: selectedCatalogItem.length,
-              })}
             </Text>
-          </Box>
+          </ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
+          <ModalBody py={8} px={8}>
+            <VStack spacing={4} align="stretch">
+              <Box>
+                <FormLabel mb={2}>
+                  {t(
+                    'settings.manufacturers.catalogMapping.assignModal.selectLabel',
+                    'Select catalog items to assign to this sub-type:',
+                  )}
+                </FormLabel>
+                <Text fontSize="sm" color={iconGray500}>
+                  {t('settings.manufacturers.catalogMapping.assignModal.selectedSummary', {
+                    codes: selectedCatalogCodes.length,
+                    items: selectedCatalogItem.length,
+                  })}
+                </Text>
+              </Box>
 
-          <Box maxH="400px">
-            <Table>
-              <Thead>
-                <Tr>
-                  <Th>
-                    <Checkbox
-                      isChecked={
-                        selectedCatalogCodes.length === groupedCatalogData.length &&
-                        groupedCatalogData.length > 0
+              {/* Desktop Table View */}
+              <Box display={{ base: 'none', md: 'block' }}>
+                <TableContainer
+                  maxH="500px"
+                  overflowY="auto"
+                  border="1px solid"
+                  borderColor={iconGray300}
+                  borderRadius="md"
+                >
+                  <Table variant="simple" size="md">
+                    <Thead position="sticky" top={0} bg={bgWhite} zIndex={1}>
+                      <Tr>
+                        <Th py={3}>
+                          <Checkbox
+                            isChecked={
+                              selectedCatalogCodes.length === groupedCatalogData.length &&
+                              groupedCatalogData.length > 0
+                            }
+                            onChange={(event) => {
+                              if (event.target.checked) {
+                                // Select all codes
+                                const allCodes = groupedCatalogData.map((group) => group.code)
+                                const allItemIds = groupedCatalogData.flatMap((group) => group.itemIds)
+                                setSelectedCatalogCodes(allCodes)
+                                setSelectedCatalogItem(allItemIds)
+                              } else {
+                                // Deselect all
+                                setSelectedCatalogCodes([])
+                                setSelectedCatalogItem([])
+                              }
+                            }}
+                          />
+                        </Th>
+                        <Th py={3}>{t('settings.manufacturers.catalogMapping.table.code')}</Th>
+                        <Th py={3}>{t('settings.manufacturers.catalogMapping.table.description')}</Th>
+                        <Th py={3}>{t('settings.manufacturers.catalogMapping.table.type')}</Th>
+                        <Th py={3}>
+                          {t('settings.manufacturers.catalogMapping.assignModal.stylesHeader', 'Styles')}
+                        </Th>
+                        <Th py={3}>
+                          {t(
+                            'settings.manufacturers.catalogMapping.assignModal.itemsCount',
+                            'Items Count',
+                          )}
+                        </Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {groupedCatalogData.map((group) => (
+                        <Tr key={group.code} _hover={{ bg: bgGray50 }}>
+                          <Td py={3}>
+                            <Checkbox
+                              isChecked={selectedCatalogCodes.includes(group.code)}
+                              onChange={(event) => {
+                                handleCodeSelection(group.code, event.target.checked)
+                              }}
+                            />
+                          </Td>
+                          <Td py={3}>{group.code}</Td>
+                          <Td py={3}>{group.description}</Td>
+                          <Td py={3}>{group.type}</Td>
+                          <Td py={3}>
+                            <Text fontSize="sm" color={iconGray500}>
+                              {group.styles.slice(0, 3).join(', ')}
+                              {group.styles.length > 3 &&
+                                ` +${group.styles.length - 3} ${t('settings.manufacturers.catalogMapping.assignModal.more', 'more')}`}
+                            </Text>
+                          </Td>
+                          <Td py={3}>
+                            <Badge colorScheme="blue">{group.itemIds.length}</Badge>
+                          </Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </Box>
+
+              {/* Mobile Card View */}
+              <Box display={{ base: 'block', md: 'none' }}>
+                {/* Select All Checkbox */}
+                <Flex
+                  mb={3}
+                  p={3}
+                  bg={bgGray50}
+                  borderRadius="md"
+                  border="1px solid"
+                  borderColor={iconGray300}
+                  align="center"
+                >
+                  <Checkbox
+                    isChecked={
+                      selectedCatalogCodes.length === groupedCatalogData.length &&
+                      groupedCatalogData.length > 0
+                    }
+                    onChange={(event) => {
+                      if (event.target.checked) {
+                        const allCodes = groupedCatalogData.map((group) => group.code)
+                        const allItemIds = groupedCatalogData.flatMap((group) => group.itemIds)
+                        setSelectedCatalogCodes(allCodes)
+                        setSelectedCatalogItem(allItemIds)
+                      } else {
+                        setSelectedCatalogCodes([])
+                        setSelectedCatalogItem([])
                       }
-                      onChange={(event) => {
-                        if (event.currentTarget.checked) {
-                          // Select all codes
-                          const allCodes = groupedCatalogData.map((group) => group.code)
-                          const allItemIds = groupedCatalogData.flatMap((group) => group.itemIds)
-                          setSelectedCatalogCodes(allCodes)
-                          setSelectedCatalogItem(allItemIds)
-                        } else {
-                          // Deselect all
-                          setSelectedCatalogCodes([])
-                          setSelectedCatalogItem([])
-                        }
-                      }}
-                    />
-                  </Th>
-                  <Th>{t('settings.manufacturers.catalogMapping.table.code')}</Th>
-                  <Th>{t('settings.manufacturers.catalogMapping.table.description')}</Th>
-                  <Th>{t('settings.manufacturers.catalogMapping.table.type')}</Th>
-                  <Th>
-                    {t('settings.manufacturers.catalogMapping.assignModal.stylesHeader', 'Styles')}
-                  </Th>
-                  <Th>
-                    {t(
-                      'settings.manufacturers.catalogMapping.subTypes.assignModal.itemsCount',
-                      'Items Count',
-                    )}
-                  </Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {groupedCatalogData.map((group) => (
-                  <Tr key={group.code}>
-                    <Td>
-                      <Checkbox
-                        isChecked={selectedCatalogCodes.includes(group.code)}
-                        onChange={(event) => {
-                          handleCodeSelection(group.code, event.currentTarget.checked)
-                        }}
-                      />
-                    </Td>
-                    <Td>{group.code}</Td>
-                    <Td>{group.description}</Td>
-                    <Td>{group.type}</Td>
-                    <Td>
-                      <Text fontSize="sm" color="gray.500">
-                        {group.styles.slice(0, 3).join(', ')}
-                        {group.styles.length > 3 &&
-                          ` +${group.styles.length - 3} ${t('settings.manufacturers.catalogMapping.subTypes.assignModal.more', 'more')}`}
-                      </Text>
-                    </Td>
-                    <Td>
-                      <Badge colorScheme="info">{group.itemIds.length}</Badge>
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </Box>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            colorScheme="gray"
-            onClick={() => {
-              setShowAssignSubTypeModal(false)
-              setSelectedSubType(null)
-              setSelectedCatalogItem([])
-              setSelectedCatalogCodes([])
-            }}
-          >
-            {t('common.cancel')}
-          </Button>
-          <Button
-            colorScheme="blue"
-            onClick={() => {
-              if (selectedSubType && selectedCatalogItem.length > 0) {
-                handleAssignToSubType()
-                setShowAssignSubTypeModal(false)
-                setSelectedSubType(null)
-                setSelectedCatalogItem([])
-                setSelectedCatalogCodes([])
-              }
-            }}
-            disabled={selectedCatalogItem.length === 0}
-          >
-            {t('settings.manufacturers.catalogMapping.subTypes.assignModal.assignCTA', {
-              count: selectedCatalogItem.length,
-            })}
-          </Button>
-        </ModalFooter>
+                    }}
+                    id="mobile-select-all-assign"
+                  />
+                  <Text as="label" htmlFor="mobile-select-all-assign" ml={2} mb={0} fontWeight="medium">
+                    {t('common.selectAll', 'Select All')} ({groupedCatalogData.length} {t('common.codes', 'codes')})
+                  </Text>
+                </Flex>
+
+                {/* Card List */}
+                <VStack
+                  spacing={3}
+                  align="stretch"
+                  maxH="400px"
+                  overflowY="auto"
+                  pr={2}
+                >
+                  {groupedCatalogData.map((group) => (
+                    <Box
+                      key={group.code}
+                      p={4}
+                      border="1px solid"
+                      borderColor={iconGray300}
+                      borderRadius="md"
+                      bg={selectedCatalogCodes.includes(group.code) ? bgBlue50 : bgWhite}
+                    >
+                      <HStack align="start" spacing={3} mb={3}>
+                        <Checkbox
+                          isChecked={selectedCatalogCodes.includes(group.code)}
+                          onChange={(event) => {
+                            handleCodeSelection(group.code, event.target.checked)
+                          }}
+                          mt={1}
+                        />
+                        <VStack align="start" spacing={1} flex={1}>
+                          <Heading as="h6" size="sm" fontWeight="bold">
+                            {group.code}
+                          </Heading>
+                          <Text fontSize="sm" color={borderGray600}>
+                            {group.description}
+                          </Text>
+                        </VStack>
+                        <Badge colorScheme="blue" fontSize="sm" px={2} py={1}>
+                          {group.itemIds.length} {t('common.items', 'items')}
+                        </Badge>
+                      </HStack>
+
+                      <Divider my={2} />
+
+                      <VStack align="start" spacing={2} fontSize="sm">
+                        <HStack>
+                          <Text fontWeight="semibold" minW="60px">
+                            {t('settings.manufacturers.catalogMapping.table.type')}:
+                          </Text>
+                          <Text color={borderGray600}>{group.type}</Text>
+                        </HStack>
+                        <HStack align="start">
+                          <Text fontWeight="semibold" minW="60px">
+                            {t('settings.manufacturers.catalogMapping.assignModal.stylesHeader', 'Styles')}:
+                          </Text>
+                          <Text color={borderGray600} flex={1}>
+                            {group.styles.slice(0, 3).join(', ')}
+                            {group.styles.length > 3 &&
+                              ` +${group.styles.length - 3} ${t('settings.manufacturers.catalogMapping.assignModal.more', 'more')}`}
+                          </Text>
+                        </HStack>
+                      </VStack>
+                    </Box>
+                  ))}
+                </VStack>
+              </Box>
+            </VStack>
+          </ModalBody>
+          <ModalFooter py={5} px={8}>
+            <HStack spacing={3}>
+              <Button
+                colorScheme="gray"
+                onClick={() => {
+                  setShowAssignSubTypeModal(false)
+                  setSelectedSubType(null)
+                  setSelectedCatalogItem([])
+                  setSelectedCatalogCodes([])
+                }}
+                minH="44px"
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button
+                colorScheme="blue"
+                onClick={() => {
+                  if (selectedSubType && selectedCatalogItem.length > 0) {
+                    handleAssignToSubType()
+                    setShowAssignSubTypeModal(false)
+                    setSelectedSubType(null)
+                    setSelectedCatalogItem([])
+                    setSelectedCatalogCodes([])
+                  }
+                }}
+                disabled={selectedCatalogItem.length === 0}
+                minH="44px"
+              >
+                {t('settings.manufacturers.catalogMapping.assignModal.assignCTA', {
+                  count: selectedCatalogItem.length,
+                })}
+              </Button>
+            </HStack>
+          </ModalFooter>
+        </ModalContent>
       </Modal>
     </Box>
   )
 }
 
 export default CatalogMappingTab
+
+
+

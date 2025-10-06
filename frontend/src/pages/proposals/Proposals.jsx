@@ -853,10 +853,10 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
             </AlertDialogHeader>
             <AlertDialogBody>{t('proposals.confirm.sendText')}</AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onSendClose}>
+              <Button ref={cancelRef} onClick={onSendClose} minH="44px">
                 {t('proposals.confirm.cancel')}
               </Button>
-              <Button colorScheme="blue" onClick={confirmSendProposal} ml={3}>
+              <Button colorScheme="blue" onClick={confirmSendProposal} ml={3} minH="44px">
                 {t('proposals.confirm.sendConfirm')}
               </Button>
             </AlertDialogFooter>
@@ -873,10 +873,10 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
             </AlertDialogHeader>
             <AlertDialogBody>{t('proposals.confirm.rejectText')}</AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onRejectClose}>
+              <Button ref={cancelRef} onClick={onRejectClose} minH="44px">
                 {t('proposals.confirm.cancel')}
               </Button>
-              <Button colorScheme="red" onClick={confirmRejectProposal} ml={3}>
+              <Button colorScheme="red" onClick={confirmRejectProposal} ml={3} minH="44px">
                 {t('proposals.confirm.rejectConfirm')}
               </Button>
             </AlertDialogFooter>
@@ -893,10 +893,10 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
             </AlertDialogHeader>
             <AlertDialogBody>{t('proposals.confirm.deleteText')}</AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onDeleteClose}>
+              <Button ref={cancelRef} onClick={onDeleteClose} minH="44px">
                 {t('proposals.confirm.cancel')}
               </Button>
-              <Button colorScheme="red" onClick={confirmDelete} ml={3}>
+              <Button colorScheme="red" onClick={confirmDelete} ml={3} minH="44px">
                 {t('proposals.confirm.deleteConfirm')}
               </Button>
             </AlertDialogFooter>

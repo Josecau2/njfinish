@@ -246,6 +246,10 @@ ProposalItem.belongsTo(Proposals, { foreignKey: 'proposal_id', as: 'proposal' })
 ProposalSectionItem.belongsTo(ProposalSection, { foreignKey: 'section_id', as: 'section' });
 ProposalSectionItem.belongsTo(ProposalItem, { foreignKey: 'item_id', as: 'item' });
 
+// Proposal item catalog reference for sub-type validation
+ProposalSectionItem.belongsTo(ManufacturerCatalogData, { foreignKey: 'catalog_data_id', as: 'catalogItem' });
+ManufacturerCatalogData.hasMany(ProposalSectionItem, { foreignKey: 'catalog_data_id', as: 'proposalItems' });
+
 // Global modification associations
 GlobalModificationTemplate.belongsTo(GlobalModificationCategory, { foreignKey: 'category_id', as: 'category' });
 GlobalModificationCategory.hasMany(GlobalModificationTemplate, { foreignKey: 'category_id', as: 'templates' });

@@ -206,7 +206,10 @@
       "Bash(start table-card-preview.html)",
       "Bash(do echo -e \"\\n### $file\")",
       "Bash(do echo \"Processing $file...\")",
-      "Bash(./update-modals-dark-mode.ps1)"
+      "Bash(./update-modals-dark-mode.ps1)",
+      "Bash(python3:*)",
+      "Bash(do sed -i 's/overflow=\"\"hidden\"\"//' \"$file\")",
+      "Bash(cd:*)"
     ],
     "deny": [],
     "ask": []

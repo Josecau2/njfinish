@@ -29,6 +29,7 @@ import {
 } from '@chakra-ui/react'
 import { Settings, Eye } from 'lucide-react'
 import { isAdmin } from '../../helpers/permissions'
+import { getContrastColor } from '../../utils/colorUtils'
 
 const getStoredUser = () => {
   try {
@@ -40,6 +41,10 @@ const getStoredUser = () => {
 
 const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
   const { t } = useTranslation()
+  const customization = useSelector((state) => state.customization) || {}
+  const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
+  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
   const authUser = useSelector((state) => state.auth?.user)
   const user = authUser || getStoredUser()
 
@@ -134,9 +139,13 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
   const ModalUI = (
     <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered size={{ base: 'full', md: 'sm' }} scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent borderRadius="12px" overflow="hidden">
-        <ModalHeader>{t('showroom.modal.titleExact', 'Showroom Mode Configuration')}</ModalHeader>
-        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+      <ModalContent borderRadius="12px">
+        <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+          <Text fontSize="lg" fontWeight="semibold">
+            {t('showroom.modal.titleExact', 'Showroom Mode Configuration')}
+          </Text>
+        </ModalHeader>
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
         <ModalBody>
           <Alert status="info" borderRadius="md" mb={4}>
             <AlertIcon />
@@ -199,7 +208,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
           <Button variant="outline" mr={3} onClick={() => setShowModal(false)}>
             {t('common.cancel', 'Cancel')}
           </Button>
-          <Button colorScheme="brand" onClick={saveMultiplier} isDisabled={!!validationError || !tempMultiplier}>
+          <Button colorScheme="brand" onClick={saveMultiplier} isDisabled={!!validationError || !tempMultiplier} minH="44px">
             {t('common.saveChanges', 'Save Changes')}
           </Button>
         </ModalFooter>

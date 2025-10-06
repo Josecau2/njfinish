@@ -580,7 +580,7 @@ const UsersPage = () => {
               {t('settings.users.confirm.text')}
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={onClose}>
+              <Button ref={cancelRef} onClick={onClose} minH="44px">
                 {t('common.cancel')}
               </Button>
               <Button
@@ -589,7 +589,7 @@ const UsersPage = () => {
                 ml={3}
                 as={motion.button}
                 whileTap={{ scale: 0.98 }}
-              >
+               minH="44px">
                 {t('settings.users.confirm.confirmYes')}
               </Button>
             </AlertDialogFooter>

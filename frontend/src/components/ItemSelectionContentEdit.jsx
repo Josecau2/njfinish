@@ -842,6 +842,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
             const newItem = {
                 id: item.id,
+                catalogDataId: item.id, // Reference to original catalog item for sub-type validation
                 code: item.code,
                 description: item.description,
                 type: item.type, // used for Specs badge
@@ -1904,28 +1905,28 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                             <Tbody>
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalDoc.priceSummary.cabinets')}</Th>
-                                    <Td textAlign="center" fontWeight="semibold">
+                                    <Td textAlign="right" fontWeight="semibold">
                                         {`$${selectVersion?.summary?.cabinets || '0'}`}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalDoc.priceSummary.assembly')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {`$${selectVersion?.summary?.assemblyFee || '0'}`}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalDoc.priceSummary.modifications')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {`$${selectVersion?.summary?.modificationsCost || '0'}`}
                                     </Td>
                                 </Tr>
 
                                 <Tr bg={bgGray100}>
                                     <Th>{t('proposalDoc.priceSummary.styleTotal')}</Th>
-                                    <Td textAlign="center" fontWeight="semibold">
+                                    <Td textAlign="right" fontWeight="semibold">
                                         {`$${selectVersion?.summary?.styleTotal || '0'}`}
                                     </Td>
                                 </Tr>
@@ -1963,35 +1964,35 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalDoc.priceSummary.total')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {`$${selectVersion?.summary?.total || '0'}`}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('settings.manufacturers.edit.deliveryFee')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {`$${versionItems.length > 0 ? (selectVersion?.summary?.deliveryFee || '0') : '0'}`}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalUI.summary.taxRate')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {`${selectVersion?.summary?.taxRate || '0'}%`}
                                     </Td>
                                 </Tr>
 
                                 <Tr>
                                     <Th bg={bgGray50}>{t('proposalDoc.priceSummary.tax')}</Th>
-                                    <Td textAlign="center">
+                                    <Td textAlign="right">
                                         {`$${selectVersion?.summary?.taxAmount || '0'}`}
                                     </Td>
                                 </Tr>
 
                                 <Tr bg={bgGreen50}>
                                     <Th>{t('proposalDoc.priceSummary.grandTotal')}</Th>
-                                    <Td textAlign="center" fontWeight="bold">
+                                    <Td textAlign="right" fontWeight="bold">
                                         {`$${selectVersion?.summary?.grandTotal || '0'}`}
                                     </Td>
                                 </Tr>
