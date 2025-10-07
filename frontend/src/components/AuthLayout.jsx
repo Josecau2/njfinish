@@ -16,7 +16,7 @@ const AuthLayout = ({
   const fallbackLeftBg = useColorModeValue('gray.900', 'gray.900')
   const fallbackLeftText = useColorModeValue('white', 'gray.100')
   const fallbackRightBg = useColorModeValue('white', 'gray.800')
-  
+
   // Enhanced mobile gradients
   const mobileGradient = useColorModeValue(
     'linear-gradient(180deg, rgba(226,232,240,1) 0%, rgba(248,250,252,1) 100%)',
@@ -24,8 +24,8 @@ const AuthLayout = ({
   )
 
   return (
-    <Flex 
-      minH="100vh" 
+    <Flex
+      minH="100vh"
       direction={{ base: 'column', lg: 'row' }}
       bg={{ base: mobileGradient, lg: 'transparent' }}
     >
@@ -56,10 +56,10 @@ const AuthLayout = ({
         pt={{ base: showLanguageSwitcher ? '60px' : 8, sm: showLanguageSwitcher ? '70px' : 10, md: 16 }}
       >
         {showLanguageSwitcher ? (
-          <Box 
-            position="absolute" 
-            top={{ base: 3, sm: 4, md: 6 }} 
-            right={{ base: 3, sm: 4, md: 6 }} 
+          <Box
+            position="absolute"
+            top={{ base: 3, sm: 4, md: 6 }}
+            right={{ base: 3, sm: 4, md: 6 }}
             zIndex="dropdown"
             bg={{ base: useColorModeValue('white', 'gray.800'), lg: 'transparent' }}
             borderRadius={{ base: 'lg', lg: 'none' }}
@@ -69,8 +69,8 @@ const AuthLayout = ({
             <LanguageSwitcher compact {...languageSwitcherProps} />
           </Box>
         ) : null}
-        <Container 
-          maxW="md" 
+        <Container
+          maxW="md"
           p={0}
           {...rightContainerProps}
         >

@@ -210,7 +210,8 @@
       "Bash(python3:*)",
       "Bash(do sed -i 's/overflow=\"\"hidden\"\"//' \"$file\")",
       "Bash(cd:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(npm audit:*)"
     ],
     "deny": [],
     "ask": []

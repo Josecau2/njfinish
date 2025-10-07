@@ -139,18 +139,18 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
           </Stack>
         </ModalBody>
         <ModalFooter gap={3} flexWrap="wrap">
-          <Button 
-            variant='outline' 
-            onClick={onClose} 
+          <Button
+            variant='outline'
+            onClick={onClose}
             minH="44px"
             whiteSpace="normal"
             flex={{ base: '1', md: '0 1 auto' }}
           >
             {t('common.cancel')}
           </Button>
-          <Button 
-            colorScheme='brand' 
-            type='submit' 
+          <Button
+            colorScheme='brand'
+            type='submit'
             minH='44px'
             whiteSpace="normal"
             flex={{ base: '1', md: '0 1 auto' }}

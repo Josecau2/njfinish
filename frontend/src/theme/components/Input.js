@@ -164,13 +164,13 @@ export const Input = {
         borderColor: 'border.subtle',
         bgGradient: 'linear-gradient(135deg, var(--chakra-colors-surface-elevated) 0%, var(--chakra-colors-surface-subtle) 100%)',
         shadow: 'sm',
-        
+
         _hover: {
           shadow: 'md',
           borderColor: 'border.default',
           bgGradient: 'linear-gradient(135deg, var(--chakra-colors-surface-base) 0%, var(--chakra-colors-surface-subtle) 100%)',
         },
-        
+
         _focus: {
           borderColor: 'interactive.primary',
           boxShadow: '0 0 0 1px var(--chakra-colors-interactive-primary), 0 4px 12px rgba(0, 0, 0, 0.1)',

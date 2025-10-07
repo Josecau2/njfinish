@@ -225,10 +225,10 @@ const ProposalAcceptanceModal = ({
             >
               {t('common.cancel')}
             </Button>
-            <Button 
-              colorScheme='brand' 
-              type='submit' 
-              isLoading={isSubmitting} 
+            <Button
+              colorScheme='brand'
+              type='submit'
+              isLoading={isSubmitting}
               minH="44px"
               whiteSpace="normal"
               flex={{ base: '1', md: '0 1 auto' }}

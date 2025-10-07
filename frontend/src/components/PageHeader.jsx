@@ -36,7 +36,7 @@ const PageHeader = ({
     'linear-gradient(180deg, rgba(226,232,240,1) 0%, rgba(203,213,225,0.95) 100%)',
     'linear-gradient(180deg, rgba(30,41,59,1) 0%, rgba(15,23,42,0.95) 100%)'
   )
-  
+
   // Enhanced border with subtle shadow - more pronounced on mobile
   const borderColor = useColorModeValue('gray.300', 'gray.600')
   const boxShadow = useColorModeValue(
@@ -47,7 +47,7 @@ const PageHeader = ({
     '0 4px 16px rgba(0,0,0,0.12)',
     '0 4px 16px rgba(0,0,0,0.4)'
   )
-  
+
   const subtitleColor = useColorModeValue('gray.600', 'gray.400')
   const iconBg = useColorModeValue('brand.50', 'brand.900')
   const iconColor = useColorModeValue('brand.500', 'brand.300')
@@ -94,7 +94,7 @@ const PageHeader = ({
                 <BreadcrumbLink
                   as={RouterLink}
                   to={crumb.href}
-                  _hover={{ 
+                  _hover={{
                     color: 'brand.500',
                     textDecoration: 'none',
                     transform: 'translateY(-1px)',
@@ -157,8 +157,8 @@ const PageHeader = ({
             </Heading>
           </Flex>
           {subtitle && (
-            <Text 
-              color={subtitleColor} 
+            <Text
+              color={subtitleColor}
               fontSize={{ base: 'sm', md: 'md' }}
               maxW="600px"
               fontWeight="medium"

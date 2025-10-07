@@ -1,7 +1,6 @@
 import StandardCard from '../../components/StandardCard'
 import PageContainer from '../../components/PageContainer'
-import CreatableCombobox from '../../components/form/CreatableCombobox'
-import { useCallback, useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
 import { useTranslation } from 'react-i18next'
@@ -46,7 +45,6 @@ import {
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
-import { fetchUsers } from '../../store/slices/userSlice'
 import { setSelectVersionNewEdit } from '../../store/slices/selectVersionNewEditSlice'
 import { sendFormDataToBackend } from '../../queries/proposalQueries'
 // Removed Formik and Yup - using React Hook Form pattern
@@ -195,10 +193,12 @@ const EditProposal = ({
   const [designerOptions, setDesignerOptions] = useState([])
   const [isCreatingDesigner, setIsCreatingDesigner] = useState(false)
   const [isCreatingStatus, setIsCreatingStatus] = useState(false)
+  const [customDesignerInput, setCustomDesignerInput] = useState('')
   const [customStatusInput, setCustomStatusInput] = useState('')
   // Use manufacturers map from Redux so we can attach full manufacturer data
   const manufacturersByIdMap = useSelector((state) => state.manufacturers.byId)
   const loggedInUser = JSON.parse(localStorage.getItem('user'))
+  const loggedInUserId = loggedInUser?.userId
   const hasSetInitialVersion = useRef(false)
 
   // Check if user is a contractor (should not see manufacturer version names)
@@ -221,7 +221,6 @@ const EditProposal = ({
   }
 
   const [formData, setFormData] = useState(defaultFormData)
-  const normalizedDesignerValue = formData?.designer == null ? '' : String(formData.designer)
   // Determine if form should be disabled (locked quote OR contractor viewing accepted quote)
   const isAccepted = formData?.status === 'Proposal accepted' || formData?.status === 'accepted'
   const isFormDisabled = !!formData?.is_locked || (isAccepted && !isAdmin)
@@ -279,82 +278,21 @@ const EditProposal = ({
   }, [requestId])
 
   // Fetch designers
-  const fetchDesigners = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get('/api/designers')
-      const designers = Array.isArray(response?.data?.users) ? response.data.users : []
-      const mapped = designers
-        .filter((designer) => designer.role === 'Manufacturers')
-        .map((designer) => ({
-          value: String(designer.id),
-          label: designer.name || designer.email || String(designer.id),
-        }))
-      setDesignerOptions(mapped)
-    } catch (error) {
-      console.error('Error fetching designers:', error)
-    }
-  }, [])
-
   useEffect(() => {
-    fetchDesigners()
-  }, [fetchDesigners])
-
-  const createNewDesigner = useCallback(
-    async (designerName) => {
-      const trimmed = String(designerName || '').trim()
-      if (!trimmed) return null
-
+    const fetchDesigners = async () => {
       try {
-        setIsCreatingDesigner(true)
-
-        const slug = trimmed.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '')
-        const tempEmail = `${slug || 'designer'}.${Date.now()}@designer.local`
-
-        const response = await axiosInstance.post('/api/users', {
-          name: trimmed,
-          email: tempEmail,
-          password: 'temppassword123',
-          role: 'Manufacturers',
-          isSalesRep: false,
-          location: null,
-          userGroup: null,
-        })
-
-        const created = response?.data?.user || response?.data
-        if (!created?.id) {
-          throw new Error('Invalid response when creating designer')
-        }
-
-        const option = { value: String(created.id), label: created.name || trimmed }
-        setDesignerOptions((prev) => [option, ...prev.filter((opt) => opt.value !== option.value)])
-
-        toast({
-          status: 'success',
-          title: t('proposals.create.customerInfo.designerCreated', 'Designer added'),
-          description: t('proposals.create.customerInfo.designerCreatedMsg', 'Designer name is now available.'),
-        })
-
-        await fetchDesigners()
-        await dispatch(fetchUsers())
-
-        return option
+        const response = await axiosInstance.get('/api/designers')
+        const designerData = response.data.users.map((designer) => ({
+          value: designer.id,
+          label: designer.name,
+        }))
+        setDesignerOptions(designerData)
       } catch (error) {
-        console.error('Error adding designer:', error)
-        toast({
-          status: 'error',
-          title: t('proposals.create.customerInfo.designerCreateError', 'Unable to add designer'),
-          description:
-            error?.response?.data?.message ||
-            error?.message ||
-            t('common.errorGeneric', 'Something went wrong'),
-        })
-        return null
-      } finally {
-        setIsCreatingDesigner(false)
+        console.error('Error fetching designers:', error)
       }
-    },
-    [fetchDesigners, toast, t],
-  )
+    }
+    fetchDesigners()
+  }, [])
 
   // Update formData when initialData changes
   useEffect(() => {
@@ -744,26 +682,86 @@ const EditProposal = ({
               <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
                 <FormControl>
                   <FormLabel htmlFor="designer">{t('common.designer', 'Designer')} *</FormLabel>
-                  <CreatableCombobox
-                    id="designer"
-                    value={designerOptions.find((option) => option.value === normalizedDesignerValue) || null}
-                    options={designerOptions}
-                    placeholder={t('common.selectDesigner', 'Select Designer')}
-                    isDisabled={isFormDisabled}
-                    onChange={(option) => {
-                      const nextValue = option ? option.value : ''
-                      updateFormData({ designer: nextValue })
-                    }}
-                    onCreateOption={createNewDesigner}
-                    isCreating={isCreatingDesigner}
-                    createOptionLabel={(name) =>
-                      t('proposals.create.customerInfo.createDesigner', {
-                        name,
-                        defaultValue: `Create designer: "${name}"`,
-                      })
-                    }
-                    noOptionsMessage={t('proposals.create.customerInfo.noDesigners', 'No designers available')}
-                  />
+                  {isCreatingDesigner ? (
+                    <HStack>
+                      <Input
+                        autoFocus
+                        value={customDesignerInput}
+                        onChange={(e) => setCustomDesignerInput(e.target.value)}
+                        placeholder={t('common.enterDesignerName', 'Enter designer name')}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && customDesignerInput.trim()) {
+                            updateFormData({ designer: customDesignerInput.trim() })
+                            setIsCreatingDesigner(false)
+                            setCustomDesignerInput('')
+                          } else if (e.key === 'Escape') {
+                            setIsCreatingDesigner(false)
+                            setCustomDesignerInput('')
+                          }
+                        }}
+                        isDisabled={isFormDisabled}
+                      />
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          if (customDesignerInput.trim()) {
+                            updateFormData({ designer: customDesignerInput.trim() })
+                            setIsCreatingDesigner(false)
+                            setCustomDesignerInput('')
+                          }
+                        }}
+                        isDisabled={isFormDisabled}
+                      >
+                        {t('common.add', 'Add')}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setIsCreatingDesigner(false)
+                          setCustomDesignerInput('')
+                        }}
+                        isDisabled={isFormDisabled}
+                      >
+                        {t('common.cancel', 'Cancel')}
+                      </Button>
+                    </HStack>
+                  ) : (
+                    <HStack>
+                      <Select
+                        id="designer"
+                        name="designer"
+                        value={formData.designer ?? ''}
+                        onChange={(e) => {
+                          if (e.target.value === '__create__') {
+                            setIsCreatingDesigner(true)
+                          } else {
+                            updateFormData({ designer: e.target.value })
+                          }
+                        }}
+                        placeholder={t('common.selectDesigner', 'Select Designer')}
+                        isDisabled={isFormDisabled}
+                        flex="1"
+                      >
+                        {designerOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                        <option value="__create__">{t('common.createNew', '+ Create New...')}</option>
+                      </Select>
+                      {formData.designer && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => updateFormData({ designer: '' })}
+                          isDisabled={isFormDisabled}
+                        >
+                          {t('common.clear', 'Clear')}
+                        </Button>
+                      )}
+                    </HStack>
+                  )}
                 </FormControl>
                 <FormControl>
                   <FormLabel htmlFor="description">
@@ -1186,9 +1184,9 @@ const EditProposal = ({
             >
               {t('common.cancel', 'Cancel')}
             </Button>
-            <Button
-              colorScheme="brand"
-              onClick={saveEditVersionName}
+            <Button 
+              colorScheme="brand" 
+              onClick={saveEditVersionName} 
               minH="44px"
               whiteSpace="normal"
               flex={{ base: '1', md: '0 1 auto' }}
@@ -1224,9 +1222,9 @@ const EditProposal = ({
             >
               {t('common.cancel', 'Cancel')}
             </Button>
-            <Button
-              colorScheme="red"
-              onClick={confirmDelete}
+            <Button 
+              colorScheme="red" 
+              onClick={confirmDelete} 
               minH="44px"
               whiteSpace="normal"
               flex={{ base: '1', md: '0 1 auto' }}

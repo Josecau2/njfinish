@@ -14,7 +14,7 @@ const AppFooter = () => {
     'linear-gradient(180deg, rgba(248, 250, 252, 0.8) 0%, rgba(226, 232, 240, 0.95) 100%)',
     'linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%)'
   )
-  
+
   const borderColor = useColorModeValue('gray.300', 'gray.600')
   const textColor = useColorModeValue('gray.700', 'gray.300')
   const linkColor = useColorModeValue('brand.600', 'brand.400')

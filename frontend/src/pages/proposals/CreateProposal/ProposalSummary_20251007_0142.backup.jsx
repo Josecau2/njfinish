@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo, useRef } from 'react'
+import React, { useEffect, useState, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -44,24 +44,19 @@ import {
   UnorderedList,
   ListItem,
   useColorModeValue,
-  useToast,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice'
-import { fetchUsers } from '../../../store/slices/userSlice'
 import { sendFormDataToBackend } from '../../../queries/proposalQueries'
 import axiosInstance from '../../../helpers/axiosInstance'
 import { useForm, Controller } from 'react-hook-form'
 import { Copy, Edit, File, List, MoreHorizontal, Trash, Trash2, Calendar } from 'lucide-react'
 import ItemSelectionContent from '../../../components/ItemSelectionContent'
-import CreatableCombobox from '../../../components/form/CreatableCombobox'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../../constants/iconSizes'
 import FileUploadSection from './FileUploadSection'
 import { setSelectVersionNew } from '../../../store/slices/selectVersionNewSlice'
 import { validateProposalSubTypeRequirements, getMissingRequirementMessages } from '../../../helpers/subTypeValidation'
 import { getContrastColor } from '../../../utils/colorUtils'
-
-const toStringValue = (value) => (value == null ? '' : String(value))
 
 const ItemSelectionStep = ({
   setFormData,
@@ -79,7 +74,6 @@ const ItemSelectionStep = ({
   const alertCancelRef = useRef(null)
   const [alertState, setAlertState] = useState({ isOpen: false, title: '', body: null, onConfirm: null })
   const customization = useSelector((state) => state.customization) || {}
-  const toast = useToast()
   const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
   const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
   const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
@@ -153,8 +147,10 @@ const ItemSelectionStep = ({
   ]
 
   const [activeTab, setActiveTab] = useState('item')
-  const { list: users, loading: usersLoading } = useSelector((state) => state.users)
+  const { list: users } = useSelector((state) => state.users)
   const loggedInUser = JSON.parse(localStorage.getItem('user'))
+  const loggedInUserId = loggedInUser.userId
+
   // Check if user is a contractor (should not see manufacturer version names)
   const isContractor = loggedInUser?.group && loggedInUser.group.group_type === 'contractor'
 
@@ -168,13 +164,11 @@ const ItemSelectionStep = ({
   const [selectedVersion, setSelectedVersion] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false)
-  const [designerChoices, setDesignerChoices] = useState([])
-  const [isCreatingDesigner, setIsCreatingDesigner] = useState(false)
 
   // React Hook Form initialization
   const defaultValues = useMemo(
     () => ({
-      designer: toStringValue(formData.designer),
+      designer: formData.designer || '',
       description: formData.description || '',
       status: formData.status || 'Draft',
       date: formData.date || '',
@@ -383,71 +377,9 @@ const ItemSelectionStep = ({
     updateFormData({ manufacturersData: [...formData.manufacturersData, copy] })
   }
 
-  const designerOptions = useMemo(
-    () =>
-      users
-        .filter((user) => user.role === 'Manufacturers')
-        .map((user) => ({ value: String(user.id), label: user.name })),
-    [users],
-  )
-
-  useEffect(() => setDesignerChoices(designerOptions), [designerOptions])
-
-  const createNewDesigner = useCallback(
-    async (designerName) => {
-      const trimmed = String(designerName || '').trim()
-      if (!trimmed) return null
-
-      try {
-        setIsCreatingDesigner(true)
-
-        const slug = trimmed.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/^\.+|\.+$/g, '')
-        const tempEmail = `${slug || 'designer'}.${Date.now()}@designer.local`
-
-        const response = await axiosInstance.post('/api/users', {
-          name: trimmed,
-          email: tempEmail,
-          password: 'temppassword123',
-          role: 'Manufacturers',
-          isSalesRep: false,
-          location: null,
-          userGroup: null,
-        })
-
-        const created = response?.data?.user || response?.data
-        if (!created?.id) {
-          throw new Error('Invalid response when creating designer')
-        }
-
-        const option = { value: String(created.id), label: created.name || trimmed }
-        setDesignerChoices((prev) => [option, ...prev.filter((opt) => opt.value !== option.value)])
-
-        toast({
-          status: 'success',
-          title: t('proposals.create.customerInfo.designerCreated', 'Designer added'),
-          description: t('proposals.create.customerInfo.designerCreatedMsg', 'Designer name is now available.'),
-        })
-
-        await dispatch(fetchUsers())
-
-        return option
-      } catch (error) {
-        console.error('Error adding designer:', error)
-        toast({
-          status: 'error',
-          title: t('proposals.create.customerInfo.designerCreateError', 'Unable to add designer'),
-          description:
-            error?.response?.data?.message ||
-            error?.message ||
-            t('common.errorGeneric', 'Something went wrong'),
-        })
-        return null
-      } finally {
-        setIsCreatingDesigner(false)
-      }
-    },
-    [dispatch, toast, t],
-  )
+  const designerOptions = users
+    .filter((user) => user.id !== loggedInUserId)
+    .map((user) => ({ value: user.id, label: user.name }))
 
   return (
     <>
@@ -477,27 +409,24 @@ const ItemSelectionStep = ({
                   control={control}
                   rules={{ required: t('proposals.create.customerInfo.validation.designer') }}
                   render={({ field }) => (
-                    <CreatableCombobox
+                    <Select
+                      {...field}
                       id="designer"
-                      value={designerChoices.find((option) => option.value === field.value) || null}
-                      options={designerChoices}
                       placeholder={t('proposals.create.customerInfo.designerPlaceholder', 'Select a designer')}
-                      onChange={(option) => {
-                        const nextValue = option ? option.value : ''
-                        field.onChange(nextValue)
-                        updateFormData({ designer: nextValue })
-                      }}
-                      onCreateOption={createNewDesigner}
-                      isLoading={usersLoading}
-                      isCreating={isCreatingDesigner}
-                      createOptionLabel={(name) =>
-                        t('proposals.create.customerInfo.createDesigner', {
-                          name,
-                          defaultValue: `Create designer: "${name}"`,
+                      onChange={(e) => {
+                        field.onChange(e.target.value)
+                        updateFormData({
+                          ...formData,
+                          designer: e.target.value,
                         })
-                      }
-                      noOptionsMessage={t('proposals.create.customerInfo.noDesigners', 'No designers available')}
-                    />
+                      }}
+                    >
+                      {designerOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </Select>
                   )}
                 />
                 <FormErrorMessage>{errors.designer?.message}</FormErrorMessage>
@@ -770,19 +699,19 @@ const ItemSelectionStep = ({
             />
           </ModalBody>
           <ModalFooter gap={3} flexWrap="wrap">
-            <Button
-              variant="ghost"
-              colorScheme="gray"
-              onClick={() => setEditModalOpen(false)}
+            <Button 
+              variant="ghost" 
+              colorScheme="gray" 
+              onClick={() => setEditModalOpen(false)} 
               minH="44px"
               whiteSpace="normal"
               flex={{ base: '1', md: '0 1 auto' }}
             >
               {t('common.cancel')}
             </Button>
-            <Button
-              colorScheme="brand"
-              onClick={saveEditVersionName}
+            <Button 
+              colorScheme="brand" 
+              onClick={saveEditVersionName} 
               minH="44px"
               whiteSpace="normal"
               flex={{ base: '1', md: '0 1 auto' }}
@@ -804,19 +733,19 @@ const ItemSelectionStep = ({
           <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} minW="44px" minH="44px" />
           <ModalBody>{t('proposals.create.summary.confirmDeleteVersion')}</ModalBody>
           <ModalFooter gap={3} flexWrap="wrap">
-            <Button
-              variant="ghost"
-              colorScheme="gray"
-              onClick={() => setDeleteModalOpen(false)}
+            <Button 
+              variant="ghost" 
+              colorScheme="gray" 
+              onClick={() => setDeleteModalOpen(false)} 
               minH="44px"
               whiteSpace="normal"
               flex={{ base: '1', md: '0 1 auto' }}
             >
               {t('common.cancel')}
             </Button>
-            <Button
-              colorScheme="red"
-              onClick={confirmDelete}
+            <Button 
+              colorScheme="red" 
+              onClick={confirmDelete} 
               minH="44px"
               whiteSpace="normal"
               flex={{ base: '1', md: '0 1 auto' }}
@@ -845,10 +774,10 @@ const ItemSelectionStep = ({
               {typeof alertState.body === 'string' ? <Text>{alertState.body}</Text> : alertState.body}
             </AlertDialogBody>
             <AlertDialogFooter gap={3} flexWrap="wrap">
-              <Button
-                ref={alertCancelRef}
-                colorScheme='brand'
-                onClick={closeAlert}
+              <Button 
+                ref={alertCancelRef} 
+                colorScheme='brand' 
+                onClick={closeAlert} 
                 minH="44px"
                 whiteSpace="normal"
                 flex={{ base: '1', md: '0 1 auto' }}

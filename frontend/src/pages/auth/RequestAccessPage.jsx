@@ -167,9 +167,9 @@ const RequestAccessPage = () => {
           <BrandLogo size={logoHeight} />
         </Box>
 
-        <Heading 
-          as="h2" 
-          size={{ base: 'lg', md: 'xl' }} 
+        <Heading
+          as="h2"
+          size={{ base: 'lg', md: 'xl' }}
           textAlign="center"
           fontWeight="bold"
           letterSpacing="tight"
@@ -177,8 +177,8 @@ const RequestAccessPage = () => {
         >
           {pageTitle}
         </Heading>
-        <Text 
-          textAlign="center" 
+        <Text
+          textAlign="center"
           color={textGray700}
           fontSize={{ base: 'sm', md: 'md' }}
           fontWeight="medium"
@@ -186,9 +186,9 @@ const RequestAccessPage = () => {
           {pageSubtitle}
         </Text>
         {pageDescription && (
-          <Text 
-            textAlign="center" 
-            color={textGray700} 
+          <Text
+            textAlign="center"
+            color={textGray700}
             fontSize={{ base: 'xs', md: 'sm' }}
           >
             {pageDescription}
@@ -197,8 +197,8 @@ const RequestAccessPage = () => {
 
         {benefits.length > 0 && (
           <Box>
-            <Text 
-              fontWeight="600" 
+            <Text
+              fontWeight="600"
               mb={2}
               fontSize={{ base: 'sm', md: 'md' }}
             >
@@ -216,8 +216,8 @@ const RequestAccessPage = () => {
         )}
 
         {successMessage && (
-          <Alert 
-            status="success" 
+          <Alert
+            status="success"
             borderRadius={{ base: 'lg', md: 'md' }}
             boxShadow="sm"
             fontSize={{ base: 'sm', md: 'md' }}
@@ -228,8 +228,8 @@ const RequestAccessPage = () => {
         )}
 
         {errorMessage && (
-          <Alert 
-            status="error" 
+          <Alert
+            status="error"
             borderRadius={{ base: 'lg', md: 'md' }}
             boxShadow="sm"
             fontSize={{ base: 'sm', md: 'md' }}
@@ -243,8 +243,8 @@ const RequestAccessPage = () => {
           <VStack spacing={{ base: 5, md: 4 }}>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} w="100%">
               <FormControl isRequired>
-                <FormLabel 
-                  htmlFor="firstName" 
+                <FormLabel
+                  htmlFor="firstName"
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
@@ -271,8 +271,8 @@ const RequestAccessPage = () => {
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel 
-                  htmlFor="lastName" 
+                <FormLabel
+                  htmlFor="lastName"
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
@@ -301,8 +301,8 @@ const RequestAccessPage = () => {
 
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} w="100%">
               <FormControl isRequired>
-                <FormLabel 
-                  htmlFor="email" 
+                <FormLabel
+                  htmlFor="email"
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
@@ -328,8 +328,8 @@ const RequestAccessPage = () => {
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel 
-                  htmlFor="phone" 
+                <FormLabel
+                  htmlFor="phone"
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
@@ -358,8 +358,8 @@ const RequestAccessPage = () => {
 
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} w="100%">
               <FormControl>
-                <FormLabel 
-                  htmlFor="city" 
+                <FormLabel
+                  htmlFor="city"
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
@@ -386,8 +386,8 @@ const RequestAccessPage = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel 
-                  htmlFor="state" 
+                <FormLabel
+                  htmlFor="state"
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
@@ -414,8 +414,8 @@ const RequestAccessPage = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel 
-                  htmlFor="zip" 
+                <FormLabel
+                  htmlFor="zip"
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
@@ -444,8 +444,8 @@ const RequestAccessPage = () => {
             </SimpleGrid>
 
             <FormControl>
-              <FormLabel 
-                htmlFor="company" 
+              <FormLabel
+                htmlFor="company"
                 fontWeight="600"
                 fontSize={{ base: 'sm', md: 'md' }}
                 mb={2}
@@ -472,8 +472,8 @@ const RequestAccessPage = () => {
             </FormControl>
 
             <FormControl>
-              <FormLabel 
-                htmlFor="message" 
+              <FormLabel
+                htmlFor="message"
                 fontWeight="600"
                 fontSize={{ base: 'sm', md: 'md' }}
                 mb={2}
@@ -524,17 +524,17 @@ const RequestAccessPage = () => {
           </VStack>
         </Box>
 
-        <Text 
-          textAlign="center" 
+        <Text
+          textAlign="center"
           fontSize={{ base: 'sm', md: 'md' }}
         >
           {copy.alreadyHaveAccess}{' '}
-          <Link 
-            as={RouterLink} 
-            to="/login" 
-            color={linkBlue} 
-            fontWeight="600" 
-            minH="44px" 
+          <Link
+            as={RouterLink}
+            to="/login"
+            color={linkBlue}
+            fontWeight="600"
+            minH="44px"
             py={2}
             _hover={{
               textDecoration: 'underline',

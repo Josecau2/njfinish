@@ -96,9 +96,9 @@ const ResetPasswordPage = () => {
           <BrandLogo size={logoHeight} />
         </Box>
 
-        <Heading 
-          as="h2" 
-          size={{ base: 'lg', md: 'xl' }} 
+        <Heading
+          as="h2"
+          size={{ base: 'lg', md: 'xl' }}
           textAlign="center"
           fontWeight="bold"
           letterSpacing="tight"
@@ -106,8 +106,8 @@ const ResetPasswordPage = () => {
         >
           {loginBrand.resetTitle || t('auth.resetPassword.formTitle')}
         </Heading>
-        <Text 
-          textAlign="center" 
+        <Text
+          textAlign="center"
           color={textGray700}
           fontSize={{ base: 'sm', md: 'md' }}
           fontWeight="medium"
@@ -116,8 +116,8 @@ const ResetPasswordPage = () => {
         </Text>
 
         {message && (
-          <Alert 
-            status="success" 
+          <Alert
+            status="success"
             borderRadius={{ base: 'lg', md: 'md' }}
             boxShadow="sm"
             fontSize={{ base: 'sm', md: 'md' }}
@@ -128,8 +128,8 @@ const ResetPasswordPage = () => {
         )}
 
         {error && (
-          <Alert 
-            status="error" 
+          <Alert
+            status="error"
             borderRadius={{ base: 'lg', md: 'md' }}
             boxShadow="sm"
             fontSize={{ base: 'sm', md: 'md' }}
@@ -142,8 +142,8 @@ const ResetPasswordPage = () => {
         <Box as="form" onSubmit={handleReset}>
           <VStack spacing={{ base: 5, md: 4 }}>
             <FormControl isRequired>
-              <FormLabel 
-                htmlFor="password" 
+              <FormLabel
+                htmlFor="password"
                 fontWeight="600"
                 fontSize={{ base: 'sm', md: 'md' }}
                 mb={2}
@@ -191,15 +191,15 @@ const ResetPasswordPage = () => {
           </VStack>
         </Box>
 
-        <Text 
+        <Text
           textAlign="center"
           fontSize={{ base: 'sm', md: 'md' }}
         >
-          <Link 
-            as={RouterLink} 
-            to="/login" 
-            color={linkBlue} 
-            minH="44px" 
+          <Link
+            as={RouterLink}
+            to="/login"
+            color={linkBlue}
+            minH="44px"
             py={2}
             fontWeight="600"
             _hover={{

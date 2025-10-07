@@ -276,18 +276,18 @@ const baseSemanticTokens = {
 
     // Card backgrounds with more pronounced gradients
     'card.bg': { default: '#ffffff', _dark: '#1e293b' },
-    'card.bgGradient': { 
-      default: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)', 
-      _dark: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' 
+    'card.bgGradient': {
+      default: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
+      _dark: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
     },
     'card.border': { default: '#e2e8f0', _dark: 'rgba(255, 255, 255, 0.12)' },
     'card.shadow': { default: 'rgba(15, 23, 42, 0.12)', _dark: 'rgba(0, 0, 0, 0.4)' },
-    
+
     // Modal backgrounds with more pronounced gradients
     'modal.bg': { default: '#ffffff', _dark: '#1e293b' },
-    'modal.bgGradient': { 
-      default: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)', 
-      _dark: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' 
+    'modal.bgGradient': {
+      default: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
+      _dark: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
     },
     'modal.border': { default: '#e2e8f0', _dark: 'rgba(255, 255, 255, 0.12)' },
     'modal.borderInternal': { default: '#e2e8f0', _dark: 'rgba(255, 255, 255, 0.08)' },    'input.bg': { default: '#ffffff', _dark: '#1e293b' },

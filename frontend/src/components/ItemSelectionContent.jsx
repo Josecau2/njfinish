@@ -433,33 +433,33 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     // Calculate safe transform value to prevent items from disappearing
     const carouselTransform = useMemo(() => {
         if (stylesMeta.length === 0) return '0px';
-        
+
         // Use pixel-based calculations for fixed-width items
         const itemWidth = styleImageContainerWidth; // Fixed width per item (140px base, 180px md, 200px lg)
         const gap = 12; // 0.75rem = 12px gap between items
         const itemTotalWidth = itemWidth + gap;
-        
+
         const safeItemsPerPage = Math.max(1, itemsPerPage);
         const maxIndex = Math.max(0, stylesMeta.length - safeItemsPerPage);
         const safeIndex = Math.max(0, Math.min(carouselCurrentIndex, maxIndex));
-        
+
         // Base transform in pixels
         const baseTransformPx = -(safeIndex * itemTotalWidth);
-        
+
         if (isDragging) {
             // Apply drag offset with rubber-band limits
             const maxTranslatePx = maxIndex * itemTotalWidth;
             const totalTransformPx = baseTransformPx + dragOffset;
-            
+
             // Clamp with rubber-band effect at boundaries
             const maxRubberBand = itemWidth * 0.3; // 30% of item width
             const clampedTransform = Math.max(
-                -maxTranslatePx - maxRubberBand, 
+                -maxTranslatePx - maxRubberBand,
                 Math.min(maxRubberBand, totalTransformPx)
             );
             return `${clampedTransform}px`;
         }
-        
+
         return `${baseTransformPx}px`;
     }, [carouselCurrentIndex, itemsPerPage, isDragging, dragOffset, stylesMeta.length, styleImageContainerWidth]);
 
@@ -529,7 +529,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         const maxDragDistance = itemWidth * 1.5; // Allow dragging up to 1.5 items
 
         let newOffset = deltaX;
-        
+
         // Clamp to max drag distance
         newOffset = Math.max(-maxDragDistance, Math.min(maxDragDistance, newOffset));
 
@@ -543,7 +543,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         } else {
             // In middle - check if we're approaching boundaries
             const projectedIndex = carouselCurrentIndex - (newOffset / itemTotalWidth);
-            
+
             if (projectedIndex < -0.5) {
                 // Would go before first item
                 newOffset = newOffset * 0.4;

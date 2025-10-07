@@ -147,9 +147,9 @@ const LoginPage = () => {
             <Box textAlign="center" mb={{ base: 2, md: 0 }}>
               <BrandLogo size={logoHeight} />
             </Box>
-            <Heading 
-              as="h2" 
-              size={{ base: 'lg', md: 'xl' }} 
+            <Heading
+              as="h2"
+              size={{ base: 'lg', md: 'xl' }}
               textAlign="center"
               fontWeight="bold"
               letterSpacing="tight"
@@ -157,8 +157,8 @@ const LoginPage = () => {
             >
               {loginBrand.title}
             </Heading>
-            <Text 
-              textAlign="center" 
+            <Text
+              textAlign="center"
               color={textGray700}
               fontSize={{ base: 'sm', md: 'md' }}
               fontWeight="medium"
@@ -167,8 +167,8 @@ const LoginPage = () => {
             </Text>
 
             {noticeMessage && (
-              <Alert 
-                status="info" 
+              <Alert
+                status="info"
                 borderRadius={{ base: 'lg', md: 'md' }}
                 boxShadow="sm"
                 fontSize={{ base: 'sm', md: 'md' }}
@@ -179,8 +179,8 @@ const LoginPage = () => {
             )}
 
             {errorMessage && (
-              <Alert 
-                status="error" 
+              <Alert
+                status="error"
                 borderRadius={{ base: 'lg', md: 'md' }}
                 boxShadow="sm"
                 fontSize={{ base: 'sm', md: 'md' }}
@@ -193,8 +193,8 @@ const LoginPage = () => {
             <Box as="form" onSubmit={handleSubmit}>
               <VStack spacing={{ base: 5, md: 4 }}>
                 <FormControl isRequired>
-                  <FormLabel 
-                    htmlFor="email" 
+                  <FormLabel
+                    htmlFor="email"
                     fontWeight="600"
                     fontSize={{ base: 'sm', md: 'md' }}
                     mb={2}
@@ -221,8 +221,8 @@ const LoginPage = () => {
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel 
-                    htmlFor="password" 
+                  <FormLabel
+                    htmlFor="password"
                     fontWeight="600"
                     fontSize={{ base: 'sm', md: 'md' }}
                     mb={2}
@@ -261,10 +261,10 @@ const LoginPage = () => {
                   </InputGroup>
                 </FormControl>
 
-                <Flex 
-                  justify="space-between" 
-                  align="center" 
-                  w="100%" 
+                <Flex
+                  justify="space-between"
+                  align="center"
+                  w="100%"
                   flexDirection={{ base: 'column', sm: 'row' }}
                   gap={{ base: 3, sm: 0 }}
                 >
@@ -283,12 +283,12 @@ const LoginPage = () => {
                     </Checkbox>
                   )}
                   {loginBrand.showForgotPassword && (
-                    <Link 
-                      as={RouterLink} 
-                      to="/forgot-password" 
-                      color={linkBlue} 
-                      minH="44px" 
-                      display="flex" 
+                    <Link
+                      as={RouterLink}
+                      to="/forgot-password"
+                      color={linkBlue}
+                      minH="44px"
+                      display="flex"
                       alignItems="center"
                       fontSize={{ base: 'sm', md: 'md' }}
                       fontWeight="600"
@@ -322,16 +322,16 @@ const LoginPage = () => {
               </VStack>
             </Box>
 
-            <Text 
+            <Text
               textAlign="center"
               fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('auth.noAccountPrompt')}{' '}
-              <Link 
-                as={RouterLink} 
-                to="/request-access" 
-                color={linkBlue} 
-                minH="44px" 
+              <Link
+                as={RouterLink}
+                to="/request-access"
+                color={linkBlue}
+                minH="44px"
                 py={2}
                 fontWeight="600"
                 _hover={{

@@ -99,7 +99,7 @@ Your app now has a sophisticated gradient system that automatically adapts to yo
 ### Using CSS Variables Directly
 ```jsx
 // In your components
-<Box 
+<Box
   bgGradient="linear-gradient(135deg, var(--sidebar-bg) 0%, var(--sidebar-bg-light) 100%)"
 >
   Custom gradient box
@@ -114,7 +114,7 @@ Your app now has a sophisticated gradient system that automatically adapts to yo
 </Box>
 
 // With CSS variables
-<Box 
+<Box
   sx={{
     background: 'var(--gradient-accent)'
   }}
@@ -225,7 +225,7 @@ Gradients automatically adapt to color mode:
 
 ```jsx
 // Semantic tokens handle light/dark automatically
-'card.bgGradient': { 
+'card.bgGradient': {
   default: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',  // Light mode
   _dark: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'     // Dark mode
 }

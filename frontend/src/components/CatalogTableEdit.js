@@ -614,15 +614,15 @@ const CatalogTableEdit = ({
                   >
                     <Flex align="center" justify="space-between" w="full">
                       <Box flex="1" pr={2}>
-                        <Text 
-                          fontWeight="bold" 
+                        <Text
+                          fontWeight="bold"
                           fontSize={{ base: "md", md: "sm" }}
                           color={useColorModeValue('blue.600', 'blue.300')}
                           mb={0.5}
                         >
                           {item.code}
                         </Text>
-                        <Text 
+                        <Text
                           fontSize={{ base: "sm", md: "xs" }}
                           color={useColorModeValue('gray.700', 'gray.300')}
                           noOfLines={2}

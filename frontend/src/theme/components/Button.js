@@ -168,7 +168,7 @@ export const Button = {
       _hover: {
         shadow: 'lg',
         transform: 'translateY(-2px)',
-        
+
         _before: {
           opacity: 1,
         },

@@ -76,7 +76,7 @@ export const Card = {
         shadow: 'md',
         border: '1px solid',
         borderColor: 'border.subtle',
-        
+
         _hover: {
           shadow: 'lg',
           transform: 'translateY(-2px)',
@@ -92,7 +92,7 @@ export const Card = {
         border: '1px solid',
         borderColor: 'border.default',
         shadow: 'none',
-        
+
         _hover: {
           borderColor: 'border.strong',
           shadow: 'sm',
@@ -107,7 +107,7 @@ export const Card = {
         bgGradient: 'linear-gradient(135deg, var(--chakra-colors-surface-subtle) 0%, var(--chakra-colors-surface-hover) 100%)',
         border: 'none',
         shadow: 'none',
-        
+
         _hover: {
           bgGradient: 'linear-gradient(135deg, var(--chakra-colors-surface-hover) 0%, var(--chakra-colors-surface-active) 100%)',
         },
