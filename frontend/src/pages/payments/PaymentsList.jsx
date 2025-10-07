@@ -499,7 +499,7 @@ const PaymentsList = ({ isContractor }) => {
                   min: { value: 1, message: t('payments.create.invalidOrderId', 'Please enter a valid order ID') },
                 }}
                 render={({ field }) => (
-                  <Input {...field} type="number" placeholder={t('payments.create.orderIdPlaceholder', 'Enter order ID')} min={1} />
+                  <Input {...field} id="create-payment-order-id" name={field.name} type="number" placeholder={t('payments.create.orderIdPlaceholder', 'Enter order ID')} min={1} />
                 )}
               />
               <FormErrorMessage>{createPaymentForm.formState.errors.orderId?.message}</FormErrorMessage>
@@ -531,7 +531,7 @@ const PaymentsList = ({ isContractor }) => {
                 control={gatewayForm.control}
                 rules={{ required: t('payments.create.gatewayRequired', 'Select a payment type') }}
                 render={({ field }) => (
-                  <RadioGroup {...field}>
+                  <RadioGroup {...field} name={field.name} id="create-payment-gateway">
                     <Stack>
                       <Radio value="stripe">{t('payments.gateway.stripe', 'Stripe')}</Radio>
                       <Radio value="manual">{t('payments.gateway.manual', 'Manual')}</Radio>
@@ -570,7 +570,7 @@ const PaymentsList = ({ isContractor }) => {
                   control={applyPaymentForm.control}
                   rules={{ required: t('payments.apply.methodRequired', 'Payment method is required') }}
                   render={({ field }) => (
-                    <RadioGroup {...field}>
+                    <RadioGroup {...field} name={field.name} id="apply-payment-method">
                       <Stack>
                         <Radio value="cash">{t('payments.apply.methods.cash', 'Cash')}</Radio>
                         <Radio value="credit_card">{t('payments.apply.methods.creditCard', 'Credit Card')}</Radio>
@@ -596,7 +596,7 @@ const PaymentsList = ({ isContractor }) => {
                         : false
                     }}
                     render={({ field }) => (
-                      <Input {...field} placeholder={t('payments.apply.checkNumberPlaceholder', 'Enter check number')} />
+                      <Input {...field} id="apply-payment-check-number" name={field.name} placeholder={t('payments.apply.checkNumberPlaceholder', 'Enter check number')} />
                     )}
                   />
                   <FormErrorMessage>{applyPaymentForm.formState.errors.checkNumber?.message}</FormErrorMessage>

@@ -2,7 +2,7 @@ import StandardCard from './StandardCard'
 import { TableCard } from './TableCard'
 import { useEffect, useMemo, useRef, useState, useDeferredValue, startTransition, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, AlertDescription, AlertIcon, Box, Button, Checkbox, CloseButton, Divider, Flex, Heading, HStack, Icon, IconButton, Image, Input, NumberInput, NumberInputField, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useColorModeValue } from '@chakra-ui/react';
+import { Alert, AlertDescription, AlertIcon, Box, Button, Checkbox, CloseButton, Divider, Flex, Heading, HStack, Icon, IconButton, Image, Input, NumberInput, NumberInputField, Stack, Switch, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useBreakpointValue, useColorModeValue } from '@chakra-ui/react';
 import { Settings, Home, Brush, ChevronLeft, ChevronRight, List } from 'lucide-react';
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 import ModificationBrowserModal from './model/ModificationBrowserModal'
@@ -69,6 +69,12 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
 
     // Dark mode colors
     const bgGray50 = useColorModeValue("gray.50", "gray.800");
+    const summaryTableMaxWidth = useBreakpointValue({ base: '100%', md: '440px', lg: '500px' }) || '100%';
+    const styleCarouselMinHeight = useBreakpointValue({ base: '180px', md: '200px', lg: '210px' }) || '200px';
+    const styleImageContainerWidth = useBreakpointValue({ base: 140, md: 180, lg: 200 }) || 180;
+    const styleImageContainerHeight = useBreakpointValue({ base: 120, md: 160, lg: 180 }) || 160;
+    const styleImageMaxHeight = useBreakpointValue({ base: 100, md: 140, lg: 160 }) || 140;
+    const styleImagePadding = useBreakpointValue({ base: 2, md: 2.5 }) || 2;
     const colorGray500 = useColorModeValue("gray.500", "gray.400");
     const colorGray600 = useColorModeValue("gray.600", "gray.400");
     const iconBlue = useColorModeValue("blue.500", "blue.300");
@@ -104,6 +110,12 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const [itemsPerPage, setItemsPerPage] = useState(4); // Desktop default
     const [touchStart, setTouchStart] = useState(null);
     const [touchEnd, setTouchEnd] = useState(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragOffset, setDragOffset] = useState(0);
+    const [transitionEnabled, setTransitionEnabled] = useState(true);
+    const [wasDrag, setWasDrag] = useState(false);
+    const carouselRef = useRef(null);
+    const carouselContainerRef = useRef(null); // For non-passive touch events
     // Stable baseline for comparison cards (prevents drift when switching styles) - no longer used
     // const [comparisonBaseline, setComparisonBaseline] = useState({ styleId: null, stylePrice: null });
     const [isStylesCollapsed, setIsStylesCollapsed] = useState(false); // New state for collapse/expand
@@ -392,43 +404,194 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         setCarouselCurrentIndex(0);
     }, [fetchedCollections]);
 
-    // Carousel navigation functions
+    // Carousel navigation functions with proper boundary checking
     const nextSlide = () => {
         const maxIndex = Math.max(0, stylesMeta.length - itemsPerPage);
-        setCarouselCurrentIndex(prev => Math.min(prev + 1, maxIndex));
+        setCarouselCurrentIndex(prev => {
+            const nextIndex = prev + itemsPerPage;
+            // Snap to exact end if we would overshoot
+            return nextIndex > maxIndex ? maxIndex : nextIndex;
+        });
     };
 
-    const prevSlide = () => setCarouselCurrentIndex(prev => Math.max(prev - 1, 0));
+    const prevSlide = () => setCarouselCurrentIndex(prev => {
+        const nextIndex = prev - itemsPerPage;
+        // Snap to start if we would undershoot
+        return nextIndex < 0 ? 0 : nextIndex;
+    });
 
-    const canGoNext = () => carouselCurrentIndex < stylesMeta.length - itemsPerPage;
+    const canGoNext = () => {
+        if (stylesMeta.length <= itemsPerPage) return false; // All items visible
+        return carouselCurrentIndex < stylesMeta.length - itemsPerPage;
+    };
 
     const canGoPrev = () => carouselCurrentIndex > 0;
 
-    // Touch swipe handlers for mobile carousel
+    // Calculate safe transform value to prevent items from disappearing
+    const carouselTransform = useMemo(() => {
+        const maxIndex = Math.max(0, stylesMeta.length - itemsPerPage);
+        const safeIndex = Math.max(0, Math.min(carouselCurrentIndex, maxIndex));
+        const baseTransform = -(safeIndex * (100 / itemsPerPage));
+
+        if (isDragging) {
+            // Clamp total transform to prevent items from disappearing
+            const containerWidth = carouselRef.current?.offsetWidth || window.innerWidth;
+            const itemWidth = containerWidth / itemsPerPage;
+            const maxTranslate = maxIndex * (100 / itemsPerPage);
+
+            // Calculate pixel offset as percentage to combine with base transform
+            const pixelOffsetPercent = (dragOffset / containerWidth) * 100;
+            const totalTransform = baseTransform + pixelOffsetPercent;
+
+            // Clamp the final value to valid range
+            const clampedTransform = Math.max(-maxTranslate - 20, Math.min(20, totalTransform));
+            return `${clampedTransform}%`;
+        }
+
+        return `${baseTransform}%`;
+    }, [carouselCurrentIndex, itemsPerPage, isDragging, dragOffset, stylesMeta.length]);
+
+    // Enhanced touch swipe handlers for smooth mobile carousel with live tracking
     const minSwipeDistance = 50;
 
-    const onTouchStart = (e) => {
+    const onTouchStart = useCallback((e) => {
+        // Only handle single touch
+        if (e.touches.length > 1) return;
+
+        // Prevent page scroll and browser gestures during carousel drag
+        e.preventDefault();
+
         setTouchEnd(null);
         setTouchStart(e.targetTouches[0].clientX);
-    };
+        setIsDragging(true);
+        setTransitionEnabled(false); // Disable transition during drag
+        setDragOffset(0);
+    }, []);
 
-    const onTouchMove = (e) => {
-        setTouchEnd(e.targetTouches[0].clientX);
-    };
+    const onTouchMove = useCallback((e) => {
+        // Only handle single touch
+        if (e.touches.length > 1) return;
 
-    const onTouchEnd = () => {
-        if (!touchStart || !touchEnd) return;
+        if (!touchStart || !isDragging) return;
+
+        // Prevent scrolling while dragging carousel
+        e.preventDefault();
+
+        const currentTouch = e.targetTouches[0].clientX;
+        const diff = currentTouch - touchStart;
+        setTouchEnd(currentTouch);
+
+        // Calculate boundaries
+        const containerWidth = carouselRef.current?.offsetWidth || window.innerWidth;
+        const itemWidth = containerWidth / itemsPerPage;
+        const maxIndex = Math.max(0, stylesMeta.length - itemsPerPage);
+        const maxDragDistance = itemWidth * 1.2; // Maximum 1.2 items worth of drag
+
+        // Strict boundaries - prevent dragging beyond limits with clamping
+        let newOffset = diff;
+
+        // Clamp the drag offset to prevent extreme values
+        newOffset = Math.max(-maxDragDistance, Math.min(maxDragDistance, newOffset));
+
+        // At the start (leftmost position)
+        if (carouselCurrentIndex === 0 && newOffset > 0) {
+            // Apply strong resistance when trying to drag right at start
+            newOffset = newOffset * 0.2;
+        }
+        // At the end (rightmost position)
+        else if (carouselCurrentIndex >= maxIndex && newOffset < 0) {
+            // Apply strong resistance when trying to drag left at end
+            newOffset = newOffset * 0.2;
+        }
+        // Near boundaries in middle positions
+        else {
+            const projectedIndex = carouselCurrentIndex - (newOffset / itemWidth);
+
+            // Approaching start
+            if (projectedIndex < -0.5) {
+                newOffset = newOffset * 0.3;
+            }
+            // Approaching end
+            else if (projectedIndex > maxIndex + 0.5) {
+                newOffset = newOffset * 0.3;
+            }
+        }
+
+        setDragOffset(newOffset);
+    }, [touchStart, isDragging, itemsPerPage, stylesMeta.length, carouselCurrentIndex]);
+
+    const onTouchEnd = useCallback(() => {
+        if (!touchStart || !touchEnd || !isDragging) {
+            setIsDragging(false);
+            setDragOffset(0);
+            setTransitionEnabled(true);
+            return;
+        }
+
         const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
+        const threshold = 50; // Minimum distance to trigger page change
 
-        if (isLeftSwipe && canGoNext()) {
-            nextSlide();
+        // Determine if this was a drag or tap
+        const dragDistance = Math.abs(distance);
+        setWasDrag(dragDistance > 10);
+
+        setTransitionEnabled(true); // Re-enable transition for snap
+        setIsDragging(false);
+        setDragOffset(0);
+
+        // Determine if we should move to next/prev page based on swipe distance
+        if (Math.abs(distance) > threshold) {
+            if (distance > 0 && canGoNext()) {
+                // Swiped left - go to next
+                nextSlide();
+            } else if (distance < 0 && canGoPrev()) {
+                // Swiped right - go to previous
+                prevSlide();
+            }
         }
-        if (isRightSwipe && canGoPrev()) {
-            prevSlide();
-        }
-    };
+
+        // Reset touch states
+        setTouchStart(null);
+        setTouchEnd(null);
+
+        // Clear drag flag after delay
+        setTimeout(() => setWasDrag(false), 300);
+    }, [touchStart, touchEnd, isDragging, canGoNext, canGoPrev, nextSlide, prevSlide]);
+
+    const onTouchCancel = useCallback(() => {
+        // Clean up state if touch is interrupted (notification, call, etc.)
+        setIsDragging(false);
+        setDragOffset(0);
+        setTransitionEnabled(true);
+        setTouchStart(null);
+        setTouchEnd(null);
+        setWasDrag(false);
+    }, []);
+
+    // Attach touch event listeners with { passive: false } to allow preventDefault()
+    useEffect(() => {
+        const container = carouselContainerRef.current;
+        if (!container) return;
+
+        // Use the existing handlers defined above
+        const handleTouchStart = (e) => onTouchStart(e);
+        const handleTouchMove = (e) => onTouchMove(e);
+        const handleTouchEnd = (e) => onTouchEnd(e);
+        const handleTouchCancel = (e) => onTouchCancel(e);
+
+        // Add listeners with passive: false to allow preventDefault()
+        container.addEventListener('touchstart', handleTouchStart, { passive: false });
+        container.addEventListener('touchmove', handleTouchMove, { passive: false });
+        container.addEventListener('touchend', handleTouchEnd, { passive: false });
+        container.addEventListener('touchcancel', handleTouchCancel, { passive: false });
+
+        return () => {
+            container.removeEventListener('touchstart', handleTouchStart);
+            container.removeEventListener('touchmove', handleTouchMove);
+            container.removeEventListener('touchend', handleTouchEnd);
+            container.removeEventListener('touchcancel', handleTouchCancel);
+        };
+    }, [onTouchStart, onTouchMove, onTouchEnd, onTouchCancel]);
 
     // Atomic totals cache (cents) per style for driving the breakdown table, mirroring Edit
     // Shape: { epoch: number, key: string, entries: { [styleId]: { result: { partsCents, assemblyCents, modsCents, customCents, subtotalBeforeDiscountCents, discountCents, totalAfterDiscountCents, deliveryCents, taxRatePct, taxCents, grandTotalCents } } } }
@@ -1577,32 +1740,43 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                 gap={4}
                                 align="flex-start"
                             >
-                                <Box
-                                    w="100px"
-                                    flexShrink={0}
-                                >
-                                    <Image
-                                        src={
-                                            selectedStyleData.styleVariants?.[0]?.image
-                                                ? `${api_url}/uploads/images/${selectedStyleData.styleVariants[0].image}`
-                                                : '/images/nologo.png'
-                                        }
-                                        alt="Selected Style"
-                                        w="100%"
-                                        h="240px"
-                                        objectFit="contain"
-                                        borderRadius="10px"
+                                <Box flexShrink={0}>
+                                    <Box
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        maxW={`${styleImageContainerWidth}px`}
+                                        maxH={`${styleImageContainerHeight}px`}
+                                        mx="auto"
                                         bg={bgGray50}
-                                        onError={(e) => {
-                                            const fname = selectedStyleData.styleVariants?.[0]?.image;
-                                            if (fname && !e.target.dataset.fallbackTried) {
-                                                e.target.dataset.fallbackTried = '1';
-                                                e.target.src = `${api_url}/uploads/manufacturer_catalogs/${fname}`;
-                                            } else {
-                                                e.target.src = '/images/nologo.png';
+                                        borderRadius="md"
+                                        borderWidth="1px"
+                                        borderColor={styleCardBorderSelected}
+                                        p={styleImagePadding}
+                                    >
+                                        <Image
+                                            src={
+                                                selectedStyleData.styleVariants?.[0]?.image
+                                                    ? `${api_url}/uploads/images/${selectedStyleData.styleVariants[0].image}`
+                                                    : '/images/nologo.png'
                                             }
-                                        }}
-                                    />
+                                            alt={selectedStyleData.styleVariants?.[0]?.shortName || selectedStyleData.style}
+                                            maxH={`${styleImageMaxHeight}px`}
+                                            maxW="100%"
+                                            w="auto"
+                                            h="auto"
+                                            objectFit="contain"
+                                            onError={(e) => {
+                                                const fname = selectedStyleData.styleVariants?.[0]?.image;
+                                                if (fname && !e.target.dataset.fallbackTried) {
+                                                    e.target.dataset.fallbackTried = '1';
+                                                    e.target.src = `${api_url}/uploads/manufacturer_catalogs/${fname}`;
+                                                } else {
+                                                    e.target.src = '/images/nologo.png';
+                                                }
+                                            }}
+                                        />
+                                    </Box>
                                 </Box>
                                 <Stack
                                     spacing={6}
@@ -1730,7 +1904,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                 w="100%"
                                 overflowX="hidden"
                                 overflowY="visible"
-                                minH={isStylesCollapsed ? '120px' : '320px'}
+                                minH={isStylesCollapsed ? '120px' : styleCarouselMinHeight}
                             >
                                 {collectionsLoading ? (
                                     <Text py={4} color={colorGray500}>
@@ -1785,15 +1959,30 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                             </Stack>
                                         ) : (
                                             <Box
+                                                ref={(node) => {
+                                                    carouselRef.current = node;
+                                                    carouselContainerRef.current = node;
+                                                }}
                                                 display="flex"
-                                                gap="1rem"
+                                                gap={{ base: '0.6rem', md: '0.85rem' }}
                                                 flexWrap={{ base: 'nowrap', md: 'wrap' }}
-                                                transform={{ base: `translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`, md: 'none' }}
-                                                transition="transform 0.3s ease-in-out"
-                                                width={{ base: stylesMeta.length > itemsPerPage ? `${Math.ceil(stylesMeta.length / itemsPerPage) * 100}%` : '100%', md: '100%' }}
-                                                onTouchStart={onTouchStart}
-                                                onTouchMove={onTouchMove}
-                                                onTouchEnd={onTouchEnd}
+                                                transform={{
+                                                    base: `translateX(${carouselTransform})`,
+                                                    md: 'none'
+                                                }}
+                                                transition={transitionEnabled ? 'transform 0.3s ease-out' : 'none'}
+                                                width={{
+                                                    base: stylesMeta.length > itemsPerPage
+                                                        ? `${(stylesMeta.length / itemsPerPage) * 100}%`
+                                                        : '100%',
+                                                    md: '100%'
+                                                }}
+                                                style={{
+                                                    touchAction: 'pan-y pinch-zoom', // Allow vertical scrolling and zoom
+                                                    userSelect: 'none', // Prevent text selection during drag
+                                                    WebkitUserSelect: 'none',
+                                                    WebkitTapHighlightColor: 'transparent', // Remove tap highlight
+                                                }}
                                             >
                                                 {stylesMeta.map((styleItem, index) => {
                                                     const variant = styleItem.styleVariants?.[0];
@@ -1809,33 +1998,60 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                             opacity={disabled ? 0.5 : 1}
                                                             transition="transform 0.2s ease"
                                                             flexShrink={0}
-                                                            onClick={() => !disabled && handleStyleSelect(styleItem.id)}
-                                                            _hover={disabled ? {} : { transform: 'scale(1.02)' }}
-                                                        >
-                                                            <Image
-                                                                src={
-                                                                    variant?.image
-                                                                        ? `${api_url}/uploads/images/${variant.image}`
-                                                                        : '/images/nologo.png'
+                                                            width={{
+                                                                base: `calc(${100 / itemsPerPage}% - ${(itemsPerPage - 1) * 0.6 / itemsPerPage}rem)`,
+                                                                md: 'auto'
+                                                            }}
+                                                            onClick={(e) => {
+                                                                // Prevent ghost clicks after drag
+                                                                if (wasDrag || isDragging) {
+                                                                    e.preventDefault();
+                                                                    return;
                                                                 }
-                                                                alt={variant?.shortName || styleItem.style}
-                                                                w="140px"
-                                                                h="140px"
-                                                                objectFit="contain"
-                                                                borderRadius="md"
+                                                                if (!disabled) handleStyleSelect(styleItem.id);
+                                                            }}
+                                                            _hover={disabled ? {} : { transform: 'scale(1.02)' }}
+                                                            _active={disabled ? {} : {
+                                                                transform: 'scale(0.98)',
+                                                                transition: 'transform 0.1s ease-out'
+                                                            }}
+                                                        >
+                                                            <Box
+                                                                display="flex"
+                                                                alignItems="center"
+                                                                justifyContent="center"
+                                                                maxW={`${styleImageContainerWidth}px`}
+                                                                maxH={`${styleImageContainerHeight}px`}
+                                                                mx="auto"
                                                                 bg={bgGray50}
+                                                                borderRadius="md"
                                                                 borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
                                                                 borderStyle="solid"
                                                                 borderColor={styleItem.id === selectedStyleData?.id ? 'blue.500' : 'gray.200'}
-                                                                onError={(e) => {
-                                                                    if (variant?.image && !e.target.dataset.fallbackTried) {
-                                                                        e.target.dataset.fallbackTried = '1';
-                                                                        e.target.src = `${api_url}/uploads/manufacturer_catalogs/${variant.image}`;
-                                                                    } else {
-                                                                        e.target.src = '/images/nologo.png';
+                                                                p={styleImagePadding}
+                                                            >
+                                                                <Image
+                                                                    src={
+                                                                        variant?.image
+                                                                            ? `${api_url}/uploads/images/${variant.image}`
+                                                                            : '/images/nologo.png'
                                                                     }
-                                                                }}
-                                                            />
+                                                                    alt={variant?.shortName || styleItem.style}
+                                                                    maxH={`${styleImageMaxHeight}px`}
+                                                                    maxW="100%"
+                                                                    w="auto"
+                                                                    h="auto"
+                                                                    objectFit="contain"
+                                                                    onError={(e) => {
+                                                                        if (variant?.image && !e.target.dataset.fallbackTried) {
+                                                                            e.target.dataset.fallbackTried = '1';
+                                                                            e.target.src = `${api_url}/uploads/manufacturer_catalogs/${variant.image}`;
+                                                                        } else {
+                                                                            e.target.src = '/images/nologo.png';
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </Box>
                                                             <Box
                                                                 mt={1.5}
                                                                 px={2}
@@ -2080,12 +2296,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 </Box>
             )}
             {pricingReady && (
-                <Flex
-                    mt={5}
-                    mb={5}
-                    justify="center"
-                >
-                    <Box w="full" maxW="420px" overflowX="auto">
+                <Flex mt={5} mb={5} justify="center">
+                    <TableCard cardProps={{ w: 'full', maxW: summaryTableMaxWidth }} containerProps={{ overflowX: 'auto' }}>
                         <Table variant="simple" size="sm">
                             <Tbody>
                                 <Tr>
@@ -2182,7 +2394,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                 </Tr>
                             </Tbody>
                         </Table>
-                    </Box>
+                    </TableCard>
                 </Flex>
             )}
 

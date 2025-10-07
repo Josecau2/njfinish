@@ -1,6 +1,7 @@
 const Customization = require('../models/Customization')
 const PdfCustomization = require('../models/PdfCustomization')
 const { sanitizeHtml } = require('../utils/htmlSanitizer')
+const { generatePdfBuffer } = require('../utils/pdfGenerator')
 const { regenerateBrandSnapshot } = require('../server/branding/regenerateBrandSnapshot')
 
 exports.getCustomization = async (req, res) => {
@@ -128,80 +129,19 @@ exports.getCustomizationdeletelogo = async (req, res) => {
 
 exports.generatepdf = async (req, res) => {
   try {
-    console.log('PDF Generation - Starting, checking imports...');
-    const { getPuppeteer } = require('../utils/puppeteerLauncher');
-    const { html, options } = req.body;
+    const { html, options } = req.body || {};
+    const pdfBuffer = await generatePdfBuffer(html, options);
 
-    if (!html) {
-      return res.status(400).json({ error: 'HTML content is required' });
-    }
-
-    console.log('PDF Generation - Starting...');
-
-    const result = getPuppeteer();
-    console.log('PDF Generation - getPuppeteer result:', {
-      hasPuppeteer: !!result.puppeteer,
-      launchOptions: result.launchOptions
-    });
-
-    const { puppeteer, launchOptions } = result;
-
-    console.log('PDF Generation - Launch options:', launchOptions);
-
-    let browser;
-    try {
-      console.log('PDF Generation - About to launch browser with options:', launchOptions);
-      browser = await puppeteer.launch(launchOptions);
-      console.log('PDF Generation - Browser launched successfully');
-
-      const page = await browser.newPage();
-      console.log('PDF Generation - New page created');
-
-      // Set viewport and user agent for better rendering
-      await page.setViewport({ width: 1200, height: 800 });
-      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
-
-      await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 });
-      console.log('PDF Generation - HTML content set');
-
-      // Default PDF options
-      const pdfOptions = {
-        format: 'A4',
-        margin: {
-          top: '20mm',
-          right: '20mm',
-          bottom: '20mm',
-          left: '20mm'
-        },
-        printBackground: true,
-        preferCSSPageSize: false,
-        ...options
-      };
-
-      console.log('PDF Generation - Generating PDF with options:', pdfOptions);
-      const pdf = await page.pdf(pdfOptions);
-      console.log('PDF Generation - PDF generated successfully, size:', pdf.length);
-
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename="document.pdf"');
-      res.send(pdf);
-
-    } catch (pageError) {
-      console.error('PDF Generation - Page/PDF error:', pageError);
-      throw pageError;
-    } finally {
-      if (browser) {
-        await browser.close();
-        console.log('PDF Generation - Browser closed');
-      }
-    }
-
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="document.pdf"');
+    res.send(pdfBuffer);
   } catch (error) {
     console.error('PDF Generation - Error:', error);
-    res.status(500).json({
+    const statusCode = error.statusCode || error.status || 500;
+    res.status(statusCode).json({
       error: 'Failed to generate PDF',
       details: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     });
   }
 };

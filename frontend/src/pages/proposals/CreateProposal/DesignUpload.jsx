@@ -56,6 +56,13 @@ const DesignImportStep = ({
   const textSecondary = useColorModeValue('gray.500', 'gray.400')
   const stickyBg = useColorModeValue('white', 'gray.800')
   const hoverBg = useColorModeValue('gray.100', 'gray.700')
+  const cardImageBg = useColorModeValue('gray.50', 'gray.800')
+
+  const gridSpacing = useBreakpointValue({ base: 2, md: 3, lg: 4 }) || 3
+  const cardMaxWidth = useBreakpointValue({ base: '140px', md: '180px', lg: '200px' }) || '180px'
+  const cardImageHeight = useBreakpointValue({ base: 120, md: 160, lg: 180 }) || 160
+  const cardImagePadding = useBreakpointValue({ base: 1, md: 1.5 }) || 1.5
+  const hoverScale = useBreakpointValue({ base: 1.02, md: 1.03 }) || 1.03
 
   const handleTabSelect = (index) => {
     setActiveTab(index === 1 ? 'import' : 'manual')
@@ -122,7 +129,7 @@ const DesignImportStep = ({
   return (
     <Box w="full">
       <StandardCard my={4} shadow="md" w="full">
-        <CardBody p={{ base: 4, md: 6 }}>
+        <CardBody p={{ base: 3, md: 4 }}>
           <Flex justify="space-between" align="center" mb={6} gap={4} flexWrap="wrap">
             <Heading size="md" color={headingColor}>
               {t('proposals.create.design.title')}
@@ -228,7 +235,7 @@ const DesignImportStep = ({
               ) : (
                 <SimpleGrid
                   columns={{ base: 2, sm: 3, md: 4, lg: 5 }}
-                  spacing={6}
+                  spacing={gridSpacing}
                   w="full"
                   justifyItems="center"
                 >
@@ -244,38 +251,53 @@ const DesignImportStep = ({
                       onMouseLeave={() => setHoveredId(null)}
                       onClick={() => onStyleSelect?.(style.id)}
                       cursor="pointer"
+                      mx="auto"
                     >
                       <Box
                         borderRadius="lg"
                         overflow="hidden"
                         boxShadow="sm"
                         transition="transform 0.2s"
-                        transform={hoveredId === style.id ? 'scale(1.03)' : 'scale(1)'}
+                        transform={hoveredId === style.id ? `scale(${hoverScale})` : 'scale(1)'}
+                        maxW={cardMaxWidth}
+                        mx="auto"
                       >
-                        <Image
-                          src={
-                            style.styleVariants?.[0]?.image
-                              ? buildUploadUrl(`/uploads/images/${style.styleVariants[0].image}`)
-                              : '/images/nologo.png'
-                          }
-                          alt={style.styleVariants?.[0]?.shortName || style.style}
-                          w="100%"
-                          h="210px"
-                          objectFit="cover"
-                          loading="lazy"
-                          fallbackSrc="/images/nologo.png"
-                          onError={(event) => {
-                            const fileName = style.styleVariants?.[0]?.image
-                            if (fileName && !event.target.dataset.fallbackTried) {
-                              event.target.dataset.fallbackTried = '1'
-                              event.target.src = buildUploadUrl(
-                                `/uploads/manufacturer_catalogs/${fileName}`,
-                              )
-                            } else {
-                              event.target.src = '/images/nologo.png'
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          bg={cardImageBg}
+                          p={cardImagePadding}
+                          maxW={cardMaxWidth}
+                          maxH={`${cardImageHeight}px`}
+                        >
+                          <Image
+                            src={
+                              style.styleVariants?.[0]?.image
+                                ? buildUploadUrl(`/uploads/images/${style.styleVariants[0].image}`)
+                                : '/images/nologo.png'
                             }
-                          }}
-                        />
+                            alt={style.styleVariants?.[0]?.shortName || style.style}
+                            maxW={`${cardMaxWidth}`}
+                            maxH={`${cardImageHeight}px`}
+                            w="auto"
+                            h="auto"
+                            objectFit="contain"
+                            loading="lazy"
+                            fallbackSrc="/images/nologo.png"
+                            onError={(event) => {
+                              const fileName = style.styleVariants?.[0]?.image
+                              if (fileName && !event.target.dataset.fallbackTried) {
+                                event.target.dataset.fallbackTried = '1'
+                                event.target.src = buildUploadUrl(
+                                  `/uploads/manufacturer_catalogs/${fileName}`,
+                                )
+                              } else {
+                                event.target.src = '/images/nologo.png'
+                              }
+                            }}
+                          />
+                        </Box>
                         <Box
                           position="absolute"
                           inset={0}

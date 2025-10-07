@@ -1,5 +1,5 @@
 {
-  "version": 1759721805180,
+  "version": 1759803281804,
   "colors": {
     "headerBg": "#000000",
     "headerText": "#808080",
@@ -14,7 +14,7 @@
   "login": {
     "title": "Sign In",
     "subtitle": "Enter your email and password to sign in!",
-    "backgroundColor": "#000000",
+    "backgroundColor": "#0e3853",
     "showForgotPassword": true,
     "showKeepLoggedIn": true,
     "leftTitle": "NJ CONTRACTOR'S PORTAL",

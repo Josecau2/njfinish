@@ -54,6 +54,7 @@ const OrdersList = ({
   const { list: manuList, byId: manuById } = useSelector((s) => s.manufacturers)
   const { payments } = useSelector((s) => s.payments)
   const authUser = useSelector((s) => s.auth?.user)
+  const isAdminUser = ['admin', 'super_admin'].includes((authUser?.role || '').toLowerCase())
 
   // Color mode values - MUST be before any useState hooks
   const hoverBg = useColorModeValue('gray.50', 'gray.700')
@@ -414,6 +415,44 @@ const OrdersList = ({
     setReceiptModalVisible(true)
   }
 
+  const buildTestPaymentFromOrder = (order) => {
+    if (!order) {
+      return null
+    }
+    const cents = typeof order?.grand_total_cents === 'number'
+      ? order.grand_total_cents
+      : Math.round(Number(order?.grand_total || 0) * 100) || 0
+
+    return {
+      id: `order-${order?.id ?? 'test'}`,
+      amount: cents / 100,
+      amount_cents: cents,
+      status: 'test',
+      paymentMethod: 'Admin Test',
+      createdAt: order?.createdAt || new Date().toISOString(),
+      paidAt: null,
+      __isTest: true,
+    }
+  }
+
+  const handleTestReceipt = (order) => {
+    const existingPayment = getOrderPayment(order.id)
+    if (!existingPayment) {
+      toast({
+        title: t('orders.receipt.testNoPaymentTitle', 'No payment record'),
+        description: t('orders.receipt.testNoPaymentMessage', 'Create a payment for this order before testing the receipt.'),
+        status: 'info',
+        duration: 4000,
+        isClosable: true,
+      })
+    }
+    const payment = existingPayment || buildTestPaymentFromOrder(order)
+    if (!payment) {
+      return
+    }
+    handleDownloadReceipt(order, payment)
+  }
+
   const closeReceiptModal = () => {
     setReceiptModalVisible(false)
     setSelectedOrderForReceipt(null)
@@ -560,6 +599,7 @@ const OrdersList = ({
               ) : (
                 paged.map((item) => {
                   const paymentInfo = getPaymentStatus(item.id)
+                  const canShowTestReceipt = isAdminUser
                   return (
                     <Tr
                       key={item.id}
@@ -625,6 +665,23 @@ const OrdersList = ({
                               {t('orders.actions.makePayment', 'Make Payment')}
                             </Button>
                           )}
+                          {canShowTestReceipt && (
+                            <Button
+                              colorScheme="purple"
+                              size="sm"
+                              variant="outline"
+                              leftIcon={<Download size={ICON_SIZE_MD} />}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleTestReceipt(item)
+                              }}
+                              minH="44px"
+                              maxW="200px"
+                              fontSize={{ base: 'xs', md: 'sm' }}
+                            >
+                              {t('orders.actions.testReceipt', 'Test Receipt')}
+                            </Button>
+                          )}
                           {paymentInfo.status === 'paid' && (
                             <Button
                               colorScheme="green"
@@ -667,6 +724,7 @@ const OrdersList = ({
         ) : (
           paged.map((item) => {
             const paymentInfo = getPaymentStatus(item.id)
+            const canShowTestReceipt = isAdminUser
             return (
               <MobileListCard
                 key={item.id}
@@ -759,6 +817,24 @@ const OrdersList = ({
                           fontSize={{ base: 'xs', md: 'sm' }}
                         >
                           {t('orders.actions.makePayment', 'Make Payment')}
+                        </Button>
+                      )}
+                      {canShowTestReceipt && (
+                        <Button
+                          colorScheme="purple"
+                          size="sm"
+                          variant="outline"
+                          leftIcon={<Download size={ICON_SIZE_MD} />}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleTestReceipt(item)
+                          }}
+                          minH="44px"
+                          maxW="200px"
+                          flex="1"
+                          fontSize={{ base: 'xs', md: 'sm' }}
+                        >
+                          {t('orders.actions.testReceipt', 'Test Receipt')}
                         </Button>
                       )}
                       {paymentInfo.status === 'paid' && (

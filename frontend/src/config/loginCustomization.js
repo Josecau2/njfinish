@@ -5,7 +5,7 @@ export const LOGIN_CUSTOMIZATION = {
   "logo": "/assets/customization/login-logo.png",
   "title": "Sign In",
   "subtitle": "Enter your email and password to sign in!",
-  "backgroundColor": "#000000",
+  "backgroundColor": "#0e3853",
   "showForgotPassword": true,
   "showKeepLoggedIn": true,
   "rightTitle": "NJ CONTRACTOR'S PORTAL",
@@ -28,8 +28,8 @@ export const LOGIN_CUSTOMIZATION = {
   "requestAccessLeadBody": "Hi {{firstName}},\n\nThank you for your interest in the NJ Cabinets platform. Our team will review your request and reach out shortly with next steps.\n\nIf you have immediate questions, simply reply to this email.\n\n— The NJ Cabinets Team",
   "id": 1,
   "createdAt": "2025-09-22T19:51:15.000Z",
-  "updatedAt": "2025-10-05T05:10:10.000Z",
-  "_generated": "2025-10-06T03:36:45.174Z",
+  "updatedAt": "2025-10-07T02:01:26.000Z",
+  "_generated": "2025-10-07T02:14:41.796Z",
   "_version": "1.0.0"
 }
 

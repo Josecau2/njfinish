@@ -209,7 +209,8 @@
       "Bash(./update-modals-dark-mode.ps1)",
       "Bash(python3:*)",
       "Bash(do sed -i 's/overflow=\"\"hidden\"\"//' \"$file\")",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(powershell:*)"
     ],
     "deny": [],
     "ask": []

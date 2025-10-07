@@ -183,21 +183,26 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
 
     try {
       const html = generateReceiptHtml({ payment, order, customization, t })
-      const { data } = await axiosInstance.post(
-        '/api/payments/receipt',
-        {
-          paymentId: payment.id,
-          orderId: order?.id,
-          html,
-        },
-        { responseType: 'blob' },
-      )
+      const isTestReceipt = Boolean(payment?.__isTest)
+      const requestPayload = {
+        orderId: order?.id,
+        html,
+      }
+
+      if (!isTestReceipt && payment?.id != null) {
+        requestPayload.paymentId = payment.id
+      }
+
+      const { data } = await axiosInstance.post('/api/payments/receipt', requestPayload, {
+        responseType: 'blob',
+      })
 
       const blob = new Blob([data], { type: 'application/pdf' })
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `payment-receipt-${payment.id}.pdf`
+      const downloadId = payment?.id ?? 'preview'
+      link.download = `payment-receipt-${downloadId}.pdf`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)

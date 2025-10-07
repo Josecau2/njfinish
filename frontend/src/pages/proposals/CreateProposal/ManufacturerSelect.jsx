@@ -126,11 +126,11 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
         ],
       })
 
-      if (!isUserAdmin) {
-        setTimeout(() => {
-          nextStep()
-        }, 0)
-      }
+      // Auto-advance to next step for all users (matching legacy behavior)
+      // Version name is pre-populated with manufacturer name
+      setTimeout(() => {
+        nextStep()
+      }, 0)
     },
     [formData, isUserAdmin, getValues, setValue, updateFormData, nextStep],
   )
@@ -353,9 +353,11 @@ const ManufacturerStep = ({ formData, updateFormData, nextStep, prevStep, hideBa
                                   <Heading as="h3" size="sm" textAlign="center" color={headingColor}>
                                     {manufacturer.name}
                                   </Heading>
-                                  <Text fontSize="sm" color={textColor} textAlign="center">
-                                    {manufacturer.city || manufacturer.country || t('common.na')}
-                                  </Text>
+                                  {(manufacturer.city || manufacturer.country) && (
+                                    <Text fontSize="sm" color={textColor} textAlign="center">
+                                      {manufacturer.city || manufacturer.country}
+                                    </Text>
+                                  )}
                                 </Stack>
                               </MotionBox>
                             )

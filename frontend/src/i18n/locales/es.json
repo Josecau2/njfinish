@@ -577,10 +577,15 @@
       }
     },
     "actions": {
-      "makePayment": "Realizar pago"
+      "makePayment": "Realizar pago",
+      "testReceipt": "Probar recibo"
     },
     "common": {
       "manufacturer": "Fabricante"
+    },
+    "receipt": {
+      "testNoPaymentTitle": "Modo de prueba",
+      "testNoPaymentMessage": "No existe un registro de pago. Generando un recibo de prueba para este pedido."
     }
   },
   "payments": {

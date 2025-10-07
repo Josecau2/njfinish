@@ -147,6 +147,15 @@ const CatalogTable = ({
   const bgUnavailableRow = useColorModeValue("red.50", "red.900")
   const textUnavailable = useColorModeValue("red.600", "red.400")
   const bgValidationWarning = useColorModeValue("orange.50", "orange.900")
+  const modalOverlayBg = "blackAlpha.600"
+  const modalHeaderBorder = useColorModeValue('gray.200', 'gray.700')
+  const modalCloseHoverBg = useColorModeValue('whiteAlpha.300', 'blackAlpha.300')
+  const modalImageBg = useColorModeValue('white', 'gray.800')
+  const modalSectionBg = useColorModeValue('gray.50', 'gray.700')
+  const modalCardBg = useColorModeValue('white', 'gray.800')
+  const modalTextColor = useColorModeValue('gray.700', 'gray.300')
+  const modalEmptyBorder = useColorModeValue('gray.300', 'gray.600')
+  const modalFooterBorder = useColorModeValue('gray.200', 'gray.700')
 
   const [partQuery, setPartQuery] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -309,8 +318,9 @@ const CatalogTable = ({
         <Box
           position="relative"
           flex="1"
-          minW="200px"
-          maxW="600px"
+          minW={{ base: "100%", md: "200px" }}
+          maxW={{ base: "100%", md: "600px" }}
+          w={{ base: "100%", md: "auto" }}
           ref={searchContainerRef}
         >
           <InputGroup>
@@ -415,9 +425,9 @@ const CatalogTable = ({
 
         <Box
           flexShrink={0}
-          minW="200px"
-          maxW="240px"
-          w="full"
+          minW={{ base: "100%", md: "200px" }}
+          maxW={{ base: "100%", md: "240px" }}
+          w={{ base: "100%", md: "full" }}
         >
           <InputGroup>
             <Input
@@ -435,112 +445,224 @@ const CatalogTable = ({
       <Modal
         isOpen={showTypeModal}
         onClose={() => setShowTypeModal(false)}
-        size={{ base: 'full', md: 'lg', lg: 'xl' }}
+        size={{ base: 'full', md: 'xl', lg: '2xl' }}
         scrollBehavior="inside"
         isCentered
       >
-        <ModalOverlay />
-        <ModalContent borderRadius="12px">
-          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
-            <Text fontSize="lg" fontWeight="semibold">
-              {selectedTypeInfo?.type || 'Type Specifications'}
-            </Text>
-          </ModalHeader>
-          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
-          <ModalBody p={{ base: 3, md: 4 }}>
-          {selectedTypeInfo ? (
-            <Flex flexDir={{ base: "column", md: "row" }} gap={4}>
-              <Box
-                textAlign={{ base: "center", md: "start" }}
-                border="1px solid"
-                borderColor={modalBorderColor}
-                borderRadius="md"
-                p={3}
-                bg={modalBg}
-                w="full"
-                maxW="520px"
-                mx="auto"
+        <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" />
+        <ModalContent
+          borderRadius={{ base: '0', md: '16px' }}
+          overflow="hidden"
+          boxShadow="2xl"
+          maxH={{ base: '100vh', md: '90vh' }}
+        >
+          <ModalHeader
+            bg={resolvedHeaderBg}
+            color={headerTextColor}
+            py={4}
+            px={6}
+            borderBottom="1px solid"
+            borderBottomColor={modalHeaderBorder}
+          >
+            <Flex align="center" gap={3}>
+              <Badge
+                colorScheme="blue"
+                fontSize="sm"
+                px={3}
+                py={1}
+                borderRadius="full"
+                textTransform="uppercase"
+                letterSpacing="wide"
               >
-                <Image
-                  src={
-                    selectedTypeInfo.image
-                      ? `${api_url}/uploads/types/${selectedTypeInfo.image}`
-                      : '/images/nologo.png'
-                  }
-                  alt={selectedTypeInfo.type}
-                  maxW="100%"
-                  h="auto"
-                  maxH="455px"
-                  objectFit="contain"
-                  bg="white"
-                  borderRadius="6px"
-                  border="1px solid"
+                Type
+              </Badge>
+              <Text fontSize="xl" fontWeight="bold">
+                {selectedTypeInfo?.type || 'Type Specifications'}
+              </Text>
+            </Flex>
+          </ModalHeader>
+          <ModalCloseButton
+            aria-label={t('common.ariaLabels.closeModal', 'Close modal')}
+            color={headerTextColor}
+            size="lg"
+            top={3}
+            right={4}
+            _hover={{ bg: modalCloseHoverBg }}
+          />
+          <ModalBody p={{ base: 4, md: 6 }}>
+          {selectedTypeInfo ? (
+            <Flex flexDir={{ base: "column", md: "row" }} gap={6}>
+              {/* Image Section */}
+              <Box
+                flex="1"
+                minW={{ base: "full", md: "280px" }}
+                maxW={{ base: "full", md: "400px" }}
+              >
+                <Box
+                  position="relative"
+                  border="2px solid"
                   borderColor={modalBorderColor}
-                  onError={(e) => {
-                    if (selectedTypeInfo.image && !e.target.dataset.fallbackTried) {
-                      e.target.dataset.fallbackTried = '1'
-                      e.target.src = `${api_url}/uploads/manufacturer_catalogs/${selectedTypeInfo.image}`
-                    } else {
-                      e.target.src = '/images/nologo.png'
+                  borderRadius="xl"
+                  p={4}
+                  bg={modalImageBg}
+                  boxShadow="lg"
+                  overflow="hidden"
+                >
+                  <Image
+                    src={
+                      selectedTypeInfo.image
+                        ? `${api_url}/uploads/types/${selectedTypeInfo.image}`
+                        : '/images/nologo.png'
                     }
-                  }}
-                />
-              </Box>
-              <Box flex="1" border="1px solid" borderColor={modalBorderColor} borderRadius="md" p={3} bg={modalBg} minW={0}>
-                <Flex mb={3} align="center" gap={2}>
-                  <Badge colorScheme="gray">{t('Type')}</Badge>
-                  <Text as="strong" fontSize="lg">{selectedTypeInfo.type}</Text>
-                </Flex>
-                {selectedTypeInfo.code && (
-                  <Box mb={2} borderBottom="1px solid" borderColor={borderColor} pb={2}>
-                    <Text as="span" color={labelColor} fontWeight="medium">{t('catalog.labels.code', 'Code')}:</Text>{' '}
-                    <Text as="span" fontWeight="bold">{selectedTypeInfo.code}</Text>
-                  </Box>
-                )}
-                {selectedTypeInfo.name && (
-                  <Box mb={2} borderBottom="1px solid" borderColor={borderColor} pb={2}>
-                    <Text as="span" color={labelColor} fontWeight="medium">{t('catalog.labels.name', 'Name')}:</Text>{' '}
-                    <Text as="span" fontWeight="bold">{selectedTypeInfo.name}</Text>
-                  </Box>
-                )}
-                {selectedTypeInfo.shortName && (
-                  <Box mb={3} borderBottom="1px solid" borderColor={borderColor} pb={2}>
-                    <Text as="span" color={labelColor} fontWeight="medium">{t('catalog.labels.short', 'Short')}:</Text>{' '}
-                    <Text as="span" fontWeight="bold">{selectedTypeInfo.shortName}</Text>
-                  </Box>
-                )}
-                <Box mt={3}>
-                  <Text as="strong" color={labelColor} display="block" mb={2}>{t('catalog.labels.description', 'Description')}:</Text>
-                  <Text whiteSpace="pre-wrap" lineHeight="1.6" fontSize="md">
-                    {selectedTypeInfo.longDescription ||
-                      selectedTypeInfo.description ||
-                      t('No description available for this type.')}
-                  </Text>
+                    alt={selectedTypeInfo.type}
+                    w="100%"
+                    h="auto"
+                    minH="200px"
+                    maxH={{ base: "300px", md: "400px" }}
+                    objectFit="contain"
+                    bg="white"
+                    borderRadius="lg"
+                    onError={(e) => {
+                      if (selectedTypeInfo.image && !e.target.dataset.fallbackTried) {
+                        e.target.dataset.fallbackTried = '1'
+                        e.target.src = `${api_url}/uploads/manufacturer_catalogs/${selectedTypeInfo.image}`
+                      } else {
+                        e.target.src = '/images/nologo.png'
+                      }
+                    }}
+                  />
                 </Box>
               </Box>
-              {/* close outer flex wrapper */}
+
+              {/* Details Section */}
+              <Box
+                flex="1"
+                minW={0}
+              >
+                <VStack align="stretch" spacing={4}>
+                  {/* Type Badge and Title */}
+                  <Box
+                    p={4}
+                    bg={modalSectionBg}
+                    borderRadius="lg"
+                    border="1px solid"
+                    borderColor={modalBorderColor}
+                  >
+                    <Text fontSize="2xl" fontWeight="bold" color={resolvedHeaderBg}>
+                      {selectedTypeInfo.type}
+                    </Text>
+                  </Box>
+
+                  {/* Metadata Grid */}
+                  {(selectedTypeInfo.code || selectedTypeInfo.name || selectedTypeInfo.shortName) && (
+                    <Box
+                      p={4}
+                      bg={modalCardBg}
+                      borderRadius="lg"
+                      border="1px solid"
+                      borderColor={modalBorderColor}
+                    >
+                      <VStack align="stretch" spacing={3}>
+                        {selectedTypeInfo.code && (
+                          <Flex justify="space-between" align="center">
+                            <Text color={labelColor} fontWeight="600" fontSize="sm">
+                              {t('catalog.labels.code', 'Code')}
+                            </Text>
+                            <Text fontWeight="bold" fontSize="md">
+                              {selectedTypeInfo.code}
+                            </Text>
+                          </Flex>
+                        )}
+                        {selectedTypeInfo.name && (
+                          <Flex justify="space-between" align="center" pt={2} borderTop="1px solid" borderTopColor={borderColor}>
+                            <Text color={labelColor} fontWeight="600" fontSize="sm">
+                              {t('catalog.labels.name', 'Name')}
+                            </Text>
+                            <Text fontWeight="bold" fontSize="md">
+                              {selectedTypeInfo.name}
+                            </Text>
+                          </Flex>
+                        )}
+                        {selectedTypeInfo.shortName && (
+                          <Flex justify="space-between" align="center" pt={2} borderTop="1px solid" borderTopColor={borderColor}>
+                            <Text color={labelColor} fontWeight="600" fontSize="sm">
+                              {t('catalog.labels.short', 'Short')}
+                            </Text>
+                            <Text fontWeight="bold" fontSize="md">
+                              {selectedTypeInfo.shortName}
+                            </Text>
+                          </Flex>
+                        )}
+                      </VStack>
+                    </Box>
+                  )}
+
+                  {/* Description */}
+                  <Box
+                    p={4}
+                    bg={useColorModeValue('white', 'gray.800')}
+                    borderRadius="lg"
+                    border="1px solid"
+                    borderColor={modalBorderColor}
+                    flex="1"
+                  >
+                    <Text
+                      color={labelColor}
+                      fontWeight="600"
+                      fontSize="sm"
+                      mb={3}
+                      textTransform="uppercase"
+                      letterSpacing="wide"
+                    >
+                      {t('catalog.labels.description', 'Description')}
+                    </Text>
+                    <Text
+                      whiteSpace="pre-wrap"
+                      lineHeight="1.7"
+                      fontSize="sm"
+                      color={modalTextColor}
+                    >
+                      {selectedTypeInfo.longDescription ||
+                        selectedTypeInfo.description ||
+                        t('No description available for this type.')}
+                    </Text>
+                  </Box>
+                </VStack>
+              </Box>
             </Flex>
           ) : (
-            <Box color={labelColor} textAlign="center" p={4} border="1px solid" borderColor={modalBorderColor} borderRadius="md" bg={modalBg}>
-              {t('No type information available.')}
+            <Box
+              color={labelColor}
+              textAlign="center"
+              p={8}
+              border="2px dashed"
+              borderColor={modalBorderColor}
+              borderRadius="xl"
+              bg={modalBg}
+            >
+              <Text fontSize="lg" fontWeight="medium">
+                {t('No type information available.')}
+              </Text>
             </Box>
           )}
           </ModalBody>
-          <ModalFooter>
-            <Box display={{ base: "block", md: "none" }} mt={2} textAlign="center" w="full">
-              <Button
-                colorScheme="gray"
-                size="lg"
-                w="full"
-                onClick={() => setShowTypeModal(false)}
-                minW="140px"
-                borderRadius="8px"
-                fontWeight="500"
-                boxShadow="sm"
-              >
-                Close
-              </Button>
-            </Box>
+          <ModalFooter
+            borderTop="1px solid"
+            borderTopColor={modalFooterBorder}
+            px={6}
+            py={4}
+          >
+            <Button
+              colorScheme="blue"
+              onClick={() => setShowTypeModal(false)}
+              size={{ base: "lg", md: "md" }}
+              w={{ base: "full", md: "auto" }}
+              minW="140px"
+              borderRadius="lg"
+              fontWeight="600"
+            >
+              {t('common.close', 'Close')}
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -684,13 +806,17 @@ const CatalogTable = ({
                         {hasTypeMetadata(item.type) && (
                           <Button
                             size="xs"
-                            variant="outline"
+                            variant="solid"
                             colorScheme="blue"
                             fontSize="xs"
-                            px={2}
-                            py={0.5}
+                            px={3}
+                            h="24px"
                             onClick={() => openTypeModal(item.type)}
                             title={`View ${item.type} specifications`}
+                            fontWeight="600"
+                            borderRadius="md"
+                            _hover={{ transform: 'translateY(-1px)', boxShadow: 'md' }}
+                            transition="all 0.2s"
                           >
                             Specs
                           </Button>
@@ -829,17 +955,22 @@ const CatalogTable = ({
                     </Td>
 
                     <Td>
-                      <Flex align="center">
-                        <Icon as={Settings}
+                      <Flex align="center" gap={{ base: 3, md: 4 }}>
+                        <Icon
+                          as={Settings}
                           cursor="pointer"
                           color="black"
-                          mr={4}
+                          boxSize={{ base: 6, md: 5 }}
                           onClick={() => handleOpenModificationModal(idx, item.id)}
+                          _hover={{ transform: 'scale(1.1)' }}
                         />
-                        <Icon as={Trash}
+                        <Icon
+                          as={Trash}
                           cursor="pointer"
                           color={textRed500}
+                          boxSize={{ base: 6, md: 5 }}
                           onClick={() => handleDelete(idx)}
+                          _hover={{ transform: 'scale(1.1)' }}
                         />
                       </Flex>
                     </Td>
@@ -1017,12 +1148,14 @@ const CatalogTable = ({
                                         {formatPrice((mod.price || 0) * (mod.qty || 1))}
                                       </Td>
                                       <Td textAlign="center">
-                                        <Icon as={Trash}
+                                        <Icon
+                                          as={Trash}
                                           cursor="pointer"
                                           color={textRed500}
-                                          fontSize="14px"
+                                          boxSize={{ base: 5, md: 4 }}
                                           onClick={() => handleDeleteModification(idx, modIdx)}
                                           title="Remove modification"
+                                          _hover={{ transform: 'scale(1.1)' }}
                                         />
                                       </Td>
                                     </Tr>
@@ -1071,99 +1204,119 @@ const CatalogTable = ({
           return (
             <React.Fragment key={`mobile-${idx}`}>
               <Box
-                border="2px solid"
+                borderWidth="1px"
                 borderColor={rowBorder}
-                borderRadius="md"
+                borderRadius="lg"
                 bg={idx % 2 === 0 ? rowBgEven : rowBgOdd}
-                mb={3}
-                p={4}
+                mb={2}
+                p={3}
+                boxShadow="sm"
+                _hover={{ boxShadow: "md" }}
+                transition="box-shadow 0.2s"
               >
-                <Flex justify="space-between" align="center" mb={3}>
+                {/* Header Row: Number + Actions */}
+                <Flex justify="space-between" align="center" mb={2}>
                   <Flex
                     align="center"
                     justify="center"
-                    minW="36px"
+                    w="28px"
                     h="28px"
-                    px="10px"
-                    borderRadius="full"
+                    borderRadius="md"
                     bg={headerBg}
                     color={textColor}
                     fontWeight={700}
-                    fontSize="16px"
+                    fontSize="14px"
                     boxShadow="sm"
                   >
                     {idx + 1}
                   </Flex>
-                  <HStack spacing={3}>
+                  <HStack spacing={2}>
                     <Icon as={Settings}
                       cursor="pointer"
                       color={settingsIconColor}
-                      boxSize={4.5}
+                      boxSize={{ base: 6, md: 5 }}
                       onClick={() => handleOpenModificationModal(idx, item.id)}
+                      _hover={{ transform: 'scale(1.1)' }}
+                      transition="transform 0.2s"
                     />
                     <Icon as={Trash}
                       cursor="pointer"
                       color={textDanger}
-                      boxSize={4.5}
+                      boxSize={{ base: 6, md: 5 }}
                       onClick={() => handleDelete(idx)}
+                      _hover={{ transform: 'scale(1.1)' }}
+                      transition="transform 0.2s"
                     />
                   </HStack>
                 </Flex>
 
-                <Flex justify="space-between" align="center" mb={2}>
-                  <Text fontWeight="600" color={labelColor} fontSize="sm">{t('proposalColumns.item')}</Text>
-                  <Flex align="center" gap={2} minW={0} flex="1" justify="flex-end">
+                {/* Item Code + Description */}
+                <Box mb={2}>
+                  <Flex align="center" gap={2} minW={0}>
                     <Text
+                      fontWeight="700"
+                      fontSize="md"
                       color={isUnavailable ? textUnavailable : undefined}
                       textDecoration={isUnavailable ? 'line-through' : undefined}
-                      whiteSpace="nowrap"
-                      overflow="hidden"
-                      textOverflow="ellipsis"
-                      fontSize="sm"
                     >
-                      <Text as="strong">{item.code}</Text>
-                      {item.description ? (
-                        <Text as="span" color={descriptionColor} ml={1}>— {item.description}</Text>
-                      ) : null}
+                      {item.code}
                     </Text>
                     {hasTypeMetadata(item.type) && (
                       <Button
                         size="xs"
-                        variant="outline"
+                        variant="solid"
                         colorScheme="blue"
                         fontSize="xs"
+                        h="20px"
                         px={2}
-                        py={0.5}
                         onClick={() => openTypeModal(item.type)}
                         title={`View ${item.type} specifications`}
+                        fontWeight="600"
+                        borderRadius="md"
+                        _hover={{ transform: 'translateY(-1px)', boxShadow: 'sm' }}
+                        transition="all 0.2s"
                       >
                         Specs
                       </Button>
                     )}
                   </Flex>
-                </Flex>
+                  {item.description && (
+                    <Text
+                      color={descriptionColor}
+                      fontSize="xs"
+                      mt={0.5}
+                      noOfLines={2}
+                    >
+                      {item.description}
+                    </Text>
+                  )}
+                </Box>
 
-                <Flex justify="space-between" align="center" mb={2}>
-                  <Text fontWeight="600" color={labelColor} fontSize="sm">{t('proposalColumns.qty')}</Text>
-                  <Input
-                    type="number"
-                    min="1"
-                    value={item.qty}
-                    onChange={(e) => updateQty(idx, parseInt(e.target.value))}
-                    w="80px"
-                    size="sm"
-                  />
-                </Flex>
-
-                <Flex justify="space-between" align="center" mb={2}>
-                  <Text fontWeight="600" color={labelColor} fontSize="sm">{t('proposalColumns.price')}</Text>
-                  <Text
-                    color={isUnavailable ? textUnavailable : undefined}
-                    textDecoration={isUnavailable ? 'line-through' : undefined}
-                    fontSize="sm"
-                  >
-                    {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
-                  </Text>
+                {/* Qty and Price Row - Compact Grid */}
+                <Flex gap={3} mb={2}>
+                  <Flex align="center" gap={2} flex="1">
+                    <Text fontWeight="600" color={labelColor} fontSize="xs">{t('proposalColumns.qty')}</Text>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={item.qty}
+                      onChange={(e) => updateQty(idx, parseInt(e.target.value))}
+                      w="60px"
+                      size="xs"
+                      h="28px"
+                    />
+                  </Flex>
+                  <Flex align="center" gap={2}>
+                    <Text fontWeight="600" color={labelColor} fontSize="xs">{t('proposalColumns.price')}</Text>
+                    <Text
+                      color={isUnavailable ? textUnavailable : undefined}
+                      textDecoration={isUnavailable ? 'line-through' : undefined}
+                      fontSize="sm"
+                      fontWeight="600"
+                    >
+                      {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
+                    </Text>
+                  </Flex>
                 </Flex>
 
                 {assembled && (
@@ -1178,14 +1331,14 @@ const CatalogTable = ({
                         }
                         p={2}
                         borderRadius="md"
-                        mb={2}
+                        mb={1.5}
                       >
-                        <Text fontWeight="600" color={labelColor} fontSize="sm" mb={2}>{t('proposalColumns.hingeSide')}</Text>
+                        <Text fontWeight="600" color={labelColor} fontSize="xs" mb={1.5}>{t('proposalColumns.hingeSide')}</Text>
                         {subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
                           (!item.hingeSide || item.hingeSide === '-') && (
                             <Text
                               color={textRed500}
-                              mb={2}
+                              mb={1.5}
                               fontSize="xs"
                               fontWeight="bold"
                             >
@@ -1194,11 +1347,13 @@ const CatalogTable = ({
                               })}
                             </Text>
                           )}
-                        <Flex gap={2}>
+                        <Flex gap={1.5}>
                           {hingeOptions.map((opt) => (
                             <Button
                               key={opt}
-                              size="sm"
+                              size="xs"
+                              h="28px"
+                              px={3}
                               variant={item.hingeSide === opt ? 'solid' : 'outline'}
                               colorScheme={item.hingeSide === opt ? undefined : 'gray'}
                               bg={item.hingeSide === opt ? headerBg : undefined}
@@ -1223,14 +1378,14 @@ const CatalogTable = ({
                         }
                         p={2}
                         borderRadius="md"
-                        mb={2}
+                        mb={1.5}
                       >
-                        <Text fontWeight="600" color={labelColor} fontSize="sm" mb={2}>{t('proposalColumns.exposedSide')}</Text>
+                        <Text fontWeight="600" color={labelColor} fontSize="xs" mb={1.5}>{t('proposalColumns.exposedSide')}</Text>
                         {subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
                           (!item.exposedSide || item.exposedSide === '-') && (
                             <Text
                               color={textRed500}
-                              mb={2}
+                              mb={1.5}
                               fontSize="xs"
                               fontWeight="bold"
                             >
@@ -1239,11 +1394,13 @@ const CatalogTable = ({
                               })}
                             </Text>
                           )}
-                        <Flex gap={2}>
+                        <Flex gap={1.5} flexWrap="wrap">
                           {exposedOptions.map((opt) => (
                             <Button
                               key={opt}
-                              size="sm"
+                              size="xs"
+                              h="28px"
+                              px={3}
                               variant={item.exposedSide === opt ? 'solid' : 'outline'}
                               colorScheme={item.exposedSide === opt ? undefined : 'gray'}
                               bg={item.exposedSide === opt ? headerBg : undefined}
@@ -1258,12 +1415,13 @@ const CatalogTable = ({
                       </Box>
                     )}
 
-                    <Flex justify="space-between" align="center" mb={2}>
-                      <Text fontWeight="600" color={labelColor} fontSize="sm">{t('proposalColumns.assemblyCost')}</Text>
+                    <Flex justify="space-between" align="center" mb={1.5}>
+                      <Text fontWeight="600" color={labelColor} fontSize="xs">{t('proposalColumns.assemblyCost')}</Text>
                       <Text
                         color={isUnavailable ? textUnavailable : undefined}
                         textDecoration={isUnavailable ? 'line-through' : undefined}
-                        fontSize="sm"
+                        fontSize="xs"
+                        fontWeight="600"
                       >
                         {formatPrice(assemblyFee)}
                       </Text>
@@ -1272,107 +1430,118 @@ const CatalogTable = ({
                 )}
 
                 {/* Modifications summary on mobile */}
-                <Flex justify="space-between" align="center" mb={2}>
-                  <Text fontWeight="600" color={labelColor} fontSize="sm">
+                <Flex justify="space-between" align="center" mb={2} py={1.5} borderTop="1px solid" borderColor={borderColor}>
+                  <Text fontWeight="600" color={labelColor} fontSize="xs">
                     {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
                   </Text>
-                  <Text fontSize="sm">{formatPrice(modsTotal)}</Text>
+                  <Text fontSize="xs" fontWeight="600">{formatPrice(modsTotal)}</Text>
                 </Flex>
 
-                <Box
-                  mt={3}
-                  pt={3}
+                {/* Total */}
+                <Flex
+                  justify="space-between"
+                  align="center"
+                  pt={2}
                   borderTop="2px solid"
-                  borderTopColor={borderColor}
+                  borderTopColor={headerBg}
                   color={isUnavailable ? textUnavailable : undefined}
                   textDecoration={isUnavailable ? 'line-through' : undefined}
                 >
-                  <Text fontWeight="bold" fontSize="md">
-                    {t('proposalColumns.total')}: {formatPrice(total)}
+                  <Text fontWeight="bold" fontSize="sm">
+                    {t('proposalColumns.total')}
                   </Text>
-                </Box>
+                  <Text fontWeight="bold" fontSize="md" color={headerBg}>
+                    {formatPrice(total)}
+                  </Text>
+                </Flex>
 
               </Box>
 
-              {/* Mobile Modification Cards */}
+              {/* Mobile Modification Cards - Compact */}
               {Array.isArray(item.modifications) &&
                 item.modifications.length > 0 &&
                 item.modifications.map((mod, modIdx) => (
                   <Box
                     key={`mobile-mod-${idx}-${modIdx}`}
-                    bg={headerBg}
-                    color={textColor}
-                    border="1px solid"
-                    borderColor={headerBg}
-                    borderRadius="6px"
-                    p={3}
-                    mt={3}
-                    mb={6}
-                    mx="auto"
-                    maxW="90%"
+                    bg={modBg}
+                    borderWidth="1px"
+                    borderColor={modBorderColor}
+                    borderRadius="md"
+                    p={2}
+                    mt={1.5}
+                    mb={2}
+                    ml={6}
                     position="relative"
-                    boxShadow="sm"
+                    boxShadow="xs"
                   >
                     {/* Item indicator badge */}
                     <Flex
                       position="absolute"
-                      top="-8px"
-                      left="12px"
-                      bg={textColor}
-                      color={headerBg}
+                      top="8px"
+                      left="-20px"
+                      bg={headerBg}
+                      color={textColor}
                       borderRadius="full"
-                      w="24px"
-                      h="24px"
+                      w="20px"
+                      h="20px"
                       align="center"
                       justify="center"
-                      fontSize="12px"
+                      fontSize="10px"
                       fontWeight="bold"
                       border="2px solid"
-                      borderColor={headerBg}
+                      borderColor={rowBgEven}
+                      boxShadow="sm"
                     >
                       {idx + 1}
                     </Flex>
-                    <Flex
-                      justify="space-between"
-                      align="center"
-                      mb={2}
-                    >
+
+                    {/* Modification Header */}
+                    <Flex justify="space-between" align="center" mb={1.5}>
                       <Text
-                        fontSize="12px"
-                        fontWeight="600"
-                        color={textColor}
+                        fontSize="xs"
+                        fontWeight="700"
+                        color={modTextColor}
                         textTransform="uppercase"
-                        letterSpacing="0.5px"
+                        letterSpacing="0.3px"
                       >
                         {t('proposalDoc.modifications')}
                       </Text>
-                      <Icon as={Trash}
+                      <Icon
+                        as={Trash}
                         cursor="pointer"
                         color={textDanger}
+                        boxSize={4}
                         onClick={() => handleDeleteModification(idx, modIdx)}
+                        _hover={{ transform: 'scale(1.1)' }}
+                        transition="transform 0.2s"
                       />
                     </Flex>
-                    <Flex
-                      justify="space-between"
-                      fontSize="14px"
-                      mb={1}
-                    >
-                      <Text>{mod.name || t('proposalUI.mod.unnamed')}</Text>
-                      {(() => {
-                        const details = buildSelectedOptionsText(mod?.selectedOptions)
-                        return details ? <Text opacity={0.7}> — {details}</Text> : null
-                      })()}
-                      <Text>{t('common.qty', 'Qty')}: {mod.qty}</Text>
-                    </Flex>
-                    <Flex
-                      justify="space-between"
-                      fontSize="14px"
-                    >
-                      <Text>
-                        {t('proposalColumns.price')}: {formatPrice(mod.price || 0)}
-                      </Text>
-                      <Text fontWeight="bold">
-                        {t('proposalColumns.total')}:{' '}
+
+                    {/* Modification Name + Details */}
+                    <Text fontSize="sm" fontWeight="600" color={modTextColor} mb={1}>
+                      {mod.name || t('proposalUI.mod.unnamed')}
+                    </Text>
+
+                    {(() => {
+                      const details = buildSelectedOptionsText(mod?.selectedOptions)
+                      return details ? (
+                        <Text fontSize="xs" color={modLabelColor} mb={1.5}>
+                          {details}
+                        </Text>
+                      ) : null
+                    })()}
+
+                    {/* Qty, Price, Total Row */}
+                    <Flex justify="space-between" align="center" fontSize="xs">
+                      <Flex gap={3}>
+                        <Text color={modLabelColor}>
+                          {t('common.qty', 'Qty')}: <Text as="span" fontWeight="600" color={modTextColor}>{mod.qty}</Text>
+                        </Text>
+                        <Text color={modLabelColor}>
+                          {formatPrice(mod.price || 0)}
+                        </Text>
+                      </Flex>
+                      <Text fontWeight="700" color={modTextColor}>
                         {formatPrice((mod.price || 0) * (mod.qty || 1))}
                       </Text>
                     </Flex>

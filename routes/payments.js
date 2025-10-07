@@ -14,6 +14,7 @@ const { verifyTokenWithGroup } = require('../middleware/auth');
 const { requirePermission } = require('../middleware/permissions');
 const { getStripeClient } = require('../services/stripeClient');
 const env = require('../config/env');
+const { generatePdfBuffer } = require('../utils/pdfGenerator');
 const { getOrderAmountCents, formatCents } = require('../utils/payments/amounts');
 
 const stripeWebhookRaw = express.raw({ type: 'application/json' });
@@ -384,6 +385,60 @@ router.put('/:id/apply', verifyTokenWithGroup, requirePermission('payments:updat
       console.error('Error applying payment:', error);
     }
     res.status(statusCode).json({ error: error.message || 'Failed to apply payment' });
+  }
+});
+
+router.post('/receipt', verifyTokenWithGroup, async (req, res) => {
+  try {
+    const role = String(req.user?.role || '').toLowerCase();
+    const isAdmin = role === 'admin' || role === 'super_admin';
+    if (!isAdmin) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const { paymentId, orderId, html, options } = req.body || {};
+
+    if (!html || typeof html !== 'string') {
+      return res.status(400).json({ error: 'HTML content is required' });
+    }
+
+    let filename;
+
+    if (paymentId) {
+      const payment = await findPaymentForUser(paymentId, req.user);
+      if (!payment) {
+        return res.status(404).json({ error: 'Payment not found' });
+      }
+
+      if (orderId && Number(orderId) !== Number(payment.orderId)) {
+        return res.status(400).json({ error: 'Payment does not belong to the specified order' });
+      }
+
+      filename = `payment-receipt-${paymentId}.pdf`;
+    } else {
+      if (!orderId) {
+        return res.status(400).json({ error: 'orderId is required for test receipts' });
+      }
+
+      const order = await Order.findByPk(orderId);
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      filename = `payment-receipt-order-${orderId}.pdf`;
+    }
+
+    const pdfBuffer = await generatePdfBuffer(html, options);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(pdfBuffer);
+  } catch (error) {
+    const statusCode = error.statusCode || error.status || 500;
+    if (statusCode >= 500) {
+      console.error('Error generating payment receipt PDF:', error);
+    }
+    res.status(statusCode).json({ error: error.message || 'Failed to generate payment receipt' });
   }
 });
 

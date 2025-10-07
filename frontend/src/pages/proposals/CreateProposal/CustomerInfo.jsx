@@ -203,27 +203,8 @@ const CustomerInfoStep = ({
     }
   }, [locations, formData.location, setValue, updateFormData])
 
-  useEffect(() => {
-    if (!canAssignDesigner || !users.length || !loggedInUserId) return
-    const currentUser = users.find((user) => user.id === loggedInUserId)
-    const availableDesigners = users.filter((user) => user.role === 'Manufacturers')
-    const isCurrentDesignerValid = availableDesigners.some(
-      (designer) => toStringValue(designer.id) === toStringValue(formData.designer),
-    )
-
-    if (!formData.designer || !isCurrentDesignerValid) {
-      if (currentUser && currentUser.role === 'Manufacturers') {
-        const nextValue = toStringValue(currentUser.id)
-        setValue('designer', nextValue)
-        updateFormData({ designer: nextValue }, { markDirty: false })
-      } else if (availableDesigners.length > 0) {
-        const firstDesigner = availableDesigners[0]
-        const nextValue = toStringValue(firstDesigner.id)
-        setValue('designer', nextValue)
-        updateFormData({ designer: nextValue }, { markDirty: false })
-      }
-    }
-  }, [canAssignDesigner, users, formData.designer, loggedInUserId, setValue, updateFormData])
+  // Removed auto-population logic to match legacy EditProposal behavior
+  // Designer field should start empty and only show available designers in dropdown
 
   const getCustomerOption = useCallback(
     (name, id, email) => {
@@ -311,48 +292,34 @@ const CustomerInfoStep = ({
     async (designerName) => {
       const trimmed = String(designerName || '').trim()
       if (!trimmed) return null
+
       try {
         setIsCreatingDesigner(true)
-        const tempEmail = `${trimmed.toLowerCase().replace(/\s+/g, '.')}@designer.local`
-        const response = await axiosInstance.post('/api/users', {
-          name: trimmed,
-          email: tempEmail,
-          password: 'temppassword123',
-          role: 'Manufacturers',
-          isSalesRep: false,
-          location: null,
-          userGroup: null,
+
+        // Simply add the designer name as a text option - don't create a User
+        const option = { value: trimmed, label: trimmed }
+        setDesignerChoices((prev) => [option, ...prev.filter((opt) => opt.value !== option.value)])
+
+        toast({
+          status: 'success',
+          title: t('proposals.create.customerInfo.designerCreated', 'Designer added'),
+          description: t('proposals.create.customerInfo.designerCreatedMsg', 'Designer name is now available.'),
         })
-        if (response.status === 200 || response.status === 201) {
-          const newDesigner = response.data.user
-          const option = mapUserToOption(newDesigner)
-          setDesignerChoices((prev) => [option, ...prev.filter((opt) => opt.value !== option.value)])
-          setSalesRepChoices((prev) => [option, ...prev.filter((opt) => opt.value !== option.value)])
-          dispatch(fetchUsers())
-          toast({
-            status: 'success',
-            title: t('proposals.create.customerInfo.designerCreated', 'Designer created'),
-            description: t('proposals.create.customerInfo.designerCreatedMsg', 'Designer is now available.'),
-          })
-          return option
-        }
-        return null
+
+        return option
       } catch (error) {
-        console.error('Error creating designer:', error)
+        console.error('Error adding designer:', error)
         toast({
           status: 'error',
-          title: t('proposals.create.customerInfo.designerCreateError', 'Unable to create designer'),
-          description:
-            error?.response?.data?.message ||
-            error?.message ||
-            t('common.errorGeneric', 'Something went wrong'),
+          title: t('proposals.create.customerInfo.designerCreateError', 'Unable to add designer'),
+          description: error?.message || t('common.errorGeneric', 'Something went wrong'),
         })
         return null
       } finally {
         setIsCreatingDesigner(false)
       }
     },
-    [dispatch, t, toast],
+    [toast, t],
   )
 
   const handleSecondarySelect = useCallback(
@@ -490,7 +457,14 @@ const CustomerInfoStep = ({
                             field.onChange(nextValue)
                             handleSecondarySelect({ fieldName: 'designer', value: nextValue })
                           }}
-                          onCreateOption={createNewDesigner}
+                          onCreateOption={async (inputValue) => {
+                            const newOption = await createNewDesigner(inputValue)
+                            if (newOption) {
+                              field.onChange(newOption.value)
+                              handleSecondarySelect({ fieldName: 'designer', value: newOption.value })
+                            }
+                            return newOption
+                          }}
                           isLoading={usersLoading}
                           isCreating={isCreatingDesigner}
                           createOptionLabel={(name) =>

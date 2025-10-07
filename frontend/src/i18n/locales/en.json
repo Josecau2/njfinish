@@ -829,10 +829,15 @@
       "subtitle": "Accepted & locked quotes will appear here"
     },
     "actions": {
-      "makePayment": "Make Payment"
+      "makePayment": "Make Payment",
+      "testReceipt": "Test Receipt"
     },
     "common": {
       "manufacturer": "Manufacturer"
+    },
+    "receipt": {
+      "testNoPaymentTitle": "Test mode",
+      "testNoPaymentMessage": "No payment record found. Generating a test receipt for this order."
     },
     "details": {
       "title": "Order Details",
