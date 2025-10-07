@@ -922,7 +922,7 @@ const CatalogTableEdit = ({
                           {formatPrice(item.unavailable ? 0 : assemblyFee)}
                         </Text>
                       ) : (
-                        <Text as="span" color={useColorModeValue("gray.600", "gray.400")}>{formatPrice(0)}</Text>
+                        <Text as="span" color={textGray600}>{formatPrice(0)}</Text>
                       )}
                     </Td>
 
