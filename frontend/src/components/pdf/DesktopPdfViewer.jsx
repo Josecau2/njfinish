@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import workerSrc from 'react-pdf/dist/pdf.worker.entry.js?url'
-import { getFreshestToken } from '../../utils/authToken'
 import {
   Box,
   Button,
@@ -36,17 +35,10 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
   const inputBorder = useColorModeValue('#555', '#666')
 
   // Build file descriptor for react-pdf with auth headers when available
-  const documentFile = useMemo(() => {
-    const token = getFreshestToken()
-    if (token) {
-      return {
-        url: fileUrl,
-        httpHeaders: { Authorization: `Bearer ${token}` },
-        withCredentials: false,
-      }
-    }
-    return { url: fileUrl }
-  }, [fileUrl])
+  const documentFile = useMemo(() => ({
+    url: fileUrl,
+    withCredentials: true,
+  }), [fileUrl])
 
   const onDocumentLoadSuccess = useCallback(({ numPages }) => {
     setNumPages(numPages)

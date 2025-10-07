@@ -1,3 +1,6 @@
+import { CUSTOMIZATION_CONFIG } from '../config/customization'
+import { LOGIN_CUSTOMIZATION } from '../config/loginCustomization'
+
 const DEFAULT_BRAND = {
   version: 0,
   logoAlt: '',
@@ -7,45 +10,77 @@ const DEFAULT_BRAND = {
   app: {},
 }
 
-// Build a BRAND-compatible object from legacy runtime JSON the dev server already loads.
-// This ensures the Vite dev server (port 3000) renders the same customization as production
-// even when server-side brand injection isn't present.
+function normaliseColors(source = {}) {
+  return {
+    headerBg: source.headerBg || 'slate.900',
+    headerText: source.headerFontColor || 'white',
+    sidebarBg: source.sidebarBg || 'gray.900',
+    sidebarText: source.sidebarFontColor || 'white',
+    text: 'slate.900',
+    accent: 'brand.500',
+    surface: 'slate.50',
+    logoBg: source.logoBg || 'black',
+  }
+}
+
+function buildBrandFromStatic() {
+  const appCfg = CUSTOMIZATION_CONFIG || {}
+  const loginCfg = LOGIN_CUSTOMIZATION || {}
+
+  if (!Object.keys(appCfg || {}).length && !Object.keys(loginCfg || {}).length) {
+    return null
+  }
+
+  const colors = normaliseColors(appCfg)
+
+  let logoDataURI = ''
+  if (loginCfg && typeof loginCfg.logo === 'string' && loginCfg.logo) {
+    logoDataURI = loginCfg.logo
+  } else if (appCfg && typeof appCfg.logoImage === 'string' && appCfg.logoImage) {
+    logoDataURI = appCfg.logoImage
+  }
+
+  return {
+    version: Date.now(),
+    logoAlt: appCfg.logoText || 'Logo',
+    logoDataURI,
+    colors,
+    login: {
+      ...(loginCfg || {}),
+      showForgotPassword:
+        typeof loginCfg?.showForgotPassword === 'boolean' ? loginCfg.showForgotPassword : true,
+      showKeepLoggedIn:
+        typeof loginCfg?.showKeepLoggedIn === 'boolean' ? loginCfg.showKeepLoggedIn : true,
+    },
+    app: {
+      logoText: appCfg.logoText,
+      logoImage: appCfg.logoImage,
+      logoBg: appCfg.logoBg,
+      companyName: appCfg.companyName,
+    },
+  }
+}
+
 function buildBrandFromLegacy() {
   try {
     if (typeof window === 'undefined') return null
     const appCfg = window.__APP_CUSTOMIZATION__ || {}
     const loginCfg = window.__LOGIN_CUSTOMIZATION__ || {}
-
-    // If neither exists, nothing to synthesize
     if (!appCfg && !loginCfg) return null
 
-    // Map app colors to the brand color keys used by components
-    const colors = {
-      headerBg: appCfg.headerBg || 'slate.900',
-      headerText: appCfg.headerFontColor || 'white',
-      sidebarBg: appCfg.sidebarBg || 'gray.900',
-      sidebarText: appCfg.sidebarFontColor || 'white',
-      // Reasonable fallbacks to avoid undefined access
-      text: 'slate.900',
-      accent: 'brand.500',
-      surface: 'slate.50',
-      logoBg: appCfg.logoBg || 'black',
-    }
-
-    // Prefer login logo; fall back to app logo image
+    const colors = normaliseColors(appCfg)
     let logoDataURI = ''
     if (typeof loginCfg.logo === 'string' && loginCfg.logo) {
-      logoDataURI = loginCfg.logo // can be /assets/... or data: URI
+      logoDataURI = loginCfg.logo
     } else if (typeof appCfg.logoImage === 'string' && appCfg.logoImage) {
       logoDataURI = appCfg.logoImage
     }
 
-    const brand = {
+    return {
       version: Date.now(),
       logoAlt: appCfg.logoText || 'Logo',
       logoDataURI,
       colors,
-      // Pass through the login object as-is (already normalized by writer)
       login: {
         ...(loginCfg || {}),
         showForgotPassword:
@@ -60,20 +95,19 @@ function buildBrandFromLegacy() {
         companyName: appCfg.companyName,
       },
     }
-
-    return brand
   } catch (_) {
     return null
   }
 }
 
 export function getBrand() {
-  // Primary: server-injected brand
   if (typeof window !== 'undefined' && window.__BRAND__) {
     return window.__BRAND__
   }
 
-  // Dev fallback: synthesize from legacy customization JSON loaded in index.html
+  const staticBrand = buildBrandFromStatic()
+  if (staticBrand) return staticBrand
+
   const synthesized = buildBrandFromLegacy()
   if (synthesized) return synthesized
 
@@ -86,22 +120,16 @@ export function useBrand() {
 
 export function getBrandColors() {
   const brand = getBrand()
-  const colors = brand.colors && Object.keys(brand.colors).length ? brand.colors : null
-  if (colors) return colors
-  // Dev fallback from legacy app customization
+  if (brand.colors && Object.keys(brand.colors).length) {
+    return brand.colors
+  }
+
+  const staticColors = normaliseColors(CUSTOMIZATION_CONFIG)
+  if (Object.keys(staticColors).length) return staticColors
+
   try {
     if (typeof window !== 'undefined') {
-      const appCfg = window.__APP_CUSTOMIZATION__ || {}
-      return {
-        headerBg: appCfg.headerBg || 'slate.900',
-        headerText: appCfg.headerFontColor || 'white',
-        sidebarBg: appCfg.sidebarBg || 'gray.900',
-        sidebarText: appCfg.sidebarFontColor || 'white',
-        text: 'slate.900',
-        accent: 'brand.500',
-        surface: 'slate.50',
-        logoBg: appCfg.logoBg || 'black',
-      }
+      return normaliseColors(window.__APP_CUSTOMIZATION__)
     }
   } catch {}
   return {}
@@ -109,12 +137,29 @@ export function getBrandColors() {
 
 export function getLoginBrand() {
   const brand = getBrand()
-  if (brand.login && Object.keys(brand.login).length) return brand.login
-  // Dev fallback: use legacy login customization JSON
+  if (brand.login && Object.keys(brand.login).length) {
+    return brand.login
+  }
+
+  if (LOGIN_CUSTOMIZATION && Object.keys(LOGIN_CUSTOMIZATION).length) {
+    return {
+      ...LOGIN_CUSTOMIZATION,
+      showForgotPassword:
+        typeof LOGIN_CUSTOMIZATION.showForgotPassword === 'boolean'
+          ? LOGIN_CUSTOMIZATION.showForgotPassword
+          : true,
+      showKeepLoggedIn:
+        typeof LOGIN_CUSTOMIZATION.showKeepLoggedIn === 'boolean'
+          ? LOGIN_CUSTOMIZATION.showKeepLoggedIn
+          : true,
+    }
+  }
+
   try {
     if (typeof window !== 'undefined' && window.__LOGIN_CUSTOMIZATION__) {
       return window.__LOGIN_CUSTOMIZATION__
     }
   } catch {}
+
   return {}
 }

@@ -158,57 +158,73 @@ const RequestAccessPage = () => {
       leftContent={leftPanel}
       leftBg={loginBackground}
       leftTextColor={rightPanelColors.text}
-      rightBg={bgWhite}
+      rightBg={useColorModeValue('gray.50', 'gray.900')}
       languageSwitcherProps={{ compact: true }}
       rightContainerProps={{ maxW: 'lg' }}
     >
-      <VStack spacing={6} align="stretch">
-        <Box textAlign="center" mb={{ base: 2, md: 0 }}>
+      <VStack spacing={{ base: 8, md: 10 }} align="stretch" px={{ base: 0, md: 2 }} position="relative" zIndex={2}>
+        <Box textAlign="center" mb={{ base: -2, md: -2 }}>
           <BrandLogo size={logoHeight} />
         </Box>
 
-        <Heading
-          as="h2"
-          size={{ base: 'lg', md: 'xl' }}
-          textAlign="center"
-          fontWeight="bold"
-          letterSpacing="tight"
-          color={useColorModeValue('gray.900', 'white')}
-        >
-          {pageTitle}
-        </Heading>
-        <Text
-          textAlign="center"
-          color={textGray700}
-          fontSize={{ base: 'sm', md: 'md' }}
-          fontWeight="medium"
-        >
-          {pageSubtitle}
-        </Text>
-        {pageDescription && (
-          <Text
-            textAlign="center"
-            color={textGray700}
-            fontSize={{ base: 'xs', md: 'sm' }}
+        <Box textAlign="center" px={{ base: 0, md: 4 }}>
+          <Heading
+            as="h2"
+            size={{ base: 'xl', md: '2xl' }}
+            fontWeight="700"
+            letterSpacing="-0.02em"
+            color={useColorModeValue('gray.900', 'white')}
+            mb={3}
           >
-            {pageDescription}
+            {pageTitle}
+          </Heading>
+          <Text
+            color={useColorModeValue('gray.600', 'gray.400')}
+            fontSize={{ base: 'md', md: 'lg' }}
+            fontWeight="400"
+            lineHeight="1.6"
+          >
+            {pageSubtitle}
           </Text>
-        )}
+          {pageDescription && (
+            <Text
+              color={useColorModeValue('gray.500', 'gray.500')}
+              fontSize={{ base: 'sm', md: 'md' }}
+              mt={2}
+              lineHeight="1.5"
+            >
+              {pageDescription}
+            </Text>
+          )}
+        </Box>
 
         {benefits.length > 0 && (
-          <Box>
+          <Box
+            bg={useColorModeValue('gray.50', 'gray.750')}
+            p={{ base: 5, md: 6 }}
+            borderRadius="xl"
+            border="1px solid"
+            borderColor={useColorModeValue('gray.200', 'gray.600')}
+          >
             <Text
               fontWeight="600"
-              mb={2}
+              mb={3}
               fontSize={{ base: 'sm', md: 'md' }}
+              color={useColorModeValue('gray.700', 'gray.300')}
             >
               {copy.benefitsHeading}
             </Text>
-            <List spacing={4} fontSize={{ base: 'xs', sm: 'sm' }}>
+            <List spacing={3} fontSize={{ base: 'sm', md: 'md' }}>
               {benefits.map((item, index) => (
                 <ListItem key={index} display="flex" alignItems="flex-start">
-                  <ListIcon as={Circle} boxSize={2} mt={1.5} mr={2} fill="currentColor" />
-                  <Text>{item}</Text>
+                  <ListIcon
+                    as={Circle}
+                    boxSize={2}
+                    mt={1.5}
+                    mr={2}
+                    fill={useColorModeValue('brand.500', 'brand.300')}
+                  />
+                  <Text color={useColorModeValue('gray.600', 'gray.400')}>{item}</Text>
                 </ListItem>
               ))}
             </List>
@@ -218,9 +234,12 @@ const RequestAccessPage = () => {
         {successMessage && (
           <Alert
             status="success"
-            borderRadius={{ base: 'lg', md: 'md' }}
+            borderRadius="xl"
             boxShadow="sm"
             fontSize={{ base: 'sm', md: 'md' }}
+            bg={useColorModeValue('green.50', 'green.900')}
+            border="1px solid"
+            borderColor={useColorModeValue('green.200', 'green.700')}
           >
             <AlertIcon />
             {successMessage}
@@ -230,9 +249,12 @@ const RequestAccessPage = () => {
         {errorMessage && (
           <Alert
             status="error"
-            borderRadius={{ base: 'lg', md: 'md' }}
+            borderRadius="xl"
             boxShadow="sm"
             fontSize={{ base: 'sm', md: 'md' }}
+            bg={useColorModeValue('red.50', 'red.900')}
+            border="1px solid"
+            borderColor={useColorModeValue('red.200', 'red.700')}
           >
             <AlertIcon />
             {errorMessage}
@@ -248,6 +270,8 @@ const RequestAccessPage = () => {
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
+                  color={useColorModeValue('gray.700', 'gray.300')}
+                  letterSpacing="tight"
                 >
                   {copy.fields.firstNameLabel}
                 </FormLabel>
@@ -260,13 +284,22 @@ const RequestAccessPage = () => {
                   onChange={handleChange}
                   maxLength={191}
                   autoComplete="given-name"
-                  minH="44px"
-                  borderRadius={{ base: 'lg', md: 'md' }}
-                  fontSize={{ base: 'md', md: 'lg' }}
+                  minH={{ base: '48px', md: '52px' }}
+                  borderRadius="xl"
+                  fontSize={{ base: 'md', md: 'md' }}
+                  bg={useColorModeValue('gray.50', 'gray.700')}
+                  border="1px solid"
+                  borderColor={useColorModeValue('gray.200', 'gray.600')}
+                  _hover={{
+                    borderColor: useColorModeValue('gray.300', 'gray.500'),
+                    bg: useColorModeValue('white', 'gray.650'),
+                  }}
                   _focus={{
                     borderColor: 'brand.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                    boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                    bg: useColorModeValue('white', 'gray.700'),
                   }}
+                  transition="all 0.2s"
                 />
               </FormControl>
 
@@ -276,6 +309,8 @@ const RequestAccessPage = () => {
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
+                  color={useColorModeValue('gray.700', 'gray.300')}
+                  letterSpacing="tight"
                 >
                   {copy.fields.lastNameLabel}
                 </FormLabel>
@@ -288,13 +323,22 @@ const RequestAccessPage = () => {
                   onChange={handleChange}
                   maxLength={191}
                   autoComplete="family-name"
-                  minH="44px"
-                  borderRadius={{ base: 'lg', md: 'md' }}
-                  fontSize={{ base: 'md', md: 'lg' }}
+                  minH={{ base: '48px', md: '52px' }}
+                  borderRadius="xl"
+                  fontSize={{ base: 'md', md: 'md' }}
+                  bg={useColorModeValue('gray.50', 'gray.700')}
+                  border="1px solid"
+                  borderColor={useColorModeValue('gray.200', 'gray.600')}
+                  _hover={{
+                    borderColor: useColorModeValue('gray.300', 'gray.500'),
+                    bg: useColorModeValue('white', 'gray.650'),
+                  }}
                   _focus={{
                     borderColor: 'brand.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                    boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                    bg: useColorModeValue('white', 'gray.700'),
                   }}
+                  transition="all 0.2s"
                 />
               </FormControl>
             </SimpleGrid>
@@ -306,6 +350,8 @@ const RequestAccessPage = () => {
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
+                  color={useColorModeValue('gray.700', 'gray.300')}
+                  letterSpacing="tight"
                 >
                   {copy.fields.emailLabel}
                 </FormLabel>
@@ -317,13 +363,22 @@ const RequestAccessPage = () => {
                   value={form.email}
                   onChange={handleChange}
                   autoComplete="email"
-                  minH="44px"
-                  borderRadius={{ base: 'lg', md: 'md' }}
-                  fontSize={{ base: 'md', md: 'lg' }}
+                  minH={{ base: '48px', md: '52px' }}
+                  borderRadius="xl"
+                  fontSize={{ base: 'md', md: 'md' }}
+                  bg={useColorModeValue('gray.50', 'gray.700')}
+                  border="1px solid"
+                  borderColor={useColorModeValue('gray.200', 'gray.600')}
+                  _hover={{
+                    borderColor: useColorModeValue('gray.300', 'gray.500'),
+                    bg: useColorModeValue('white', 'gray.650'),
+                  }}
                   _focus={{
                     borderColor: 'brand.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                    boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                    bg: useColorModeValue('white', 'gray.700'),
                   }}
+                  transition="all 0.2s"
                 />
               </FormControl>
 
@@ -333,6 +388,8 @@ const RequestAccessPage = () => {
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
+                  color={useColorModeValue('gray.700', 'gray.300')}
+                  letterSpacing="tight"
                 >
                   {copy.fields.phoneLabel}
                 </FormLabel>
@@ -345,13 +402,22 @@ const RequestAccessPage = () => {
                   onChange={handleChange}
                   maxLength={32}
                   autoComplete="tel"
-                  minH="44px"
-                  borderRadius={{ base: 'lg', md: 'md' }}
-                  fontSize={{ base: 'md', md: 'lg' }}
+                  minH={{ base: '48px', md: '52px' }}
+                  borderRadius="xl"
+                  fontSize={{ base: 'md', md: 'md' }}
+                  bg={useColorModeValue('gray.50', 'gray.700')}
+                  border="1px solid"
+                  borderColor={useColorModeValue('gray.200', 'gray.600')}
+                  _hover={{
+                    borderColor: useColorModeValue('gray.300', 'gray.500'),
+                    bg: useColorModeValue('white', 'gray.650'),
+                  }}
                   _focus={{
                     borderColor: 'brand.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                    boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                    bg: useColorModeValue('white', 'gray.700'),
                   }}
+                  transition="all 0.2s"
                 />
               </FormControl>
             </SimpleGrid>
@@ -363,6 +429,8 @@ const RequestAccessPage = () => {
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
+                  color={useColorModeValue('gray.700', 'gray.300')}
+                  letterSpacing="tight"
                 >
                   {copy.fields.cityLabel}
                 </FormLabel>
@@ -375,13 +443,22 @@ const RequestAccessPage = () => {
                   onChange={handleChange}
                   maxLength={191}
                   autoComplete="address-level2"
-                  minH="44px"
-                  borderRadius={{ base: 'lg', md: 'md' }}
-                  fontSize={{ base: 'md', md: 'lg' }}
+                  minH={{ base: '48px', md: '52px' }}
+                  borderRadius="xl"
+                  fontSize={{ base: 'md', md: 'md' }}
+                  bg={useColorModeValue('gray.50', 'gray.700')}
+                  border="1px solid"
+                  borderColor={useColorModeValue('gray.200', 'gray.600')}
+                  _hover={{
+                    borderColor: useColorModeValue('gray.300', 'gray.500'),
+                    bg: useColorModeValue('white', 'gray.650'),
+                  }}
                   _focus={{
                     borderColor: 'brand.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                    boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                    bg: useColorModeValue('white', 'gray.700'),
                   }}
+                  transition="all 0.2s"
                 />
               </FormControl>
 
@@ -391,6 +468,8 @@ const RequestAccessPage = () => {
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
+                  color={useColorModeValue('gray.700', 'gray.300')}
+                  letterSpacing="tight"
                 >
                   {copy.fields.stateLabel}
                 </FormLabel>
@@ -403,13 +482,22 @@ const RequestAccessPage = () => {
                   onChange={handleChange}
                   maxLength={64}
                   autoComplete="address-level1"
-                  minH="44px"
-                  borderRadius={{ base: 'lg', md: 'md' }}
-                  fontSize={{ base: 'md', md: 'lg' }}
+                  minH={{ base: '48px', md: '52px' }}
+                  borderRadius="xl"
+                  fontSize={{ base: 'md', md: 'md' }}
+                  bg={useColorModeValue('gray.50', 'gray.700')}
+                  border="1px solid"
+                  borderColor={useColorModeValue('gray.200', 'gray.600')}
+                  _hover={{
+                    borderColor: useColorModeValue('gray.300', 'gray.500'),
+                    bg: useColorModeValue('white', 'gray.650'),
+                  }}
                   _focus={{
                     borderColor: 'brand.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                    boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                    bg: useColorModeValue('white', 'gray.700'),
                   }}
+                  transition="all 0.2s"
                 />
               </FormControl>
 
@@ -419,6 +507,8 @@ const RequestAccessPage = () => {
                   fontWeight="600"
                   fontSize={{ base: 'sm', md: 'md' }}
                   mb={2}
+                  color={useColorModeValue('gray.700', 'gray.300')}
+                  letterSpacing="tight"
                 >
                   {copy.fields.zipLabel}
                 </FormLabel>
@@ -432,13 +522,22 @@ const RequestAccessPage = () => {
                   maxLength={32}
                   inputMode="numeric"
                   autoComplete="postal-code"
-                  minH="44px"
-                  borderRadius={{ base: 'lg', md: 'md' }}
-                  fontSize={{ base: 'md', md: 'lg' }}
+                  minH={{ base: '48px', md: '52px' }}
+                  borderRadius="xl"
+                  fontSize={{ base: 'md', md: 'md' }}
+                  bg={useColorModeValue('gray.50', 'gray.700')}
+                  border="1px solid"
+                  borderColor={useColorModeValue('gray.200', 'gray.600')}
+                  _hover={{
+                    borderColor: useColorModeValue('gray.300', 'gray.500'),
+                    bg: useColorModeValue('white', 'gray.650'),
+                  }}
                   _focus={{
                     borderColor: 'brand.500',
-                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                    boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                    bg: useColorModeValue('white', 'gray.700'),
                   }}
+                  transition="all 0.2s"
                 />
               </FormControl>
             </SimpleGrid>
@@ -449,6 +548,8 @@ const RequestAccessPage = () => {
                 fontWeight="600"
                 fontSize={{ base: 'sm', md: 'md' }}
                 mb={2}
+                color={useColorModeValue('gray.700', 'gray.300')}
+                letterSpacing="tight"
               >
                 {copy.fields.companyLabel}
               </FormLabel>
@@ -461,13 +562,22 @@ const RequestAccessPage = () => {
                 onChange={handleChange}
                 maxLength={191}
                 autoComplete="organization"
-                minH="44px"
-                borderRadius={{ base: 'lg', md: 'md' }}
-                fontSize={{ base: 'md', md: 'lg' }}
+                minH={{ base: '48px', md: '52px' }}
+                borderRadius="xl"
+                fontSize={{ base: 'md', md: 'md' }}
+                bg={useColorModeValue('gray.50', 'gray.700')}
+                border="1px solid"
+                borderColor={useColorModeValue('gray.200', 'gray.600')}
+                _hover={{
+                  borderColor: useColorModeValue('gray.300', 'gray.500'),
+                  bg: useColorModeValue('white', 'gray.650'),
+                }}
                 _focus={{
                   borderColor: 'brand.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                  boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                  bg: useColorModeValue('white', 'gray.700'),
                 }}
+                transition="all 0.2s"
               />
             </FormControl>
 
@@ -477,6 +587,8 @@ const RequestAccessPage = () => {
                 fontWeight="600"
                 fontSize={{ base: 'sm', md: 'md' }}
                 mb={2}
+                color={useColorModeValue('gray.700', 'gray.300')}
+                letterSpacing="tight"
               >
                 {copy.fields.messageLabel}
               </FormLabel>
@@ -488,15 +600,29 @@ const RequestAccessPage = () => {
                 value={form.message}
                 onChange={handleChange}
                 maxLength={2000}
-                minH="44px"
-                borderRadius={{ base: 'lg', md: 'md' }}
-                fontSize={{ base: 'md', md: 'lg' }}
+                minH={{ base: '100px', md: '120px' }}
+                borderRadius="xl"
+                fontSize={{ base: 'md', md: 'md' }}
+                bg={useColorModeValue('gray.50', 'gray.700')}
+                border="1px solid"
+                borderColor={useColorModeValue('gray.200', 'gray.600')}
+                _hover={{
+                  borderColor: useColorModeValue('gray.300', 'gray.500'),
+                  bg: useColorModeValue('white', 'gray.650'),
+                }}
                 _focus={{
                   borderColor: 'brand.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                  boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                  bg: useColorModeValue('white', 'gray.700'),
                 }}
+                transition="all 0.2s"
               />
-              <Text fontSize="xs" textAlign="right" color={textGray700} mt={1}>
+              <Text
+                fontSize="xs"
+                textAlign="right"
+                color={useColorModeValue('gray.500', 'gray.500')}
+                mt={1}
+              >
                 {form.message.length}/2000
               </Text>
             </FormControl>
@@ -506,43 +632,56 @@ const RequestAccessPage = () => {
               colorScheme="brand"
               size="lg"
               width="100%"
-              minH="44px"
+              minH={{ base: '52px', md: '56px' }}
+              borderRadius="xl"
+              fontWeight="700"
+              fontSize={{ base: 'md', md: 'lg' }}
+              letterSpacing="tight"
+              boxShadow="0 4px 12px rgba(0, 0, 0, 0.08)"
+              _hover={{
+                transform: 'translateY(-2px)',
+                boxShadow: '0 8px 20px rgba(0, 0, 0, 0.12)',
+              }}
+              _active={{
+                transform: 'translateY(0)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+              }}
+              transition="all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
               isLoading={isSubmitting}
               loadingText={copy.submitting}
-              borderRadius={{ base: 'lg', md: 'md' }}
-              fontWeight="bold"
-              fontSize={{ base: 'md', md: 'lg' }}
-              boxShadow="sm"
-              _hover={{
-                transform: 'translateY(-1px)',
-                boxShadow: 'md',
-              }}
-              transition="all 0.2s"
+              mt={2}
             >
               {copy.submit}
             </Button>
           </VStack>
         </Box>
 
-        <Text
+        <Box
           textAlign="center"
-          fontSize={{ base: 'sm', md: 'md' }}
+          pt={{ base: 4, md: 2 }}
+          borderTop="1px solid"
+          borderColor={useColorModeValue('gray.100', 'gray.700')}
         >
-          {copy.alreadyHaveAccess}{' '}
-          <Link
-            as={RouterLink}
-            to="/login"
-            color={linkBlue}
-            fontWeight="600"
-            minH="44px"
-            py={2}
-            _hover={{
-              textDecoration: 'underline',
-            }}
+          <Text
+            fontSize={{ base: 'sm', md: 'md' }}
+            color={useColorModeValue('gray.600', 'gray.400')}
           >
-            {copy.signIn}
-          </Link>
-        </Text>
+            {copy.alreadyHaveAccess}{' '}
+            <Link
+              as={RouterLink}
+              to="/login"
+              color={useColorModeValue('brand.600', 'brand.300')}
+              fontWeight="600"
+              _hover={{
+                textDecoration: 'underline',
+                color: useColorModeValue('brand.700', 'brand.400'),
+              }}
+              transition="color 0.2s"
+            >
+              {copy.signIn}
+            </Link>
+          </Text>
+        </Box>
       </VStack>
     </AuthLayout>
   )

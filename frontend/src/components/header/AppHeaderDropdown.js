@@ -15,7 +15,9 @@ import { User, LogOut } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { logout } from '../../store/slices/authSlice'
+import axiosInstance from '../../helpers/axiosInstance'
 import { clearAllTokens } from '../../utils/authToken'
+import { clearSessionFlag } from '../../utils/authSession'
 import { forceBrowserCleanup } from '../../utils/browserCleanup'
 import { ICON_SIZE_MD, ICON_SIZE_SM } from '../../constants/iconSizes'
 
@@ -33,8 +35,13 @@ const AppHeaderDropdown = () => {
 
   const accent = useColorModeValue('brand.500', 'brand.300')
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post('/api/auth/logout')
+    } catch {}
+
     clearAllTokens()
+    clearSessionFlag()
     dispatch(logout())
     forceBrowserCleanup()
     setTimeout(() => {
@@ -86,3 +93,6 @@ const AppHeaderDropdown = () => {
 }
 
 export default AppHeaderDropdown
+
+
+

@@ -102,39 +102,44 @@ const ForgotPasswordPage = () => {
       leftContent={leftPanel}
       leftBg={loginBackground}
       leftTextColor={rightPanelColors.text}
-      rightBg={bgWhite}
+      rightBg={useColorModeValue('gray.50', 'gray.900')}
       languageSwitcherProps={{ compact: true }}
     >
-      <VStack spacing={6} align="stretch">
-        <Box textAlign="center" mb={{ base: 2, md: 0 }}>
+      <VStack spacing={{ base: 8, md: 10 }} align="stretch" px={{ base: 0, md: 2 }} position="relative" zIndex={2}>
+        <Box textAlign="center" mb={{ base: -2, md: -2 }}>
           <BrandLogo size={logoHeight} />
         </Box>
 
-        <Heading
-          as="h2"
-          size={{ base: 'lg', md: 'xl' }}
-          textAlign="center"
-          fontWeight="bold"
-          letterSpacing="tight"
-          color={useColorModeValue('gray.900', 'white')}
-        >
-          {loginBrand.resetTitle || t('auth.forgotPassword.title')}
-        </Heading>
-        <Text
-          textAlign="center"
-          color={textGray700}
-          fontSize={{ base: 'sm', md: 'md' }}
-          fontWeight="medium"
-        >
-          {loginBrand.resetSubtitle || t('auth.forgotPassword.subtitle')}
-        </Text>
+        <Box textAlign="center" px={{ base: 0, md: 4 }}>
+          <Heading
+            as="h2"
+            size={{ base: 'xl', md: '2xl' }}
+            fontWeight="700"
+            letterSpacing="-0.02em"
+            color={useColorModeValue('gray.900', 'white')}
+            mb={3}
+          >
+            {loginBrand.resetTitle || t('auth.forgotPassword.title')}
+          </Heading>
+          <Text
+            color={useColorModeValue('gray.600', 'gray.400')}
+            fontSize={{ base: 'md', md: 'lg' }}
+            fontWeight="400"
+            lineHeight="1.6"
+          >
+            {loginBrand.resetSubtitle || t('auth.forgotPassword.subtitle')}
+          </Text>
+        </Box>
 
         {message && (
           <Alert
             status="success"
-            borderRadius={{ base: 'lg', md: 'md' }}
+            borderRadius="xl"
             boxShadow="sm"
             fontSize={{ base: 'sm', md: 'md' }}
+            bg={useColorModeValue('green.50', 'green.900')}
+            border="1px solid"
+            borderColor={useColorModeValue('green.200', 'green.700')}
           >
             <AlertIcon />
             {message}
@@ -144,9 +149,12 @@ const ForgotPasswordPage = () => {
         {error && (
           <Alert
             status="error"
-            borderRadius={{ base: 'lg', md: 'md' }}
+            borderRadius="xl"
             boxShadow="sm"
             fontSize={{ base: 'sm', md: 'md' }}
+            bg={useColorModeValue('red.50', 'red.900')}
+            border="1px solid"
+            borderColor={useColorModeValue('red.200', 'red.700')}
           >
             <AlertIcon />
             {error}
@@ -154,13 +162,15 @@ const ForgotPasswordPage = () => {
         )}
 
         <Box as="form" onSubmit={handleSubmit}>
-          <VStack spacing={{ base: 5, md: 4 }}>
+          <VStack spacing={{ base: 6, md: 5 }}>
             <FormControl isRequired>
               <FormLabel
                 htmlFor="email"
                 fontWeight="600"
                 fontSize={{ base: 'sm', md: 'md' }}
                 mb={2}
+                color={useColorModeValue('gray.700', 'gray.300')}
+                letterSpacing="tight"
               >
                 {t('auth.email')}
               </FormLabel>
@@ -172,13 +182,22 @@ const ForgotPasswordPage = () => {
                 placeholder={t('auth.emailPlaceholder')}
                 value={form.email}
                 onChange={handleChange}
-                minH="44px"
-                borderRadius={{ base: 'lg', md: 'md' }}
+                minH={{ base: '52px', md: '56px' }}
+                borderRadius="xl"
                 fontSize={{ base: 'md', md: 'lg' }}
+                bg={useColorModeValue('gray.50', 'gray.700')}
+                border="1px solid"
+                borderColor={useColorModeValue('gray.200', 'gray.600')}
+                _hover={{
+                  borderColor: useColorModeValue('gray.300', 'gray.500'),
+                  bg: useColorModeValue('white', 'gray.650'),
+                }}
                 _focus={{
                   borderColor: 'brand.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                  boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                  bg: useColorModeValue('white', 'gray.700'),
                 }}
+                transition="all 0.2s"
               />
             </FormControl>
 
@@ -187,42 +206,51 @@ const ForgotPasswordPage = () => {
               colorScheme="brand"
               size="lg"
               width="100%"
-              minH="44px"
+              minH={{ base: '52px', md: '56px' }}
+              borderRadius="xl"
+              fontWeight="700"
+              fontSize={{ base: 'md', md: 'lg' }}
+              letterSpacing="tight"
+              boxShadow="0 4px 12px rgba(0, 0, 0, 0.08)"
+              _hover={{
+                transform: 'translateY(-2px)',
+                boxShadow: '0 8px 20px rgba(0, 0, 0, 0.12)',
+              }}
+              _active={{
+                transform: 'translateY(0)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+              }}
+              transition="all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
               isLoading={isSubmitting}
               loadingText={t('auth.forgotPassword.submitting')}
-              borderRadius={{ base: 'lg', md: 'md' }}
-              fontWeight="bold"
-              fontSize={{ base: 'md', md: 'lg' }}
-              boxShadow="sm"
-              _hover={{
-                transform: 'translateY(-1px)',
-                boxShadow: 'md',
-              }}
-              transition="all 0.2s"
+              mt={2}
             >
               {t('auth.forgotPassword.submit')}
             </Button>
           </VStack>
         </Box>
 
-        <Text
+        <Box
           textAlign="center"
-          fontSize={{ base: 'sm', md: 'md' }}
+          pt={{ base: 4, md: 2 }}
+          borderTop="1px solid"
+          borderColor={useColorModeValue('gray.100', 'gray.700')}
         >
           <Link
             as={RouterLink}
             to="/login"
-            color={linkBlue}
-            minH="44px"
-            py={2}
+            color={useColorModeValue('brand.600', 'brand.300')}
             fontWeight="600"
+            fontSize={{ base: 'sm', md: 'md' }}
             _hover={{
               textDecoration: 'underline',
+              color: useColorModeValue('brand.700', 'brand.400'),
             }}
+            transition="color 0.2s"
           >
             {t('auth.backToLogin')}
           </Link>
-        </Text>
+        </Box>
       </VStack>
     </AuthLayout>
   )

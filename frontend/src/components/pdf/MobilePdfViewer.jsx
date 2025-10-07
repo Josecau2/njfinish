@@ -4,7 +4,6 @@ import { Document, Page, pdfjs } from 'react-pdf'
 import workerSrc from 'react-pdf/dist/pdf.worker.entry.js?url'
 import { Box, Button, HStack } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight, X } from '@/icons-lucide'
-import { getFreshestToken } from '../../utils/authToken'
 
 // Configure pdf.js worker explicitly for Vite - FORCE override
 if (pdfjs?.GlobalWorkerOptions) {
@@ -19,17 +18,10 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
   const [error, setError] = useState(null)
 
   // Memoize file descriptor to prevent unnecessary reloads
-  const documentFile = useMemo(() => {
-    const token = getFreshestToken()
-    if (token) {
-      return {
-        url: fileUrl,
-        httpHeaders: { Authorization: `Bearer ${token}` },
-        withCredentials: false,
-      }
-    }
-    return { url: fileUrl }
-  }, [fileUrl])
+  const documentFile = useMemo(() => ({
+    url: fileUrl,
+    withCredentials: true,
+  }), [fileUrl])
 
   const onLoadSuccess = useCallback(({ numPages: nextNumPages }) => {
     setNumPages(nextNumPages)

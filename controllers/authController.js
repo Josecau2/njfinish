@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const { Op } = require('sequelize');
 const { sendMail } = require('../utils/mail');
 const { validatePassword, passwordPolicyHint } = require('../utils/passwordPolicy');
+const { setAuthCookies, clearAuthCookies } = require('../utils/authCookies');
 require('dotenv').config();
 
 // Centralized token lifetime (default to long-lived sessions)
@@ -119,17 +120,29 @@ exports.login = async (req, res) => {
       }
     }
 
+            setAuthCookies(res, token, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
+
     res.json({
-      token,
+      sessionActive: true,
       userId: user.id,
       name: user.name,
       role: userRole,
       role_id: user.role_id,
       group_id: user.group_id,
-      group: groupData
+      group: groupData,
+      email: user.email,
     });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.logout = async (req, res) => {
+  try {
+    clearAuthCookies(res);
+    res.status(200).json({ message: 'Logged out' });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -680,4 +693,16 @@ exports.getUserRole = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal server error' });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 

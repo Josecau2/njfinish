@@ -155,24 +155,8 @@ const DesignImportStep = ({
             mb={6}
           >
             <TabList>
-              <Tab
-                whiteSpace="normal"
-                px={6}
-                py={3}
-                textAlign="center"
-                minH="48px"
-              >
-                {t('proposals.create.design.tabs.manualEntry')}
-              </Tab>
-              <Tab
-                whiteSpace="normal"
-                px={6}
-                py={3}
-                textAlign="center"
-                minH="48px"
-              >
-                {t('proposals.create.design.tabs.import2020')}
-              </Tab>
+              <Tab>{t('proposals.create.design.tabs.manualEntry')}</Tab>
+              <Tab>{t('proposals.create.design.tabs.import2020')}</Tab>
             </TabList>
           </Tabs>
 
@@ -353,19 +337,16 @@ const DesignImportStep = ({
           py={3}
           zIndex={1}
         >
-          <SimpleGrid columns={2} spacing={3}>
+          <SimpleGrid columns={2} spacing={4}>
             <MotionButton
               variant={activeTab === 'manual' ? 'solid' : 'outline'}
               colorScheme="brand"
               onClick={() => setActiveTab('manual')}
               whileTap={{ scale: 0.98 }}
               leftIcon={<Icon as={PenSquare} boxSize={ICON_BOX_MD} />}
-              minH="56px"
-              fontSize="xs"
-              px={2}
-              textAlign="center"
-              whiteSpace="normal"
-              lineHeight="1.3"
+              minH="44px"
+              maxW={{ base: '180px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('proposals.create.design.tabs.manualEntry')}
             </MotionButton>
@@ -375,12 +356,9 @@ const DesignImportStep = ({
               onClick={() => setActiveTab('import')}
               whileTap={{ scale: 0.98 }}
               leftIcon={<Icon as={UploadCloud} boxSize={ICON_BOX_MD} />}
-              minH="56px"
-              fontSize="xs"
-              px={2}
-              textAlign="center"
-              whiteSpace="normal"
-              lineHeight="1.3"
+              minH="44px"
+              maxW={{ base: '180px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('proposals.create.design.tabs.import2020')}
             </MotionButton>

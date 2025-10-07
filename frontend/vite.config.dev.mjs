@@ -33,7 +33,6 @@ export default defineConfig(() => {
         'react',
         'react-dom',
         'react-router-dom',
-        '@coreui/react',
         '@reduxjs/toolkit',
         'react-redux'
       ],

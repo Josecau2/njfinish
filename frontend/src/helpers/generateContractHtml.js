@@ -1,5 +1,16 @@
 // Helper to build printable contract HTML outside React component scope.
 // Accepts a translation function so consuming code can provide localized labels.
+const escapeHtml = (value) => {
+  const stringValue = String(value ?? '');
+  return stringValue
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
+
 export const generateContractHtml = (formData, options = {}) => {
   const {
     t = (key) => key,
@@ -134,10 +145,10 @@ export const generateContractHtml = (formData, options = {}) => {
                       <tr>
                           <td style="border: 1px solid #ccc; padding: 5px;">${index + 1}</td>
                           <td style="border: 1px solid #ccc; padding: 5px;">${item.qty}</td>
-                          <td style="border: 1px solid #ccc; padding: 5px;">${item.code || ''}</td>
+                          <td style="border: 1px solid #ccc; padding: 5px;">${escapeHtml(item.code || '')}</td>
               <td style="border: 1px solid #ccc; padding: 5px;">${item.assembled ? pdf.yes : pdf.no}</td>
-              <td style="border: 1px solid #ccc; padding: 5px;">${item.hingeSide || pdf.na}</td>
-              <td style="border: 1px solid #ccc; padding: 5px;">${item.exposedSide || pdf.na}</td>
+              <td style="border: 1px solid #ccc; padding: 5px;">${escapeHtml(item.hingeSide || pdf.na)}</td>
+              <td style="border: 1px solid #ccc; padding: 5px;">${escapeHtml(item.exposedSide || pdf.na)}</td>
                           <td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.price).toFixed(2)}</td>
               <td style="border: 1px solid #ccc; padding: 5px;">$${item.includeAssemblyFee ? parseFloat(item.assemblyFee).toFixed(2) : '0.00'}</td>
                           <td style="border: 1px solid #ccc; padding: 5px;">$${parseFloat(item.total).toFixed(2)}</td>

@@ -44,11 +44,10 @@ export default defineConfig(({ mode }) => {
             // Vendor chunks for better caching
             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
             'chakra-vendor': ['@chakra-ui/react', '@emotion/react', '@emotion/styled', 'framer-motion'],
-            'ui-vendor': ['@coreui/react', '@coreui/icons-react', '@coreui/utils'],
             'form-vendor': ['formik', 'yup', 'react-select', 'react-select/creatable'],
             'date-vendor': ['date-fns', 'date-fns-tz', 'react-datepicker'],
             'redux-vendor': ['@reduxjs/toolkit', 'react-redux', 'redux'],
-            'icons-vendor': ['lucide-react', '@fortawesome/react-fontawesome'],
+            'icons-vendor': ['lucide-react'],
             'utils-vendor': ['axios', 'classnames', 'prop-types'],
             'pdf-vendor': ['pdfjs-dist', 'react-pdf']
           },
@@ -73,7 +72,6 @@ export default defineConfig(({ mode }) => {
         'react',
         'react-dom',
         'react-router-dom',
-        '@coreui/react',
         '@reduxjs/toolkit',
         'react-redux',
         'date-fns',

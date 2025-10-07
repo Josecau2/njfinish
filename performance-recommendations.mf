@@ -1,0 +1,37 @@
+Performance Audit Recommendations (2025-10-07)
+Scope: React frontend (Chakra UI + Redux + React Query), Node/Express API layer, MySQL persistence.
+
+Frontend UI
+- frontend/src/pages/proposals/EditProposal.jsx:177-357 - Re-parsing localStorage per render, verbose console logging, broad useEffect dependencies, and forced page reloads trigger costly re-renders and network storms. Memoize user/session data, gate debug logs behind dev checks, trim effect dependencies, and replace reloads with state resets or router navigation.
+- frontend/src/pages/proposals/CreateProposal/DesignUpload.jsx:98-127 - Effect depends on entire formData object, re-fetching styles on every keystroke. Depend on manufacturer id only, debounce lookup, and hydrate styles from cached Redux or react-query data before hitting the API.
+- frontend/src/pages/proposals/CreateProposal/ProposalSummary.jsx:214-235 - Mapping manufacturersData and dispatching fetchManufacturerById on every rerender duplicates requests. Memoize the ID list, dispatch missing IDs only once, and reuse the selectVersion slice as the cache source.
+- frontend/src/components/model/PrintProposalModal.jsx and EmailProposalModal.jsx - Each open triggers PDF customization plus manufacturer/style lookups regardless of prior fetches. Prefetch these records when proposals load, share a cached hook, and lazy-build previews only when the user asks for them.
+- frontend/src/components/ItemSelectionContent.jsx and CatalogTable.js - Large tables re-render wholesale on every edit; no virtualization, expensive filtering runs synchronously, and document listeners stay live. Introduce windowing (react-window), move heavy transforms behind useMemo or useDeferredValue with stable deps, and ensure listeners clean up on modal close.
+- frontend/src/pages/settings/manufacturers/EditManufacturer.jsx - Tabs array and render callbacks are recreated each render; extract to useMemo or useCallback so Chakra lazy tab panes do not remount unnecessarily on tab switch.
+
+State & Data Layer
+- frontend/src/store/slices/manufacturersSlice.js:139-152 - Global loading flag and selected reset fire for every fetchManufacturerById call. Track loading per manufacturer id, keep selected intact, and short-circuit if data already lives in byId.
+- frontend/src/store/slices/selectedVersionSlice.js - Entire item arrays are replaced in Redux on each change, forcing deep re-render chains. Store items per version id, emit granular mutations, and keep large payloads outside global state when possible.
+- React Query usage (frontend/src/queries/proposalQueries.js) - Hooks exist but proposal edit/create screens still call axios manually, bypassing caching and retry logic. Adopt useProposal or useUpdateProposal, and co-locate optimistic updates to avoid double fetching.
+
+Backend/API Layer
+- controllers/proposalsController.js - Verbose console logging runs in production paths and normalization walks large JSON graphs on each save. Swap logs for a leveled logger, guard heavy debug output, and offload normalization to a service layer or DB trigger executed asynchronously when possible.
+- controllers/proposalsController.js:getContracts - Returns the full proposals list for type=1 with eager relations and no pagination. Add query params (limit/offset), default limit (for example 50), and select only required fields.
+- controllers/manufacturerController.js:38-66 - Global fetchManufacturer returns all manufacturers without paging or caching. Provide pagination, optional search filters, and emit cache headers for rarely changing data.
+- axiosInstance (frontend/src/helpers/axiosInstance.js) - Single AbortController cancels every in-flight request on logout. Verify flows that open background polling and consider per-request controllers so concurrent requests do not cancel each other when one is aborted.
+
+Database
+- config/db.js - Uses Sequelize defaults; no pool configuration, timezone, or SSL options. Define pool (min/max/idle), set timezone or coerce numeric types, and enable SSL in production to prevent connection churn.
+- models/Customer.js - customerController/saveProposal performs email lookups but the table lacks an email index. Add unique index on email (and email+group) to eliminate table scans.
+- Proposals and ManufacturerCatalogData - Massive JSON columns (manufacturersData, catalogData) grow quickly. Evaluate archival strategy, move aggregates into dedicated tables, and ensure MySQL row size stays below limits.
+
+Tooling & Monitoring
+- Frontend bundles: run `npm run build:analyze` regularly, enforce bundle budgets, and split rarely used modals (Print or Email) via dynamic import.
+- Perceptual metrics: add web-vitals logging (CLS, LCP, TTFB) and track modal open latency to validate improvements.
+- Backend profiling: enable slow query logging (>250ms) and add indices for frequent filters (status, created_at ranges) in proposals/orders reports.
+
+Next Steps (Suggested Order)
+1. Triage frontend fetch churn (DesignUpload, ProposalSummary, EditProposal) and land caching or memoization patches.
+2. Introduce pagination plus caching to manufacturer and proposal admin endpoints, then widen React Query adoption.
+3. Add DB indexes or pool tuning, measure slow queries, and design archival plan for oversized JSON fields.
+4. Establish automated Lighthouse and bundle-size checks in CI to guard regressions.

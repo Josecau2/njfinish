@@ -16,10 +16,18 @@ const StylePicturesTab = ({ manufacturer }) => {
   const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
   const api_url = import.meta.env.VITE_API_URL
 
-  // Color mode values
+  // Color mode values - ALL hooks must be declared at the top level
   const iconGray500 = useColorModeValue('gray.500', 'gray.400')
   const bgGray50 = useColorModeValue('gray.50', 'gray.800')
   const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const cardHoverBorder = useColorModeValue('blue.300', 'blue.500')
+  const inputBg = useColorModeValue('white', 'gray.700')
+  const inputBorderColor = useColorModeValue('gray.300', 'gray.600')
+  const inputPlaceholder = useColorModeValue('gray.500', 'gray.400')
+  const textColor = useColorModeValue('gray.800', 'gray.100')
+  const deleteTextColor = useColorModeValue('red.600', 'red.400')
+  const modalBorderColor = useColorModeValue('gray.200', 'gray.600')
 
   const [stylesMeta, setStylesMeta] = useState([])
   const [loading, setLoading] = useState(false)
@@ -243,37 +251,53 @@ const StylePicturesTab = ({ manufacturer }) => {
   return (
     <Box>
       <StandardCard mb={4}>
-        <CardHeader>
-          <Flex direction={{ base: 'column', md: 'row' }} gap={4} align={{ base: 'stretch', md: 'center' }} justify="space-between">
-            <Box>
-              <HStack spacing={4} align="center">
-                <Text as="h5" fontWeight="semibold">
+        <CardHeader bg={resolvedHeaderBg} color={headerTextColor} borderTopRadius="lg">
+          <Flex
+            direction={{ base: 'column', md: 'row' }}
+            gap={4}
+            align={{ base: 'stretch', md: 'center' }}
+            justify="space-between"
+          >
+            <Box flex="1">
+              <HStack spacing={3} mb={2} flexWrap="wrap">
+                <Text as="h5" fontWeight="semibold" fontSize="lg">
                   {t('styles.header', 'Style Pictures for {{name}}', { name: manufacturer.name })}
                 </Text>
-                <Badge colorScheme="brand">
+                <Badge colorScheme="whiteAlpha" variant="solid" fontSize="sm" px={3} py={1}>
                   {t('styles.count', '{{count}} Styles', { count: filteredStyles.length })}
                 </Badge>
                 {searchTerm && (
-                  <Badge colorScheme="gray" variant="subtle">
+                  <Badge colorScheme="whiteAlpha" variant="outline" fontSize="xs" px={2} py={1}>
                     {t('styles.filtered', '(filtered from {{total}})', { total: stylesMeta.length })}
                   </Badge>
                 )}
               </HStack>
-              <Text mt={1} fontSize="sm" color={iconGray500}>
+              <Text fontSize="sm" opacity={0.9}>
                 {t(
                   'styles.helperText',
                   'View all styles with their associated pictures. Images are used in quote creation to help customers visualize their selections.',
                 )}
               </Text>
             </Box>
-            <HStack spacing={4} align="center">
+            <HStack spacing={3} align="center" flexWrap="wrap" w={{ base: 'full', md: 'auto' }}>
               <Input
                 placeholder={t('styles.searchPlaceholder', 'Search styles...')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                maxW={{ base: '100%', md: '260px' }}
+                bg={inputBg}
+                borderColor={inputBorderColor}
+                _placeholder={{ color: inputPlaceholder }}
+                maxW={{ base: '100%', md: '280px' }}
+                size="md"
               />
-              <Button leftIcon={<Plus size={ICON_SIZE_MD} />} colorScheme="brand" onClick={() => setCreateModal(true)}>
+              <Button
+                leftIcon={<Plus size={ICON_SIZE_MD} />}
+                colorScheme="brand"
+                onClick={() => setCreateModal(true)}
+                flexShrink={0}
+                size="md"
+                minH="44px"
+              >
                 {t('styles.create', 'Add Style')}
               </Button>
             </HStack>
@@ -282,26 +306,59 @@ const StylePicturesTab = ({ manufacturer }) => {
       </StandardCard>
 
       <StandardCard>
-        <CardBody>
-          <Flex wrap="wrap" gap={4}>
+        <CardBody p={{ base: 4, md: 6 }}>
+          <Box
+            as="div"
+            display="grid !important"
+            gridTemplateColumns={{
+              base: 'repeat(2, 1fr)',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+              lg: 'repeat(4, 1fr)',
+              xl: 'repeat(5, 1fr)',
+            }}
+            gap={{ base: 3, md: 4, lg: 5 }}
+            w="100%"
+            sx={{
+              '& > *': {
+                minWidth: 0,
+              }
+            }}
+          >
             {filteredStyles.map((style, index) => (
               <Box
                 key={style.id || index}
-                textAlign="center"
-                minW="90px"
-                maxW="130px"
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                w="full"
+                minW={0}
               >
+                {/* Image Container */}
                 <Box
                   position="relative"
                   onMouseEnter={() => setHoveredId(style.id)}
                   onMouseLeave={() => setHoveredId(null)}
                   cursor="pointer"
+                  w="full"
+                  mb={3}
                 >
                   <Box
                     borderWidth="1px"
-                    borderRadius="md"
-                    p={3}
+                    borderRadius="lg"
+                    borderColor={borderColor}
                     bg={bgGray50}
+                    p={4}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    aspectRatio="4/5"
+                    overflow="hidden"
+                    transition="all 0.2s ease"
+                    _hover={{
+                      borderColor: cardHoverBorder,
+                      shadow: 'md',
+                    }}
                   >
                     <Image
                       src={
@@ -310,133 +367,261 @@ const StylePicturesTab = ({ manufacturer }) => {
                           : '/images/nologo.png'
                       }
                       alt={style.styleVariants?.[0]?.shortName || style.style}
-                      maxW="120px"
-                      maxH="150px"
+                      maxW="100%"
+                      maxH="100%"
                       h="auto"
                       w="auto"
-                      display="block"
+                      objectFit="contain"
                       fallbackSrc="/images/nologo.png"
                       loading="lazy"
                       onError={(e) => handleImageError(e, style)}
                     />
                   </Box>
 
-                  {/* Overlay actions */}
+                  {/* Desktop: Overlay actions on hover */}
                   <Flex
+                    display={{ base: 'none', md: 'flex' }}
                     position="absolute"
                     inset={0}
                     align="center"
                     justify="center"
-                    bg="rgba(0,0,0,0.6)"
+                    bg="blackAlpha.700"
+                    backdropFilter="blur(4px)"
                     color="white"
                     opacity={hoveredId === style.id ? 1 : 0}
-                    transition="opacity 0.2s ease-in-out"
-                    borderRadius="md"
+                    transition="opacity 0.25s ease-in-out"
+                    borderRadius="lg"
+                    gap={2}
+                    px={3}
+                    py={2}
+                    flexDirection="column"
+                    zIndex={10}
                   >
-                    <HStack spacing={4}>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleEditImage(style)
-                        }}
-                        leftIcon={<Pencil size={14} />}
-                      >
-                        {t('types.ui.uploadImage', 'Upload Image')}
-                      </Button>
-                      <Button
-                        colorScheme="red"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setDeleteAsk({ open: true, styleName: style.style })
-                          setReassignTo('')
-                        }}
-                        leftIcon={<Trash size={14} />}
-                      >
-                        {t('common.delete', 'Delete')}
-                      </Button>
-                    </HStack>
+                    <Button
+                      variant="solid"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleEditImage(style)
+                      }}
+                      leftIcon={<Pencil size={16} />}
+                      colorScheme="blue"
+                      w="full"
+                      minH="40px"
+                      fontSize="sm"
+                      fontWeight="600"
+                      boxShadow="lg"
+                      _hover={{
+                        transform: 'translateY(-1px)',
+                        boxShadow: 'xl',
+                      }}
+                    >
+                      {t('types.ui.uploadImage', 'Upload')}
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      variant="solid"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setDeleteAsk({ open: true, styleName: style.style })
+                        setReassignTo('')
+                      }}
+                      leftIcon={<Trash size={16} />}
+                      w="full"
+                      minH="40px"
+                      fontSize="sm"
+                      fontWeight="600"
+                      boxShadow="lg"
+                      _hover={{
+                        transform: 'translateY(-1px)',
+                        boxShadow: 'xl',
+                      }}
+                    >
+                      {t('common.delete', 'Delete')}
+                    </Button>
                   </Flex>
                 </Box>
 
+                {/* Mobile: Action buttons below image */}
+                <Flex
+                  display={{ base: 'flex', md: 'none' }}
+                  direction="column"
+                  gap={2}
+                  w="full"
+                  mb={3}
+                >
+                  <Button
+                    variant="solid"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleEditImage(style)
+                    }}
+                    leftIcon={<Pencil size={16} />}
+                    colorScheme="blue"
+                    w="full"
+                    minH="44px"
+                    fontSize="sm"
+                    fontWeight="600"
+                  >
+                    {t('types.ui.uploadImage', 'Upload')}
+                  </Button>
+                  <Button
+                    colorScheme="red"
+                    variant="solid"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setDeleteAsk({ open: true, styleName: style.style })
+                      setReassignTo('')
+                    }}
+                    leftIcon={<Trash size={16} />}
+                    w="full"
+                    minH="44px"
+                    fontSize="sm"
+                    fontWeight="600"
+                  >
+                    {t('common.delete', 'Delete')}
+                  </Button>
+                </Flex>
+
                 {/* Caption */}
-                <Box mt={2} maxW="120px" mx="auto">
-                  <Text fontSize="sm" noOfLines={1} title={style.styleVariants?.[0]?.shortName || style.style}>
+                <Box textAlign="center" w="full">
+                  <Text
+                    fontSize="sm"
+                    fontWeight="600"
+                    noOfLines={2}
+                    lineHeight="1.3"
+                    mb={1}
+                    title={style.styleVariants?.[0]?.shortName || style.style}
+                    color={textColor}
+                  >
                     {style.styleVariants?.[0]?.shortName || style.style}
                   </Text>
                   {style.styleVariants?.length > 0 && (
-                    <Box textAlign="center" mt={1}>
-                      <Badge colorScheme="gray" fontSize="xs">
-                        {style.styleVariants.length} {t('styles.variants', 'variants')}
-                      </Badge>
-                    </Box>
+                    <Badge colorScheme="gray" fontSize="xs" variant="subtle">
+                      {style.styleVariants.length} {t('styles.variants', 'variant', { count: style.styleVariants.length })}
+                    </Badge>
                   )}
                 </Box>
               </Box>
             ))}
-          </Flex>
+          </Box>
         </CardBody>
       </StandardCard>
 
       {/* Create Style Modal */}
-      <Modal isOpen={createModal} onClose={() => setCreateModal(false)} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
-        <ModalOverlay />
-        <ModalContent borderRadius="12px">
-          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+      <Modal
+        isOpen={createModal}
+        onClose={() => setCreateModal(false)}
+        size={{ base: 'full', md: 'lg' }}
+        scrollBehavior="inside"
+        isCentered
+      >
+        <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" />
+        <ModalContent borderRadius={{ base: '0', md: '2xl' }} maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader
+            bg={resolvedHeaderBg}
+            color={headerTextColor}
+            borderTopRadius={{ base: '0', md: '2xl' }}
+            py={4}
+            px={6}
+          >
             <Text fontSize="lg" fontWeight="semibold">
               {t('styles.createHeader', 'Add Style')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
-          <ModalBody>
+          <ModalCloseButton
+            aria-label={t('common.ariaLabels.closeModal', 'Close modal')}
+            color={headerTextColor}
+            top={4}
+            right={4}
+            minW="44px"
+            minH="44px"
+          />
+          <ModalBody px={6} py={5}>
             <Flex direction="column" gap={4}>
               <Box>
-                <FormLabel>{t('styles.name', 'Style Name')}</FormLabel>
+                <FormLabel mb={2} fontWeight="600">
+                  {t('styles.name', 'Style Name')}
+                </FormLabel>
                 <Input
                   value={createForm.name}
                   onChange={(e) => setCreateForm((p) => ({ ...p, name: e.target.value }))}
+                  size="lg"
                 />
               </Box>
               <Box>
-                <FormLabel>{t('styles.short', 'Short Name')}</FormLabel>
+                <FormLabel mb={2} fontWeight="600">
+                  {t('styles.short', 'Short Name')}
+                </FormLabel>
                 <Input
                   value={createForm.shortName}
                   onChange={(e) => setCreateForm((p) => ({ ...p, shortName: e.target.value }))}
+                  size="lg"
                 />
               </Box>
               <Box>
-                <FormLabel>{t('common.description', 'Description')}</FormLabel>
+                <FormLabel mb={2} fontWeight="600">
+                  {t('common.description', 'Description')}
+                </FormLabel>
                 <Input
                   value={createForm.description}
                   onChange={(e) => setCreateForm((p) => ({ ...p, description: e.target.value }))}
+                  size="lg"
                 />
               </Box>
               <Box>
-                <FormLabel>{t('common.code', 'Code')}</FormLabel>
+                <FormLabel mb={2} fontWeight="600">
+                  {t('common.code', 'Code')}
+                </FormLabel>
                 <Input
                   value={createForm.code}
                   onChange={(e) => setCreateForm((p) => ({ ...p, code: e.target.value }))}
+                  size="lg"
                 />
               </Box>
               <Box>
-                <FormLabel>{t('common.image', 'Image')}</FormLabel>
+                <FormLabel mb={2} fontWeight="600">
+                  {t('common.image', 'Image')}
+                </FormLabel>
                 <Input
                   type="file"
                   accept="image/*"
                   onChange={(e) =>
                     setCreateForm((p) => ({ ...p, imageFile: e.target.files?.[0] || null }))
                   }
+                  size="lg"
+                  pt={2}
                 />
               </Box>
             </Flex>
           </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={() => setCreateModal(false)} disabled={createBusy}>
+          <ModalFooter
+            gap={3}
+            flexWrap="wrap"
+            px={6}
+            py={4}
+            borderTop="1px"
+            borderColor={modalBorderColor}
+          >
+            <Button
+              variant="ghost"
+              onClick={() => setCreateModal(false)}
+              disabled={createBusy}
+              flex={{ base: '1', md: '0 1 auto' }}
+              minH="44px"
+            >
               {t('common.cancel', 'Cancel')}
             </Button>
-            <Button colorScheme="brand" onClick={handleCreateStyle} isLoading={createBusy} minH="44px">
+            <Button
+              colorScheme="brand"
+              onClick={handleCreateStyle}
+              isLoading={createBusy}
+              flex={{ base: '1', md: '0 1 auto' }}
+              minH="44px"
+            >
               {t('common.save', 'Save')}
             </Button>
           </ModalFooter>
@@ -444,36 +629,75 @@ const StylePicturesTab = ({ manufacturer }) => {
       </Modal>
 
       {/* Delete Confirm Modal */}
-      <Modal isOpen={deleteAsk.open} onClose={() => setDeleteAsk({ open: false, styleName: '' })} size={{ base: 'full', md: 'md' }} scrollBehavior="inside" isCentered>
-        <ModalOverlay />
-        <ModalContent borderRadius="12px">
-          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+      <Modal
+        isOpen={deleteAsk.open}
+        onClose={() => setDeleteAsk({ open: false, styleName: '' })}
+        size={{ base: 'full', md: 'lg' }}
+        scrollBehavior="inside"
+        isCentered
+      >
+        <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" />
+        <ModalContent borderRadius={{ base: '0', md: '2xl' }} maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader
+            bg={resolvedHeaderBg}
+            color={headerTextColor}
+            borderTopRadius={{ base: '0', md: '2xl' }}
+            py={4}
+            px={6}
+          >
             <Text fontSize="lg" fontWeight="semibold">
               {t('styles.deleteHeader', 'Delete Style')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
-          <ModalBody>
-            <Text>
+          <ModalCloseButton
+            aria-label={t('common.ariaLabels.closeModal', 'Close modal')}
+            color={headerTextColor}
+            top={4}
+            right={4}
+            minW="44px"
+            minH="44px"
+          />
+          <ModalBody px={6} py={5}>
+            <Text fontSize="md" mb={4}>
               {t('styles.deleteConfirm', 'Delete style')}{' '}
-              <Text as="span" fontWeight="semibold">{deleteAsk.styleName}</Text>?
+              <Text as="span" fontWeight="semibold" color={deleteTextColor}>
+                {deleteAsk.styleName}
+              </Text>?
             </Text>
-            <Box mt={4}>
-              <FormLabel>
+            <Box>
+              <FormLabel mb={2} fontWeight="600">
                 {t('styles.reassign', 'Reassign items to (leave empty to clear)')}
               </FormLabel>
               <Input
                 value={reassignTo}
                 onChange={(e) => setReassignTo(e.target.value)}
                 placeholder={t('styles.reassignPh', 'New style name or blank')}
+                size="lg"
               />
             </Box>
           </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={() => setDeleteAsk({ open: false, styleName: '' })}>
+          <ModalFooter
+            gap={3}
+            flexWrap="wrap"
+            px={6}
+            py={4}
+            borderTop="1px"
+            borderColor={modalBorderColor}
+          >
+            <Button
+              variant="ghost"
+              onClick={() => setDeleteAsk({ open: false, styleName: '' })}
+              flex={{ base: '1', md: '0 1 auto' }}
+              minH="44px"
+            >
               {t('common.cancel', 'Cancel')}
             </Button>
-            <Button colorScheme="red" onClick={handleDeleteStyle} minH="44px">
+            <Button
+              colorScheme="red"
+              onClick={handleDeleteStyle}
+              flex={{ base: '1', md: '0 1 auto' }}
+              minH="44px"
+            >
               {t('common.delete', 'Delete')}
             </Button>
           </ModalFooter>
@@ -488,31 +712,56 @@ const StylePicturesTab = ({ manufacturer }) => {
           setSelectedStyle(null)
           setSelectedFile(null)
         }}
-        size={{ base: 'full', md: 'md', lg: 'lg' }}
+        size={{ base: 'full', md: 'xl' }}
         scrollBehavior="inside"
         isCentered
       >
-        <ModalOverlay />
-        <ModalContent borderRadius="12px">
-          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
+        <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" />
+        <ModalContent borderRadius={{ base: '0', md: '2xl' }} maxH={{ base: '100vh', md: '90vh' }}>
+          <ModalHeader
+            bg={resolvedHeaderBg}
+            color={headerTextColor}
+            borderTopRadius={{ base: '0', md: '2xl' }}
+            py={4}
+            px={6}
+          >
             <Text fontSize="lg" fontWeight="semibold">
               {t('styles.editImage', 'Edit Style Image')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
-          <ModalBody>
+          <ModalCloseButton
+            aria-label={t('common.ariaLabels.closeModal', 'Close modal')}
+            color={headerTextColor}
+            top={4}
+            right={4}
+            minW="44px"
+            minH="44px"
+          />
+          <ModalBody px={6} py={5}>
             {selectedStyle && (
-              <>
-                <Box mb={3}>
-                  <Text>
-                    <Text as="span" fontWeight="semibold">{t('common.style', 'Style')}:</Text> {selectedStyle.style}
+              <Flex direction="column" gap={5}>
+                <Box>
+                  <Text fontSize="md">
+                    <Text as="span" fontWeight="semibold">{t('common.style', 'Style')}:</Text>{' '}
+                    {selectedStyle.style}
                   </Text>
                 </Box>
-                <Box mb={4} borderWidth="1px" borderRadius="md" p={3} bg={bgGray50}>
-                  <Text fontWeight="semibold" mb={2}>
-                    {t('types.ui.currentImage', 'Current Image:')}
+
+                <Box>
+                  <Text fontWeight="semibold" mb={3} fontSize="md">
+                    {t('types.ui.currentImage', 'Current Image')}
                   </Text>
-                  <Flex justify="center">
+                  <Box
+                    borderWidth="1px"
+                    borderRadius="lg"
+                    borderColor={borderColor}
+                    p={6}
+                    bg={bgGray50}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    minH="240px"
+                  >
                     <Image
                       src={
                         selectedStyle.styleVariants?.[0]?.image
@@ -520,28 +769,27 @@ const StylePicturesTab = ({ manufacturer }) => {
                           : '/default-image.png'
                       }
                       alt={selectedStyle.style}
-                      maxW="200px"
-                      maxH="200px"
+                      maxW="100%"
+                      maxH="240px"
                       objectFit="contain"
-                      borderWidth="1px"
-                      borderColor="gray.200"
-                      borderRadius="4px"
                       fallbackSrc="/default-image.png"
                       loading="lazy"
                       onError={(e) => handleImageError(e, selectedStyle)}
                     />
-                  </Flex>
+                  </Box>
                 </Box>
 
-                <Box mb={3}>
-                  <FormLabel htmlFor="imageUpload">
-                    {t('styles.uploadNewImage', 'Upload New Image:')}
+                <Box>
+                  <FormLabel mb={2} fontWeight="600">
+                    {t('styles.uploadNewImage', 'Upload New Image')}
                   </FormLabel>
                   <Input
                     id="imageUpload"
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
+                    size="lg"
+                    pt={2}
                   />
                   <Text mt={2} color={borderGray600} fontSize="sm">
                     {selectedFile
@@ -554,37 +802,52 @@ const StylePicturesTab = ({ manufacturer }) => {
 
                 {selectedFile && (
                   <Box>
-                    <Text fontWeight="semibold" mb={2}>
-                      {t('styles.previewNewImage', 'New Image Preview:')}
+                    <Text fontWeight="semibold" mb={3} fontSize="md">
+                      {t('styles.previewNewImage', 'New Image Preview')}
                     </Text>
-                    <Flex justify="center" borderWidth="1px" borderRadius="md" p={3} bg={bgGray50}>
+                    <Box
+                      borderWidth="1px"
+                      borderRadius="lg"
+                      borderColor={borderColor}
+                      p={6}
+                      bg={bgGray50}
+                      display="flex"
+                      justifyContent="center"
+                      alignItems="center"
+                      minH="240px"
+                    >
                       <Image
                         src={URL.createObjectURL(selectedFile)}
                         alt="Preview"
-                        maxW="200px"
-                        maxH="200px"
+                        maxW="100%"
+                        maxH="240px"
                         objectFit="contain"
-                        borderWidth="1px"
-                        borderColor="gray.200"
-                        borderRadius="4px"
                         fallbackSrc="/default-image.png"
                         loading="lazy"
                       />
-                    </Flex>
+                    </Box>
                   </Box>
                 )}
-              </>
+              </Flex>
             )}
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter
+            gap={3}
+            flexWrap="wrap"
+            px={6}
+            py={4}
+            borderTop="1px"
+            borderColor={modalBorderColor}
+          >
             <Button
               variant="ghost"
-              mr={3}
               onClick={() => {
                 setEditModalVisible(false)
                 setSelectedStyle(null)
                 setSelectedFile(null)
               }}
+              flex={{ base: '1', md: '0 1 auto' }}
+              minH="44px"
             >
               {t('common.cancel', 'Cancel')}
             </Button>
@@ -594,6 +857,8 @@ const StylePicturesTab = ({ manufacturer }) => {
               isDisabled={!selectedFile || uploadingImage}
               leftIcon={<Upload size={ICON_SIZE_MD} />}
               isLoading={uploadingImage}
+              flex={{ base: '1', md: '0 1 auto' }}
+              minH="44px"
             >
               {t('types.ui.uploadImage', 'Upload Image')}
             </Button>

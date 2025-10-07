@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchDashboardCounts, fetchLatestProposals } from '../../store/slices/dashboardSlice'
 import { useTranslation } from 'react-i18next'
-import { getFreshestToken } from '../../utils/authToken'
+import { isAuthSessionActive } from '../../utils/authSession'
 import { Badge, Box, Button, CardBody, Flex, HStack, Icon, List, ListItem, SimpleGrid, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
 import StandardCard from '../../components/StandardCard'
@@ -101,43 +101,13 @@ const Dashboard = () => {
   const productUpdates = []
 
   useEffect(() => {
-    let cancelled = false
-
-    const kickoff = async () => {
-      let token = getFreshestToken()
-      if (!token) {
-        for (let attempt = 0; attempt < 6 && !token; attempt += 1) {
-          // Roughly 150ms backoff window to wait for token hydration
-          // eslint-disable-next-line no-await-in-loop
-          await new Promise((resolve) => setTimeout(resolve, 25))
-          token = getFreshestToken()
-        }
-      }
-
-      if (!cancelled && token) {
-        dispatch(fetchDashboardCounts())
-        dispatch(fetchLatestProposals())
-      }
+    if (!isAuthSessionActive()) {
+      return
     }
 
-    kickoff()
-
-    return () => {
-      cancelled = true
-    }
+    dispatch(fetchDashboardCounts())
+    dispatch(fetchLatestProposals())
   }, [dispatch])
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const token = getFreshestToken()
-      if (token) {
-        fetchLinks()
-        fetchFiles()
-      }
-    }, 100)
-
-    return () => clearTimeout(timer)
-  }, [])
 
   const fetchLinks = useCallback(async () => {
     try {
@@ -160,6 +130,15 @@ const Dashboard = () => {
       console.warn('Failed to load resource files', error)
     }
   }, [])
+
+  useEffect(() => {
+    if (!isAuthSessionActive()) {
+      return
+    }
+    fetchLinks()
+    fetchFiles()
+  }, [fetchLinks, fetchFiles])
+
 
   useEffect(() => {
     let interval = null

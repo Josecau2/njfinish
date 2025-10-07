@@ -28,7 +28,7 @@ const TypesTab = ({ manufacturer }) => {
   const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
   const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
-  // Color mode values
+  // Color mode values - all declared at top level
   const bgGray50 = useColorModeValue('gray.50', 'gray.800')
   const borderGray200 = useColorModeValue('gray.200', 'gray.600')
   const borderGray700 = useColorModeValue('gray.700', 'gray.300')
@@ -36,6 +36,15 @@ const TypesTab = ({ manufacturer }) => {
   const iconGray500 = useColorModeValue('gray.500', 'gray.400')
   const color6 = useColorModeValue('white', 'gray.700')
   const borderGray600 = useColorModeValue('gray.600', 'gray.400')
+  const inputBg = useColorModeValue('white', 'gray.700')
+  const inputBorderColor = useColorModeValue('gray.300', 'gray.600')
+  const inputPlaceholder = useColorModeValue('gray.500', 'gray.400')
+  const cardHoverBorder = useColorModeValue('brand.200', 'brand.700')
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const textColor = useColorModeValue('gray.800', 'gray.100')
+  const brandColor = useColorModeValue('brand.600', 'brand.400')
+  const brandBorderColor = useColorModeValue('brand.300', 'brand.500')
+  const spinnerColor = useColorModeValue('brand.500', 'brand.400')
 
   const [types, setTypes] = useState([])
   const [loading, setLoading] = useState(false)
@@ -194,18 +203,6 @@ const TypesTab = ({ manufacturer }) => {
       return matchesSearch && matchesStyleFilter && matchesTypeFilter
     })
   }, [types, searchTerm, styleFilter, typeFilter, catalogItems])
-
-  // Group types by type name - memoized to prevent unnecessary re-renders
-  const groupedTypes = useMemo(() => {
-    return filteredTypes.reduce((acc, type) => {
-      const typeName = type.type || 'Unnamed'
-      if (!acc[typeName]) {
-        acc[typeName] = []
-      }
-      acc[typeName].push(type)
-      return acc
-    }, {})
-  }, [filteredTypes])
 
   // Handle type selection
   const handleTypeSelection = useCallback((typeId, checked) => {
@@ -662,7 +659,7 @@ const TypesTab = ({ manufacturer }) => {
     return (
       <Box minH="400px" display="flex" alignItems="center" justifyContent="center">
         <VStack spacing={4}>
-          <Spinner color="brand.500" size="lg" />
+          <Spinner color={spinnerColor} size="lg" />
           <Text>{t('types.loading', 'Loading types...')}</Text>
         </VStack>
       </Box>
@@ -671,22 +668,42 @@ const TypesTab = ({ manufacturer }) => {
 
   return (
     <Box>
-      <StandardCard>
-        <CardHeader bg={bgGray50} borderBottom="1px" borderColor={borderGray200}>
-          <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
-            <Text fontSize="xl" fontWeight="bold" color="brand.600">
-              {t('types.ui.header', 'Type Pictures & Management')}
-            </Text>
-            <HStack spacing={4} wrap="wrap">
+      <StandardCard mb={4}>
+        <CardHeader bg={resolvedHeaderBg} color={headerTextColor} borderTopRadius="lg">
+          <Flex
+            direction={{ base: 'column', md: 'row' }}
+            gap={4}
+            align={{ base: 'stretch', md: 'center' }}
+            justify="space-between"
+          >
+            <Box flex="1">
+              <HStack spacing={3} mb={2} flexWrap="wrap">
+                <Text as="h5" fontWeight="semibold" fontSize="lg">
+                  {t('types.ui.header', 'Type Pictures for {{name}}', { name: manufacturer.name })}
+                </Text>
+                <Badge colorScheme="whiteAlpha" variant="solid" fontSize="sm" px={3} py={1}>
+                  {t('types.count', '{{count}} Types', { count: filteredTypes.length })}
+                </Badge>
+              </HStack>
+              <Text fontSize="sm" opacity={0.9}>
+                {t(
+                  'types.helperText',
+                  'View and manage cabinet type pictures. Images help customers visualize different door styles and configurations.',
+                )}
+              </Text>
+            </Box>
+            <HStack spacing={3} align="center" flexWrap="wrap" w={{ base: 'full', md: 'auto' }}>
               <Button
-                colorScheme="green"
                 leftIcon={<Plus size={ICON_SIZE_MD} />}
+                colorScheme="green"
                 onClick={() => {
                   setCreateForm({ typeName: '', longDescription: '', imageFile: null })
                   setCreateError(null)
                   setCreateModalVisible(true)
                 }}
                 size="md"
+                minH="44px"
+                flexShrink={0}
               >
                 {t('types.ui.createType', 'Create Type')}
               </Button>
@@ -695,20 +712,27 @@ const TypesTab = ({ manufacturer }) => {
                 variant="outline"
                 onClick={() => setViewMode(viewMode === 'grid' ? 'table' : 'grid')}
                 size="md"
+                minH="44px"
+                flexShrink={0}
               >
                 {viewMode === 'grid'
                   ? t('types.ui.tableView', 'Table View')
                   : t('types.ui.gridView', 'Grid View')}
               </Button>
-
               {selectedItems.length > 0 && (
                 <Menu>
-                  <MenuButton as={Button} rightIcon={<ChevronDown size={ICON_SIZE_MD} />} colorScheme="gray" size="md">
+                  <MenuButton
+                    as={Button}
+                    rightIcon={<ChevronDown size={ICON_SIZE_MD} />}
+                    colorScheme="gray"
+                    size="md"
+                    minH="44px"
+                  >
                     {t('types.ui.actions', 'Actions')} ({selectedItems.length})
                   </MenuButton>
                   <MenuList>
                     <MenuItem onClick={() => setBulkEditModalVisible(true)}>
-                      Bulk Edit
+                      {t('types.ui.bulkEdit', 'Bulk Edit')}
                     </MenuItem>
                     <MenuItem
                       onClick={() => {
@@ -722,7 +746,7 @@ const TypesTab = ({ manufacturer }) => {
                         }
                       }}
                     >
-                      Rename Type Globally
+                      {t('types.ui.renameType', 'Rename Type Globally')}
                     </MenuItem>
                   </MenuList>
                 </Menu>
@@ -730,10 +754,13 @@ const TypesTab = ({ manufacturer }) => {
             </HStack>
           </Flex>
         </CardHeader>
-        <CardBody p={6}>
+      </StandardCard>
+
+      <StandardCard>
+        <CardBody p={{ base: 4, md: 6 }}>
           {/* Search Bar */}
           <Box mb={6}>
-            <FormLabel fontWeight="semibold" color={borderGray700} mb={2}>
+            <FormLabel fontWeight="600" color={textColor} mb={2}>
               {t('types.ui.searchLabel', 'Search Types')}
             </FormLabel>
             <InputGroup size="lg">
@@ -744,6 +771,9 @@ const TypesTab = ({ manufacturer }) => {
                 placeholder={t('types.ui.searchPlaceholder', 'Search types...')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                bg={inputBg}
+                borderColor={inputBorderColor}
+                _placeholder={{ color: inputPlaceholder }}
               />
             </InputGroup>
           </Box>
@@ -752,7 +782,7 @@ const TypesTab = ({ manufacturer }) => {
           <Box mb={6} p={4} bg={bgGray50} borderRadius="md">
             <Flex gap={4} wrap="wrap">
               <Box flex="1" minW="200px">
-                <FormLabel fontWeight="semibold" color="brand.600">
+                <FormLabel fontWeight="semibold" color={brandColor}>
                   {t('types.ui.filterByStyle', 'Filter by Style')}
                 </FormLabel>
                 <Input
@@ -760,7 +790,7 @@ const TypesTab = ({ manufacturer }) => {
                   value={styleFilter}
                   onChange={(e) => setStyleFilter(e.target.value)}
                   list="stylesList"
-                  borderColor="brand.300"
+                  borderColor={brandBorderColor}
                 />
                 <DataList id="stylesList">
                   {uniqueStyles.map((style) => (
@@ -769,7 +799,7 @@ const TypesTab = ({ manufacturer }) => {
                 </DataList>
               </Box>
               <Box flex="1" minW="200px">
-                <FormLabel fontWeight="semibold" color="brand.600">
+                <FormLabel fontWeight="semibold" color={brandColor}>
                   {t('types.ui.filterByType', 'Filter by Type')}
                 </FormLabel>
                 <Input
@@ -777,7 +807,7 @@ const TypesTab = ({ manufacturer }) => {
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
                   list="typesList"
-                  borderColor="brand.300"
+                  borderColor={brandBorderColor}
                 />
                 <DataList id="typesList">
                   {uniqueTypes.map((type) => (
@@ -841,21 +871,21 @@ const TypesTab = ({ manufacturer }) => {
           {viewMode === 'grid' ? (
             // Grid View
             <>
-              <Box mb={4} p={3} bg="brand.50" borderRadius="md" border="1px" borderColor="brand.200">
+              <Box mb={4} p={3} bg={bgGray50} borderRadius="md" border="1px" borderColor={borderColor}>
                 <Checkbox
                   isChecked={
                     selectedItems.length === filteredTypes.length && filteredTypes.length > 0
                   }
                   onChange={(e) => handleSelectAll(e.target.checked)}
                   fontWeight="semibold"
-                  color="brand.600"
+                  colorScheme="brand"
                   fontSize="lg"
                 >
-                  Select All ({filteredTypes.length} types)
+                  {t('types.ui.selectAll', 'Select All ({{count}} types)', { count: filteredTypes.length })}
                 </Checkbox>
               </Box>
 
-              {Object.keys(groupedTypes).length === 0 ? (
+              {filteredTypes.length === 0 ? (
                 <VStack spacing={4} py={10} textAlign="center">
                   <Box fontSize="6xl" color={iconGray400}>
                     📷
@@ -870,96 +900,230 @@ const TypesTab = ({ manufacturer }) => {
                   </Text>
                 </VStack>
               ) : (
-                <Stack spacing={6}>
-                  {Object.entries(groupedTypes).map(([typeName, typeItems]) => (
-                    <Box key={typeName}>
-                      <Text fontWeight="semibold" color="brand.600" mb={2}>
-                        {typeName}
-                      </Text>
-                      <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4}>
-                        {typeItems.map((type) => {
-                          const isSelected = selectedItems.includes(type.id)
-                          return (
-                            <Box
-                              key={type.id}
-                              bg={bgGray50}
-                              borderRadius="md"
-                              borderWidth="1px"
-                              borderColor={isSelected ? 'brand.200' : 'gray.200'}
-                              overflow="hidden"
-                              onMouseEnter={() => setHoveredId(type.id)}
-                              onMouseLeave={() => setHoveredId(null)}
+                <Box
+                  as="div"
+                  display="grid"
+                  gridTemplateColumns={{
+                    base: 'repeat(2, minmax(0, 1fr))',
+                    sm: 'repeat(2, minmax(0, 1fr))',
+                    md: 'repeat(3, minmax(0, 1fr))',
+                    lg: 'repeat(4, minmax(0, 1fr))',
+                    xl: 'repeat(5, minmax(0, 1fr))',
+                  }}
+                  gap={{ base: 3, md: 4, lg: 5 }}
+                  w="100%"
+                  alignItems="stretch"
+                  sx={{
+                    '& > *': {
+                      minWidth: 0,
+                    },
+                  }}
+                >
+                  {filteredTypes.map((type) => {
+                    const isSelected = selectedItems.includes(type.id)
+                    return (
+                      <Box
+                        key={type.id}
+                        display="flex"
+                        flexDirection="column"
+                        w="full"
+                        minW={0}
+                        h="100%"
+                        borderWidth="1px"
+                        borderColor={borderColor}
+                        borderRadius="xl"
+                        bg={color6}
+                        px={4}
+                        py={5}
+                        boxShadow="sm"
+                        transition="box-shadow 0.2s ease"
+                        _hover={{ boxShadow: 'md' }}
+                      >
+                        <Text
+                          fontWeight="semibold"
+                          fontSize="md"
+                          color={textColor}
+                          mb={3}
+                          noOfLines={2}
+                          textAlign="center"
+                        >
+                          {type.type || t('types.meta.unnamedType', 'Unnamed Type')}
+                        </Text>
+
+                        {/* Image Container */}
+                        <Box
+                          position="relative"
+                          onMouseEnter={() => setHoveredId(type.id)}
+                          onMouseLeave={() => setHoveredId(null)}
+                          cursor="pointer"
+                          mb={3}
+                        >
+                          <Box
+                            borderWidth="1px"
+                            borderRadius="lg"
+                            borderColor={isSelected ? 'brand.400' : borderColor}
+                            bg={bgGray50}
+                            p={4}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            aspectRatio="4/5"
+                            overflow="hidden"
+                            transition="all 0.2s ease"
+                            _hover={{
+                              borderColor: cardHoverBorder,
+                              shadow: 'md',
+                            }}
+                          >
+                            <Image
+                              src={getImageSrc(type)}
+                              alt={type.type}
+                              onError={handleImageError}
+                              maxW="100%"
+                              maxH="100%"
+                              objectFit="contain"
+                              loading="lazy"
+                            />
+                          </Box>
+
+                          {/* Desktop: Overlay actions on hover */}
+                          {!isContractor && (
+                            <Flex
+                              display={{ base: 'none', md: 'flex' }}
+                              position="absolute"
+                              inset={0}
+                              align="center"
+                              justify="center"
+                              bg="blackAlpha.700"
+                              backdropFilter="blur(4px)"
+                              color="white"
+                              opacity={hoveredId === type.id ? 1 : 0}
+                              transition="opacity 0.25s ease-in-out"
+                              borderRadius="lg"
+                              gap={2}
+                              px={3}
+                              py={2}
+                              flexDirection="column"
+                              zIndex={10}
                             >
-                              <Box position="relative" p={3} display="flex" justifyContent="center" minH="170px">
-                                <Image
-                                  src={getImageSrc(type)}
-                                  alt={type.type}
-                                  onError={handleImageError}
-                                  maxH="130px"
-                                  objectFit="contain"
-                                  bg={color6}
-                                  borderRadius="md"
-                                  w="full"
-                                />
-                                {!isContractor && (
-                                  <Flex
-                                    position="absolute"
-                                    inset={0}
-                                    align="center"
-                                    justify="center"
-                                    bg="rgba(0, 0, 0, 0.6)"
-                                    opacity={hoveredId === type.id ? 1 : 0}
-                                    transition="opacity 0.3s ease"
-                                    gap={4}
-                                  >
-                                    <Button
-                                      size="sm"
-                                      colorScheme="brand"
-                                      onClick={(event) => {
-                                        event.stopPropagation()
-                                        handleEditType(type)
-                                      }}
-                                    >
-                                      <Pencil size={ICON_SIZE_MD} aria-hidden="true" mr={1} />{' '}
-                                      {t('types.meta.editType', 'Edit Type')}
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      colorScheme="red"
-                                      onClick={(event) => {
-                                        event.stopPropagation()
-                                        setDeleteTypeAsk({ open: true, typeName: type.type })
-                                        setReassignTypeTo('')
-                                      }}
-                                    >
-                                      <Trash size={ICON_SIZE_MD} aria-hidden="true" />
-                                    </Button>
-                                  </Flex>
-                                )}
-                              </Box>
-                              <Stack spacing={4} px={3} pb={3}>
-                                <Text fontSize="sm" color={borderGray600} minH="2.5em">
-                                  {type.longDescription ||
-                                    t(
-                                      'types.meta.descriptionPlaceholder',
-                                      'Add a description for this type',
-                                    )}
-                                </Text>
-                                <Flex justify="flex-end">
-                                  <Checkbox
-                                    id={`type-${type.id}`}
-                                    isChecked={selectedItems.includes(type.id)}
-                                    onChange={(event) => handleTypeSelection(type.id, event.target.checked)}
-                                  />
-                                </Flex>
-                              </Stack>
-                            </Box>
-                          )
-                        })}
-                      </SimpleGrid>
-                    </Box>
-                  ))}
-                </Stack>
+                              <Button
+                                size="sm"
+                                colorScheme="blue"
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  handleEditType(type)
+                                }}
+                                leftIcon={<Pencil size={16} />}
+                                w="full"
+                                minH="40px"
+                                fontSize="sm"
+                                fontWeight="600"
+                                boxShadow="lg"
+                                _hover={{
+                                  transform: 'translateY(-1px)',
+                                  boxShadow: 'xl',
+                                }}
+                              >
+                                {t('types.meta.editType', 'Edit')}
+                              </Button>
+                              <Button
+                                size="sm"
+                                colorScheme="red"
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  setDeleteTypeAsk({ open: true, typeName: type.type })
+                                  setReassignTypeTo('')
+                                }}
+                                leftIcon={<Trash size={16} />}
+                                w="full"
+                                minH="40px"
+                                fontSize="sm"
+                                fontWeight="600"
+                                boxShadow="lg"
+                                _hover={{
+                                  transform: 'translateY(-1px)',
+                                  boxShadow: 'xl',
+                                }}
+                              >
+                                {t('common.delete', 'Delete')}
+                              </Button>
+                            </Flex>
+                          )}
+                        </Box>
+
+                        {/* Mobile: Action buttons below image */}
+                        {!isContractor && (
+                          <Flex
+                            display={{ base: 'flex', md: 'none' }}
+                            direction="column"
+                            gap={2}
+                            mb={3}
+                          >
+                            <Button
+                              size="sm"
+                              colorScheme="blue"
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                handleEditType(type)
+                              }}
+                              leftIcon={<Pencil size={16} />}
+                              w="full"
+                              minH="44px"
+                              fontSize="sm"
+                              fontWeight="600"
+                            >
+                              {t('types.meta.editType', 'Edit')}
+                            </Button>
+                            <Button
+                              size="sm"
+                              colorScheme="red"
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                setDeleteTypeAsk({ open: true, typeName: type.type })
+                                setReassignTypeTo('')
+                              }}
+                              leftIcon={<Trash size={16} />}
+                              w="full"
+                              minH="44px"
+                              fontSize="sm"
+                              fontWeight="600"
+                            >
+                              {t('common.delete', 'Delete')}
+                            </Button>
+                          </Flex>
+                        )}
+
+                        {/* Description and Checkbox */}
+                        <Stack spacing={3} mt="auto" textAlign="center">
+                          <Text
+                            fontSize="sm"
+                            color={borderGray600}
+                            minH="2.5em"
+                            noOfLines={2}
+                          >
+                            {type.longDescription ||
+                              t(
+                                'types.meta.descriptionPlaceholder',
+                                'Add a description for this type',
+                              )}
+                          </Text>
+                          <Checkbox
+                            id={`type-${type.id}`}
+                            isChecked={isSelected}
+                            onChange={(e) => handleTypeSelection(type.id, e.target.checked)}
+                            colorScheme="brand"
+                            size="md"
+                            justifyContent="center"
+                          >
+                            <Text fontSize="sm" fontWeight="600">
+                              {t('types.ui.select', 'Select')}
+                            </Text>
+                          </Checkbox>
+                        </Stack>
+                      </Box>
+                    )
+                  })}
+                </Box>
               )}
             </>
           ) : (
@@ -1161,7 +1325,7 @@ const TypesTab = ({ manufacturer }) => {
               {/* Right Column - Catalog Items Assignment */}
               <Box>
                 <Box mb={4}>
-                  <Text fontWeight="bold" color="brand.600" fontSize="lg" mb={2}>
+                  <Text fontWeight="bold" color={brandColor} fontSize="lg" mb={2}>
                     {t('types.assign.header', 'Assign Catalog Items to This Type')}
                   </Text>
                   <Text color={borderGray600} fontSize="sm" mb={4}>

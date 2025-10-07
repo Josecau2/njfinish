@@ -92,62 +92,35 @@ const ResetPasswordPage = () => {
       languageSwitcherProps={{ compact: true }}
     >
       <VStack spacing={6} align="stretch">
-        <Box textAlign="center" mb={{ base: 2, md: 0 }}>
+        <Box textAlign="center">
           <BrandLogo size={logoHeight} />
         </Box>
 
-        <Heading
-          as="h2"
-          size={{ base: 'lg', md: 'xl' }}
-          textAlign="center"
-          fontWeight="bold"
-          letterSpacing="tight"
-          color={useColorModeValue('gray.900', 'white')}
-        >
+        <Heading as="h2" size="lg" textAlign="center">
           {loginBrand.resetTitle || t('auth.resetPassword.formTitle')}
         </Heading>
-        <Text
-          textAlign="center"
-          color={textGray700}
-          fontSize={{ base: 'sm', md: 'md' }}
-          fontWeight="medium"
-        >
+        <Text textAlign="center" color={textGray700}>
           {loginBrand.resetSubtitle || t('auth.resetPassword.formDescription')}
         </Text>
 
         {message && (
-          <Alert
-            status="success"
-            borderRadius={{ base: 'lg', md: 'md' }}
-            boxShadow="sm"
-            fontSize={{ base: 'sm', md: 'md' }}
-          >
+          <Alert status="success" borderRadius="md">
             <AlertIcon />
             {message}
           </Alert>
         )}
 
         {error && (
-          <Alert
-            status="error"
-            borderRadius={{ base: 'lg', md: 'md' }}
-            boxShadow="sm"
-            fontSize={{ base: 'sm', md: 'md' }}
-          >
+          <Alert status="error" borderRadius="md">
             <AlertIcon />
             {error}
           </Alert>
         )}
 
         <Box as="form" onSubmit={handleReset}>
-          <VStack spacing={{ base: 5, md: 4 }}>
+          <VStack spacing={4}>
             <FormControl isRequired>
-              <FormLabel
-                htmlFor="password"
-                fontWeight="600"
-                fontSize={{ base: 'sm', md: 'md' }}
-                mb={2}
-              >
+              <FormLabel htmlFor="password" fontWeight="500">
                 {t('auth.resetPassword.passwordLabel')}
               </FormLabel>
               <Input
@@ -159,12 +132,6 @@ const ResetPasswordPage = () => {
                 onChange={(event) => setPassword(event.target.value)}
                 minLength={8}
                 minH="44px"
-                borderRadius={{ base: 'lg', md: 'md' }}
-                fontSize={{ base: 'md', md: 'lg' }}
-                _focus={{
-                  borderColor: 'brand.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
-                }}
               />
             </FormControl>
 
@@ -176,36 +143,14 @@ const ResetPasswordPage = () => {
               minH="44px"
               isLoading={isSubmitting}
               loadingText={t('auth.resetPassword.submitting')}
-              borderRadius={{ base: 'lg', md: 'md' }}
-              fontWeight="bold"
-              fontSize={{ base: 'md', md: 'lg' }}
-              boxShadow="sm"
-              _hover={{
-                transform: 'translateY(-1px)',
-                boxShadow: 'md',
-              }}
-              transition="all 0.2s"
             >
               {t('auth.resetPassword.submit')}
             </Button>
           </VStack>
         </Box>
 
-        <Text
-          textAlign="center"
-          fontSize={{ base: 'sm', md: 'md' }}
-        >
-          <Link
-            as={RouterLink}
-            to="/login"
-            color={linkBlue}
-            minH="44px"
-            py={2}
-            fontWeight="600"
-            _hover={{
-              textDecoration: 'underline',
-            }}
-          >
+        <Text textAlign="center">
+          <Link as={RouterLink} to="/login" color={linkBlue} minH="44px" py={2}>
             {t('auth.backToLogin')}
           </Link>
         </Text>

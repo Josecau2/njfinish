@@ -1,18 +1,16 @@
 import { Navigate } from 'react-router-dom'
-import { getFreshestToken } from '../utils/authToken'
+import { isAuthSessionActive } from '../utils/authSession'
 
 const PublicRoute = ({ children }) => {
-  const token = getFreshestToken()
+  const hasSession = isAuthSessionActive()
 
-  if (token) {
-    // If already authenticated, redirect to the last intended route if any
+  if (hasSession) {
     let dest = '/'
     try {
       const stored = sessionStorage.getItem('return_to')
       if (stored && typeof stored === 'string' && stored.startsWith('/')) {
         dest = stored
       }
-      // Clear the hint to avoid loops on subsequent visits
       sessionStorage.removeItem('return_to')
     } catch {}
     return <Navigate to={dest} replace />

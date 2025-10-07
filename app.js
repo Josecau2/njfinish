@@ -20,6 +20,8 @@ require('./utils/eventManager');
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Security headers middleware
 app.use((req, res, next) => {
   const cspNonce = crypto.randomBytes(16).toString('base64');

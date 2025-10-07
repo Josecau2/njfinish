@@ -1,5 +1,3 @@
-import { getFreshestToken } from './authToken'
-
 let cachedBase = null
 
 function resolveApiBase() {
@@ -32,16 +30,7 @@ function resolveApiBase() {
 }
 
 export function withAuthToken(url) {
-  if (!url) return ''
-  try {
-    const token = getFreshestToken()
-    if (!token) return url
-    if (url.includes('token=')) return url
-    const separator = url.includes('?') ? '&' : '?'
-    return `${url}${separator}token=${encodeURIComponent(token)}`
-  } catch (error) {
-    return url
-  }
+  return url || ''
 }
 
 export function buildUploadUrl(inputPath) {

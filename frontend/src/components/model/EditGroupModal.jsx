@@ -79,13 +79,13 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
   return (
     <Modal isOpen={show} onClose={onClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent as='form' onSubmit={handleSubmit} borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
+      <ModalContent as='form' onSubmit={handleSubmit} borderRadius="12px" >
         <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
           <Text fontSize="lg" fontWeight="semibold">
             {t('settings.userGroups.multipliers.modal.title')}
           </Text>
         </ModalHeader>
-        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} minW="44px" minH="44px" />
+        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
         <ModalBody>
           <Stack spacing={4}>
             {error ? (
@@ -138,23 +138,11 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
             </FormControl>
           </Stack>
         </ModalBody>
-        <ModalFooter gap={3} flexWrap="wrap">
-          <Button
-            variant='outline'
-            onClick={onClose}
-            minH="44px"
-            whiteSpace="normal"
-            flex={{ base: '1', md: '0 1 auto' }}
-          >
+        <ModalFooter gap={4}>
+          <Button variant='outline' onClick={onClose} minH="44px">
             {t('common.cancel')}
           </Button>
-          <Button
-            colorScheme='brand'
-            type='submit'
-            minH='44px'
-            whiteSpace="normal"
-            flex={{ base: '1', md: '0 1 auto' }}
-          >
+          <Button colorScheme='brand' type='submit' minH='44px'>
             {t('common.save')}
           </Button>
         </ModalFooter>

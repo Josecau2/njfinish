@@ -1,12 +1,5 @@
 import { extendTheme } from '@chakra-ui/react'
 
-// Import premium component variants
-import { Button as PremiumButton } from './components/Button'
-import { Card as PremiumCard } from './components/Card'
-import { Input as PremiumInput, Select as PremiumSelect, Textarea as PremiumTextarea } from './components/Input'
-import { Modal as PremiumModal, AlertDialog as PremiumAlertDialog, Drawer as PremiumDrawer } from './components/Modal'
-import { Table as PremiumTable, TableContainer as PremiumTableContainer } from './components/Table'
-
 const NAMED_COLOR_MAP = {
   white: '#ffffff',
   black: '#000000',
@@ -205,111 +198,17 @@ const radii = {
   md: '12px',
   lg: '16px',
   xl: '24px',
-  '2xl': '32px',
 }
 
-// Premium elevation system with sophisticated shadows
 const shadows = {
-  // Subtle shadows for light elevation
   xs: '0 1px 2px rgba(15, 23, 42, 0.06)',
   sm: '0 2px 4px rgba(15, 23, 42, 0.08)',
-
-  // Standard shadows for cards and modals
   md: '0 8px 20px rgba(15, 23, 42, 0.12)',
   lg: '0 16px 40px rgba(15, 23, 42, 0.16)',
-  xl: '0 24px 60px rgba(15, 23, 42, 0.20)',
-  '2xl': '0 32px 80px rgba(15, 23, 42, 0.24)',
-
-  // Special effects
-  glow: '0 0 20px rgba(37, 99, 235, 0.4)',
-  glowStrong: '0 0 40px rgba(37, 99, 235, 0.6)',
 }
 
 const baseSemanticTokens = {
   colors: {
-    // ============================================================================
-    // PREMIUM DESIGN TOKENS - Enhanced semantic color system
-    // All tokens use theme-aware colors (no hardcoded values)
-    // Compatible with Redux customization system
-    // ============================================================================
-
-    // Surface colors - backgrounds at different elevations
-    'surface.base': { default: '#FFFFFF', _dark: '#111827' },
-    'surface.subtle': { default: '#f8fafc', _dark: '#1a1a1a' },
-    'surface.elevated': { default: '#FFFFFF', _dark: '#1e293b' },
-    'surface.hover': { default: '#e2e8f0', _dark: '#2a2a2a' },
-    'surface.active': { default: '#cbd5e1', _dark: '#3a3a3a' },
-    'surface.disabled': { default: '#f1f5f9', _dark: '#1e293b' },
-
-    // Text colors - hierarchy for readability
-    'text.primary': { default: '#0f172a', _dark: '#E2E8F0' },
-    'text.secondary': { default: '#64748B', _dark: '#94A3B8' },
-    'text.tertiary': { default: '#94A3B8', _dark: '#64748B' },
-    'text.inverse': { default: '#ffffff', _dark: '#0f172a' },
-    'text.disabled': { default: '#cbd5e1', _dark: '#475569' },
-
-    // Border colors - subtle to prominent
-    'border.subtle': { default: '#e2e8f0', _dark: 'rgba(255, 255, 255, 0.08)' },
-    'border.default': { default: '#cbd5e1', _dark: 'rgba(255, 255, 255, 0.12)' },
-    'border.strong': { default: '#94a3b8', _dark: 'rgba(255, 255, 255, 0.24)' },
-
-    // Interactive colors - primary actions
-    'interactive.primary': { default: 'brand.500', _dark: 'brand.400' },
-    'interactive.primaryHover': { default: 'brand.600', _dark: 'brand.500' },
-    'interactive.primaryActive': { default: 'brand.700', _dark: 'brand.600' },
-    'interactive.secondary': { default: 'slate.500', _dark: 'slate.400' },
-    'interactive.secondaryHover': { default: 'slate.600', _dark: 'slate.500' },
-
-    // Status colors - feedback states
-    'status.success': { default: '#22c55e', _dark: '#4ade80' },
-    'status.successBg': { default: '#dcfce7', _dark: 'rgba(74, 222, 128, 0.2)' },
-    'status.successBorder': { default: '#86efac', _dark: 'rgba(74, 222, 128, 0.4)' },
-    'status.warning': { default: '#f97316', _dark: '#fbbf24' },
-    'status.warningBg': { default: '#ffedd5', _dark: 'rgba(251, 191, 36, 0.2)' },
-    'status.warningBorder': { default: '#fed7aa', _dark: 'rgba(251, 191, 36, 0.4)' },
-    'status.error': { default: '#ef4444', _dark: '#f87171' },
-    'status.errorBg': { default: '#fee2e2', _dark: 'rgba(248, 113, 113, 0.2)' },
-    'status.errorBorder': { default: '#fecaca', _dark: 'rgba(248, 113, 113, 0.4)' },
-    'status.info': { default: '#3b82f6', _dark: '#38bdf8' },
-    'status.infoBg': { default: '#dbeafe', _dark: 'rgba(59, 130, 246, 0.2)' },
-    'status.infoBorder': { default: '#93c5fd', _dark: 'rgba(59, 130, 246, 0.4)' },
-
-    // Card backgrounds with more pronounced gradients
-    'card.bg': { default: '#ffffff', _dark: '#1e293b' },
-    'card.bgGradient': {
-      default: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
-      _dark: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
-    },
-    'card.border': { default: '#e2e8f0', _dark: 'rgba(255, 255, 255, 0.12)' },
-    'card.shadow': { default: 'rgba(15, 23, 42, 0.12)', _dark: 'rgba(0, 0, 0, 0.4)' },
-
-    // Modal backgrounds with more pronounced gradients
-    'modal.bg': { default: '#ffffff', _dark: '#1e293b' },
-    'modal.bgGradient': {
-      default: 'linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%)',
-      _dark: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
-    },
-    'modal.border': { default: '#e2e8f0', _dark: 'rgba(255, 255, 255, 0.12)' },
-    'modal.borderInternal': { default: '#e2e8f0', _dark: 'rgba(255, 255, 255, 0.08)' },    'input.bg': { default: '#ffffff', _dark: '#1e293b' },
-    'input.bgFocus': { default: '#ffffff', _dark: '#0f172a' },
-    'input.border': { default: '#cbd5e1', _dark: 'rgba(148, 163, 184, 0.4)' },
-    'input.borderHover': { default: '#94a3b8', _dark: 'rgba(148, 163, 184, 0.6)' },
-
-    'table.bg': { default: '#ffffff', _dark: '#1e293b' },
-    'table.headerBg': { default: '#f8fafc', _dark: '#0f172a' },
-    'table.footerBg': { default: '#f8fafc', _dark: '#0f172a' },
-    'table.border': { default: '#e2e8f0', _dark: 'rgba(255, 255, 255, 0.08)' },
-    'table.rowHover': { default: '#f1f5f9', _dark: 'rgba(255, 255, 255, 0.04)' },
-    'table.rowStriped': { default: '#f8fafc', _dark: 'rgba(255, 255, 255, 0.02)' },
-
-    'badge.success': { default: '#dcfce7', _dark: 'rgba(74, 222, 128, 0.2)' },
-    'badge.warning': { default: '#ffedd5', _dark: 'rgba(251, 191, 36, 0.2)' },
-    'badge.error': { default: '#fee2e2', _dark: 'rgba(248, 113, 113, 0.2)' },
-    'badge.info': { default: '#dbeafe', _dark: 'rgba(59, 130, 246, 0.2)' },
-
-    // ============================================================================
-    // LEGACY TOKENS - Preserved for backward compatibility
-    // ============================================================================
     background: { default: '#F8FAFC', _dark: '#0f172a' },
     surface: { default: '#FFFFFF', _dark: '#111827' },
     text: { default: '#0f172a', _dark: '#E2E8F0' },
@@ -351,10 +250,8 @@ const baseSemanticTokens = {
   },
 }
 
-// Merge premium Button with existing customization-aware Button
 const Button = {
   baseStyle: {
-    ...PremiumButton.baseStyle,
     fontWeight: '600',
     borderRadius: 'md',
     minH: '44px',
@@ -370,7 +267,6 @@ const Button = {
     transitionDuration: '200ms',
   },
   sizes: {
-    ...PremiumButton.sizes,
     md: {
       h: '44px',
       minW: '44px',
@@ -380,23 +276,58 @@ const Button = {
     },
   },
   variants: {
-    // Use premium variants
-    ...PremiumButton.variants,
-    // Keep brand-aware solid variant for backward compatibility
     solid: {
       bg: 'brand.500',
       color: 'white',
       _hover: {
         bg: 'brand.600',
-        transform: 'translateY(-1px)',
-        shadow: 'md',
         _disabled: {
           bg: 'brand.300',
         },
       },
       _active: {
         bg: 'brand.700',
-        transform: 'translateY(0)',
+      },
+    },
+    outline: {
+      borderWidth: '1px',
+      borderColor: 'brand.500',
+      color: 'brand.600',
+      _hover: {
+        bg: 'brand.50',
+        _dark: {
+          bg: 'whiteAlpha.100',
+        },
+      },
+      _active: {
+        borderColor: 'brand.700',
+        color: 'brand.700',
+        _dark: {
+          borderColor: 'brand.400',
+          color: 'brand.400',
+        },
+      },
+      _dark: {
+        borderColor: 'brand.400',
+        color: 'brand.300',
+      },
+    },
+    ghost: {
+      color: 'brand.600',
+      _hover: {
+        bg: 'brand.50',
+        _dark: {
+          bg: 'whiteAlpha.100',
+        },
+      },
+      _active: {
+        color: 'brand.700',
+        _dark: {
+          color: 'brand.400',
+        },
+      },
+      _dark: {
+        color: 'brand.300',
       },
     },
   },
@@ -406,36 +337,108 @@ const Button = {
   },
 }
 
-// Use premium Input, Select, Textarea
-const Input = PremiumInput
-const Select = PremiumSelect
-const Textarea = PremiumTextarea
-
-// Merge premium Modal with existing responsive settings
-const Modal = {
-  ...PremiumModal,
+const inputLikeComponent = {
   baseStyle: {
-    ...PremiumModal.baseStyle,
+    field: {
+      borderRadius: 'md',
+      _focusVisible: {
+        borderColor: 'brand.500',
+        boxShadow: '0 0 0 2px var(--chakra-colors-focusRing)',
+        outline: 'none',
+      },
+      _invalid: {
+        borderColor: 'red.500',
+        _focusVisible: {
+          borderColor: 'red.500',
+          boxShadow: '0 0 0 2px var(--chakra-colors-focusRingError)',
+        },
+      },
+    },
+  },
+  sizes: {
+    md: {
+      field: {
+        h: '44px',
+        fontSize: 'sm',
+        px: 3,
+      },
+    },
+  },
+  variants: {
+    outline: {
+      field: {
+        borderWidth: '1px',
+        borderColor: 'border',
+        bg: 'surface',
+        _hover: {
+          borderColor: 'brand.300',
+        },
+        _focusVisible: {
+          borderColor: 'brand.500',
+        },
+      },
+    },
+    filled: {
+      field: {
+        bg: 'slate.50',
+        _hover: {
+          bg: 'slate.100',
+        },
+        _focusVisible: {
+          bg: 'surface',
+        },
+        _dark: {
+          bg: 'gray.700',
+          _hover: {
+            bg: 'gray.600',
+          },
+          _focusVisible: {
+            bg: 'gray.800',
+          },
+        },
+      },
+    },
+  },
+  defaultProps: {
+    variant: 'outline',
+    size: 'md',
+  },
+}
+
+const Input = inputLikeComponent
+const Select = inputLikeComponent
+const Textarea = inputLikeComponent
+
+const Modal = {
+  baseStyle: {
     dialog: {
-      ...PremiumModal.baseStyle.dialog,
-      borderRadius: { base: '0', md: '2xl' },  // Full-screen on mobile
+      borderRadius: { base: '0', md: 'lg' },  // Full-screen on mobile
+      boxShadow: 'lg',
+      border: '1px solid',
+      borderColor: 'border',
+      bg: 'surface',
       maxH: { base: '100vh', md: '90vh' },
       my: { base: 0, md: '3.75rem' },
     },
     dialogContainer: {
-      ...PremiumModal.baseStyle.dialogContainer,
       alignItems: { base: 'stretch', md: 'center' },
     },
     closeButton: {
-      ...PremiumModal.baseStyle.closeButton,
       minW: '44px',  // WCAG AA tap target
       minH: '44px',
     },
   },
 }
 
-// Use premium Drawer
-const Drawer = PremiumDrawer
+const Drawer = {
+  baseStyle: {
+    dialog: {
+      bg: 'surface',
+      color: 'text',
+      boxShadow: '2xl',
+    },
+  },
+}
 
 const Tabs = {
   baseStyle: {
@@ -472,31 +475,30 @@ const Badge = {
   },
 }
 
-// Merge premium Table with existing responsive settings
 const Table = {
-  ...PremiumTable,
   baseStyle: {
-    ...PremiumTable.baseStyle,
     table: {
-      ...PremiumTable.baseStyle.table,
-      tableLayout: { base: 'fixed', xl: 'auto' },  // Preserve responsive behavior
+      borderSpacing: 0,
+      width: '100%',
+      minWidth: '100%',
+      tableLayout: { base: 'fixed', xl: 'auto' },
+      border: '1px solid',
+      borderColor: 'borderStrong',
+      boxShadow: '0 2px 8px rgba(15, 23, 42, 0.08)',
+      backgroundColor: 'surface',
     },
     thead: {
-      ...PremiumTable.baseStyle.thead,
       th: {
-        ...PremiumTable.baseStyle.th,
         whiteSpace: 'normal',
         wordBreak: 'break-word',
       },
     },
     tbody: {
-      ...PremiumTable.baseStyle.tbody,
       td: {
         whiteSpace: 'normal',
         wordBreak: 'break-word',
       },
       tr: {
-        ...PremiumTable.baseStyle.tr,
         _last: {
           td: {
             borderBottomWidth: 0,
@@ -505,15 +507,46 @@ const Table = {
       },
     },
     th: {
-      ...PremiumTable.baseStyle.th,
+      fontWeight: '600',
+      textTransform: 'none',
+      fontSize: 'sm',
+      color: 'muted',
+      borderColor: 'border',
+      borderBottomWidth: '1px',
       whiteSpace: 'normal',
       wordBreak: 'break-word',
     },
     td: {
-      ...PremiumTable.baseStyle.td,
+      borderColor: 'border',
+      borderBottomWidth: '1px',
+      fontSize: 'sm',
       whiteSpace: 'normal',
       wordBreak: 'break-word',
     },
+  },
+  variants: {
+    simple: {
+      th: {
+        bg: 'brand.50',
+        _dark: {
+          bg: 'gray.800',
+        },
+      },
+      tbody: {
+        tr: {
+          _hover: {
+            bg: 'brand.50',
+            _dark: {
+              bg: 'whiteAlpha.100',
+            },
+          },
+        },
+      },
+    },
+  },
+  defaultProps: {
+    variant: 'simple',
+    size: 'md',
   },
 }
 
@@ -614,21 +647,15 @@ const Link = {
 }
 
 const components = {
-  // Premium components
   Button,
-  Card: PremiumCard,
   Input,
   Select,
   Textarea,
   Modal,
-  AlertDialog: PremiumAlertDialog,
   Drawer,
-  Table,
-  TableContainer: PremiumTableContainer,
-
-  // Existing components
   Tabs,
   Badge,
+  Table,
   Menu,
   IconButton,
   Checkbox,
@@ -732,14 +759,6 @@ const buildAppCssVariables = (palette, loginBrand = {}) => {
   const boxShadow = '0 1px 3px rgba(15, 23, 42, 0.1), 0 1px 2px -1px rgba(15, 23, 42, 0.08)'
   const boxShadowLg = '0 12px 30px -6px rgba(15, 23, 42, 0.28), 0 8px 16px -8px rgba(15, 23, 42, 0.18)'
 
-  // Generate gradient variations from customization colors
-  const sidebarBgLight = lightenHex(sidebarBg, 0.12)
-  const sidebarBgLighter = lightenHex(sidebarBg, 0.20)
-  const sidebarBgDark = darkenHex(sidebarBg, 0.12)
-  const accentLight = lightenHex(accent, 0.12)
-  const accentLighter = lightenHex(accent, 0.20)
-  const surfaceLight = lightenHex(surface, 0.04)
-
   return {
     '--app-primary': accent,
     '--app-primary-rgb': accentRgb,
@@ -796,17 +815,6 @@ const buildAppCssVariables = (palette, loginBrand = {}) => {
     '--header-fg': headerText,
     '--sidebar-bg': sidebarBg,
     '--sidebar-fg': sidebarText,
-    '--sidebar-bg-light': sidebarBgLight,
-    '--sidebar-bg-lighter': sidebarBgLighter,
-    '--sidebar-bg-dark': sidebarBgDark,
-    '--accent-light': accentLight,
-    '--accent-lighter': accentLighter,
-    // Gradient CSS variables for more pronounced effects
-    '--gradient-subtle': `linear-gradient(135deg, ${surface} 0%, ${lightenHex(sidebarBg, 0.75)} 100%)`,
-    '--gradient-header': `linear-gradient(135deg, ${headerBg} 0%, ${lightenHex(headerBg, 0.15)} 100%)`,
-    '--gradient-sidebar': `linear-gradient(180deg, ${sidebarBg} 0%, ${sidebarBgDark} 100%)`,
-    '--gradient-accent': `linear-gradient(135deg, ${accent} 0%, ${accentLight} 100%)`,
-    '--gradient-surface': `linear-gradient(135deg, ${surface} 0%, ${surfaceLight} 100%)`,
     '--cui-light': 'var(--app-gray-50)',
     '--cui-spacer-1': '0.25rem',
     '--cui-spacer-2': '0.5rem',
@@ -983,16 +991,6 @@ export const createThemeWithBrand = (brandConfig = {}) => {
     fonts,
     radii,
     shadows,
-    zIndices: {
-      base: 0,
-      dropdown: 1000,
-      sticky: 1100,
-      fixed: 1200,
-      modal: 1300,
-      popover: 1400,
-      tooltip: 1500,
-      toast: 1600,
-    },
     components,
     styles: {
       global: globalStyles,

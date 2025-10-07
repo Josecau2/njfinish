@@ -26,14 +26,21 @@ const EditManufacturer = () => {
   const id = decodeParam(rawId)
   const dispatch = useDispatch()
 
-  // Color mode values
+  // Color mode values - all declared at top level
   const borderGray200 = useColorModeValue('gray.200', 'gray.600')
+  const tabBg = useColorModeValue('gray.50', 'gray.700')
+  const tabBgHover = useColorModeValue('white', 'gray.600')
+  const tabColor = useColorModeValue('gray.600', 'gray.400')
+  const tabColorHover = useColorModeValue('brand.600', 'brand.300')
   const tabBorderColor = useColorModeValue('gray.200', 'gray.600')
-  const tabColor = useColorModeValue('brand.600', 'brand.300')
-  const tabHoverBorderColor = useColorModeValue('brand.400', 'brand.500')
+  const tabBorderHover = useColorModeValue('brand.200', 'brand.700')
+  const tabBorderBottomHover = useColorModeValue('brand.300', 'brand.400')
   const tabSelectedBg = useColorModeValue('brand.500', 'brand.600')
-  const tabSelectedBorderColor = useColorModeValue('brand.500', 'brand.600')
   const tabSelectedColor = useColorModeValue('white', 'white')
+  const scrollbarThumb = useColorModeValue('gray.300', 'gray.600')
+  const tabShadow = useColorModeValue('sm', 'dark-lg')
+  const tabShadowHover = useColorModeValue('md', 'dark-lg')
+  const tabShadowSelected = useColorModeValue('lg', '0 8px 16px rgba(0, 0, 0, 0.4)')
 
   const [activeKey, setActiveKey] = useState(0)
   const manufacturer = useSelector((state) => state.manufacturers.selected)
@@ -80,45 +87,88 @@ const EditManufacturer = () => {
       <Tabs index={activeKey} onChange={setActiveKey} variant="unstyled" isLazy>
         <TabList
           gap={{ base: 2, md: 3 }}
-          flexWrap={{ base: 'wrap', md: 'nowrap' }}
-          display={{ base: 'grid', md: 'flex' }}
-          gridTemplateColumns={tabColumns}
-          borderBottom="1px solid"
+          flexWrap="wrap"
+          display="flex"
+          borderBottom="2px solid"
           borderColor={borderGray200}
-          pb={{ base: 2, md: 0 }}
+          pb={0}
+          overflowX={{ base: 'auto', md: 'visible' }}
+          overflowY="visible"
           sx={{
+            // Custom scrollbar styling
+            '&::-webkit-scrollbar': {
+              height: '4px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'transparent',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: scrollbarThumb,
+              borderRadius: '2px',
+            },
+            // Tab button styling
             '& button[role="tab"]': {
-              minHeight: '44px',
-              borderRadius: '8px',
-              fontSize: "md",
-              fontWeight: 500,
-              paddingInline: '20px',
-              paddingBlock: '12px',
+              minW: { base: '140px', md: 'auto' },
+              minH: { base: '48px', md: '44px' },
+              maxW: { base: 'none', md: '220px' },
+              borderRadius: '8px 8px 0 0',
+              fontSize: { base: 'sm', md: 'md' },
+              fontWeight: 600,
+              px: { base: 3, md: 5 },
+              py: { base: 2.5, md: 3 },
               border: '1px solid',
               borderColor: tabBorderColor,
+              borderBottom: '3px solid',
+              borderBottomColor: 'transparent',
               color: tabColor,
-              transition: 'all 0.15s ease',
+              bg: tabBg,
+              transition: 'all 0.2s ease-in-out',
+              whiteSpace: { base: 'normal', md: 'nowrap' },
+              textAlign: 'center',
+              lineHeight: '1.3',
+              position: 'relative',
+              boxShadow: tabShadow,
+              flexShrink: { base: 0, md: 1 },
+              // Hover state
+              _hover: {
+                color: tabColorHover,
+                borderBottomColor: tabBorderBottomHover,
+                bg: tabBgHover,
+                borderColor: tabBorderHover,
+                boxShadow: tabShadowHover,
+                transform: 'translateY(-1px)',
+              },
             },
+            // Selected tab state
             '& button[role="tab"][aria-selected="true"]': {
-              backgroundColor: tabSelectedBg,
-              borderColor: tabSelectedBorderColor,
               color: tabSelectedColor,
-              boxShadow: 'sm',
+              bg: tabSelectedBg,
+              borderColor: tabSelectedBg,
+              borderBottomColor: tabSelectedBg,
+              fontWeight: 700,
+              boxShadow: tabShadowSelected,
+              transform: { base: 'none', md: 'translateY(2px)' },
+              _hover: {
+                bg: tabSelectedBg,
+                borderColor: tabSelectedBg,
+                borderBottomColor: tabSelectedBg,
+                transform: { base: 'none', md: 'translateY(2px)' },
+              },
             },
-            '& button[role="tab"]:hover:not([aria-selected="true"])': {
-              borderColor: tabHoverBorderColor,
-              boxShadow: 'xs',
+            // Non-selected tabs have slight margin on desktop
+            '& button[role="tab"][aria-selected="false"]': {
+              mb: { base: 0, md: '2px' },
             },
           }}
         >
-          {tabs.map((tab, index) => (
+          {tabs.map((tab) => (
             <Tab key={tab.label} justifyContent="center">
               {tab.label}
             </Tab>
           ))}
         </TabList>
 
-        <TabPanels mt={4}>
+        <TabPanels mt={{ base: 4, md: 6 }}>
           {tabs.map((tab) => (
             <TabPanel key={tab.label} px={0}>
               {tab.render()}

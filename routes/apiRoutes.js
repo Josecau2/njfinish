@@ -89,6 +89,7 @@ const resetPasswordLimiter = createRateLimiter({
 
 // Auth route
 router.post('/login', loginLimiter, authController.login);
+router.post('/logout', authController.logout);
 router.post('/signup', signupLimiter, authController.signup);
 router.post('/forgot-password', forgotPasswordLimiter, authController.forgotPassword);
 router.post('/reset-password', resetPasswordLimiter, authController.resetPassword);
@@ -243,9 +244,9 @@ router.delete('/v1/modifications/assignments/:id', verifyTokenWithGroup, require
 router.get('/v1/modifications/item/:catalogDataId', verifyTokenWithGroup, validateIdParam('catalogDataId'), globalModsController.getItemAssignments);
 
 // Multi Manufacturer routes
-router.get('/multi-manufacturer', multiManufacturerController.getAllMultiManufacturers);
-router.post('/multi-manufacturer', multiManufacturerController.createMultiManufacturer);
-router.put('/multi-manufacturer/:id', validateIdParam('id'), sanitizeBodyStrings(), multiManufacturerController.updateMultiManufacturer);
+router.get('/multi-manufacturer', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.MANUFACTURERS), multiManufacturerController.getAllMultiManufacturers);
+router.post('/multi-manufacturer', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.MANUFACTURERS), sanitizeBodyStrings(), multiManufacturerController.createMultiManufacturer);
+router.put('/multi-manufacturer/:id', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.MANUFACTURERS), validateIdParam('id'), sanitizeBodyStrings(), multiManufacturerController.updateMultiManufacturer);
 
 // User CRUD routes - ADMIN ONLY (contractors should not access)
 router.get('/users', verifyTokenWithGroup, requirePermission('admin:users'), authController.fetchUsers);
@@ -271,25 +272,25 @@ router.get('/user/multiplier', verifyTokenWithGroup, userGroupController.getCurr
 
 
 // Locations CRUD routes
-router.get('/locations', locationController.fetchLocations);
-router.get('/locations/:id', validateIdParam('id'), locationController.fetchSingleLocation);
-router.post('/locations', sanitizeBodyStrings(), locationController.addLocation);
-router.delete('/locations/:id', validateIdParam('id'), locationController.deleteLocation);
-router.put('/locations/:id', validateIdParam('id'), sanitizeBodyStrings(), locationController.updateLocation);
+router.get('/locations', verifyTokenWithGroup, locationController.fetchLocations);
+router.get('/locations/:id', verifyTokenWithGroup, validateIdParam('id'), locationController.fetchSingleLocation);
+router.post('/locations', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), sanitizeBodyStrings(), locationController.addLocation);
+router.delete('/locations/:id', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), validateIdParam('id'), locationController.deleteLocation);
+router.put('/locations/:id', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), validateIdParam('id'), sanitizeBodyStrings(), locationController.updateLocation);
 
 // Tax CRUD routes
-router.get('/taxes', taxesController.getTaxes);
-router.post('/taxes', taxesController.addTax);
-router.delete('/taxes/:id', validateIdParam('id'), taxesController.deleteTax);
-router.put('/taxes/:id', validateIdParam('id'), taxesController.setDefaultTax);
+router.get('/taxes', verifyTokenWithGroup, taxesController.getTaxes);
+router.post('/taxes', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), sanitizeBodyStrings(), taxesController.addTax);
+router.delete('/taxes/:id', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), validateIdParam('id'), taxesController.deleteTax);
+router.put('/taxes/:id', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), validateIdParam('id'), taxesController.setDefaultTax);
 
 // Collections CRUD routes
-router.get('/collections', collectionsController.fetchCollection);
-router.post('/collections', collectionsController.addCollection);
-router.delete('/collections/:id', validateIdParam('id'), collectionsController.deleteCollection);
-router.put('/collections/:id', validateIdParam('id'), sanitizeBodyStrings(), collectionsController.updateCollection);
-router.get('/collections/:id', validateIdParam('id'), collectionsController.fetchCollectionById);
-router.post('/bulk-collections', collectionsController.addBulkCollection);
+router.get('/collections', verifyTokenWithGroup, collectionsController.fetchCollection);
+router.post('/collections', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), sanitizeBodyStrings(), collectionsController.addCollection);
+router.delete('/collections/:id', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), validateIdParam('id'), collectionsController.deleteCollection);
+router.put('/collections/:id', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), validateIdParam('id'), sanitizeBodyStrings(), collectionsController.updateCollection);
+router.get('/collections/:id', verifyTokenWithGroup, validateIdParam('id'), collectionsController.fetchCollectionById);
+router.post('/bulk-collections', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), sanitizeBodyStrings(), collectionsController.addBulkCollection);
 
 
 
@@ -416,13 +417,13 @@ router.post('/orders/:id/resend-manufacturer-email', verifyTokenWithGroup, requi
 	}
 });
 
-router.get('/settings/customization', customizationController.getCustomization)
-router.post('/settings/customization', upload.single('logoImage'), customizationController.saveCustomization)
+router.get('/settings/customization', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), customizationController.getCustomization);
+router.post('/settings/customization', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), upload.single('logoImage'), customizationController.saveCustomization);
 
-router.post('/settings/customization/pdf', upload.single('logo'), customizationController.saveCustomizationpdf)
-router.get('/settings/customization/pdf', customizationController.getCustomizationpdf)
-router.delete('/settings/customization/logo', customizationController.getCustomizationdeletelogo)
-router.post('/generate-pdf', customizationController.generatepdf)
+router.post('/settings/customization/pdf', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), upload.single('logo'), customizationController.saveCustomizationpdf);
+router.get('/settings/customization/pdf', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), customizationController.getCustomizationpdf);
+router.delete('/settings/customization/logo', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), customizationController.getCustomizationdeletelogo);
+router.post('/generate-pdf', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), customizationController.generatepdf);
 
 
 
@@ -443,7 +444,7 @@ router.post(
 
 
 //fetch desinger
-router.get('/designers', userGroupController.getDesingers);
+router.get('/designers', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.USERS), userGroupController.getDesingers);
 
 // Login page customization
 // Public GET so unauthenticated users (and contractors) can load the admin-defined branding on the login screen
@@ -514,7 +515,7 @@ router.get('/resources/files/:id/thumbnail', attachTokenFromQuery(), verifyToken
 // Upload images for sample images and category cards (admin only)
 router.post('/global-mods/upload/image', verifyTokenWithGroup, requirePermission('admin:manufacturers'), upload.imageUpload.single('logoImage'), uploadImage);
 
-router.get('/calendar-events', calenderController.fetchEvents);
+router.get('/calendar-events', verifyTokenWithGroup, calenderController.fetchEvents);
 
 // Contact Info & Messaging
 router.get('/contact/info', verifyTokenWithGroup, contactController.getContactInfo);

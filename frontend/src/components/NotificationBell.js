@@ -21,7 +21,7 @@ import { useSelector } from 'react-redux'
 import axiosInstance from '../helpers/axiosInstance'
 import axios from 'axios'
 import { getContrastColor } from '../utils/colorUtils'
-import { getFreshestToken } from '../utils/authToken'
+import { isAuthSessionActive } from '../utils/authSession'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 const ICON_CONFIG = {
@@ -40,8 +40,6 @@ const NotificationBell = () => {
       return null
     }
   })()
-  const token = getFreshestToken()
-
   // Local state for notifications instead of Redux
   const [notifications, setNotifications] = useState([])
   const [unreadCount, setUnreadCount] = useState(0)
@@ -66,12 +64,11 @@ const NotificationBell = () => {
   const intervalRef = useRef(null)
   const disabledRef = useRef(false)
 
-  const hasSession = Boolean(user && token)
+  const hasSession = Boolean(user) && isAuthSessionActive()
 
   const fetchUnreadCount = useCallback(async () => {
     try {
-      const tok = getFreshestToken()
-      if (!tok) return
+      if (!isAuthSessionActive()) return
       const { data } = await axiosInstance.get('/api/notifications/unread-count', {
         __suppressAuthLogout: true,
       })
@@ -144,8 +141,6 @@ const NotificationBell = () => {
     if (fetching) return
     setFetching(true)
     try {
-      const tok = getFreshestToken()
-      if (!tok) return
       const { data } = await axiosInstance.get('/api/notifications', {
         params: { limit: 10 },
         __suppressAuthLogout: true,
@@ -163,8 +158,6 @@ const NotificationBell = () => {
 
   const markAllReadSilently = async () => {
     try {
-      const tok = getFreshestToken()
-      if (!tok) return
       await axiosInstance.post('/api/notifications/mark-all-read', null, {
         __suppressAuthLogout: true,
       })
@@ -191,8 +184,6 @@ const NotificationBell = () => {
 
   const handleMarkAsRead = async (notificationId) => {
     try {
-      const tok = getFreshestToken()
-      if (!tok) return
       await axiosInstance.post(`/api/notifications/${notificationId}/read`, null, {
         __suppressAuthLogout: true,
       })

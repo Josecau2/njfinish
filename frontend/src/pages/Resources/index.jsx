@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import axiosInstance from '../../helpers/axiosInstance'
-import { getFreshestToken } from '../../utils/authToken'
+import { isAuthSessionActive } from '../../utils/authSession'
 import { getContrastColor } from '../../utils/colorUtils'
 import {
   Alert,
@@ -394,10 +394,6 @@ const Resources = ({ isContractor, contractorGroupName }) => {
         if (mode && mode !== 'download') {
           url.searchParams.set('mode', mode)
         }
-        const token = getFreshestToken()
-        if (token) {
-          url.searchParams.set('token', token)
-        }
         return url.toString()
       } catch (error) {
         console.error('Error building secure resource URL', error)
@@ -409,8 +405,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
   const resolveCategoryThumbUrl = useCallback(
     (categoryOrUrl) => {
-      const token = getFreshestToken()
-      let urlStr = null
+            let urlStr = null
       if (!categoryOrUrl) return null
       if (typeof categoryOrUrl === 'string') {
         urlStr = categoryOrUrl
@@ -934,8 +929,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
       return
     try {
       setActionLoading(true)
-      const token = getFreshestToken()
-      await axiosInstance.delete(`${CATEGORY_ENDPOINT}/${category.id}`, {
+            await axiosInstance.delete(`${CATEGORY_ENDPOINT}/${category.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       await fetchResources()
@@ -958,8 +952,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
   const handleCreateCategoryScaffold = async () => {
     setScaffoldLoading(true)
     try {
-      const token = getFreshestToken()
-      await axiosInstance.post(
+            await axiosInstance.post(
         SCAFFOLD_ENDPOINT,
         {},
         {
@@ -1530,8 +1523,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                         return
                                       try {
                                         setDeleteLoading((prev) => ({ ...prev, [`announcement-${announcement.id}`]: true }))
-                                        const token = getFreshestToken()
-                                        await axiosInstance.delete(
+                                                                                await axiosInstance.delete(
                                           `${ANNOUNCEMENTS_ENDPOINT}/${announcement.id}`,
                                           {
                                             headers: { Authorization: `Bearer ${token}` },
@@ -1666,8 +1658,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                         return
                                       try {
                                         setDeleteLoading((prev) => ({ ...prev, [`link-${link.id}`]: true }))
-                                        const token = getFreshestToken()
-                                        await axiosInstance.delete(`${LINKS_ENDPOINT}/${link.id}`, {
+                                                                                await axiosInstance.delete(`${LINKS_ENDPOINT}/${link.id}`, {
                                           headers: { Authorization: `Bearer ${token}` },
                                         })
                                         await fetchResources()
@@ -1831,8 +1822,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                             return
                                           try {
                                             setDeleteLoading((prev) => ({ ...prev, [`file-${file.id}`]: true }))
-                                            const token = getFreshestToken()
-                                            await axiosInstance.delete(
+                                                                                        await axiosInstance.delete(
                                               `${FILES_ENDPOINT}/${file.id}`,
                                               {
                                                 headers: { Authorization: `Bearer ${token}` },
@@ -2350,8 +2340,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               onClick={async () => {
                 try {
                   setActionLoading(true)
-                  const token = getFreshestToken()
-                  const payload = {
+                                    const payload = {
                     ...linkModal.form,
                     tags: normalizeTagsInput(linkModal.form.tags),
                     visibleToGroupTypes: normalizeVisibilityInput(
@@ -2634,8 +2623,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               onClick={async () => {
                 try {
                   setActionLoading(true)
-                  const token = getFreshestToken()
-                  const formData = new FormData()
+                                    const formData = new FormData()
 
                   // Add file if present
                   if (fileModal.form.file) {
@@ -2929,8 +2917,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
               onClick={async () => {
                 try {
                   setActionLoading(true)
-                  const token = getFreshestToken()
-                  const payload = {
+                                    const payload = {
                     ...announcementModal.form,
                     tags: normalizeTagsInput(announcementModal.form.tags),
                     visibleToGroupTypes: normalizeVisibilityInput(

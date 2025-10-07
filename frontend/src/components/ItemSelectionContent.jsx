@@ -108,17 +108,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const [collectionsLoading, setCollectionsLoading] = useState(true);
     const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(4); // Desktop default
-    const [touchStartX, setTouchStartX] = useState(null);
-    const [touchStartY, setTouchStartY] = useState(null);
-    const [touchEndX, setTouchEndX] = useState(null);
-    const [touchIntent, setTouchIntent] = useState(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const [dragOffset, setDragOffset] = useState(0);
-    const [transitionEnabled, setTransitionEnabled] = useState(true);
-    const [wasDrag, setWasDrag] = useState(false);
-    const [showSwipeHint, setShowSwipeHint] = useState(true); // Swipe hint for mobile
-    const carouselRef = useRef(null);
-    const carouselContainerRef = useRef(null); // For non-passive touch events
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
     // Stable baseline for comparison cards (prevents drift when switching styles) - no longer used
     // const [comparisonBaseline, setComparisonBaseline] = useState({ styleId: null, stylePrice: null });
     const [isStylesCollapsed, setIsStylesCollapsed] = useState(false); // New state for collapse/expand
@@ -407,254 +398,43 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
         setCarouselCurrentIndex(0);
     }, [fetchedCollections]);
 
-    // Carousel navigation functions with proper boundary checking
+    // Carousel navigation functions
     const nextSlide = () => {
         const maxIndex = Math.max(0, stylesMeta.length - itemsPerPage);
-        setCarouselCurrentIndex(prev => {
-            const nextIndex = prev + itemsPerPage;
-            // Snap to exact end if we would overshoot
-            return nextIndex > maxIndex ? maxIndex : nextIndex;
-        });
+        setCarouselCurrentIndex(prev => Math.min(prev + 1, maxIndex));
     };
 
-    const prevSlide = () => setCarouselCurrentIndex(prev => {
-        const nextIndex = prev - itemsPerPage;
-        // Snap to start if we would undershoot
-        return nextIndex < 0 ? 0 : nextIndex;
-    });
+    const prevSlide = () => setCarouselCurrentIndex(prev => Math.max(prev - 1, 0));
 
-    const canGoNext = () => {
-        if (stylesMeta.length <= itemsPerPage) return false; // All items visible
-        return carouselCurrentIndex < stylesMeta.length - itemsPerPage;
-    };
+    const canGoNext = () => carouselCurrentIndex < stylesMeta.length - itemsPerPage;
 
     const canGoPrev = () => carouselCurrentIndex > 0;
 
-    // Calculate safe transform value to prevent items from disappearing
-    const carouselTransform = useMemo(() => {
-        if (stylesMeta.length === 0) return '0px';
-
-        // Use pixel-based calculations for fixed-width items
-        const itemWidth = styleImageContainerWidth; // Fixed width per item (140px base, 180px md, 200px lg)
-        const gap = 12; // 0.75rem = 12px gap between items
-        const itemTotalWidth = itemWidth + gap;
-
-        const safeItemsPerPage = Math.max(1, itemsPerPage);
-        const maxIndex = Math.max(0, stylesMeta.length - safeItemsPerPage);
-        const safeIndex = Math.max(0, Math.min(carouselCurrentIndex, maxIndex));
-
-        // Base transform in pixels
-        const baseTransformPx = -(safeIndex * itemTotalWidth);
-
-        if (isDragging) {
-            // Apply drag offset with rubber-band limits
-            const maxTranslatePx = maxIndex * itemTotalWidth;
-            const totalTransformPx = baseTransformPx + dragOffset;
-
-            // Clamp with rubber-band effect at boundaries
-            const maxRubberBand = itemWidth * 0.3; // 30% of item width
-            const clampedTransform = Math.max(
-                -maxTranslatePx - maxRubberBand,
-                Math.min(maxRubberBand, totalTransformPx)
-            );
-            return `${clampedTransform}px`;
-        }
-
-        return `${baseTransformPx}px`;
-    }, [carouselCurrentIndex, itemsPerPage, isDragging, dragOffset, stylesMeta.length, styleImageContainerWidth]);
-
-    // Enhanced touch swipe handlers for smooth mobile carousel with live tracking
+    // Touch swipe handlers for mobile carousel
     const minSwipeDistance = 50;
-    const touchSlop = 8;
 
-    const onTouchStart = useCallback((e) => {
-        if (e.touches.length > 1) return;
+    const onTouchStart = (e) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+    };
 
-        const { clientX, clientY } = e.targetTouches[0];
-        setTouchStartX(clientX);
-        setTouchStartY(clientY);
-        setTouchEndX(null);
-        setTouchIntent(null);
-        setWasDrag(false);
-        setIsDragging(false);
-        setDragOffset(0);
-        setTransitionEnabled(true);
-    }, []);
+    const onTouchMove = (e) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
 
-    const onTouchMove = useCallback((e) => {
-        if (e.touches.length > 1) return;
-        if (touchStartX == null || touchStartY == null) return;
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
 
-        const { clientX, clientY } = e.targetTouches[0];
-        const deltaX = clientX - touchStartX;
-        const deltaY = clientY - touchStartY;
-
-        let intent = touchIntent;
-
-        if (!intent) {
-            const absDeltaX = Math.abs(deltaX);
-            const absDeltaY = Math.abs(deltaY);
-
-            if (absDeltaY > absDeltaX && absDeltaY > touchSlop) {
-                setTouchIntent('vertical');
-                setIsDragging(false);
-                setDragOffset(0);
-                setTransitionEnabled(true);
-                return;
-            }
-
-            if (absDeltaX > touchSlop) {
-                intent = 'horizontal';
-                setTouchIntent('horizontal');
-                setIsDragging(true);
-                setTransitionEnabled(false);
-            } else {
-                return;
-            }
+        if (isLeftSwipe && canGoNext()) {
+            nextSlide();
         }
-
-        if (intent !== 'horizontal') {
-            return;
+        if (isRightSwipe && canGoPrev()) {
+            prevSlide();
         }
-
-        e.preventDefault();
-        setTouchEndX(clientX);
-
-        // Use pixel-based calculations for fixed-width items
-        const itemWidth = styleImageContainerWidth; // Fixed width per item
-        const gap = 12; // 0.75rem gap
-        const itemTotalWidth = itemWidth + gap;
-        const safeItemsPerPage = Math.max(1, itemsPerPage);
-        const maxIndex = Math.max(0, stylesMeta.length - safeItemsPerPage);
-        const maxDragDistance = itemWidth * 1.5; // Allow dragging up to 1.5 items
-
-        let newOffset = deltaX;
-
-        // Clamp to max drag distance
-        newOffset = Math.max(-maxDragDistance, Math.min(maxDragDistance, newOffset));
-
-        // Apply rubber-band resistance at boundaries
-        if (carouselCurrentIndex === 0 && newOffset > 0) {
-            // At start, dragging right - apply resistance
-            newOffset = newOffset * 0.3;
-        } else if (carouselCurrentIndex >= maxIndex && newOffset < 0) {
-            // At end, dragging left - apply resistance
-            newOffset = newOffset * 0.3;
-        } else {
-            // In middle - check if we're approaching boundaries
-            const projectedIndex = carouselCurrentIndex - (newOffset / itemTotalWidth);
-
-            if (projectedIndex < -0.5) {
-                // Would go before first item
-                newOffset = newOffset * 0.4;
-            } else if (projectedIndex > maxIndex + 0.5) {
-                // Would go past last item
-                newOffset = newOffset * 0.4;
-            }
-        }
-
-        setDragOffset(newOffset);
-    }, [touchStartX, touchStartY, touchIntent, itemsPerPage, stylesMeta.length, carouselCurrentIndex]);
-
-    const onTouchEnd = useCallback(() => {
-        const horizontalGesture = touchIntent === 'horizontal';
-
-        if (!horizontalGesture || touchStartX == null || touchEndX == null || !isDragging) {
-            setIsDragging(false);
-            setDragOffset(0);
-            setTransitionEnabled(true);
-            setTouchStartX(null);
-            setTouchStartY(null);
-            setTouchEndX(null);
-            setTouchIntent(null);
-            setWasDrag(false);
-            return;
-        }
-
-        const distance = touchStartX - touchEndX;
-        const dragDistance = Math.abs(distance);
-        setWasDrag(dragDistance > 10);
-
-        setTransitionEnabled(true);
-        setIsDragging(false);
-        setDragOffset(0);
-
-        if (dragDistance > minSwipeDistance) {
-            if (distance > 0 && canGoNext()) {
-                nextSlide();
-            } else if (distance < 0 && canGoPrev()) {
-                prevSlide();
-            }
-        }
-
-        setTouchStartX(null);
-        setTouchStartY(null);
-        setTouchEndX(null);
-        setTouchIntent(null);
-
-        setTimeout(() => setWasDrag(false), 300);
-    }, [touchIntent, touchStartX, touchEndX, isDragging, canGoNext, canGoPrev, nextSlide, prevSlide, minSwipeDistance]);
-
-    const onTouchCancel = useCallback(() => {
-        setIsDragging(false);
-        setDragOffset(0);
-        setTransitionEnabled(true);
-        setTouchStartX(null);
-        setTouchStartY(null);
-        setTouchEndX(null);
-        setTouchIntent(null);
-        setWasDrag(false);
-    }, []);
-
-    // Attach touch event listeners with { passive: false } to allow preventDefault()
-    useEffect(() => {
-        const container = carouselContainerRef.current;
-        if (!container) return;
-
-        // Use the existing handlers defined above
-        const handleTouchStart = (e) => onTouchStart(e);
-        const handleTouchMove = (e) => onTouchMove(e);
-        const handleTouchEnd = (e) => onTouchEnd(e);
-        const handleTouchCancel = (e) => onTouchCancel(e);
-
-        // Add listeners with passive: false to allow preventDefault()
-        container.addEventListener('touchstart', handleTouchStart, { passive: false });
-        container.addEventListener('touchmove', handleTouchMove, { passive: false });
-        container.addEventListener('touchend', handleTouchEnd, { passive: false });
-        container.addEventListener('touchcancel', handleTouchCancel, { passive: false });
-
-        return () => {
-            container.removeEventListener('touchstart', handleTouchStart);
-            container.removeEventListener('touchmove', handleTouchMove);
-            container.removeEventListener('touchend', handleTouchEnd);
-            container.removeEventListener('touchcancel', handleTouchCancel);
-        };
-    }, [onTouchStart, onTouchMove, onTouchEnd, onTouchCancel]);
-
-    // Hide swipe hint after 3 seconds or first touch interaction
-    useEffect(() => {
-        if (!showSwipeHint) return;
-
-        const timer = setTimeout(() => {
-            setShowSwipeHint(false);
-        }, 3000);
-
-        const hideOnInteraction = () => {
-            setShowSwipeHint(false);
-        };
-
-        const container = carouselContainerRef.current;
-        if (container) {
-            container.addEventListener('touchstart', hideOnInteraction, { once: true });
-        }
-
-        return () => {
-            clearTimeout(timer);
-            if (container) {
-                container.removeEventListener('touchstart', hideOnInteraction);
-            }
-        };
-    }, [showSwipeHint]);
+    };
 
     // Atomic totals cache (cents) per style for driving the breakdown table, mirroring Edit
     // Shape: { epoch: number, key: string, entries: { [styleId]: { result: { partsCents, assemblyCents, modsCents, customCents, subtotalBeforeDiscountCents, discountCents, totalAfterDiscountCents, deliveryCents, taxRatePct, taxCents, grandTotalCents } } } }
@@ -1979,18 +1759,11 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                     </Text>
                                 ) : (
                                     <Box>
-                                        {filteredItems.length === 0 && (
-                                            <Text
-                                                py={3}
-                                                textAlign="center"
-                                                color={colorGray500}
-                                                fontSize="sm"
-                                            >
+                                        {filteredItems.length === 0 ? (
+                                            <Text py={4} textAlign="center" color={colorGray500} fontSize="sm">
                                                 {t('proposalUI.styleComparison.selectItemsMessage')}
                                             </Text>
-                                        )}
-
-                                        {isStylesCollapsed ? (
+                                        ) : isStylesCollapsed ? (
                                             <Stack spacing={4}>
                                                 {stylesMeta.map((styleItem, index) => {
                                                     const isCurrentStyle = styleItem.id === selectedStyleData?.id;
@@ -2028,71 +1801,17 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                 })}
                                             </Stack>
                                         ) : (
-                                            <Box position="relative">
-                                                {/* Swipe hint for mobile only */}
-                                                <Box
-                                                    display={{ base: 'flex', md: 'none' }}
-                                                    position="absolute"
-                                                    top="50%"
-                                                    left="50%"
-                                                    transform="translate(-50%, -50%)"
-                                                    zIndex="tooltip"
-                                                    bg="blackAlpha.700"
-                                                    color="white"
-                                                    px={4}
-                                                    py={2}
-                                                    borderRadius="full"
-                                                    fontSize="sm"
-                                                    fontWeight="medium"
-                                                    alignItems="center"
-                                                    gap={2}
-                                                    pointerEvents="none"
-                                                    opacity={showSwipeHint ? 1 : 0}
-                                                    transition="opacity 0.3s ease-in-out"
-                                                    boxShadow="lg"
-                                                >
-                                                    <Text>👆 Swipe to choose style</Text>
-                                                    <Box
-                                                        animation="swipeAnimation 1.5s ease-in-out infinite"
-                                                        sx={{
-                                                            '@keyframes swipeAnimation': {
-                                                                '0%, 100%': { transform: 'translateX(0)' },
-                                                                '50%': { transform: 'translateX(-10px)' }
-                                                            }
-                                                        }}
-                                                    >
-                                                        👉
-                                                    </Box>
-                                                </Box>
-
-                                                <Box
-                                                    ref={(node) => {
-                                                        carouselRef.current = node;
-                                                        carouselContainerRef.current = node;
-                                                    }}
-                                                    display={{ base: 'flex', md: 'grid' }}
-                                                    gridTemplateColumns={{ md: 'repeat(auto-fill, minmax(180px, 1fr))' }}
-                                                    gap={{ base: '0.75rem', md: '1rem' }}
-                                                    flexWrap={{ base: 'nowrap', md: 'wrap' }}
-                                                    transform={{
-                                                        base: `translate3d(${carouselTransform}, 0, 0)`,
-                                                        md: 'none'
-                                                    }}
-                                                    transition={{
-                                                        base: transitionEnabled ? 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
-                                                        md: 'none'
-                                                    }}
-                                                    width="100%"
-                                                    style={{
-                                                        touchAction: 'pan-y pinch-zoom',
-                                                        userSelect: 'none',
-                                                        WebkitUserSelect: 'none',
-                                                        WebkitTapHighlightColor: 'transparent',
-                                                        willChange: 'transform',
-                                                        backfaceVisibility: 'hidden',
-                                                        WebkitBackfaceVisibility: 'hidden',
-                                                    }}
-                                                >
+                                            <Box
+                                                display="flex"
+                                                gap={{ base: '0.6rem', md: '0.85rem' }}
+                                                flexWrap={{ base: 'nowrap', md: 'wrap' }}
+                                                transform={{ base: `translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`, md: 'none' }}
+                                                transition="transform 0.3s ease-in-out"
+                                                width={{ base: stylesMeta.length > itemsPerPage ? `${Math.ceil(stylesMeta.length / itemsPerPage) * 100}%` : '100%', md: '100%' }}
+                                                onTouchStart={onTouchStart}
+                                                onTouchMove={onTouchMove}
+                                                onTouchEnd={onTouchEnd}
+                                            >
                                                 {stylesMeta.map((styleItem, index) => {
                                                     const variant = styleItem.styleVariants?.[0];
                                                     const hasAnyItems = filteredItems.length > 0;
@@ -2107,31 +1826,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                             opacity={disabled ? 0.5 : 1}
                                                             transition="transform 0.2s ease"
                                                             flexShrink={0}
-                                                            width={{
-                                                                base: `${styleImageContainerWidth}px`,
-                                                                md: 'auto'
-                                                            }}
-                                                            minW={{
-                                                                base: `${styleImageContainerWidth}px`,
-                                                                md: 'auto'
-                                                            }}
-                                                            maxW={{
-                                                                base: `${styleImageContainerWidth}px`,
-                                                                md: 'none'
-                                                            }}
-                                                            onClick={(e) => {
-                                                                // Prevent ghost clicks after drag
-                                                                if (wasDrag || isDragging) {
-                                                                    e.preventDefault();
-                                                                    return;
-                                                                }
-                                                                if (!disabled) handleStyleSelect(styleItem.id);
-                                                            }}
+                                                            onClick={() => !disabled && handleStyleSelect(styleItem.id)}
                                                             _hover={disabled ? {} : { transform: 'scale(1.02)' }}
-                                                            _active={disabled ? {} : {
-                                                                transform: 'scale(0.98)',
-                                                                transition: 'transform 0.1s ease-out'
-                                                            }}
                                                         >
                                                             <Box
                                                                 display="flex"
@@ -2193,14 +1889,13 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                     );
                                                 })}
                                             </Box>
-                                        </Box>
-                                    )}
-                                </Box>
-                            )}
+                                        )}
+                                    </Box>
+                                )}
+                            </Box>
                         </Box>
-                    </Box>
-                </Flex>
-            </>
+                    </Flex>
+                </>
             )}
             <Divider my={6} />
 

@@ -1,5 +1,6 @@
 // redux/authSlice.js
 import { createSlice } from '@reduxjs/toolkit'
+import { clearSessionFlag } from '../../utils/authSession'
 
 const initialState = {
   user: null,
@@ -31,6 +32,7 @@ const authSlice = createSlice({
       state.error = null
 
       // Clear ALL possible token storage locations
+      clearSessionFlag()
       const storageKeys = [
         'token',
         'user',
