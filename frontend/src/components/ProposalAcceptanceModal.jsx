@@ -162,14 +162,14 @@ const ProposalAcceptanceModal = ({
   return (
     <Modal isOpen={show} onClose={handleClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" closeOnOverlayClick={!isSubmitting} isCentered>
       <ModalOverlay as={motion.div} {...overlayMotionProps} />
-      <ModalContent as={motion.div} {...contentMotionProps} borderRadius="12px" >
+      <ModalContent as={motion.div} {...contentMotionProps} borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
         <Box as="form" onSubmit={submitProposal}>
           <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
             <Text fontSize="lg" fontWeight="semibold">
               {t('proposalAcceptance.title')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton color={headerTextColor} disabled={isSubmitting} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+          <ModalCloseButton color={headerTextColor} disabled={isSubmitting} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} minW="44px" minH="44px" />
 
           <ModalBody>
             <Stack spacing={4}>
@@ -214,15 +214,25 @@ const ProposalAcceptanceModal = ({
             </Stack>
           </ModalBody>
 
-          <ModalFooter gap={4}>
+          <ModalFooter gap={3} flexWrap="wrap">
             <Button
               variant='ghost'
               onClick={handleClose}
               isDisabled={isSubmitting}
-             minH="44px">
+              minH="44px"
+              whiteSpace="normal"
+              flex={{ base: '1', md: '0 1 auto' }}
+            >
               {t('common.cancel')}
             </Button>
-            <Button colorScheme='brand' type='submit' isLoading={isSubmitting} minH="44px">
+            <Button 
+              colorScheme='brand' 
+              type='submit' 
+              isLoading={isSubmitting} 
+              minH="44px"
+              whiteSpace="normal"
+              flex={{ base: '1', md: '0 1 auto' }}
+            >
               {t('proposalAcceptance.confirm')}
             </Button>
           </ModalFooter>

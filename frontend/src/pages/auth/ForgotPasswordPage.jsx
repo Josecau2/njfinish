@@ -106,35 +106,62 @@ const ForgotPasswordPage = () => {
       languageSwitcherProps={{ compact: true }}
     >
       <VStack spacing={6} align="stretch">
-        <Box textAlign="center">
+        <Box textAlign="center" mb={{ base: 2, md: 0 }}>
           <BrandLogo size={logoHeight} />
         </Box>
 
-        <Heading as="h2" size="lg" textAlign="center">
+        <Heading 
+          as="h2" 
+          size={{ base: 'lg', md: 'xl' }} 
+          textAlign="center"
+          fontWeight="bold"
+          letterSpacing="tight"
+          color={useColorModeValue('gray.900', 'white')}
+        >
           {loginBrand.resetTitle || t('auth.forgotPassword.title')}
         </Heading>
-        <Text textAlign="center" color={textGray700}>
+        <Text 
+          textAlign="center" 
+          color={textGray700}
+          fontSize={{ base: 'sm', md: 'md' }}
+          fontWeight="medium"
+        >
           {loginBrand.resetSubtitle || t('auth.forgotPassword.subtitle')}
         </Text>
 
         {message && (
-          <Alert status="success" borderRadius="md">
+          <Alert 
+            status="success" 
+            borderRadius={{ base: 'lg', md: 'md' }}
+            boxShadow="sm"
+            fontSize={{ base: 'sm', md: 'md' }}
+          >
             <AlertIcon />
             {message}
           </Alert>
         )}
 
         {error && (
-          <Alert status="error" borderRadius="md">
+          <Alert 
+            status="error" 
+            borderRadius={{ base: 'lg', md: 'md' }}
+            boxShadow="sm"
+            fontSize={{ base: 'sm', md: 'md' }}
+          >
             <AlertIcon />
             {error}
           </Alert>
         )}
 
         <Box as="form" onSubmit={handleSubmit}>
-          <VStack spacing={4}>
+          <VStack spacing={{ base: 5, md: 4 }}>
             <FormControl isRequired>
-              <FormLabel htmlFor="email" fontWeight="500">
+              <FormLabel 
+                htmlFor="email" 
+                fontWeight="600"
+                fontSize={{ base: 'sm', md: 'md' }}
+                mb={2}
+              >
                 {t('auth.email')}
               </FormLabel>
               <Input
@@ -146,6 +173,12 @@ const ForgotPasswordPage = () => {
                 value={form.email}
                 onChange={handleChange}
                 minH="44px"
+                borderRadius={{ base: 'lg', md: 'md' }}
+                fontSize={{ base: 'md', md: 'lg' }}
+                _focus={{
+                  borderColor: 'brand.500',
+                  boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                }}
               />
             </FormControl>
 
@@ -157,14 +190,36 @@ const ForgotPasswordPage = () => {
               minH="44px"
               isLoading={isSubmitting}
               loadingText={t('auth.forgotPassword.submitting')}
+              borderRadius={{ base: 'lg', md: 'md' }}
+              fontWeight="bold"
+              fontSize={{ base: 'md', md: 'lg' }}
+              boxShadow="sm"
+              _hover={{
+                transform: 'translateY(-1px)',
+                boxShadow: 'md',
+              }}
+              transition="all 0.2s"
             >
               {t('auth.forgotPassword.submit')}
             </Button>
           </VStack>
         </Box>
 
-        <Text textAlign="center">
-          <Link as={RouterLink} to="/login" color={linkBlue} minH="44px" py={2}>
+        <Text 
+          textAlign="center"
+          fontSize={{ base: 'sm', md: 'md' }}
+        >
+          <Link 
+            as={RouterLink} 
+            to="/login" 
+            color={linkBlue} 
+            minH="44px" 
+            py={2}
+            fontWeight="600"
+            _hover={{
+              textDecoration: 'underline',
+            }}
+          >
             {t('auth.backToLogin')}
           </Link>
         </Text>

@@ -690,7 +690,7 @@ const ItemSelectionStep = ({
               {t('proposals.create.summary.editVersionTitle')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} minW="44px" minH="44px" />
           <ModalBody>
             <Input
               value={editedVersionName}
@@ -698,11 +698,24 @@ const ItemSelectionStep = ({
               placeholder={t('proposals.create.manufacturer.labels.versionName')}
             />
           </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" colorScheme="gray" onClick={() => setEditModalOpen(false)} mr={3} minH="44px">
+          <ModalFooter gap={3} flexWrap="wrap">
+            <Button 
+              variant="ghost" 
+              colorScheme="gray" 
+              onClick={() => setEditModalOpen(false)} 
+              minH="44px"
+              whiteSpace="normal"
+              flex={{ base: '1', md: '0 1 auto' }}
+            >
               {t('common.cancel')}
             </Button>
-            <Button colorScheme="brand" onClick={saveEditVersionName} minH="44px">
+            <Button 
+              colorScheme="brand" 
+              onClick={saveEditVersionName} 
+              minH="44px"
+              whiteSpace="normal"
+              flex={{ base: '1', md: '0 1 auto' }}
+            >
               {t('common.save')}
             </Button>
           </ModalFooter>
@@ -717,13 +730,26 @@ const ItemSelectionStep = ({
               {t('customers.confirmTitle')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} minW="44px" minH="44px" />
           <ModalBody>{t('proposals.create.summary.confirmDeleteVersion')}</ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" colorScheme="gray" onClick={() => setDeleteModalOpen(false)} mr={3} minH="44px">
+          <ModalFooter gap={3} flexWrap="wrap">
+            <Button 
+              variant="ghost" 
+              colorScheme="gray" 
+              onClick={() => setDeleteModalOpen(false)} 
+              minH="44px"
+              whiteSpace="normal"
+              flex={{ base: '1', md: '0 1 auto' }}
+            >
               {t('common.cancel')}
             </Button>
-            <Button colorScheme="red" onClick={confirmDelete} minH="44px">
+            <Button 
+              colorScheme="red" 
+              onClick={confirmDelete} 
+              minH="44px"
+              whiteSpace="normal"
+              flex={{ base: '1', md: '0 1 auto' }}
+            >
               {t('common.delete')}
             </Button>
           </ModalFooter>
@@ -735,9 +761,10 @@ const ItemSelectionStep = ({
         leastDestructiveRef={alertCancelRef}
         onClose={closeAlert}
         isCentered
+        size={{ base: 'full', md: 'md' }}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent borderRadius="12px" overflow="hidden">
+          <AlertDialogContent borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
             <AlertDialogHeader bg={resolvedHeaderBg} color={headerTextColor}>
               <Text fontSize="lg" fontWeight="semibold">
                 {alertState.title}
@@ -746,8 +773,15 @@ const ItemSelectionStep = ({
             <AlertDialogBody>
               {typeof alertState.body === 'string' ? <Text>{alertState.body}</Text> : alertState.body}
             </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={alertCancelRef} colorScheme='brand' onClick={closeAlert} minH="44px">
+            <AlertDialogFooter gap={3} flexWrap="wrap">
+              <Button 
+                ref={alertCancelRef} 
+                colorScheme='brand' 
+                onClick={closeAlert} 
+                minH="44px"
+                whiteSpace="normal"
+                flex={{ base: '1', md: '0 1 auto' }}
+              >
                 {t('common.ok', 'OK')}
               </Button>
             </AlertDialogFooter>

@@ -144,34 +144,61 @@ const LoginPage = () => {
       languageSwitcherProps={{ compact: true }}
     >
       <VStack spacing={6} align="stretch">
-            <Box textAlign="center">
+            <Box textAlign="center" mb={{ base: 2, md: 0 }}>
               <BrandLogo size={logoHeight} />
             </Box>
-            <Heading as="h2" size="lg" textAlign="center">
+            <Heading 
+              as="h2" 
+              size={{ base: 'lg', md: 'xl' }} 
+              textAlign="center"
+              fontWeight="bold"
+              letterSpacing="tight"
+              color={useColorModeValue('gray.900', 'white')}
+            >
               {loginBrand.title}
             </Heading>
-            <Text textAlign="center" color={textGray700}>
+            <Text 
+              textAlign="center" 
+              color={textGray700}
+              fontSize={{ base: 'sm', md: 'md' }}
+              fontWeight="medium"
+            >
               {loginBrand.subtitle}
             </Text>
 
             {noticeMessage && (
-              <Alert status="info" borderRadius="md">
+              <Alert 
+                status="info" 
+                borderRadius={{ base: 'lg', md: 'md' }}
+                boxShadow="sm"
+                fontSize={{ base: 'sm', md: 'md' }}
+              >
                 <AlertIcon />
                 {noticeMessage}
               </Alert>
             )}
 
             {errorMessage && (
-              <Alert status="error" borderRadius="md">
+              <Alert 
+                status="error" 
+                borderRadius={{ base: 'lg', md: 'md' }}
+                boxShadow="sm"
+                fontSize={{ base: 'sm', md: 'md' }}
+              >
                 <AlertIcon />
                 {errorMessage}
               </Alert>
             )}
 
             <Box as="form" onSubmit={handleSubmit}>
-              <VStack spacing={4}>
+              <VStack spacing={{ base: 5, md: 4 }}>
                 <FormControl isRequired>
-                  <FormLabel htmlFor="email" fontWeight="500">
+                  <FormLabel 
+                    htmlFor="email" 
+                    fontWeight="600"
+                    fontSize={{ base: 'sm', md: 'md' }}
+                    mb={2}
+                  >
                     {t('auth.email')}
                   </FormLabel>
                   <Input
@@ -184,11 +211,22 @@ const LoginPage = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
                     minH="44px"
+                    borderRadius={{ base: 'lg', md: 'md' }}
+                    fontSize={{ base: 'md', md: 'lg' }}
+                    _focus={{
+                      borderColor: 'brand.500',
+                      boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                    }}
                   />
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel htmlFor="password" fontWeight="500">
+                  <FormLabel 
+                    htmlFor="password" 
+                    fontWeight="600"
+                    fontSize={{ base: 'sm', md: 'md' }}
+                    mb={2}
+                  >
                     {t('auth.password')}
                   </FormLabel>
                   <InputGroup size="lg">
@@ -201,6 +239,12 @@ const LoginPage = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       autoComplete="current-password"
                       minH="44px"
+                      borderRadius={{ base: 'lg', md: 'md' }}
+                      fontSize={{ base: 'md', md: 'lg' }}
+                      _focus={{
+                        borderColor: 'brand.500',
+                        boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                      }}
                     />
                     <InputRightElement width="44px" height="44px">
                       <IconButton
@@ -211,12 +255,19 @@ const LoginPage = () => {
                         tabIndex={-1}
                         minW="44px"
                         minH="44px"
+                        borderRadius={{ base: 'lg', md: 'md' }}
                       />
                     </InputRightElement>
                   </InputGroup>
                 </FormControl>
 
-                <Flex justify="space-between" align="center" w="100%">
+                <Flex 
+                  justify="space-between" 
+                  align="center" 
+                  w="100%" 
+                  flexDirection={{ base: 'column', sm: 'row' }}
+                  gap={{ base: 3, sm: 0 }}
+                >
                   {loginBrand.showKeepLoggedIn && (
                     <Checkbox
                       id="keepLoggedIn"
@@ -225,12 +276,26 @@ const LoginPage = () => {
                       minH="44px"
                       display="flex"
                       alignItems="center"
+                      fontSize={{ base: 'sm', md: 'md' }}
+                      fontWeight="medium"
                     >
                       {t('auth.keepLoggedIn')}
                     </Checkbox>
                   )}
                   {loginBrand.showForgotPassword && (
-                    <Link as={RouterLink} to="/forgot-password" color={linkBlue} minH="44px" display="flex" alignItems="center">
+                    <Link 
+                      as={RouterLink} 
+                      to="/forgot-password" 
+                      color={linkBlue} 
+                      minH="44px" 
+                      display="flex" 
+                      alignItems="center"
+                      fontSize={{ base: 'sm', md: 'md' }}
+                      fontWeight="600"
+                      _hover={{
+                        textDecoration: 'underline',
+                      }}
+                    >
                       {t('auth.forgotPasswordLink')}
                     </Link>
                   )}
@@ -242,15 +307,37 @@ const LoginPage = () => {
                   size="lg"
                   width="100%"
                   minH="44px"
+                  borderRadius={{ base: 'lg', md: 'md' }}
+                  fontWeight="bold"
+                  fontSize={{ base: 'md', md: 'lg' }}
+                  boxShadow="sm"
+                  _hover={{
+                    transform: 'translateY(-1px)',
+                    boxShadow: 'md',
+                  }}
+                  transition="all 0.2s"
                 >
                   {t('auth.signIn')}
                 </Button>
               </VStack>
             </Box>
 
-            <Text textAlign="center">
+            <Text 
+              textAlign="center"
+              fontSize={{ base: 'sm', md: 'md' }}
+            >
               {t('auth.noAccountPrompt')}{' '}
-              <Link as={RouterLink} to="/request-access" color={linkBlue} minH="44px" py={2}>
+              <Link 
+                as={RouterLink} 
+                to="/request-access" 
+                color={linkBlue} 
+                minH="44px" 
+                py={2}
+                fontWeight="600"
+                _hover={{
+                  textDecoration: 'underline',
+                }}
+              >
                 {t('auth.requestAccess.submit')}
               </Link>
             </Text>

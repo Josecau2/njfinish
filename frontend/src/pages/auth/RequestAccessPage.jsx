@@ -163,28 +163,48 @@ const RequestAccessPage = () => {
       rightContainerProps={{ maxW: 'lg' }}
     >
       <VStack spacing={6} align="stretch">
-        <Box textAlign="center">
+        <Box textAlign="center" mb={{ base: 2, md: 0 }}>
           <BrandLogo size={logoHeight} />
         </Box>
 
-        <Heading as="h2" size="lg" textAlign="center">
+        <Heading 
+          as="h2" 
+          size={{ base: 'lg', md: 'xl' }} 
+          textAlign="center"
+          fontWeight="bold"
+          letterSpacing="tight"
+          color={useColorModeValue('gray.900', 'white')}
+        >
           {pageTitle}
         </Heading>
-        <Text textAlign="center" color={textGray700}>
+        <Text 
+          textAlign="center" 
+          color={textGray700}
+          fontSize={{ base: 'sm', md: 'md' }}
+          fontWeight="medium"
+        >
           {pageSubtitle}
         </Text>
         {pageDescription && (
-          <Text textAlign="center" color={textGray700} fontSize="sm">
+          <Text 
+            textAlign="center" 
+            color={textGray700} 
+            fontSize={{ base: 'xs', md: 'sm' }}
+          >
             {pageDescription}
           </Text>
         )}
 
         {benefits.length > 0 && (
           <Box>
-            <Text fontWeight="500" mb={2}>
+            <Text 
+              fontWeight="600" 
+              mb={2}
+              fontSize={{ base: 'sm', md: 'md' }}
+            >
               {copy.benefitsHeading}
             </Text>
-            <List spacing={4} fontSize="sm">
+            <List spacing={4} fontSize={{ base: 'xs', sm: 'sm' }}>
               {benefits.map((item, index) => (
                 <ListItem key={index} display="flex" alignItems="flex-start">
                   <ListIcon as={Circle} boxSize={2} mt={1.5} mr={2} fill="currentColor" />
@@ -196,24 +216,39 @@ const RequestAccessPage = () => {
         )}
 
         {successMessage && (
-          <Alert status="success" borderRadius="md">
+          <Alert 
+            status="success" 
+            borderRadius={{ base: 'lg', md: 'md' }}
+            boxShadow="sm"
+            fontSize={{ base: 'sm', md: 'md' }}
+          >
             <AlertIcon />
             {successMessage}
           </Alert>
         )}
 
         {errorMessage && (
-          <Alert status="error" borderRadius="md">
+          <Alert 
+            status="error" 
+            borderRadius={{ base: 'lg', md: 'md' }}
+            boxShadow="sm"
+            fontSize={{ base: 'sm', md: 'md' }}
+          >
             <AlertIcon />
             {errorMessage}
           </Alert>
         )}
 
         <Box as="form" onSubmit={handleSubmit}>
-          <VStack spacing={4}>
+          <VStack spacing={{ base: 5, md: 4 }}>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} w="100%">
               <FormControl isRequired>
-                <FormLabel htmlFor="firstName" fontWeight="500">
+                <FormLabel 
+                  htmlFor="firstName" 
+                  fontWeight="600"
+                  fontSize={{ base: 'sm', md: 'md' }}
+                  mb={2}
+                >
                   {copy.fields.firstNameLabel}
                 </FormLabel>
                 <Input
@@ -226,11 +261,22 @@ const RequestAccessPage = () => {
                   maxLength={191}
                   autoComplete="given-name"
                   minH="44px"
+                  borderRadius={{ base: 'lg', md: 'md' }}
+                  fontSize={{ base: 'md', md: 'lg' }}
+                  _focus={{
+                    borderColor: 'brand.500',
+                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                  }}
                 />
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel htmlFor="lastName" fontWeight="500">
+                <FormLabel 
+                  htmlFor="lastName" 
+                  fontWeight="600"
+                  fontSize={{ base: 'sm', md: 'md' }}
+                  mb={2}
+                >
                   {copy.fields.lastNameLabel}
                 </FormLabel>
                 <Input
@@ -243,13 +289,24 @@ const RequestAccessPage = () => {
                   maxLength={191}
                   autoComplete="family-name"
                   minH="44px"
+                  borderRadius={{ base: 'lg', md: 'md' }}
+                  fontSize={{ base: 'md', md: 'lg' }}
+                  _focus={{
+                    borderColor: 'brand.500',
+                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                  }}
                 />
               </FormControl>
             </SimpleGrid>
 
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4} w="100%">
               <FormControl isRequired>
-                <FormLabel htmlFor="email" fontWeight="500">
+                <FormLabel 
+                  htmlFor="email" 
+                  fontWeight="600"
+                  fontSize={{ base: 'sm', md: 'md' }}
+                  mb={2}
+                >
                   {copy.fields.emailLabel}
                 </FormLabel>
                 <Input
@@ -261,11 +318,22 @@ const RequestAccessPage = () => {
                   onChange={handleChange}
                   autoComplete="email"
                   minH="44px"
+                  borderRadius={{ base: 'lg', md: 'md' }}
+                  fontSize={{ base: 'md', md: 'lg' }}
+                  _focus={{
+                    borderColor: 'brand.500',
+                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                  }}
                 />
               </FormControl>
 
               <FormControl isRequired>
-                <FormLabel htmlFor="phone" fontWeight="500">
+                <FormLabel 
+                  htmlFor="phone" 
+                  fontWeight="600"
+                  fontSize={{ base: 'sm', md: 'md' }}
+                  mb={2}
+                >
                   {copy.fields.phoneLabel}
                 </FormLabel>
                 <Input
@@ -278,13 +346,24 @@ const RequestAccessPage = () => {
                   maxLength={32}
                   autoComplete="tel"
                   minH="44px"
+                  borderRadius={{ base: 'lg', md: 'md' }}
+                  fontSize={{ base: 'md', md: 'lg' }}
+                  _focus={{
+                    borderColor: 'brand.500',
+                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                  }}
                 />
               </FormControl>
             </SimpleGrid>
 
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} w="100%">
               <FormControl>
-                <FormLabel htmlFor="city" fontWeight="500">
+                <FormLabel 
+                  htmlFor="city" 
+                  fontWeight="600"
+                  fontSize={{ base: 'sm', md: 'md' }}
+                  mb={2}
+                >
                   {copy.fields.cityLabel}
                 </FormLabel>
                 <Input
@@ -297,11 +376,22 @@ const RequestAccessPage = () => {
                   maxLength={191}
                   autoComplete="address-level2"
                   minH="44px"
+                  borderRadius={{ base: 'lg', md: 'md' }}
+                  fontSize={{ base: 'md', md: 'lg' }}
+                  _focus={{
+                    borderColor: 'brand.500',
+                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                  }}
                 />
               </FormControl>
 
               <FormControl>
-                <FormLabel htmlFor="state" fontWeight="500">
+                <FormLabel 
+                  htmlFor="state" 
+                  fontWeight="600"
+                  fontSize={{ base: 'sm', md: 'md' }}
+                  mb={2}
+                >
                   {copy.fields.stateLabel}
                 </FormLabel>
                 <Input
@@ -314,11 +404,22 @@ const RequestAccessPage = () => {
                   maxLength={64}
                   autoComplete="address-level1"
                   minH="44px"
+                  borderRadius={{ base: 'lg', md: 'md' }}
+                  fontSize={{ base: 'md', md: 'lg' }}
+                  _focus={{
+                    borderColor: 'brand.500',
+                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                  }}
                 />
               </FormControl>
 
               <FormControl>
-                <FormLabel htmlFor="zip" fontWeight="500">
+                <FormLabel 
+                  htmlFor="zip" 
+                  fontWeight="600"
+                  fontSize={{ base: 'sm', md: 'md' }}
+                  mb={2}
+                >
                   {copy.fields.zipLabel}
                 </FormLabel>
                 <Input
@@ -332,12 +433,23 @@ const RequestAccessPage = () => {
                   inputMode="numeric"
                   autoComplete="postal-code"
                   minH="44px"
+                  borderRadius={{ base: 'lg', md: 'md' }}
+                  fontSize={{ base: 'md', md: 'lg' }}
+                  _focus={{
+                    borderColor: 'brand.500',
+                    boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                  }}
                 />
               </FormControl>
             </SimpleGrid>
 
             <FormControl>
-              <FormLabel htmlFor="company" fontWeight="500">
+              <FormLabel 
+                htmlFor="company" 
+                fontWeight="600"
+                fontSize={{ base: 'sm', md: 'md' }}
+                mb={2}
+              >
                 {copy.fields.companyLabel}
               </FormLabel>
               <Input
@@ -350,11 +462,22 @@ const RequestAccessPage = () => {
                 maxLength={191}
                 autoComplete="organization"
                 minH="44px"
+                borderRadius={{ base: 'lg', md: 'md' }}
+                fontSize={{ base: 'md', md: 'lg' }}
+                _focus={{
+                  borderColor: 'brand.500',
+                  boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                }}
               />
             </FormControl>
 
             <FormControl>
-              <FormLabel htmlFor="message" fontWeight="500">
+              <FormLabel 
+                htmlFor="message" 
+                fontWeight="600"
+                fontSize={{ base: 'sm', md: 'md' }}
+                mb={2}
+              >
                 {copy.fields.messageLabel}
               </FormLabel>
               <Textarea
@@ -366,6 +489,12 @@ const RequestAccessPage = () => {
                 onChange={handleChange}
                 maxLength={2000}
                 minH="44px"
+                borderRadius={{ base: 'lg', md: 'md' }}
+                fontSize={{ base: 'md', md: 'lg' }}
+                _focus={{
+                  borderColor: 'brand.500',
+                  boxShadow: '0 0 0 1px var(--chakra-colors-brand-500)',
+                }}
               />
               <Text fontSize="xs" textAlign="right" color={textGray700} mt={1}>
                 {form.message.length}/2000
@@ -380,15 +509,37 @@ const RequestAccessPage = () => {
               minH="44px"
               isLoading={isSubmitting}
               loadingText={copy.submitting}
+              borderRadius={{ base: 'lg', md: 'md' }}
+              fontWeight="bold"
+              fontSize={{ base: 'md', md: 'lg' }}
+              boxShadow="sm"
+              _hover={{
+                transform: 'translateY(-1px)',
+                boxShadow: 'md',
+              }}
+              transition="all 0.2s"
             >
               {copy.submit}
             </Button>
           </VStack>
         </Box>
 
-        <Text textAlign="center" fontSize="sm">
+        <Text 
+          textAlign="center" 
+          fontSize={{ base: 'sm', md: 'md' }}
+        >
           {copy.alreadyHaveAccess}{' '}
-          <Link as={RouterLink} to="/login" color={linkBlue} fontWeight="600" minH="44px" py={2}>
+          <Link 
+            as={RouterLink} 
+            to="/login" 
+            color={linkBlue} 
+            fontWeight="600" 
+            minH="44px" 
+            py={2}
+            _hover={{
+              textDecoration: 'underline',
+            }}
+          >
             {copy.signIn}
           </Link>
         </Text>

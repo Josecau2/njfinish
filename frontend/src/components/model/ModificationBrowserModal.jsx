@@ -664,7 +664,7 @@ const ModificationBrowserModal = ({
   return (
     <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "full" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent borderRadius="12px">
+      <ModalContent borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
         <ModalHeader px={6} py={4} bg={resolvedHeaderBg} color={headerTextColor}>
           <HStack justify="space-between" align="center">
             <HStack spacing={4} align="center">
@@ -696,7 +696,6 @@ const ModificationBrowserModal = ({
             />
           </HStack>
         </ModalHeader>
-        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
 
         <ModalBody px={6} py={4} bg={bgGray50}>
           <Stack spacing={6}>

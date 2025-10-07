@@ -542,8 +542,9 @@ const CatalogTableEdit = ({
           <Box
             position="relative"
             flex="1"
-            minW="200px"
-            maxW="600px"
+            minW={{ base: "full", md: "200px" }}
+            maxW={{ base: "full", md: "600px" }}
+            w={{ base: "full", md: "auto" }}
             ref={searchContainerRef}
           >
             <InputGroup>
@@ -564,6 +565,7 @@ const CatalogTableEdit = ({
                     setShowSuggestions(false)
                   }
                 }}
+                w="full"
               />
             </InputGroup>
             {showSuggestions && filteredOptions.length > 0 && (
@@ -577,51 +579,79 @@ const CatalogTableEdit = ({
                 border="1px solid"
                 borderColor={borderGray200}
                 borderRadius="md"
-                boxShadow="lg"
-                zIndex={1000}
+                boxShadow="xl"
+                zIndex={1500}
                 w="full"
-                maxH="260px"
+                maxH={{ base: "400px", md: "320px" }}
                 overflowY="auto"
+                css={{
+                  '&::-webkit-scrollbar': {
+                    width: '8px',
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    background: 'transparent',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    background: useColorModeValue('#CBD5E0', '#4A5568'),
+                    borderRadius: '4px',
+                  },
+                }}
               >
-                {filteredOptions.map((item) => (
+                {filteredOptions.map((item, index) => (
                   <Flex
                     key={item.id}
-                    justify="space-between"
-                    align="center"
-                    p={1}
+                    direction="column"
+                    px={{ base: 3, md: 2 }}
+                    py={{ base: 3, md: 2 }}
+                    cursor="pointer"
+                    _hover={{ bg: useColorModeValue('blue.50', 'gray.700') }}
+                    _active={{ bg: useColorModeValue('blue.100', 'gray.600') }}
+                    borderBottom={index < filteredOptions.length - 1 ? "1px solid" : "none"}
+                    borderColor={borderGray200}
+                    onClick={() => pickItem(item)}
+                    minH={{ base: "56px", md: "auto" }}
+                    justify="center"
                   >
-                    <Button
-                      variant="ghost"
-                      textAlign="start"
-                      flex="1"
-                      whiteSpace="normal"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => pickItem(item)}
-                      px={3}
-                      py={1}
-                      fontWeight="normal"
-                    >
-                      <Text as="span" fontWeight="bold">{item.code}</Text> — {item.description}
-                    </Button>
-                    {hasTypeMetadata(getItemType(item)) && (
-                      <Button
-                        size="xs"
-                        variant="outline"
-                        colorScheme="blue"
-                        ml={2}
-                        fontSize="xs"
-                        px={1}
-                        py={0.5}
-                        flexShrink={0}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          openTypeModal(getItemType(item))
-                        }}
-                        title={`View ${getItemType(item)} specifications`}
-                      >
-                        Specs
-                      </Button>
-                    )}
+                    <Flex align="center" justify="space-between" w="full">
+                      <Box flex="1" pr={2}>
+                        <Text 
+                          fontWeight="bold" 
+                          fontSize={{ base: "md", md: "sm" }}
+                          color={useColorModeValue('blue.600', 'blue.300')}
+                          mb={0.5}
+                        >
+                          {item.code}
+                        </Text>
+                        <Text 
+                          fontSize={{ base: "sm", md: "xs" }}
+                          color={useColorModeValue('gray.700', 'gray.300')}
+                          noOfLines={2}
+                        >
+                          {item.description}
+                        </Text>
+                      </Box>
+                      {hasTypeMetadata(getItemType(item)) && (
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          colorScheme="blue"
+                          fontSize={{ base: "xs", md: "2xs" }}
+                          px={{ base: 2, md: 1.5 }}
+                          py={{ base: 1, md: 0.5 }}
+                          minH={{ base: "32px", md: "24px" }}
+                          h="auto"
+                          lineHeight="1.2"
+                          flexShrink={0}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            openTypeModal(getItemType(item))
+                          }}
+                          title={`View ${getItemType(item)} specifications`}
+                        >
+                          Specs
+                        </Button>
+                      )}
+                    </Flex>
                   </Flex>
                 ))}
               </Box>

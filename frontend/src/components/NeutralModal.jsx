@@ -46,18 +46,33 @@ export default function NeutralModal({
 
   const headerTextColor = customization?.headerFontColor || getContrastColor(headerBg)
 
-  const chakraSize = size === 'xl' ? '6xl' : size === 'lg' ? '4xl' : '2xl'
+  // Responsive size mapping
+  const getResponsiveSize = (size) => {
+    const sizeMap = {
+      xs: { base: 'full', md: 'xs' },
+      sm: { base: 'full', md: 'sm' },
+      md: { base: 'full', md: 'md' },
+      lg: { base: 'full', md: 'lg', lg: '4xl' },
+      xl: { base: 'full', md: 'xl', lg: '6xl' },
+      '2xl': { base: 'full', md: '2xl' },
+      '3xl': { base: 'full', md: '3xl' },
+      '4xl': { base: 'full', md: '4xl' },
+      '5xl': { base: 'full', md: '5xl' },
+      '6xl': { base: 'full', md: '6xl' },
+    }
+    return sizeMap[size] || sizeMap.xl
+  }
 
   return (
     <Modal
       isOpen={visible}
       onClose={onClose}
       isCentered
-      size={chakraSize}
+      size={getResponsiveSize(size)}
       scrollBehavior="inside"
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
         <ModalHeader
           bg={headerBg}
           color={headerTextColor}
@@ -65,9 +80,9 @@ export default function NeutralModal({
         >
           {title}
         </ModalHeader>
-        <ModalCloseButton color={headerTextColor} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+        <ModalCloseButton color={headerTextColor} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} minW="44px" minH="44px" />
         <ModalBody>{children}</ModalBody>
-        {footer ? <ModalFooter>{footer}</ModalFooter> : null}
+        {footer ? <ModalFooter gap={3} flexWrap="wrap">{footer}</ModalFooter> : null}
       </ModalContent>
     </Modal>
   )

@@ -1161,33 +1161,40 @@ const EditProposal = ({
         scrollBehavior="inside"
         isCentered
       >
-        <ModalOverlay>
-          <ModalContent>
-            <ModalHeader>{t('common.editVersionName', 'Edit Version Name')}</ModalHeader>
-            <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
-            <ModalBody>
-              <Input
-                mb={3}
-                value={editedVersionName}
-                onChange={(e) => setEditedVersionName(e.target.value)}
-                placeholder={t('common.versionName', 'Version Name')}
-              />
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                variant="outline"
-                colorScheme="gray"
-                onClick={() => setEditModalOpen(false)}
-                mr={3}
-              >
-                {t('common.cancel', 'Cancel')}
-              </Button>
-              <Button colorScheme="brand" onClick={saveEditVersionName} minH="44px">
-                {t('common.save', 'Save')}
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </ModalOverlay>
+        <ModalOverlay />
+        <ModalContent borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
+          <ModalHeader>{t('common.editVersionName', 'Edit Version Name')}</ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} minW="44px" minH="44px" />
+          <ModalBody>
+            <Input
+              mb={3}
+              value={editedVersionName}
+              onChange={(e) => setEditedVersionName(e.target.value)}
+              placeholder={t('common.versionName', 'Version Name')}
+            />
+          </ModalBody>
+          <ModalFooter gap={3} flexWrap="wrap">
+            <Button
+              variant="outline"
+              colorScheme="gray"
+              onClick={() => setEditModalOpen(false)}
+              minH="44px"
+              whiteSpace="normal"
+              flex={{ base: '1', md: '0 1 auto' }}
+            >
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button 
+              colorScheme="brand" 
+              onClick={saveEditVersionName} 
+              minH="44px"
+              whiteSpace="normal"
+              flex={{ base: '1', md: '0 1 auto' }}
+            >
+              {t('common.save', 'Save')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
       </Modal>
 
       <Modal
@@ -1197,28 +1204,35 @@ const EditProposal = ({
         scrollBehavior="inside"
         isCentered
       >
-        <ModalOverlay>
-          <ModalContent>
-            <ModalHeader>{t('common.confirmDelete', 'Confirm Delete')}</ModalHeader>
-            <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
-            <ModalBody>
-              {t('common.areYouSureDelete', 'Are you sure you want to delete this version?')}
-            </ModalBody>
-            <ModalFooter>
-              <Button
-                variant="outline"
-                colorScheme="gray"
-                onClick={() => setDeleteModalOpen(false)}
-                mr={3}
-              >
-                {t('common.cancel', 'Cancel')}
-              </Button>
-              <Button colorScheme="red" onClick={confirmDelete} minH="44px">
-                {t('common.delete', 'Delete')}
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </ModalOverlay>
+        <ModalOverlay />
+        <ModalContent borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
+          <ModalHeader>{t('common.confirmDelete', 'Confirm Delete')}</ModalHeader>
+          <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} minW="44px" minH="44px" />
+          <ModalBody>
+            {t('common.areYouSureDelete', 'Are you sure you want to delete this version?')}
+          </ModalBody>
+          <ModalFooter gap={3} flexWrap="wrap">
+            <Button
+              variant="outline"
+              colorScheme="gray"
+              onClick={() => setDeleteModalOpen(false)}
+              minH="44px"
+              whiteSpace="normal"
+              flex={{ base: '1', md: '0 1 auto' }}
+            >
+              {t('common.cancel', 'Cancel')}
+            </Button>
+            <Button 
+              colorScheme="red" 
+              onClick={confirmDelete} 
+              minH="44px"
+              whiteSpace="normal"
+              flex={{ base: '1', md: '0 1 auto' }}
+            >
+              {t('common.delete', 'Delete')}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
       </Modal>
     </>
   )

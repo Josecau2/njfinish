@@ -555,6 +555,8 @@ const ProposalForm = ({
                 aria-label={t('common.back', 'Back')}
                 flex={1}
                 minH="44px"
+                whiteSpace="normal"
+                textAlign="center"
               >
                 {t('common.back', 'Back')}
               </Button>
@@ -564,6 +566,8 @@ const ProposalForm = ({
                 aria-label={t('common.next', 'Next')}
                 flex={1}
                 minH="44px"
+                whiteSpace="normal"
+                textAlign="center"
               >
                 {t('common.next', 'Next')}
               </Button>
