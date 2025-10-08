@@ -4,13 +4,12 @@ import { setUser, setError } from '../../store/slices/authSlice';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import { Box, Flex, Heading, Text, FormControl, FormLabel, Input, InputGroup, InputRightElement, IconButton, Button, Checkbox, Link, Alert, AlertIcon, VStack, HStack, useColorModeValue } from '@chakra-ui/react';
 import { Eye, EyeOff } from 'lucide-react';
-import axios from 'axios';
+import axiosInstance from '../../helpers/axiosInstance';
 import { useTranslation } from 'react-i18next';
 import { getOptimalColors } from '../../utils/colorUtils';
 import BrandLogo from '../../components/BrandLogo';
 import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand';
-import { clearAllTokens } from '../../utils/authToken';
-import { markSessionActive } from '../../utils/authSession';
+import { clearAllTokens, installTokenEverywhere } from '../../utils/authToken';
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 import AuthLayout from '../../components/AuthLayout';
 
@@ -31,6 +30,43 @@ const LoginPage = () => {
   const bgWhite = useColorModeValue("white", "gray.800")
   const textGray700 = useColorModeValue("gray.700", "gray.300")
   const linkBlue = useColorModeValue("blue.600", "blue.300")
+  const rightBg = useColorModeValue('gray.50', 'gray.900')
+
+  // Heading and text colors
+  const headingColor = useColorModeValue('gray.900', 'white')
+  const subtitleColor = useColorModeValue('gray.600', 'gray.400')
+
+  // Alert colors
+  const alertInfoBg = useColorModeValue('blue.50', 'blue.900')
+  const alertInfoBorderColor = useColorModeValue('blue.200', 'blue.700')
+  const alertErrorBg = useColorModeValue('red.50', 'red.900')
+  const alertErrorBorderColor = useColorModeValue('red.200', 'red.700')
+
+  // Form label colors
+  const labelColor = useColorModeValue('gray.700', 'gray.300')
+
+  // Input colors
+  const inputBg = useColorModeValue('gray.50', 'gray.700')
+  const inputBorderColor = useColorModeValue('gray.200', 'gray.600')
+  const inputHoverBorderColor = useColorModeValue('gray.300', 'gray.500')
+  const inputHoverBg = useColorModeValue('white', 'gray.650')
+  const inputFocusBg = useColorModeValue('white', 'gray.700')
+
+  // Button colors
+  const togglePasswordHoverBg = useColorModeValue('gray.100', 'gray.600')
+
+  // Checkbox color
+  const checkboxColor = useColorModeValue('gray.700', 'gray.300')
+
+  // Link colors
+  const linkColor = useColorModeValue('brand.600', 'brand.300')
+  const linkHoverColor = useColorModeValue('brand.700', 'brand.400')
+
+  // Divider color
+  const dividerBorderColor = useColorModeValue('gray.100', 'gray.700')
+
+  // Bottom text color
+  const bottomTextColor = useColorModeValue('gray.600', 'gray.400')
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -70,35 +106,49 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const apiBase = api_url ? api_url.replace(/\/+$/, '') : '';
-      const loginUrl = apiBase ? `${apiBase}/api/auth/login` : '/api/auth/login';
-      const response = await axios.post(loginUrl, {
+      const loginUrl = '/api/auth/login';
+      console.log('[Login] Attempting login to:', loginUrl);
+
+      const response = await axiosInstance.post(loginUrl, {
         email,
         password,
-      }, { withCredentials: true });
+      });
 
-      const { sessionActive, userId, name, role, role_id, group_id, group, email: responseEmail } = response.data || {};
+      console.log('[Login] Response received:', response.status, response.data);
+
+      const { sessionActive, userId, name, role, role_id, group_id, group, email: responseEmail, token } = response.data || {};
       const resolvedEmail = responseEmail || email;
       const normalizedRole = String(role || '').toLowerCase();
       const user = { email: resolvedEmail, userId, name, role: normalizedRole, role_id, group_id, group };
+
+      console.log('[Login] Parsed user data:', { sessionActive, userId, name, role: normalizedRole });
 
       if (!sessionActive) {
         throw new Error('Session not established');
       }
 
       clearAllTokens({ preserveUser: false });
-      markSessionActive();
-      try { localStorage.setItem('user', JSON.stringify(user)); } catch {}
       try { window.localStorage.setItem('__auth_changed__', String(Date.now())); } catch {}
 
-      dispatch(setUser({ user, token: null }));
+      // Install token in memory for components that check getFreshestToken()
+      if (token) {
+        installTokenEverywhere(token, { preserveUser: false });
+      }
+
+      dispatch(setUser({ user }));
+      console.log('[Login] User set in Redux store');
+
+      // Store user in localStorage for components that need it
+      try { localStorage.setItem('user', JSON.stringify(user)); } catch {}
 
       localStorage.setItem('coreui-free-react-admin-template-theme', 'light');
 
       const returnTo = (() => { try { return sessionStorage.getItem('return_to') || '/' } catch { return '/' } })();
       try { sessionStorage.removeItem('return_to'); } catch {}
+      console.log('[Login] Navigating to:', returnTo);
       navigate(returnTo);
     } catch (err) {
+      console.error('[Login] Error:', err);
       const errorMsg = err.response?.data?.message || t('auth.loginFailed');
       dispatch(setError(errorMsg));
       setErrorMessage(errorMsg);
@@ -128,7 +178,7 @@ const LoginPage = () => {
       leftContent={leftPanel}
       leftBg={loginBackground}
       leftTextColor={rightPanelColors.text}
-      rightBg={useColorModeValue('gray.50', 'gray.900')}
+      rightBg={rightBg}
       languageSwitcherProps={{ compact: true }}
     >
       <VStack spacing={{ base: 8, md: 10 }} align="stretch" px={{ base: 0, md: 2 }} position="relative" zIndex={2}>
@@ -141,13 +191,13 @@ const LoginPage = () => {
                 size={{ base: 'xl', md: '2xl' }}
                 fontWeight="700"
                 letterSpacing="-0.02em"
-                color={useColorModeValue('gray.900', 'white')}
+                color={headingColor}
                 mb={3}
               >
                 {loginBrand.title}
               </Heading>
               <Text
-                color={useColorModeValue('gray.600', 'gray.400')}
+                color={subtitleColor}
                 fontSize={{ base: 'md', md: 'lg' }}
                 fontWeight="400"
                 lineHeight="1.6"
@@ -162,9 +212,9 @@ const LoginPage = () => {
                 borderRadius="xl"
                 boxShadow="sm"
                 fontSize={{ base: 'sm', md: 'md' }}
-                bg={useColorModeValue('blue.50', 'blue.900')}
+                bg={alertInfoBg}
                 border="1px solid"
-                borderColor={useColorModeValue('blue.200', 'blue.700')}
+                borderColor={alertInfoBorderColor}
               >
                 <AlertIcon />
                 {noticeMessage}
@@ -177,9 +227,9 @@ const LoginPage = () => {
                 borderRadius="xl"
                 boxShadow="sm"
                 fontSize={{ base: 'sm', md: 'md' }}
-                bg={useColorModeValue('red.50', 'red.900')}
+                bg={alertErrorBg}
                 border="1px solid"
-                borderColor={useColorModeValue('red.200', 'red.700')}
+                borderColor={alertErrorBorderColor}
               >
                 <AlertIcon />
                 {errorMessage}
@@ -194,7 +244,7 @@ const LoginPage = () => {
                     fontWeight="600"
                     fontSize={{ base: 'sm', md: 'md' }}
                     mb={2}
-                    color={useColorModeValue('gray.700', 'gray.300')}
+                    color={labelColor}
                     letterSpacing="tight"
                   >
                     {t('auth.email')}
@@ -211,17 +261,17 @@ const LoginPage = () => {
                     minH={{ base: '52px', md: '56px' }}
                     borderRadius="xl"
                     fontSize={{ base: 'md', md: 'lg' }}
-                    bg={useColorModeValue('gray.50', 'gray.700')}
+                    bg={inputBg}
                     border="1px solid"
-                    borderColor={useColorModeValue('gray.200', 'gray.600')}
+                    borderColor={inputBorderColor}
                     _hover={{
-                      borderColor: useColorModeValue('gray.300', 'gray.500'),
-                      bg: useColorModeValue('white', 'gray.650'),
+                      borderColor: inputHoverBorderColor,
+                      bg: inputHoverBg,
                     }}
                     _focus={{
                       borderColor: 'brand.500',
                       boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
-                      bg: useColorModeValue('white', 'gray.700'),
+                      bg: inputFocusBg,
                     }}
                     transition="all 0.2s"
                   />
@@ -233,7 +283,7 @@ const LoginPage = () => {
                     fontWeight="600"
                     fontSize={{ base: 'sm', md: 'md' }}
                     mb={2}
-                    color={useColorModeValue('gray.700', 'gray.300')}
+                    color={labelColor}
                     letterSpacing="tight"
                   >
                     {t('auth.password')}
@@ -250,17 +300,17 @@ const LoginPage = () => {
                       minH={{ base: '52px', md: '56px' }}
                       borderRadius="xl"
                       fontSize={{ base: 'md', md: 'lg' }}
-                      bg={useColorModeValue('gray.50', 'gray.700')}
+                      bg={inputBg}
                       border="1px solid"
-                      borderColor={useColorModeValue('gray.200', 'gray.600')}
+                      borderColor={inputBorderColor}
                       _hover={{
-                        borderColor: useColorModeValue('gray.300', 'gray.500'),
-                        bg: useColorModeValue('white', 'gray.650'),
+                        borderColor: inputHoverBorderColor,
+                        bg: inputHoverBg,
                       }}
                       _focus={{
                         borderColor: 'brand.500',
                         boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
-                        bg: useColorModeValue('white', 'gray.700'),
+                        bg: inputFocusBg,
                       }}
                       transition="all 0.2s"
                     />
@@ -275,7 +325,7 @@ const LoginPage = () => {
                         minH="44px"
                         borderRadius="xl"
                         _hover={{
-                          bg: useColorModeValue('gray.100', 'gray.600'),
+                          bg: togglePasswordHoverBg,
                         }}
                         transition="all 0.2s"
                       />
@@ -301,7 +351,7 @@ const LoginPage = () => {
                       alignItems="center"
                       fontSize={{ base: 'sm', md: 'md' }}
                       fontWeight="500"
-                      color={useColorModeValue('gray.700', 'gray.300')}
+                      color={checkboxColor}
                     >
                       {t('auth.keepLoggedIn')}
                     </Checkbox>
@@ -310,7 +360,7 @@ const LoginPage = () => {
                     <Link
                       as={RouterLink}
                       to="/forgot-password"
-                      color={useColorModeValue('brand.600', 'brand.300')}
+                      color={linkColor}
                       minH="44px"
                       display="flex"
                       alignItems="center"
@@ -318,7 +368,7 @@ const LoginPage = () => {
                       fontWeight="600"
                       _hover={{
                         textDecoration: 'underline',
-                        color: useColorModeValue('brand.700', 'brand.400'),
+                        color: linkHoverColor,
                       }}
                       transition="color 0.2s"
                     >
@@ -358,21 +408,21 @@ const LoginPage = () => {
               textAlign="center"
               pt={{ base: 4, md: 2 }}
               borderTop="1px solid"
-              borderColor={useColorModeValue('gray.100', 'gray.700')}
+              borderColor={dividerBorderColor}
             >
               <Text
                 fontSize={{ base: 'sm', md: 'md' }}
-                color={useColorModeValue('gray.600', 'gray.400')}
+                color={bottomTextColor}
               >
                 {t('auth.noAccountPrompt')}{' '}
                 <Link
                   as={RouterLink}
                   to="/request-access"
-                  color={useColorModeValue('brand.600', 'brand.300')}
+                  color={linkColor}
                   fontWeight="600"
                   _hover={{
                     textDecoration: 'underline',
-                    color: useColorModeValue('brand.700', 'brand.400'),
+                    color: linkHoverColor,
                   }}
                   transition="color 0.2s"
                 >

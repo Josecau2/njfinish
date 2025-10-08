@@ -109,7 +109,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   const proposal = Array.isArray(proposalsData) ? proposalsData : []
 
   // Get user data for permission checks
-  const loggedInUser = JSON.parse(localStorage.getItem('user'))
+  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}')
   const canAssignDesigner = hasPermission(loggedInUser, 'admin:users')
 
   const tabs = [
@@ -413,7 +413,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   const confirmDelete = async () => {
     if (pendingProposalId) {
       try {
-        const user = JSON.parse(localStorage.getItem('user'))
+        const user = JSON.parse(localStorage.getItem('user') || '{}')
         const mutation = isAdmin(user) ? adminDeleteMutation : deleteProposalMutation
         await mutation.mutateAsync(pendingProposalId)
         toast({

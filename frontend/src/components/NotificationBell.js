@@ -21,7 +21,7 @@ import { useSelector } from 'react-redux'
 import axiosInstance from '../helpers/axiosInstance'
 import axios from 'axios'
 import { getContrastColor } from '../utils/colorUtils'
-import { isAuthSessionActive } from '../utils/authSession'
+import { getFreshestToken } from '../utils/authToken'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
 const ICON_CONFIG = {
@@ -40,6 +40,10 @@ const NotificationBell = () => {
       return null
     }
   })()
+  const token = getFreshestToken()
+  // Show bell for any authenticated user (same as legacy)
+  if (!user || !token) return null
+
   // Local state for notifications instead of Redux
   const [notifications, setNotifications] = useState([])
   const [unreadCount, setUnreadCount] = useState(0)
@@ -64,11 +68,10 @@ const NotificationBell = () => {
   const intervalRef = useRef(null)
   const disabledRef = useRef(false)
 
-  const hasSession = Boolean(user) && isAuthSessionActive()
-
   const fetchUnreadCount = useCallback(async () => {
     try {
-      if (!isAuthSessionActive()) return
+      const token = getFreshestToken()
+      if (!token) return
       const { data } = await axiosInstance.get('/api/notifications/unread-count', {
         __suppressAuthLogout: true,
       })
@@ -85,7 +88,7 @@ const NotificationBell = () => {
   }, [])
 
   useEffect(() => {
-    if (!hasSession || disabledRef.current) return
+    if (disabledRef.current) return
 
     fetchUnreadCount()
     const pollMs = Number(import.meta.env.VITE_NOTIFICATIONS_POLL_INTERVAL_MS) || 15000
@@ -100,10 +103,10 @@ const NotificationBell = () => {
         clearInterval(intervalRef.current)
       }
     }
-  }, [fetchUnreadCount, hasSession])
+  }, [fetchUnreadCount])
 
   useEffect(() => {
-    if (!hasSession || typeof unreadCount !== 'number') return
+    if (typeof unreadCount !== 'number') return
 
     const prev = prevUnreadCount.current
     let message
@@ -131,16 +134,15 @@ const NotificationBell = () => {
       setLiveMessage(message)
     }
     prevUnreadCount.current = unreadCount
-  }, [hasSession, unreadCount])
-
-  if (!hasSession) {
-    return null
-  }
+  }, [unreadCount])
 
   const fetchNotifications = async () => {
     if (fetching) return
     setFetching(true)
     try {
+      const token = getFreshestToken()
+      if (!token) return
+
       const { data } = await axiosInstance.get('/api/notifications', {
         params: { limit: 10 },
         __suppressAuthLogout: true,
@@ -158,6 +160,8 @@ const NotificationBell = () => {
 
   const markAllReadSilently = async () => {
     try {
+      const token = getFreshestToken()
+      if (!token) return
       await axiosInstance.post('/api/notifications/mark-all-read', null, {
         __suppressAuthLogout: true,
       })
@@ -184,6 +188,9 @@ const NotificationBell = () => {
 
   const handleMarkAsRead = async (notificationId) => {
     try {
+      const token = getFreshestToken()
+      if (!token) return
+
       await axiosInstance.post(`/api/notifications/${notificationId}/read`, null, {
         __suppressAuthLogout: true,
       })

@@ -74,10 +74,13 @@ const CustomerInfoStep = ({
   const [salesRepChoices, setSalesRepChoices] = useState([])
 
   const dispatch = useDispatch()
-  const { list: users, loading: usersLoading } = useSelector((state) => state.users)
+  const { list: users, loading } = useSelector((state) => state.users)
   const { list: locations } = useSelector((state) => state.locations)
-  const loggedInUser = JSON.parse(localStorage.getItem('user'))
+  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}')
   const loggedInUserId = loggedInUser?.userId
+
+  // Extract specific loading states
+  const usersLoading = loading.fetch
 
   const canAssignDesigner = hasPermission(loggedInUser, 'admin:users')
 

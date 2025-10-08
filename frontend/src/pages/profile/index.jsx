@@ -12,10 +12,10 @@ const ProfilePage = () => {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const toast = useToast()
-  const loggedInUser = JSON.parse(localStorage.getItem('user'))
+  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}')
   const loggedInUserId = loggedInUser?.userId
   const isContractor = loggedInUser?.group?.group_type === 'contractor'
-  const { selected, loading: userLoading } = useSelector((state) => state.users)
+  const { selected, loading } = useSelector((state) => state.users)
   const { list: locations, loading: locationsLoading } = useSelector((state) => state.locations)
   const customization = useSelector((state) => state.customization)
 
@@ -37,7 +37,7 @@ const ProfilePage = () => {
   const labelColor = useColorModeValue('gray.700', 'gray.300')
 
   // Combined loading state for initial data fetch
-  const isLoading = userLoading || locationsLoading
+  const isLoading = loading.fetchById || locationsLoading
 
   useEffect(() => {
     const load = async () => {

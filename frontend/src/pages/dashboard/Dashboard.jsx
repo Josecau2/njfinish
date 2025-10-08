@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchDashboardCounts, fetchLatestProposals } from '../../store/slices/dashboardSlice'
 import { useTranslation } from 'react-i18next'
+import { getFreshestToken } from '../../utils/authToken'
 import { isAuthSessionActive } from '../../utils/authSession'
 import { Badge, Box, Button, CardBody, Flex, HStack, Icon, List, ListItem, SimpleGrid, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../components/PageContainer'
@@ -100,13 +101,29 @@ const Dashboard = () => {
 
   const productUpdates = []
 
+  // Ensure auth session is established before dispatching dashboard API calls to avoid race
   useEffect(() => {
-    if (!isAuthSessionActive()) {
-      return
+    let cancelled = false
+    const kickoff = async () => {
+      // Check for memory token first (immediate), then cookie (may have delay)
+      let hasAuth = getFreshestToken() || isAuthSessionActive()
+      if (!hasAuth) {
+        // Retry up to 6 times with 25ms delay (~150ms max) to wait for auth session cookie
+        for (let i = 0; i < 6 && !hasAuth; i++) {
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise((r) => setTimeout(r, 25))
+          hasAuth = getFreshestToken() || isAuthSessionActive()
+        }
+      }
+      if (!cancelled && hasAuth) {
+        dispatch(fetchDashboardCounts())
+        dispatch(fetchLatestProposals())
+      }
     }
-
-    dispatch(fetchDashboardCounts())
-    dispatch(fetchLatestProposals())
+    kickoff()
+    return () => {
+      cancelled = true
+    }
   }, [dispatch])
 
   const fetchLinks = useCallback(async () => {
@@ -131,12 +148,18 @@ const Dashboard = () => {
     }
   }, [])
 
+  // Delay these calls slightly to avoid race condition with auth session synchronization
   useEffect(() => {
-    if (!isAuthSessionActive()) {
-      return
-    }
-    fetchLinks()
-    fetchFiles()
+    const timer = setTimeout(() => {
+      // Check for memory token first (immediate), then cookie (may have delay)
+      const hasAuth = getFreshestToken() || isAuthSessionActive()
+      if (hasAuth) {
+        fetchLinks()
+        fetchFiles()
+      }
+    }, 100) // Small delay to ensure auth session is synchronized
+
+    return () => clearTimeout(timer)
   }, [fetchLinks, fetchFiles])
 
 

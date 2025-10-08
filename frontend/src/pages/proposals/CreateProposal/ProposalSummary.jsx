@@ -72,6 +72,7 @@ const ItemSelectionStep = ({
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const alertCancelRef = useRef(null)
+  const requestedManufacturerIdsRef = useRef(new Set())
   const [alertState, setAlertState] = useState({ isOpen: false, title: '', body: null, onConfirm: null })
   const customization = useSelector((state) => state.customization) || {}
   const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
@@ -148,8 +149,8 @@ const ItemSelectionStep = ({
 
   const [activeTab, setActiveTab] = useState('item')
   const { list: users } = useSelector((state) => state.users)
-  const loggedInUser = JSON.parse(localStorage.getItem('user'))
-  const loggedInUserId = loggedInUser.userId
+  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}')
+  const loggedInUserId = loggedInUser?.userId
 
   // Check if user is a contractor (should not see manufacturer version names)
   const isContractor = loggedInUser?.group && loggedInUser.group.group_type === 'contractor'
@@ -211,19 +212,51 @@ const ItemSelectionStep = ({
     }
   }, [selectedVersion?.versionName, selectedVersion?.manufacturer, dispatch])
 
-  useEffect(() => {
-    formData.manufacturersData?.forEach((item) => {
-      if (item.manufacturer) {
-        // Don't load full catalog data for proposal summary - only manufacturer info needed
-        dispatch(fetchManufacturerById({ id: item.manufacturer, includeCatalog: false }))
-      }
+  const manufacturerIds = useMemo(() => {
+    if (!Array.isArray(formData?.manufacturersData)) {
+      return []
+    }
+    const seen = new Set()
+    const ids = []
+    formData.manufacturersData.forEach((item) => {
+      const manufacturerId = item?.manufacturer
+      if (!manufacturerId || seen.has(manufacturerId)) return
+      seen.add(manufacturerId)
+      ids.push(manufacturerId)
     })
-  }, [formData.manufacturersData, dispatch])
+    return ids
+  }, [formData?.manufacturersData])
 
-  const versionDetails = formData?.manufacturersData?.map((item) => ({
-    ...item,
-    manufacturerData: manufacturersById[item.manufacturer],
-  }))
+  useEffect(() => {
+    if (!manufacturerIds.length) {
+      requestedManufacturerIdsRef.current.clear()
+      return
+    }
+
+    manufacturerIds.forEach((manufacturerId) => {
+      if (manufacturersById[manufacturerId]) {
+        if (requestedManufacturerIdsRef.current.has(manufacturerId)) {
+          requestedManufacturerIdsRef.current.delete(manufacturerId)
+        }
+        return
+      }
+
+      if (requestedManufacturerIdsRef.current.has(manufacturerId)) return
+
+      requestedManufacturerIdsRef.current.add(manufacturerId)
+      dispatch(fetchManufacturerById({ id: manufacturerId, includeCatalog: false }))
+    })
+  }, [manufacturerIds, manufacturersById, dispatch])
+
+  const versionDetails = useMemo(() => {
+    if (!Array.isArray(formData?.manufacturersData)) {
+      return []
+    }
+    return formData.manufacturersData.map((item) => ({
+      ...item,
+      manufacturerData: manufacturersById[item.manufacturer],
+    }))
+  }, [formData?.manufacturersData, manufacturersById])
   const selectVersion = versionDetails[selectedVersionIndex]
 
   useEffect(() => {
