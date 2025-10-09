@@ -28,8 +28,6 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
   const [error, setError] = useState(null)
   const [pageInputValue, setPageInputValue] = useState('1')
   const scrollContainerRef = React.useRef(null)
-  // Debug flag – set true to enable verbose wheel event logging
-  const debugWheel = true
 
   const bgOverlay = useColorModeValue('rgba(0, 0, 0, 0.9)', 'rgba(0, 0, 0, 0.95)')
   const bgHeader = useColorModeValue('rgba(0, 0, 0, 0.8)', 'rgba(10, 10, 10, 0.9)')
@@ -197,55 +195,24 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
     setPageInputValue(String(pageNumber))
   }, [pageNumber])
 
-  // Instrument wheel events to diagnose why native scrolling may be blocked
+  // Wheel listener with silent fallback (no console logs) to ensure scrolling always works
   useEffect(() => {
-    if (!scrollContainerRef.current) return
-
     const el = scrollContainerRef.current
+    if (!el) return
 
     const wheelListener = (e) => {
-      if (debugWheel) {
-        // Log a concise summary; avoid huge object graphs
-        console.log('[PDF VIEWER] wheel event', {
-          deltaY: e.deltaY,
-          deltaX: e.deltaX,
-          defaultPrevented: e.defaultPrevented,
-          targetTag: e.target?.tagName,
-          time: Date.now(),
-        })
-      }
-      // If some ancestor already prevented default we cannot detect it here (would not reach us)
-      // Provide manual scroll fallback (in case browser thinks element is non-scrollable)
-      // Only do fallback if event not already producing scroll after a tiny timeout
-      if (!e.defaultPrevented) {
-        // Try natural behavior first; schedule a check
-        const startTop = el.scrollTop
-        requestAnimationFrame(() => {
-          const afterTop = el.scrollTop
-          if (afterTop === startTop) {
-            // No native scroll happened – perform manual scroll
-            el.scrollTop += e.deltaY
-          }
-        })
-      }
+      if (e.defaultPrevented) return
+      const startTop = el.scrollTop
+      requestAnimationFrame(() => {
+        if (el.scrollTop === startTop) {
+          el.scrollTop += e.deltaY
+        }
+      })
     }
 
-    // Capture phase listener at document level to see if events are firing at all
-    const docCaptureListener = (e) => {
-      if (!debugWheel) return
-      // Note: If this fires but container listener does not, propagation might be stopped before bubble
-      console.log('[PDF VIEWER][capture] wheel path length=', e.composedPath?.().length || 'n/a')
-    }
-
-    // Attach non-passive so we *could* preventDefault if needed later
     el.addEventListener('wheel', wheelListener, { passive: false })
-    document.addEventListener('wheel', docCaptureListener, { passive: true, capture: true })
-
-    return () => {
-      el.removeEventListener('wheel', wheelListener, { passive: false })
-      document.removeEventListener('wheel', docCaptureListener, { capture: true })
-    }
-  }, [scale]) // reattach if scale changes (canvas reflow) – not strictly required
+    return () => el.removeEventListener('wheel', wheelListener, { passive: false })
+  }, [scale])
 
   return (
     <>
