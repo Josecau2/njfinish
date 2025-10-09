@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import {
   Button,
   Menu,
-  MenuButton,
   MenuItemOption,
   MenuList,
   MenuOptionGroup,
@@ -31,18 +30,19 @@ const LanguageSwitcher = ({ compact = false }) => {
   const currentLabel = t(`languages.${current === 'en' ? 'english' : 'spanish'}`)
 
   return (
-    <Menu placement="bottom-end">
-      <MenuButton
-        as={Button}
-        size="sm"
-        minH="44px"
-        minW={minWidth}
-        variant={compact ? 'ghost' : 'outline'}
-        rightIcon={<ChevronDown size={14} />}
-      >
-        {currentLabel}
-      </MenuButton>
-      <MenuList minW={minWidth}>
+    <Menu.Root placement="bottom-end">
+      <Menu.Trigger asChild>
+        <Button
+          size="sm"
+          minH="44px"
+          minW={minWidth}
+          variant={compact ? 'ghost' : 'outline'}
+        >
+          {currentLabel}
+          <ChevronDown size={14} />
+        </Button>
+      </Menu.Trigger>
+      <Menu.Content minW={minWidth}>
         <MenuOptionGroup type="radio" value={current} onChange={handleChange}>
           {languages.map((lang) => (
             <MenuItemOption key={lang} value={lang}>
@@ -50,8 +50,8 @@ const LanguageSwitcher = ({ compact = false }) => {
             </MenuItemOption>
           ))}
         </MenuOptionGroup>
-      </MenuList>
-    </Menu>
+      </Menu.Content>
+    </Menu.Root>
   )
 }
 

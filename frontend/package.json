@@ -18,8 +18,8 @@
     "audit:contrast": "node ./scripts/audit-contrast.mjs"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.10.9",
-    "@chakra-ui/theme-tools": "^2.2.9",
+    "@chakra-ui/react": "^3.27.0",
+    "@chakra-ui/theme-tools": "^2.2.6",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@monaco-editor/react": "^4.7.0",
