@@ -1,5 +1,3 @@
-import { getFreshestToken } from './authToken'
-
 let cachedBase = null
 
 function resolveApiBase() {
@@ -11,11 +9,18 @@ function resolveApiBase() {
 
   try {
     if (!raw && typeof window !== 'undefined') {
-      const host = window.location.hostname
-      if (host && host !== 'localhost' && host !== '127.0.0.1') {
+      const { protocol, hostname, port } = window.location
+      if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1') {
         raw = window.location.origin
-      } else if (!raw) {
-        raw = window.location.origin || ''
+      } else {
+        const inferredPort = port || (protocol === 'https:' ? '443' : '80')
+        if (inferredPort === '3000' || inferredPort === '5173') {
+          raw = `${protocol}//${hostname || 'localhost'}:8080`
+        } else if (port) {
+          raw = `${protocol}//${hostname || 'localhost'}:${port}`
+        } else {
+          raw = `${protocol}//${hostname || 'localhost'}:8080`
+        }
       }
     }
   } catch (error) {
@@ -31,18 +36,45 @@ function resolveApiBase() {
   return cachedBase
 }
 
-export function withAuthToken(url) {
-  if (!url) return ''
+function stripTokenQuery(url) {
+  if (!url || typeof url !== 'string' || !url.includes('token=')) {
+    return url || ''
+  }
 
   try {
-    const token = getFreshestToken()
-    if (!token) return url
-    if (url.includes('token=')) return url
-    const separator = url.includes('?') ? '&' : '?'
-    return `${url}${separator}token=${encodeURIComponent(token)}`
-  } catch (error) {
+    const base = typeof window !== 'undefined' && window.location?.origin ? window.location.origin : 'http://localhost'
+    const parsed = new URL(url, base)
+    parsed.searchParams.delete('token')
+
+    const search = parsed.searchParams.toString()
+    const hash = parsed.hash || ''
+    const pathWithQuery = `${parsed.pathname}${search ? `?${search}` : ''}${hash}`
+
+    if (/^https?:\/\//i.test(url)) {
+      return `${parsed.protocol}//${parsed.host}${pathWithQuery}`
+    }
+    if (url.startsWith('//')) {
+      return `//${parsed.host}${pathWithQuery}`
+    }
+    if (url.startsWith('/')) {
+      return pathWithQuery
+    }
+    return pathWithQuery.replace(/^\//, '')
+  } catch (_) {
     return url
+      .replace(/([?&])token=[^&#]*(#|$)/i, (_, prefix, suffix) => {
+        if (prefix === '?' && suffix && suffix !== '#') {
+          return `?${suffix}`
+        }
+        return suffix || ''
+      })
+      .replace(/\?&/, '?')
+      .replace(/([?&])$/, '')
   }
+}
+
+export function withAuthToken(url) {
+  return stripTokenQuery(url)
 }
 
 export function buildUploadUrl(inputPath) {

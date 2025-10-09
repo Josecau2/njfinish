@@ -34,7 +34,9 @@ function buildBrandFromStatic() {
   const colors = normaliseColors(appCfg)
 
   let logoDataURI = ''
-  if (loginCfg && typeof loginCfg.logo === 'string' && loginCfg.logo) {
+  if (loginCfg && typeof loginCfg.logoDataURI === 'string' && loginCfg.logoDataURI) {
+    logoDataURI = loginCfg.logoDataURI
+  } else if (loginCfg && typeof loginCfg.logo === 'string' && loginCfg.logo) {
     logoDataURI = loginCfg.logo
   } else if (appCfg && typeof appCfg.logoImage === 'string' && appCfg.logoImage) {
     logoDataURI = appCfg.logoImage
@@ -70,7 +72,9 @@ function buildBrandFromLegacy() {
 
     const colors = normaliseColors(appCfg)
     let logoDataURI = ''
-    if (typeof loginCfg.logo === 'string' && loginCfg.logo) {
+    if (typeof loginCfg.logoDataURI === 'string' && loginCfg.logoDataURI) {
+      logoDataURI = loginCfg.logoDataURI
+    } else if (typeof loginCfg.logo === 'string' && loginCfg.logo) {
       logoDataURI = loginCfg.logo
     } else if (typeof appCfg.logoImage === 'string' && appCfg.logoImage) {
       logoDataURI = appCfg.logoImage

@@ -170,7 +170,14 @@ const Contracts = () => {
   const handleDelete = (id) => {
     // TODO: Implement delete functionality
   }
-  const htmlContent = generateContractHtml(formData, { t })
+
+  // Extract PDF customization from Redux store
+  const pdfCustomization = customization?.pdfCustomization || customization || {}
+
+  const htmlContent = generateContractHtml(formData, {
+    t,
+    pdfCustomization
+  })
 
   const statusTranslationMap = {
     draft: 'draft',

@@ -28,6 +28,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
   const [error, setError] = useState(null)
   const [pageInputValue, setPageInputValue] = useState('1')
   const transformRef = useRef(null)
+  const scrollContainerRef = useRef(null)
 
   const bgOverlay = useColorModeValue('rgba(0, 0, 0, 0.9)', 'rgba(0, 0, 0, 0.95)')
   const bgHeader = useColorModeValue('rgba(0, 0, 0, 0.8)', 'rgba(10, 10, 10, 0.9)')
@@ -72,6 +73,24 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
   }, [numPages])
 
   const [currentScale, setCurrentScale] = useState(1)
+  const [containerWidth, setContainerWidth] = useState(null)
+  const containerRef = useRef(null)
+
+  // Calculate container width on mount and resize
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        // Get the available width minus padding (20px on each side = 40px total)
+        const availableWidth = containerRef.current.offsetWidth - 40
+        // Use at least 300px width for readability
+        setContainerWidth(Math.max(availableWidth, 300))
+      }
+    }
+
+    updateWidth()
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
 
   const handlePageInputChange = (e) => {
     setPageInputValue(e.target.value)
@@ -97,7 +116,9 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
     const handleKeyDown = (e) => {
       // Don't interfere if user is typing in an input
       if (e.target.tagName === 'INPUT') return
-      
+
+      const scrollContainer = scrollContainerRef.current
+
       switch (e.key) {
         case 'ArrowLeft':
           e.preventDefault()
@@ -106,6 +127,51 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
         case 'ArrowRight':
           e.preventDefault()
           goToNextPage()
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          if (scrollContainer) {
+            scrollContainer.scrollBy({ top: -50, behavior: 'smooth' })
+          }
+          break
+        case 'ArrowDown':
+          e.preventDefault()
+          if (scrollContainer) {
+            scrollContainer.scrollBy({ top: 50, behavior: 'smooth' })
+          }
+          break
+        case 'PageUp':
+          e.preventDefault()
+          if (scrollContainer) {
+            scrollContainer.scrollBy({
+              top: -scrollContainer.clientHeight * 0.9,
+              behavior: 'smooth'
+            })
+          }
+          break
+        case 'PageDown':
+          e.preventDefault()
+          if (scrollContainer) {
+            scrollContainer.scrollBy({
+              top: scrollContainer.clientHeight * 0.9,
+              behavior: 'smooth'
+            })
+          }
+          break
+        case 'Home':
+          e.preventDefault()
+          if (scrollContainer) {
+            scrollContainer.scrollTo({ top: 0, behavior: 'smooth' })
+          }
+          break
+        case 'End':
+          e.preventDefault()
+          if (scrollContainer) {
+            scrollContainer.scrollTo({
+              top: scrollContainer.scrollHeight,
+              behavior: 'smooth'
+            })
+          }
           break
         case 'Escape':
           e.preventDefault()
@@ -136,7 +202,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
           .react-pdf__Page__annotations {
             pointer-events: auto !important;
           }
-          
+
           /* Ensure the canvas is not blocking scroll */
           .react-pdf__Page__canvas {
             display: block;
@@ -211,16 +277,6 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
               Next →
             </Button>
           </HStack>
-
-          {/* Zoom Controls */}
-          <HStack spacing={2} ml={5}>
-            <Text color={textColor} fontSize="sm" minW="80px" textAlign="center">
-              Zoom: {Math.round(currentScale * 100)}%
-            </Text>
-            <Text color="gray.500" fontSize="xs">
-              (use mouse wheel)
-            </Text>
-          </HStack>
         </HStack>
 
         {/* Close Button */}
@@ -235,57 +291,93 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
       </HStack>
 
       {/* PDF Content Area */}
-      <Box
-        flex={1}
-        p={5}
-        sx={{
-          overflow: 'auto',
-          overflowY: 'scroll',
-          overflowX: 'auto',
-          scrollBehavior: 'smooth',
-          WebkitOverflowScrolling: 'touch',
-          '&:focus': {
-            outline: 'none',
-          },
-          '&::-webkit-scrollbar': {
-            width: '12px',
-            height: '12px',
-          },
-          '&::-webkit-scrollbar-track': {
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '6px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'rgba(255, 255, 255, 0.3)',
-            borderRadius: '6px',
-            '&:hover': {
-              background: 'rgba(255, 255, 255, 0.5)',
-            },
-          },
-        }}
-      >
+      <Box flex={1} position="relative">
         <TransformWrapper
           ref={transformRef}
           initialScale={1}
           minScale={0.5}
           maxScale={3}
-          wheel={{ step: 0.1 }}
+          wheel={{
+            step: 0.05,
+            activationKeys: ["Shift"]
+          }}
+          panning={{
+            disabled: true
+          }}
           pinch={{ disabled: false }}
           doubleClick={{ mode: 'zoomIn' }}
           onTransformed={(ref) => setCurrentScale(ref.state.scale)}
+          alignmentAnimation={{ sizeX: 0, sizeY: 0 }}
         >
-          <TransformComponent
-            wrapperStyle={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}
-            contentStyle={{
-              display: 'inline-block',
-            }}
-          >
+          {({ zoomIn, zoomOut, resetTransform, ...rest }) => (
+            <>
+              {/* Zoom Controls inside TransformWrapper context */}
+              <Box
+                position="absolute"
+                top={4}
+                right={4}
+                zIndex={10}
+                bg="rgba(0, 0, 0, 0.7)"
+                borderRadius="md"
+                p={2}
+              >
+                <HStack spacing={2}>
+                  <Button
+                    onClick={() => zoomOut()}
+                    size="sm"
+                    colorScheme="green"
+                    minH="36px"
+                  >
+                    -
+                  </Button>
+
+                  <Text color="white" fontSize="sm" minW="60px" textAlign="center">
+                    {Math.round(currentScale * 100)}%
+                  </Text>
+
+                  <Button
+                    onClick={() => zoomIn()}
+                    size="sm"
+                    colorScheme="green"
+                    minH="36px"
+                  >
+                    +
+                  </Button>
+
+                  <Button
+                    onClick={() => resetTransform()}
+                    size="sm"
+                    colorScheme="gray"
+                    minH="36px"
+                  >
+                    Reset
+                  </Button>
+                </HStack>
+              </Box>
+
+              <TransformComponent
+                wrapperStyle={{
+                  width: '100%',
+                  height: '100%',
+                  overflow: 'auto'
+                }}
+                wrapperProps={{
+                  ref: (el) => {
+                    scrollContainerRef.current = el
+                    containerRef.current = el
+                  }
+                }}
+                contentStyle={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'flex-start',
+                  paddingTop: '10px',
+                  paddingBottom: '20px',
+                  paddingLeft: '20px',
+                  paddingRight: '20px'
+                }}
+              >
             <Box textAlign="center">
               {/* Force worker override right before Document render */}
               {(() => {
@@ -311,7 +403,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
               >
                 <Page
                   pageNumber={pageNumber}
-                  scale={1.5}
+                  width={containerWidth || undefined}
                   loading={
                     <Text color={textColor} p={5}>
                       Loading page...
@@ -328,6 +420,8 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
               </Document>
             </Box>
           </TransformComponent>
+            </>
+          )}
         </TransformWrapper>
       </Box>
 
@@ -341,7 +435,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
         color="gray.500"
         textAlign="center"
       >
-        Keyboard shortcuts: ← → (navigate pages) | Mouse wheel or pinch (zoom) | ESC (close)
+        Shortcuts: ← → (pages) | ↑ ↓ (scroll) | Page Up/Down | Home/End | Shift + Scroll (zoom) | +/- buttons | ESC (close)
       </Box>
     </Box>
     </>

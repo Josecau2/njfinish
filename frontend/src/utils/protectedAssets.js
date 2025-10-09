@@ -19,18 +19,16 @@ function resolveRelativePart(url, base) {
 }
 
 function secureUrl(url) {
-  if (!shouldSecure(url)) {
-    return url
-  }
+  const cleanedUrl = withAuthToken(url)
 
-  if (url.includes('token=')) {
-    return url
+  if (!shouldSecure(cleanedUrl)) {
+    return cleanedUrl
   }
 
   try {
     const apiBase = getUploadApiBase()
     if (apiBase) {
-      const relative = resolveRelativePart(url, apiBase)
+      const relative = resolveRelativePart(cleanedUrl, apiBase)
       if (relative) {
         return buildUploadUrl(relative)
       }
@@ -39,20 +37,20 @@ function secureUrl(url) {
     if (typeof window !== 'undefined') {
       const origin = window.location?.origin
       if (origin) {
-        const relative = resolveRelativePart(url, origin)
+        const relative = resolveRelativePart(cleanedUrl, origin)
         if (relative) {
           return buildUploadUrl(relative)
         }
       }
     }
 
-    if (url.startsWith('/')) {
-      return buildUploadUrl(url)
+    if (cleanedUrl.startsWith('/')) {
+      return buildUploadUrl(cleanedUrl)
     }
 
-    return withAuthToken(url)
+    return cleanedUrl
   } catch (error) {
-    return url
+    return cleanedUrl
   }
 }
 

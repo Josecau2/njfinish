@@ -18,7 +18,10 @@ export function buildBrandFromGlobals() {
     }
 
     const logoDataURI =
-      (typeof loginCfg.logo === 'string' && loginCfg.logo) || CUSTOMIZATION_CONFIG.logoImage || ''
+      (typeof loginCfg.logoDataURI === 'string' && loginCfg.logoDataURI) ||
+      (typeof loginCfg.logo === 'string' && loginCfg.logo) ||
+      CUSTOMIZATION_CONFIG.logoImage ||
+      ''
 
     const login =
       (loginCfg && Object.keys(loginCfg).length > 0 ? loginCfg : LOGIN_CUSTOMIZATION) || {}
@@ -36,4 +39,3 @@ export function buildBrandFromGlobals() {
     return null
   }
 }
-

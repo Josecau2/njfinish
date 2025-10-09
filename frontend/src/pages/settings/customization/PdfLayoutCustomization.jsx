@@ -1,6 +1,6 @@
 import StandardCard from '../../../components/StandardCard'
 import { TableCard } from '../../../components/TableCard'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Alert, AlertIcon, Badge, Box, Button, CardBody, CardHeader, Center, Container, FormControl, FormLabel, HStack, Icon, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Stack, Table, TableContainer, Tbody, Td, Text, Textarea, Th, Thead, Tr, VStack, useColorModeValue } from '@chakra-ui/react'
 import PageContainer from '../../../components/PageContainer'
 import axiosInstance from '../../../helpers/axiosInstance'
@@ -36,6 +36,7 @@ const PdfLayoutCustomization = () => {
     logo: null,
     logoPreview: null,
     previousBlobUrl: null,
+    logoOriginalPath: null,
     companyName: '',
     companyPhone: '',
     companyEmail: '',
@@ -43,6 +44,7 @@ const PdfLayoutCustomization = () => {
     companyAddress: '',
     headerTxtColor: "white",
   })
+  const isMountedRef = useRef(true)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
   const [previewOpen, setPreviewOpen] = useState(false)
@@ -54,11 +56,69 @@ const PdfLayoutCustomization = () => {
 
   useEffect(() => {
     return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
       if (formData.previousBlobUrl) {
         URL.revokeObjectURL(formData.previousBlobUrl)
       }
     }
   }, [formData.previousBlobUrl])
+
+  const resolveAssetUrl = useCallback(
+    (value) => {
+      if (!value) return null
+      if (/^(blob:|data:|https?:\/\/)/i.test(value)) {
+        return value
+      }
+      const candidateBase =
+        (api_url && api_url.trim()) ||
+        (axiosInstance.defaults?.baseURL && axiosInstance.defaults.baseURL.trim()) ||
+        (typeof window !== 'undefined' ? window.location.origin : '')
+
+      const normalizedBase = candidateBase ? candidateBase.replace(/\/+$/, '') : ''
+      const normalizedPath = value.startsWith('/') ? value : `/${value}`
+      return normalizedBase ? `${normalizedBase}${normalizedPath}` : normalizedPath
+    },
+    [api_url],
+  )
+
+  const loadExistingLogo = useCallback(
+    async (logoPath) => {
+      const absoluteUrl = resolveAssetUrl(logoPath)
+      if (!absoluteUrl) return
+
+      try {
+        const response = await axiosInstance.get(absoluteUrl, { responseType: 'blob' })
+        const blobUrl = URL.createObjectURL(response.data)
+
+        if (!isMountedRef.current) {
+          URL.revokeObjectURL(blobUrl)
+          return
+        }
+
+        setFormData((prev) => {
+          if (prev.previousBlobUrl) {
+            URL.revokeObjectURL(prev.previousBlobUrl)
+          }
+
+          return {
+            ...prev,
+            logo: null,
+            logoPreview: blobUrl,
+            previousBlobUrl: blobUrl,
+            logoOriginalPath: logoPath || null,
+          }
+        })
+      } catch (error) {
+        console.error('Failed to load logo preview:', error)
+      }
+    },
+    [resolveAssetUrl],
+  )
 
   const fetchCustomization = async () => {
     try {
@@ -76,20 +136,32 @@ const PdfLayoutCustomization = () => {
         headerTxtColor,
       } = res.data || {}
 
-      setFormData((prev) => ({
-        ...prev,
-        pdfHeader: pdfHeader || '',
-        pdfFooter: pdfFooter || '',
-        headerBgColor: headerBgColor || "black",
-        logoPreview: headerLogo || null,
-        companyName: companyName || '',
-        companyPhone: companyPhone || '',
-        companyEmail: companyEmail || '',
-        companyWebsite: companyWebsite || '',
-        companyAddress: companyAddress || '',
-        headerTxtColor: headerTxtColor || "white",
-        logo: null,
-      }))
+      setFormData((prev) => {
+        if (prev.previousBlobUrl) {
+          URL.revokeObjectURL(prev.previousBlobUrl)
+        }
+
+        return {
+          ...prev,
+          pdfHeader: pdfHeader || '',
+          pdfFooter: pdfFooter || '',
+          headerBgColor: headerBgColor || 'black',
+          logoPreview: null,
+          previousBlobUrl: null,
+          logoOriginalPath: headerLogo || null,
+          companyName: companyName || '',
+          companyPhone: companyPhone || '',
+          companyEmail: companyEmail || '',
+          companyWebsite: companyWebsite || '',
+          companyAddress: companyAddress || '',
+          headerTxtColor: headerTxtColor || 'white',
+          logo: null,
+        }
+      })
+
+      if (headerLogo) {
+        loadExistingLogo(headerLogo)
+      }
     } catch (err) {
       console.error('Failed to load customization:', err)
       setMessage({ type: 'danger', text: t('settings.customization.pdf.alerts.loadFailed') })
@@ -104,15 +176,10 @@ const PdfLayoutCustomization = () => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const getLogoUrl = (logoPreview) => {
-    if (!logoPreview) return null
-    if (logoPreview.startsWith('blob:')) {
-      return logoPreview
-    }
-    const baseUrl = api_url || (typeof window !== 'undefined' ? window.location.origin : '')
-    const cleanPath = logoPreview.startsWith('/') ? logoPreview : `/${logoPreview}`
-    return `${baseUrl}${cleanPath}`
-  }
+  const getLogoUrl = useCallback(
+    (logoPreview) => resolveAssetUrl(logoPreview),
+    [resolveAssetUrl],
+  )
 
   const handleDrag = (e) => {
     e.preventDefault()
@@ -155,6 +222,7 @@ const PdfLayoutCustomization = () => {
       logo: file,
       logoPreview: blobUrl,
       previousBlobUrl: blobUrl,
+      logoOriginalPath: null,
     }))
   }
 
@@ -174,6 +242,7 @@ const PdfLayoutCustomization = () => {
       logo: null,
       logoPreview: null,
       previousBlobUrl: null,
+      logoOriginalPath: null,
     }))
   }
 

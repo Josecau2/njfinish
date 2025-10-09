@@ -19,11 +19,11 @@ import {
 import { Bell, BellRing, CheckCircle2, AlertTriangle, Info } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import axiosInstance from '../helpers/axiosInstance'
 import axios from 'axios'
+import axiosInstance from '../helpers/axiosInstance'
 import { getContrastColor } from '../utils/colorUtils'
 import { getFreshestToken } from '../utils/authToken'
-import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
+import { ICON_SIZE_MD } from '../constants/iconSizes'
 
 const ICON_CONFIG = {
   proposal_accepted: { icon: CheckCircle2, color: 'brand.500' },
@@ -36,15 +36,19 @@ const ICON_CONFIG = {
 const NotificationBell = () => {
   const navigate = useNavigate()
   const user = useSelector((state) => state.auth?.user)
-  const token = getFreshestToken()
-  // Show bell for any authenticated user (same as legacy)
-  if (!user || !token) return null
+  const customization = useSelector((state) => state.customization) || {}
 
-  // Local state for notifications instead of Redux
   const [notifications, setNotifications] = useState([])
   const [unreadCount, setUnreadCount] = useState(0)
+  const [liveMessage, setLiveMessage] = useState('')
+  const prevUnreadCount = useRef()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [fetching, setFetching] = useState(false)
+  const intervalRef = useRef(null)
 
-  const customization = useSelector((state) => state.customization) || {}
+  const tokenRef = useRef(getFreshestToken())
+  tokenRef.current = getFreshestToken()
+  const isAuthenticated = Boolean(user && tokenRef.current)
 
   const fallbackTextColor = useColorModeValue('slate.900', 'gray.200')
   const optimalTextColor = customization.headerBg
@@ -56,17 +60,10 @@ const NotificationBell = () => {
   const unreadBackground = useColorModeValue('brand.50', 'slate.700')
   const emptyStateColor = useColorModeValue('muted', 'slate.300')
 
-  const [liveMessage, setLiveMessage] = useState('')
-  const prevUnreadCount = useRef()
-
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [fetching, setFetching] = useState(false)
-  const intervalRef = useRef(null)
-  const disabledRef = useRef(false)
-
   const fetchUnreadCount = useCallback(async () => {
+    if (!isAuthenticated) return
     try {
-      const token = getFreshestToken()
+      const token = tokenRef.current
       if (!token) return
       const { data } = await axiosInstance.get('/api/notifications/unread-count', {
         __suppressAuthLogout: true,
@@ -81,17 +78,20 @@ const NotificationBell = () => {
         setUnreadCount(0)
       }
     }
-  }, [])
+  }, [isAuthenticated])
 
   useEffect(() => {
-    if (disabledRef.current) return
+    if (!isAuthenticated) {
+      setNotifications([])
+      setUnreadCount(0)
+      setLiveMessage('')
+      return
+    }
 
     fetchUnreadCount()
     const pollMs = Number(import.meta.env.VITE_NOTIFICATIONS_POLL_INTERVAL_MS) || 15000
     intervalRef.current = setInterval(() => {
-      if (!disabledRef.current) {
-        fetchUnreadCount()
-      }
+      fetchUnreadCount()
     }, pollMs)
 
     return () => {
@@ -99,10 +99,10 @@ const NotificationBell = () => {
         clearInterval(intervalRef.current)
       }
     }
-  }, [fetchUnreadCount])
+  }, [fetchUnreadCount, isAuthenticated])
 
   useEffect(() => {
-    if (typeof unreadCount !== 'number') return
+    if (!isAuthenticated || typeof unreadCount !== 'number') return
 
     const prev = prevUnreadCount.current
     let message
@@ -130,15 +130,14 @@ const NotificationBell = () => {
       setLiveMessage(message)
     }
     prevUnreadCount.current = unreadCount
-  }, [unreadCount])
+  }, [unreadCount, isAuthenticated])
 
-  const fetchNotifications = async () => {
-    if (fetching) return
+  const fetchNotifications = useCallback(async () => {
+    if (!isAuthenticated || fetching) return
     setFetching(true)
     try {
-      const token = getFreshestToken()
+      const token = tokenRef.current
       if (!token) return
-
       const { data } = await axiosInstance.get('/api/notifications', {
         params: { limit: 10 },
         __suppressAuthLogout: true,
@@ -152,11 +151,12 @@ const NotificationBell = () => {
     } finally {
       setFetching(false)
     }
-  }
+  }, [fetching, isAuthenticated])
 
-  const markAllReadSilently = async () => {
+  const markAllReadSilently = useCallback(async () => {
+    if (!isAuthenticated) return
     try {
-      const token = getFreshestToken()
+      const token = tokenRef.current
       if (!token) return
       await axiosInstance.post('/api/notifications/mark-all-read', null, {
         __suppressAuthLogout: true,
@@ -172,131 +172,139 @@ const NotificationBell = () => {
     } catch (error) {
       if (axios.isCancel && axios.isCancel(error)) return
     }
-  }
+  }, [isAuthenticated, notifications])
 
-  const handleToggle = async (nextOpen) => {
-    setMenuOpen(nextOpen)
-    if (nextOpen) {
-      await fetchNotifications()
-      await markAllReadSilently()
-    }
-  }
+  const handleToggle = useCallback(
+    async (nextOpen) => {
+      if (!isAuthenticated) return
+      setMenuOpen(nextOpen)
+      if (nextOpen) {
+        await fetchNotifications()
+        await markAllReadSilently()
+      }
+    },
+    [fetchNotifications, markAllReadSilently, isAuthenticated],
+  )
 
-  const handleMarkAsRead = async (notificationId) => {
+  const handleMarkAsRead = useCallback(
+    async (notificationId) => {
+      if (!isAuthenticated) return
+      try {
+        const token = tokenRef.current
+        if (!token) return
+        await axiosInstance.post(`/api/notifications/${notificationId}/read`, null, {
+          __suppressAuthLogout: true,
+        })
+        setNotifications((prevNotifications) =>
+          prevNotifications.map((n) =>
+            n.id === notificationId
+              ? { ...n, is_read: true, read_at: new Date().toISOString() }
+              : n,
+          ),
+        )
+        fetchUnreadCount()
+      } catch (error) {
+        if (axios.isCancel && axios.isCancel(error)) return
+      }
+    },
+    [fetchUnreadCount, isAuthenticated],
+  )
+
+  const handleMarkAllAsRead = useCallback(async () => {
+    if (!isAuthenticated) return
     try {
-      const token = getFreshestToken()
+      const token = tokenRef.current
       if (!token) return
-
-      await axiosInstance.post(`/api/notifications/${notificationId}/read`, null, {
+      await axiosInstance.post('/api/notifications/mark-all-read', null, {
         __suppressAuthLogout: true,
       })
-      // Update the specific notification as read locally
-      setNotifications(prevNotifications =>
-        prevNotifications.map(n =>
-          n.id === notificationId
-            ? { ...n, is_read: true, read_at: new Date().toISOString() }
-            : n
-        )
+      setUnreadCount(0)
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((n) => ({ ...n, is_read: true, read_at: new Date().toISOString() })),
       )
-      fetchUnreadCount()
     } catch (error) {
       if (axios.isCancel && axios.isCancel(error)) return
     }
-  }
+  }, [isAuthenticated])
 
-  const handleMarkAllAsRead = async () => {
-    await markAllReadSilently()
-    await fetchNotifications()
-  }
+  const renderNotificationIcon = useCallback((type) => {
+    const config = ICON_CONFIG[type] || ICON_CONFIG.default
+    const IconComponent = config.icon
+    return (
+      <Flex
+        align="center"
+        justify="center"
+        boxSize="32px"
+        borderRadius="full"
+        bg={`${config.color}12`}
+        color={config.color}
+        flexShrink={0}
+      >
+        <IconComponent size={16} strokeWidth={2} aria-hidden="true" />
+      </Flex>
+    )
+  }, [])
 
-  const resolveNotificationUrl = (n) => {
-    if (!n) return null
-    // If backend already provides a fully-qualified or absolute in-app path, trust it.
-    if (n.action_url) {
-      if (/^https?:\/\//i.test(n.action_url)) {
-        // External link: open in same tab for now (could adapt later)
-        return n.action_url
-      }
-      return n.action_url.startsWith('/') ? n.action_url : `/${n.action_url}`
-    }
+  const resolveNotificationUrl = useCallback((notification) => {
+    if (!notification) return null
+    if (notification.url) return notification.url
+    if (notification.link) return notification.link
+    const proposalId = notification?.payload?.proposalId
+    if (proposalId) return `/quotes/${proposalId}/admin-view`
+    return null
+  }, [])
 
-    const payload = n.payload || {}
-    const role = String(user?.role || '').toLowerCase()
-    const proposalId = payload.proposalId || payload.quoteId || payload.proposal_id || payload.quote_id
-    if (proposalId) {
-      // If notification type suggests admin view (e.g., proposal_accepted) and user is admin, send to admin-view.
-      const isAdmin = role === 'admin' || role === 'super_admin'
-      if (isAdmin && /accepted|rejected|admin_view/i.test(n.type || '')) {
-        return `/proposals/${proposalId}/admin-view`
-      }
-      // Base edit path (redirect component will noisify)
-      return `/proposals/edit/${proposalId}`
-    }
-    // Orders: prefer admin order path if user is admin, else my-orders if present
-    const orderId = payload.orderId || payload.order_id
-    if (orderId) {
-      const isAdmin = role === 'admin' || role === 'super_admin'
-      return isAdmin ? `/orders/${orderId}` : `/my-orders/${orderId}`
-    }
-    const customerId = payload.customerId || payload.customer_id
-    if (customerId) {
-      return `/customers/edit/${customerId}`
-    }
+  const handleNavigateToList = useCallback(() => {
+    if (!user) return
+    const role = String(user.role || '').toLowerCase()
+    const isAdmin = role === 'admin' || role === 'super_admin'
+    navigate(isAdmin ? '/admin/notifications' : '/notifications')
+  }, [navigate, user])
+
+  if (!isAuthenticated) {
     return null
   }
 
-  const renderNotificationIcon = (type) => {
-    const config = ICON_CONFIG[type] || ICON_CONFIG.default
-    const Icon = config.icon || Info
-    return (
-      <Box color={config.color} mt={0.5} aria-hidden>
-        <Icon size={ICON_SIZE_MD} />
-      </Box>
-    )
-  }
-
   return (
-    <Menu isOpen={menuOpen} onOpen={() => handleToggle(true)} onClose={() => handleToggle(false)}>
-      <VisuallyHidden aria-live="polite" role="status">
-        {liveMessage || ' '}
-      </VisuallyHidden>
+    <Menu isOpen={menuOpen} onClose={() => handleToggle(false)} placement="bottom-end">
       <MenuButton
         as={IconButton}
+        aria-label="Notifications"
         variant="ghost"
-        aria-label={
-          unreadCount > 0 ? `You have ${unreadCount} unread notifications` : 'Open notifications'
-        }
-        icon={
-          <Box position="relative" zIndex={1}>
-            {unreadCount > 0 ? (
-              <BellRing size={22} color={optimalTextColor} />
-            ) : (
-              <Bell size={22} color={optimalTextColor} />
-            )}
-            {unreadCount > 0 && (
-              <Badge
-                colorScheme="red"
-                position="absolute"
-                top="-4px"
-                right="-6px"
-                fontSize="10px"
-                borderRadius="full"
-                minW="18px"
-                h="18px"
-                px="1"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                zIndex={2}
-                boxShadow="0 0 0 2px var(--chakra-colors-gray-800, #1A202C)"
-                transform="translate(2px, -2px)"
-              >
-                {unreadCount > 99 ? '99+' : unreadCount}
-              </Badge>
-            )}
-          </Box>
-        }
-      />
+        minW="44px"
+        minH="44px"
+        color={optimalTextColor}
+        onClick={() => handleToggle(!menuOpen)}
+        _hover={{ bg: 'whiteAlpha.300' }}
+        _active={{ bg: 'whiteAlpha.400' }}
+      >
+        <VisuallyHidden>Notifications</VisuallyHidden>
+        <Box position="relative">
+          {unreadCount > 0 ? (
+            <BellRing size={ICON_SIZE_MD} strokeWidth={2} />
+          ) : (
+            <Bell size={ICON_SIZE_MD} strokeWidth={2} />
+          )}
+          <Badge
+            position="absolute"
+            top="-6px"
+            right="-6px"
+            borderRadius="full"
+            minW="20px"
+            h="20px"
+            px="1"
+            bg="brand.500"
+            color="white"
+            fontSize="xs"
+            fontWeight="bold"
+            display={unreadCount > 0 ? 'flex' : 'none'}
+            alignItems="center"
+            justifyContent="center"
+          >
+            {unreadCount > 99 ? '99+' : unreadCount}
+          </Badge>
+        </Box>
+      </MenuButton>
       <MenuList
         bg={menuBg}
         borderColor={menuBorder}
@@ -305,12 +313,13 @@ const NotificationBell = () => {
         maxH="420px"
         overflowY="auto"
         p={0}
+        onMouseLeave={() => handleToggle(false)}
       >
         <Box px={4} py={3} borderBottom="1px solid" borderColor={menuBorder}>
           <Flex align="center" justify="space-between">
             <Text fontWeight="semibold">Notifications</Text>
             {unreadCount > 0 && (
-              <Button size="sm" minH="44px" variant="ghost" onClick={handleMarkAllAsRead} isDisabled={fetching}>
+              <Button size="sm" minH="32px" variant="ghost" onClick={handleMarkAllAsRead} isDisabled={fetching}>
                 Mark all read
               </Button>
             )}
@@ -385,19 +394,10 @@ const NotificationBell = () => {
         )}
 
         <MenuDivider my={0} />
-        <MenuItem
-          onClick={() =>
-            navigate(
-              String(user.role).toLowerCase() === 'admin' ||
-              String(user.role).toLowerCase() === 'super_admin'
-                ? '/admin/notifications'
-                : '/notifications'
-            )
-          }
-        >
-          View all notifications
-        </MenuItem>
+        <MenuItem onClick={handleNavigateToList}>View all notifications</MenuItem>
       </MenuList>
+
+      <VisuallyHidden aria-live="polite">{liveMessage}</VisuallyHidden>
     </Menu>
   )
 }
@@ -420,3 +420,4 @@ function formatTimeAgo(dateString) {
 }
 
 export default NotificationBell
+

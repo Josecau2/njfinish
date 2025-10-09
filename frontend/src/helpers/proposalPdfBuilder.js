@@ -1,3 +1,6 @@
+import resolveAssetUrl from '../utils/assetUtils'
+import { getUploadApiBase } from '../utils/uploads'
+
 const DEFAULT_COLUMNS = [
   'no',
   'qty',
@@ -257,6 +260,7 @@ export const buildProposalPdfHtml = ({
 } = {}) => {
   const apiUrl =
     typeof import.meta !== 'undefined' && import.meta?.env ? import.meta.env.VITE_API_URL || '' : ''
+  const uploadBase = getUploadApiBase()
 
   const {
     selectedColumns = DEFAULT_COLUMNS,
@@ -339,6 +343,7 @@ export const buildProposalPdfHtml = ({
     companyWebsite,
     headerBgColor = '#000000',
     // Different endpoints / legacy data may provide any of these keys
+    headerLogoDataUri,
     headerLogo, // preferred (may already be absolute from backend controller)
     logo, // legacy key saved from customization UI (raw filename or path)
     logoImage, // fallback from main customization table
@@ -364,23 +369,37 @@ export const buildProposalPdfHtml = ({
   // 2. headerLogo relative path
   // 3. logo (legacy field) / logoImage (main customization) -> may be filename or relative path
   // 4. If none, null => text fallback
-  const candidateLogoRaw = headerLogo || logo || logoImage || null
+  const candidateLogoRaw = headerLogoDataUri || headerLogo || logo || logoImage || null
 
   const resolveLogoUrl = (raw) => {
     if (!raw || typeof raw !== 'string') return null
     const trimmed = raw.trim()
     if (!trimmed) return null
-    // If already a data URI or absolute URL (http(s) or protocol-relative) just return it
+
+    // Absolute URL
     if (/^(data:|https?:\/\/)/i.test(trimmed) || /^\/\//.test(trimmed)) {
-      return trimmed
+      const currentOrigin = typeof window !== 'undefined' ? window.location.origin : undefined
+      const currentHostname = typeof window !== 'undefined' ? window.location.hostname : ''
+      try {
+        const parsed = new URL(trimmed, currentOrigin)
+        if (
+          (parsed.hostname === currentHostname || parsed.hostname === '') &&
+          parsed.pathname.startsWith('/uploads/') &&
+          uploadBase
+        ) {
+          return `${uploadBase.replace(/\/+$/, '')}${parsed.pathname}${parsed.search}${parsed.hash}`
+        }
+        return parsed.href
+      } catch (_) {
+        return trimmed
+      }
     }
-    // If backend already prepended protocol host (controller does this) we would have matched above.
-    // Handle cases where raw is something like '/uploads/branding/logo.png' or 'uploads/branding/logo.png'
-    const normalized = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
-    // Avoid duplicating the API base if raw already contains '/uploads' and apiUrl also points to same host.
-    const base = apiUrl?.replace(/\/+$/, '') || ''
-    if (!base) return normalized // relative path only (browser print view may still load it)
-    return `${base}${normalized}`
+
+    const resolved = resolveAssetUrl(trimmed, apiUrl || uploadBase)
+    if (resolved && resolved.startsWith('/uploads') && uploadBase) {
+      return `${uploadBase.replace(/\/+$/, '')}${resolved}`
+    }
+    return resolved
   }
 
   const logoUrl = resolveLogoUrl(candidateLogoRaw)

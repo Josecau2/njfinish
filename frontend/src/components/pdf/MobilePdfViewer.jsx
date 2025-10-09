@@ -1,8 +1,8 @@
-import React, { useCallback, useState, useMemo } from 'react'
+import React, { useCallback, useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Document, Page, pdfjs } from 'react-pdf'
 import workerSrc from 'react-pdf/dist/pdf.worker.entry.js?url'
-import { Box, Button, HStack } from '@chakra-ui/react'
+import { Box, Button, HStack, useColorModeValue } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight, X } from '@/icons-lucide'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 
@@ -17,6 +17,23 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
   const [pageNumber, setPageNumber] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [containerWidth, setContainerWidth] = useState(Math.max(window.innerWidth - 40, 280))
+  // Dynamic theming for overlay and header; fall back to dark shades in both modes
+  const overlayBg = useColorModeValue('rgba(0,0,0,0.88)', 'rgba(0,0,0,0.92)')
+  const headerBg = useColorModeValue('rgba(0,0,0,0.85)', 'rgba(10,10,10,0.9)')
+  const surfaceBg = useColorModeValue('#1f1f1f', '#222')
+
+  // Update container width on resize
+  useEffect(() => {
+    const updateWidth = () => {
+      // Use window width minus padding (20px on each side)
+      // Minimum 280px for mobile readability
+      setContainerWidth(Math.max(window.innerWidth - 40, 280))
+    }
+
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
 
   // Memoize file descriptor to prevent unnecessary reloads
   const documentFile = useMemo(() => ({
@@ -52,7 +69,7 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
       left={0}
       right={0}
       bottom={0}
-      bg="rgba(0, 0, 0, 0.95)"
+      bg={overlayBg}
       display="flex"
       flexDirection="column"
       zIndex={10000}
@@ -62,9 +79,9 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
         justify="space-between"
         align="center"
         p={2}
-        bg="rgba(0, 0, 0, 0.9)"
+        bg={headerBg}
         borderBottom="1px solid"
-        borderColor="#333"
+        borderColor="rgba(255,255,255,0.08)"
         color="white"
         fontSize="sm"
       >
@@ -116,7 +133,7 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
       {/* PDF Content */}
       <Box
         flex={1}
-        bg="#2a2a2a"
+        bg={surfaceBg}
         overflow="hidden"
       >
         <TransformWrapper
@@ -134,13 +151,19 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
               width: '100%',
               height: '100%',
               display: 'flex',
-              alignItems: 'center',
+              // Center horizontally & allow vertical scroll start near top
+              alignItems: 'flex-start',
               justifyContent: 'center',
+              paddingTop: '10px',
+              overflow: 'auto'
             }}
             contentStyle={{
               display: 'flex',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               justifyContent: 'center',
+              paddingTop: '10px',
+              // Prevent content from hugging left on certain transforms
+              margin: '0 auto'
             }}
           >
             <Box textAlign="center">
@@ -168,7 +191,7 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
               >
                 <Page
                   pageNumber={pageNumber}
-                  width={Math.min(window.innerWidth - 20, 800)}
+                  width={containerWidth}
                   renderTextLayer={false}
                   renderAnnotationLayer={false}
                   loading={

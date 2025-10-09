@@ -35,6 +35,7 @@ import {
 } from '../../helpers/proposalPdfBuilder'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 import { getContrastColor } from '../../utils/colorUtils'
+import resolveAssetUrl from '../../utils/assetUtils'
 
 const MobilePdfViewer = lazy(() => import('../pdf/MobilePdfViewer'))
 const DesktopPdfViewer = lazy(() => import('../pdf/DesktopPdfViewer'))
@@ -59,6 +60,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
   const spinnerColor = useColorModeValue('blue.500', 'blue.300')
   const previewContainerBg = useColorModeValue('gray.50', 'gray.900')
   const [pdfCustomization, setPdfCustomization] = useState(null)
+  const [pdfLogoDataUri, setPdfLogoDataUri] = useState(null)
   const [styleData, setStyleData] = useState(null)
   const [manufacturerNameData, setManufacturerNameData] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -68,6 +70,66 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false)
 
   const previewIframeRef = useRef(null)
+  const isMountedRef = useRef(true)
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
+  const blobToDataUrl = useCallback(
+    (blob) =>
+      new Promise((resolve, reject) => {
+        try {
+          const reader = new FileReader()
+          reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : null)
+          reader.onerror = reject
+          reader.readAsDataURL(blob)
+        } catch (error) {
+          reject(error)
+        }
+      }),
+    [],
+  )
+
+  const preloadLogoDataUri = useCallback(
+    async (customization) => {
+      const candidate =
+        customization?.headerLogo || customization?.logo || customization?.logoImage
+      if (!candidate) {
+        if (isMountedRef.current) {
+          setPdfLogoDataUri(null)
+        }
+        return
+      }
+
+      try {
+        const trimmed = typeof candidate === 'string' ? candidate.trim() : ''
+        if (trimmed && /^data:/i.test(trimmed)) {
+          if (isMountedRef.current) {
+            setPdfLogoDataUri(trimmed)
+          }
+          return
+        }
+
+        const resolvedUrl = resolveAssetUrl(candidate)
+        const response = await axiosInstance.get(resolvedUrl || candidate, {
+          responseType: 'blob',
+        })
+        const dataUrl = await blobToDataUrl(response.data)
+        if (isMountedRef.current) {
+          setPdfLogoDataUri(dataUrl)
+        }
+      } catch (error) {
+        console.error('Error preloading PDF logo:', error)
+        if (isMountedRef.current) {
+          setPdfLogoDataUri(null)
+        }
+      }
+    },
+    [blobToDataUrl],
+  )
 
   const defaultValues = useMemo(
     () => ({
@@ -121,14 +183,30 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     [t],
   )
 
+  const effectivePdfCustomization = useMemo(
+    () => ({
+      ...(pdfCustomization || {}),
+      headerLogoDataUri: pdfLogoDataUri || (pdfCustomization && pdfCustomization.headerLogoDataUri),
+    }),
+    [pdfCustomization, pdfLogoDataUri],
+  )
+
   const fetchPdfCustomization = useCallback(async () => {
     try {
       const response = await axiosInstance.get('/api/settings/customization/pdf')
-      setPdfCustomization(response.data || {})
+      const data = response.data || {}
+      if (isMountedRef.current) {
+        setPdfCustomization(data)
+      }
+      await preloadLogoDataUri(data)
     } catch (error) {
       console.error('Error fetching PDF customization:', error)
+      if (isMountedRef.current) {
+        setPdfCustomization(null)
+        setPdfLogoDataUri(null)
+      }
     }
-  }, [])
+  }, [preloadLogoDataUri])
 
   const fetchStyleData = useCallback(async (manufacturerId, styleId) => {
     if (!manufacturerId || !styleId) return
@@ -179,14 +257,14 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
           selectedVersions: values.selectedVersions,
           includeCatalog: true,
         },
-        pdfCustomization,
+        pdfCustomization: effectivePdfCustomization,
         t,
         i18n,
         shortLabel,
         styleData,
         manufacturerNameData,
       }),
-    [formData, pdfCustomization, t, i18n, shortLabel, styleData, manufacturerNameData],
+    [formData, effectivePdfCustomization, t, i18n, shortLabel, styleData, manufacturerNameData],
   )
 
   const refreshPreview = useCallback(
@@ -199,50 +277,53 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
   )
 
   // Convert HTML to PDF blob using backend
-    const convertHtmlToPdfBlob = useCallback(async (html) => {
-    if (!html) return null;
-    
-    try {
-      setIsGeneratingPreview(true);
-      const response = await axiosInstance.post(
-        '/api/generate-pdf',
-        { 
-          html,
-          options: {
-            format: 'A4',
-            margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' }
-          }
-        },
-        { responseType: 'blob' }
-      );
-      
-      const blob = response.data;
-      const url = URL.createObjectURL(blob);
-      return url;
-    } catch (error) {
-      console.error('Failed to convert HTML to PDF:', error);
-      return null;
-    } finally {
-      setIsGeneratingPreview(false);
-    }
-  }, []);
+  const convertHtmlToPdfBlob = useCallback(
+    async (html) => {
+      if (!html) return null
+
+      try {
+        setIsGeneratingPreview(true)
+        const response = await axiosInstance.post(
+          '/api/generate-pdf',
+          {
+            html,
+            options: {
+              format: 'A4',
+              margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' },
+            },
+          },
+          { responseType: 'blob' },
+        )
+
+        const blob = response.data
+        const url = URL.createObjectURL(blob)
+        return url
+      } catch (error) {
+        console.error('Failed to convert HTML to PDF:', error)
+        return null
+      } finally {
+        setIsGeneratingPreview(false)
+      }
+    },
+    [],
+  )
 
   useEffect(() => {
     if (!showPreview) return
     refreshPreview()
-  }, [showPreview, pdfCustomization, styleData, manufacturerNameData, refreshPreview])
+  }, [showPreview, effectivePdfCustomization, styleData, manufacturerNameData, refreshPreview])
 
   // Generate PDF blob when preview HTML changes
   useEffect(() => {
     const generatePdfForPreview = async () => {
       if (!showPreview || !previewHtml) return
-      
+
       const pdfUrl = await convertHtmlToPdfBlob(previewHtml)
       if (pdfUrl) {
         setPreviewPdfUrl(pdfUrl)
       }
     }
-    
+
     generatePdfForPreview()
   }, [previewHtml, showPreview, convertHtmlToPdfBlob])
 
@@ -733,14 +814,14 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                   }
                 >
                   {isMobile ? (
-                    <MobilePdfViewer 
-                      fileUrl={previewPdfUrl} 
-                      onClose={() => setShowPreview(false)} 
+                    <MobilePdfViewer
+                      fileUrl={previewPdfUrl}
+                      onClose={() => setShowPreview(false)}
                     />
                   ) : (
-                    <DesktopPdfViewer 
-                      fileUrl={previewPdfUrl} 
-                      onClose={() => setShowPreview(false)} 
+                    <DesktopPdfViewer
+                      fileUrl={previewPdfUrl}
+                      onClose={() => setShowPreview(false)}
                     />
                   )}
                 </Suspense>

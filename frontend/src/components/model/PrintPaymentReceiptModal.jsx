@@ -52,9 +52,48 @@ const formatCurrency = (value) => {
 }
 
 const generateReceiptHtml = ({ payment, order, customization, t }) => {
+  // Resolve colors and branding
   const headerColor = resolveBackground(customization?.headerBg)
   const headerTextColor = getContrastColor(headerColor)
-  const logoText = customization?.logoText || 'NJ Cabinets'
+  const logoText = customization?.logoText || customization?.companyName || 'NJ Cabinets'
+
+  // Helper: Resolve logo URL similar to backend logic
+  const resolveLogoUrl = () => {
+    const pdfCustomization = customization?.pdfCustomization || customization
+
+    // Check multiple legacy keys for logo
+    const logoCandidate =
+      pdfCustomization?.headerLogoDataUri ||
+      pdfCustomization?.headerLogo ||
+      pdfCustomization?.logo ||
+      pdfCustomization?.logoImage
+
+    if (!logoCandidate) return null
+
+    // Data URI - return as-is
+    if (typeof logoCandidate === 'string' && logoCandidate.startsWith('data:')) {
+      return logoCandidate
+    }
+
+    // Absolute URL - return as-is
+    if (typeof logoCandidate === 'string' && (logoCandidate.startsWith('http://') || logoCandidate.startsWith('https://'))) {
+      return logoCandidate
+    }
+
+    // Relative path - prepend /public-uploads if needed
+    if (typeof logoCandidate === 'string' && logoCandidate.trim()) {
+      const path = logoCandidate.trim()
+      if (path.startsWith('/uploads/')) {
+        return `/public-uploads${path}`
+      }
+      if (!path.startsWith('/')) {
+        return `/public-uploads/uploads/${path}`
+      }
+      return `/public-uploads${path}`
+    }
+
+    return null
+  }
 
   const formatDate = (dateString) => {
     if (!dateString) return '--'
@@ -94,7 +133,24 @@ const generateReceiptHtml = ({ payment, order, customization, t }) => {
     return `RCP${stamp}${payment.id}`
   })()
 
+  // Get company info from customization
+  const companyName = customization?.pdfCustomization?.companyName || customization?.companyName || logoText
+  const companyPhone = customization?.pdfCustomization?.companyPhone || customization?.companyPhone || ''
+  const companyEmail = customization?.pdfCustomization?.companyEmail || customization?.companyEmail || ''
+  const companyWebsite = customization?.pdfCustomization?.companyWebsite || customization?.companyWebsite || ''
+  const companyAddress = customization?.pdfCustomization?.companyAddress || customization?.companyAddress || ''
+
+  const logoUrl = resolveLogoUrl()
+
   const rows = [
+    {
+      label: t('paymentReceipt.receiptNumber', 'Receipt #'),
+      value: receiptNumber,
+    },
+    {
+      label: t('paymentReceipt.paymentDate', 'Payment Date'),
+      value: formatDate(payment?.paidAt || payment?.createdAt),
+    },
     {
       label: t('paymentReceipt.modal.paymentAmount', 'Amount'),
       value: formatCurrency(payment?.amount),
@@ -108,53 +164,222 @@ const generateReceiptHtml = ({ payment, order, customization, t }) => {
       value: payment?.status || '--',
     },
     {
-      label: t('paymentReceipt.modal.paidDate', 'Paid Date'),
-      value: formatDate(payment?.paidAt || payment?.createdAt),
-    },
-    {
       label: t('paymentReceipt.modal.paymentMethod', 'Payment Method'),
       value: payment?.paymentMethod || '--',
     },
   ]
 
+  // Transaction ID if available
+  if (payment?.transactionId) {
+    rows.push({
+      label: t('paymentReceipt.transactionId', 'Transaction ID'),
+      value: payment.transactionId,
+    })
+  }
+
+  // Consistent PDF styling matching proposal and order PDFs
   return `<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
     <style>
-      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; color: #1f2933; }
-      .header { background: ${headerColor}; color: ${headerTextColor}; padding: 24px; }
-      .container { padding: 24px; }
-      .section { margin-bottom: 24px; }
-      .info { display: flex; flex-direction: column; gap: 12px; }
-      .info-row { display: flex; justify-content: space-between; font-size: 14px; }
-      .info-row strong { color: #111827; }
-      .footer { margin-top: 32px; font-size: 12px; color: #6b7280; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 12px;
+        line-height: 1.6;
+        color: #1f2937;
+        background: white;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0;
+      }
+
+      /* Header with branding - consistent with other PDFs */
+      .header {
+        background: ${headerColor};
+        color: ${headerTextColor};
+        padding: 20px 30px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 3px solid rgba(0,0,0,0.1);
+      }
+      .header .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .header .logo {
+        max-height: 60px;
+        max-width: 200px;
+        object-fit: contain;
+      }
+      .header .company-name {
+        font-size: 24px;
+        font-weight: 700;
+      }
+      .header .company-info {
+        text-align: right;
+        font-size: 11px;
+        opacity: 0.95;
+        line-height: 1.5;
+      }
+
+      .document-title {
+        background: #f9fafb;
+        padding: 16px 30px;
+        border-bottom: 2px solid #e5e7eb;
+      }
+      .document-title h1 {
+        font-size: 20px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 4px;
+      }
+      .document-title p {
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .content {
+        padding: 30px;
+      }
+
+      .section {
+        margin-bottom: 30px;
+      }
+      .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: ${headerColor};
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #e5e7eb;
+      }
+
+      .info-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #f9fafb;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .info-table tr {
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .info-table tr:last-child {
+        border-bottom: none;
+      }
+      .info-table td {
+        padding: 12px 16px;
+        font-size: 13px;
+      }
+      .info-table td:first-child {
+        font-weight: 600;
+        color: #374151;
+        width: 40%;
+      }
+      .info-table td:last-child {
+        color: #111827;
+        text-align: right;
+      }
+
+      .payment-total {
+        background: ${headerColor};
+        color: ${headerTextColor};
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 24px;
+      }
+      .payment-total .label {
+        font-size: 14px;
+        opacity: 0.9;
+        margin-bottom: 8px;
+      }
+      .payment-total .amount {
+        font-size: 32px;
+        font-weight: 700;
+      }
+
+      .footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+        text-align: center;
+        font-size: 11px;
+        color: #6b7280;
+        line-height: 1.6;
+      }
+      .footer strong {
+        color: #374151;
+      }
+
+      @media print {
+        .container {
+          max-width: none;
+          padding: 0;
+        }
+      }
     </style>
   </head>
   <body>
-    <div class="header">
-      <h1 style="margin: 0; font-size: 22px;">${t('paymentReceipt.modal.title', 'Payment receipt')}</h1>
-      <p style="margin: 4px 0 0;">${logoText}</p>
-    </div>
     <div class="container">
-      <div class="section">
-        <h2 style="margin-bottom: 12px; font-size: 18px;">${t('paymentReceipt.modal.summary', 'Receipt summary')}</h2>
-        <div class="info">
-          ${rows
-            .map(
-              (row) => `
-            <div class="info-row">
-              <strong>${row.label}</strong>
-              <span>${row.value || '--'}</span>
-            </div>
-          `,
-            )
-            .join('')}
+      <!-- Consistent branded header -->
+      <div class="header">
+        <div class="logo-section">
+          ${logoUrl
+            ? `<img src="${logoUrl}" alt="${companyName}" class="logo">`
+            : `<div class="company-name">${companyName}</div>`
+          }
+        </div>
+        <div class="company-info">
+          ${companyName ? `<div><strong>${companyName}</strong></div>` : ''}
+          ${companyPhone ? `<div>${companyPhone}</div>` : ''}
+          ${companyEmail ? `<div>${companyEmail}</div>` : ''}
+          ${companyWebsite ? `<div>${companyWebsite}</div>` : ''}
+          ${companyAddress ? `<div>${companyAddress}</div>` : ''}
         </div>
       </div>
+
+      <div class="document-title">
+        <h1>${t('paymentReceipt.title', 'Payment Receipt')}</h1>
+        <p>${t('paymentReceipt.officialReceipt', 'Official payment receipt for your records', { company: companyName })}</p>
+      </div>
+
+      <div class="content">
+        <div class="section">
+          <h2 class="section-title">${t('paymentReceipt.receiptInformation', 'Receipt Information')}</h2>
+          <table class="info-table">
+            ${rows.map(row => `
+              <tr>
+                <td>${row.label}</td>
+                <td>${row.value || '--'}</td>
+              </tr>
+            `).join('')}
+          </table>
+        </div>
+
+        <div class="payment-total">
+          <div class="label">${t('paymentReceipt.totalPayment', 'Total Payment')}</div>
+          <div class="amount">${formatCurrency(payment?.amount)}</div>
+        </div>
+
+        ${order?.description ? `
+          <div class="section">
+            <h2 class="section-title">${t('paymentReceipt.orderDetails', 'Order Details')}</h2>
+            <p style="padding: 12px; background: #f9fafb; border-radius: 8px;">${order.description}</p>
+          </div>
+        ` : ''}
+      </div>
+
       <div class="footer">
-        ${t('paymentReceipt.modal.footerNote', 'Save this receipt for your records.')}
+        <p><strong>${t('paymentReceipt.thankYou', 'Thank you for your business!')}</strong></p>
+        <p>${t('paymentReceipt.generatedOn', 'Generated on', { date: formatDate(new Date()) })}</p>
+        <p>${t('paymentReceipt.modal.footerNote', 'Please save this receipt for your records.')}</p>
       </div>
     </div>
   </body>

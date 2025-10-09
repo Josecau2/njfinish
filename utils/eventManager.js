@@ -4,6 +4,8 @@ const { logActivity } = require('./activityLogger');
 const { User, Proposals, Manufacturer } = require('../models');
 const { sendMail } = require('./mail');
 const { getPuppeteer } = require('./puppeteerLauncher');
+const { escapeHtml, buildPdfHeader, getPdfStyles } = require('./pdfStylingHelpers');
+const PdfCustomization = require('../models/PdfCustomization');
 
 class EventManager extends EventEmitter {
     constructor() {
@@ -147,46 +149,66 @@ class EventManager extends EventEmitter {
     }
 
         // Build a styled, no-price HTML similar to proposal PDF (suppressed prices)
-    buildNoPriceOrderHtml(snapshot) {
-                const info = snapshot?.info || {};
-                const m = (snapshot?.manufacturers && snapshot.manufacturers[0]) || {};
-                const items = Array.isArray(m.items) ? m.items : Array.isArray(snapshot?.items) ? snapshot.items : [];
-                const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
-                const cols = ['no', 'qty', 'item', 'assembled', 'hingeSide', 'exposedSide'];
-                const headerCell = (txt, right) => `<th style="border:1px solid #dee2e6;padding:8px;background:#f8f9fa;${right?'text-align:right;':''}">${txt}</th>`;
-                const cell = (txt, right) => `<td style="border:1px solid #dee2e6;padding:6px;${right?'text-align:right;':''}">${txt}</td>`;
-                const yes = 'Yes', no = 'No', na = 'N/A';
-                const rows = items.map((it, i) => {
-                        const assembled = it.isRowAssembled ? yes : no;
-                        return `<tr>
-                                ${cell(i+1)}
-                                ${cell(Number(it.quantity || it.qty || 1))}
-                                ${cell(esc(it.sku || it.code || it.name || ''))}
-                                ${cell(assembled)}
-                                ${cell(esc(it.hingeSide || na))}
-                                ${cell(esc(it.exposedSide || na))}
-                        </tr>`;
-                }).join('');
-            return `<!doctype html><html><head><meta charset="utf-8"/><title>Order ${esc(info.orderNumber || '')} for ${esc(info.manufacturerName || m.name || 'Manufacturer')}</title>
-                <style>
-                        body{font-family:Arial,Helvetica,sans-serif;color:#333;font-size:12px}
-                        h1{font-size:18px;margin:0 0 6px}
-                        .muted{color:#666}
-                        .summary{margin:6px 0 14px}
-                        table{width:100%;border-collapse:collapse;margin-top:10px}
-                        th,td{font-size:12px}
-                </style>
-                </head><body>
-                    <h1>Order ${esc(info.orderNumber || '')}</h1>
-                    <div class="summary">
-                        <div><strong>Customer:</strong> ${esc(info.customerName || 'N/A')}</div>
-                        <div><strong>Order #:</strong> ${esc(info.orderNumber || 'N/A')}</div>
-                        <div><strong>Description:</strong> ${esc(info.description || 'N/A')}</div>
-                        <div><strong>Accepted At:</strong> ${esc(info.acceptedAt || info.dateAccepted || '')}</div>
-                        <div><strong>Manufacturer:</strong> ${esc(info.manufacturerName || m.name || '')}</div>
-                        <div><strong>Style:</strong> ${esc(m.styleName || info.styleName || '')}</div>
+    async buildNoPriceOrderHtml(snapshot) {
+        // Fetch PDF customization for consistent branding
+        let pdfCustomization = {};
+        try {
+            const pdfConfig = await PdfCustomization.findOne({ order: [['updatedAt', 'DESC']] });
+            if (pdfConfig) {
+                pdfCustomization = pdfConfig.toJSON();
+            }
+        } catch (err) {
+            console.warn('Failed to fetch PDF customization for order PDF:', err?.message);
+        }
+
+        const info = snapshot?.info || {};
+        const m = (snapshot?.manufacturers && snapshot.manufacturers[0]) || {};
+        const items = Array.isArray(m.items) ? m.items : Array.isArray(snapshot?.items) ? snapshot.items : [];
+
+        const cols = ['no', 'qty', 'item', 'assembled', 'hingeSide', 'exposedSide'];
+        const headerCell = (txt, right) => `<th style="border:1px solid #e5e7eb;padding:8px 10px;${right?'text-align:right;':''}">${txt}</th>`;
+        const cell = (txt, right) => `<td style="border:1px solid #e5e7eb;padding:7px 10px;font-size:9.5px;${right?'text-align:right;':''}">${txt}</td>`;
+
+        const yes = 'Yes', no = 'No', na = 'N/A';
+        const rows = items.map((it, i) => {
+            const assembled = it.isRowAssembled ? yes : no;
+            return `<tr>
+                ${cell(i+1)}
+                ${cell(Number(it.quantity || it.qty || 1))}
+                ${cell(escapeHtml(it.sku || it.code || it.name || ''))}
+                ${cell(assembled)}
+                ${cell(escapeHtml(it.hingeSide || na))}
+                ${cell(escapeHtml(it.exposedSide || na))}
+            </tr>`;
+        }).join('');
+
+        const header = buildPdfHeader({
+            pdfCustomization,
+            title: `Order ${escapeHtml(info.orderNumber || '')}`,
+            apiUrl: process.env.API_URL || '',
+            uploadBase: process.env.API_URL || '',
+            t: (key, defaultValue) => defaultValue || key,
+        });
+
+        const styles = getPdfStyles(pdfCustomization);
+
+        return `<!doctype html><html><head><meta charset="utf-8"/>
+            <title>Order ${escapeHtml(info.orderNumber || '')} for ${escapeHtml(info.manufacturerName || m.name || 'Manufacturer')}</title>
+            ${styles}
+        </head><body>
+            <div class="page-wrapper">
+                ${header}
+                <div class="content-wrapper">
+                    <h1 style="font-size:18px;margin:0 0 16px;color:#111827;">Order ${escapeHtml(info.orderNumber || '')}</h1>
+                    <div style="margin:6px 0 20px;font-size:11px;">
+                        <div style="margin-bottom:6px;"><strong>Customer:</strong> ${escapeHtml(info.customerName || 'N/A')}</div>
+                        <div style="margin-bottom:6px;"><strong>Order #:</strong> ${escapeHtml(info.orderNumber || 'N/A')}</div>
+                        <div style="margin-bottom:6px;"><strong>Description:</strong> ${escapeHtml(info.description || 'N/A')}</div>
+                        <div style="margin-bottom:6px;"><strong>Accepted At:</strong> ${escapeHtml(info.acceptedAt || info.dateAccepted || '')}</div>
+                        <div style="margin-bottom:6px;"><strong>Manufacturer:</strong> ${escapeHtml(info.manufacturerName || m.name || '')}</div>
+                        <div style="margin-bottom:6px;"><strong>Style:</strong> ${escapeHtml(m.styleName || info.styleName || '')}</div>
                     </div>
-                    <table>
+                    <table class="items-table">
                         <thead><tr>
                             ${headerCell('No.')}
                             ${headerCell('Qty')}
@@ -197,11 +219,13 @@ class EventManager extends EventEmitter {
                         </tr></thead>
                         <tbody>${rows}</tbody>
                     </table>
-                </body></html>`;
-        }
+                </div>
+            </div>
+        </body></html>`;
+    }
 
     async generateNoPricePdf(snapshot) {
-        const html = this.buildNoPriceOrderHtml(snapshot);
+        const html = await this.buildNoPriceOrderHtml(snapshot);
         const { puppeteer, launchOptions } = getPuppeteer();
         const browser = await puppeteer.launch(launchOptions);
         try {
