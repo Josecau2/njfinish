@@ -216,7 +216,9 @@
       "Bash(timeout 8 npx vite)",
       "Bash(timeout 5 npx vite)",
       "Read(//c//**)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(./node_modules/.bin/vite build:*)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

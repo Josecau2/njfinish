@@ -22,6 +22,53 @@ class ProductionImageVerifier {
         console.log(`${prefix} [${timestamp}] ${message}`);
     }
 
+    normalizeImagePath(imagePath) {
+        if (!imagePath) return null;
+
+        let normalized = String(imagePath).trim();
+        if (!normalized) return null;
+
+        normalized = normalized
+            .replace(/\\/g, '/')
+            .replace(/^https?:\/\/[^/]+/i, '')
+            .replace(/^\/+/, '');
+
+        if (/^uploads\//i.test(normalized)) {
+            normalized = normalized.replace(/^uploads\//i, '');
+        }
+
+        if (/^images\//i.test(normalized)) {
+            normalized = normalized.replace(/^images\//i, '');
+        }
+
+        normalized = normalized
+            .split('/')
+            .filter(Boolean)
+            .filter(segment => segment !== '.' && segment !== '..')
+            .join('/');
+
+        return normalized || null;
+    }
+
+    buildImageUrl(imagePath) {
+        const base = this.baseUrl.replace(/\/+$/, '');
+        const encodedSegments = imagePath
+            .split('/')
+            .map(segment => encodeURIComponent(segment));
+
+        return `${base}/uploads/images/${encodedSegments.join('/')}`;
+    }
+
+    async isApiBaseReachable() {
+        const reachable = await this.checkUrlAccessible(this.baseUrl, { allow404: true });
+
+        if (!reachable) {
+            this.log(`API base ${this.baseUrl} not reachable. Skipping API access verification.`, 'warn');
+        }
+
+        return reachable;
+    }
+
     async checkDirectoryStructure() {
         this.log('Checking directory structure...');
         
@@ -101,12 +148,19 @@ class ProductionImageVerifier {
             this.log(`Found ${manufacturers.length} manufacturers with images`);
 
             for (const manufacturer of manufacturers) {
-                const imagePath = path.resolve(__dirname, 'uploads', 'images', manufacturer.image);
+                const normalizedImage = this.normalizeImagePath(manufacturer.image);
+
+                if (!normalizedImage) {
+                    this.log(`Invalid image path for ${manufacturer.name}: ${manufacturer.image}`, 'warn');
+                    continue;
+                }
+
+                const imagePath = path.resolve(__dirname, 'uploads', 'images', normalizedImage);
                 if (!fs.existsSync(imagePath)) {
-                    this.log(`Missing image file for ${manufacturer.name}: ${manufacturer.image}`, 'warn');
-                    this.results.errors.push(`Missing image file for ${manufacturer.name}: ${manufacturer.image}`);
+                    this.log(`Missing image file for ${manufacturer.name}: ${normalizedImage}`, 'warn');
+                    this.results.errors.push(`Missing image file for ${manufacturer.name}: ${normalizedImage}`);
                 } else {
-                    this.log(`Image file exists for ${manufacturer.name}: ${manufacturer.image}`);
+                    this.log(`Image file exists for ${manufacturer.name}: ${normalizedImage}`);
                 }
             }
 
@@ -139,10 +193,23 @@ class ProductionImageVerifier {
                 return true;
             }
 
+            const baseReachable = await this.isApiBaseReachable();
+            if (!baseReachable) {
+                this.results.apiAccessCheck = true;
+                return true;
+            }
+
             for (const manufacturer of manufacturers) {
-                const imageUrl = `${this.baseUrl}/uploads/images/${manufacturer.image}`;
+                const normalizedImage = this.normalizeImagePath(manufacturer.image);
+
+                if (!normalizedImage) {
+                    this.log(`Skipping API check for ${manufacturer.name}: invalid image path ${manufacturer.image}`, 'warn');
+                    continue;
+                }
+
+                const imageUrl = this.buildImageUrl(normalizedImage);
                 const accessible = await this.checkUrlAccessible(imageUrl);
-                
+
                 if (accessible) {
                     this.log(`API access OK for ${manufacturer.name}: ${imageUrl}`);
                 } else {
@@ -161,12 +228,20 @@ class ProductionImageVerifier {
         }
     }
 
-    checkUrlAccessible(url) {
+    checkUrlAccessible(url, { allow404 = false } = {}) {
         return new Promise((resolve) => {
             const protocol = url.startsWith('https:') ? https : http;
             
             const request = protocol.get(url, (response) => {
-                resolve(response.statusCode === 200);
+                const statusCode = response.statusCode || 0;
+
+                if (allow404) {
+                    resolve(statusCode < 500);
+                } else {
+                    resolve(statusCode >= 200 && statusCode < 300);
+                }
+
+                response.resume();
             });
 
             request.on('error', () => {

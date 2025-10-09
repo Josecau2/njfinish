@@ -472,7 +472,9 @@ const EditProposal = ({
   const validateForm = () => {
     const errors = []
 
-    if (!formData.designer || formData.designer.trim() === '') {
+    // Designer can be a string (custom name) or number (selected ID)
+    const designerValue = typeof formData.designer === 'string' ? formData.designer.trim() : formData.designer
+    if (!designerValue) {
       errors.push(t('proposals.validation.designerRequired', 'Designer is required'))
     }
 

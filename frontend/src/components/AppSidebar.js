@@ -35,6 +35,7 @@ const AppSidebar = () => {
   const { t } = useTranslation()
   const { sidebarShow, sidebarUnfoldable, sidebarPinned } = useSelector((state) => state.sidebar)
   const customization = useSelector((state) => state.customization)
+  const authUser = useSelector((state) => state.auth?.user)
   const navItems = useNavItems()
   const sidebarRef = useRef(null)
 
