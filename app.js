@@ -13,6 +13,7 @@ const startupHandler = require('./startup-handler');
 const { withBrandInline } = require('./server/middleware/withBrandInline');
 const { regenerateBrandSnapshot } = require('./server/branding/regenerateBrandSnapshot');
 const { serveUpload } = require('./controllers/uploadServeController');
+const { servePublicUpload } = require('./controllers/publicUploadsController');
 const { attachTokenFromQuery, verifyTokenWithGroup } = require('./middleware/auth');
 
 // Initialize event manager for domain events
@@ -107,6 +108,12 @@ app.use('/api/payments', paymentsRoutes);
 app.use('/api/payment-config', paymentConfigRoutes);
 app.use('/api', apiRoutes);
 
+// Public readonly image route (whitelisted subpaths) to avoid CORB for assets used in PDFs/emails.
+// Example: <img src="/public-uploads/uploads/branding/logo.png"> (preferred) OR existing absolute URL.
+// Keeps original /uploads secured while offering safe access for non-auth contexts (PDF renderer, email clients, etc.)
+app.use('/public-uploads', servePublicUpload);
+
+// Auth-protected uploads router (legacy / internal usage requiring token)
 const uploadsRouter = express.Router();
 uploadsRouter.use(attachTokenFromQuery({ extraParams: ['access_token', 'authToken'] }));
 uploadsRouter.use(verifyTokenWithGroup);
