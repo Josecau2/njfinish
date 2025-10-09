@@ -155,3 +155,6 @@ dist
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Claude MCP configuration (contains API keys)
+.claude/mcp.json
