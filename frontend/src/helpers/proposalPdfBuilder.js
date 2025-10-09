@@ -114,7 +114,7 @@ const buildColumnHeaders = (cols, t) => {
       const alignRight = ['price', 'assemblyCost', 'total'].includes(col)
         ? 'text-align: right;'
         : ''
-      return `<th style="border: 1px solid #dee2e6; padding: 0.75rem; ${alignRight}">${columnTranslations[col] || col}</th>`
+      return `<th style="border: 1px solid #e5e7eb; padding: 8px 10px; ${alignRight}">${columnTranslations[col] || col}</th>`
     })
     .join('')
 }
@@ -130,42 +130,42 @@ const buildItemRows = (items, cols, t, shortLabel) => {
         .map((col) => {
           switch (col) {
             case 'no':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${index + 1}</td>`
+              return `<td style="border: 1px solid #e5e7eb; padding: 7px 10px; font-size: 9.5px;">${index + 1}</td>`
             case 'qty':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${toNumber(item.qty)}</td>`
+              return `<td style="border: 1px solid #e5e7eb; padding: 7px 10px; font-size: 9.5px;">${toNumber(item.qty)}</td>`
             case 'item':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${escapeHtml(item.code || '')}</td>`
+              return `<td style="border: 1px solid #e5e7eb; padding: 7px 10px; font-size: 9.5px; font-weight: 500;">${escapeHtml(item.code || '')}</td>`
             case 'assembled':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${item.isRowAssembled ? yesLabel : noLabel}</td>`
+              return `<td style="border: 1px solid #e5e7eb; padding: 7px 10px; font-size: 9.5px;">${item.isRowAssembled ? yesLabel : noLabel}</td>`
             case 'hingeSide':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.hingeSide || naLabel)}</td>`
+              return `<td style="border: 1px solid #e5e7eb; padding: 7px 10px; font-size: 9.5px;">${shortLabel(item.hingeSide || naLabel)}</td>`
             case 'exposedSide':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;">${shortLabel(item.exposedSide || naLabel)}</td>`
+              return `<td style="border: 1px solid #e5e7eb; padding: 7px 10px; font-size: 9.5px;">${shortLabel(item.exposedSide || naLabel)}</td>`
             case 'price':
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(item.price)}</td>`
+              return `<td style="border: 1px solid #e5e7eb; padding: 7px 10px; text-align: right; font-size: 9.5px;">$${safeToFixed(item.price)}</td>`
             case 'assemblyCost': {
               const assemblyCost = item.includeAssemblyFee ? item.assemblyFee : 0
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(assemblyCost)}</td>`
+              return `<td style="border: 1px solid #e5e7eb; padding: 7px 10px; text-align: right; font-size: 9.5px;">$${safeToFixed(assemblyCost)}</td>`
             }
             case 'total': {
               const totalValue = item.includeAssemblyFee ? item.total : item.price
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem; text-align: right;">$${safeToFixed(totalValue)}</td>`
+              return `<td style="border: 1px solid #e5e7eb; padding: 7px 10px; text-align: right; font-size: 9.5px; font-weight: 600;">$${safeToFixed(totalValue)}</td>`
             }
             default:
-              return `<td style="border: 1px solid #dee2e6; padding: 0.75rem;"></td>`
+              return `<td style="border: 1px solid #e5e7eb; padding: 7px 10px; font-size: 9.5px;"></td>`
           }
         })
         .join('')
 
       const descriptionRow = item.description
-        ? `<tr class="item-description-row"><td colspan="${cols.length}" style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; font-size: 10px; color: #555; background:#fff; font-style: italic;">${escapeHtml(item.description)}</td></tr>`
+        ? `<tr class="item-description-row"><td colspan="${cols.length}" style="border: 1px solid #e5e7eb; border-top: none; padding: 6px 10px; font-size: 9px; color: #6b7280; background: #fafbfc; font-style: italic;">${escapeHtml(item.description)}</td></tr>`
         : ''
 
       const mods = ensureArray(item.modifications)
       let modificationsRows = ''
 
       if (mods.length > 0) {
-        const modsHeader = `<tr class="mods-header-row"><td colspan="${cols.length}" style="padding: 0.5rem 0.75rem; background:#f9f9f9; font-style: italic; font-weight:600;">${t('proposalDoc.modifications', 'Modifications')}</td></tr>`
+        const modsHeader = `<tr class="mods-header-row"><td colspan="${cols.length}" style="padding: 7px 10px; background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); font-style: italic; font-weight: 600; font-size: 9.5px; color: #374151; border: 1px solid #e5e7eb; border-top: none;">${t('proposalDoc.modifications', 'Modifications')}</td></tr>`
         const modRows = mods
           .map((mod) => {
             const price = toNumber(mod.price)
@@ -176,22 +176,22 @@ const buildItemRows = (items, cols, t, shortLabel) => {
               .map((col) => {
                 switch (col) {
                   case 'no':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">-</td>`
+                    return `<td style="border: 1px solid #e5e7eb; border-top: none; padding: 6px 10px; font-size: 9px; color: #9ca3af;">-</td>`
                   case 'qty':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">${qty || ''}</td>`
+                    return `<td style="border: 1px solid #e5e7eb; border-top: none; padding: 6px 10px; font-size: 9px;">${qty || ''}</td>`
                   case 'item':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;">${escapeHtml(mod.name || mod.description || '')}</td>`
+                    return `<td style="border: 1px solid #e5e7eb; border-top: none; padding: 6px 10px; font-size: 9px; color: #374151;">${escapeHtml(mod.name || mod.description || '')}</td>`
                   case 'price':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; text-align: right;">$${safeToFixed(price)}</td>`
+                    return `<td style="border: 1px solid #e5e7eb; border-top: none; padding: 6px 10px; text-align: right; font-size: 9px;">$${safeToFixed(price)}</td>`
                   case 'total':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem; text-align: right;">$${safeToFixed(total)}</td>`
+                    return `<td style="border: 1px solid #e5e7eb; border-top: none; padding: 6px 10px; text-align: right; font-size: 9px; font-weight: 600;">$${safeToFixed(total)}</td>`
                   case 'assemblyCost':
                   case 'assembled':
                   case 'hingeSide':
                   case 'exposedSide':
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;"></td>`
+                    return `<td style="border: 1px solid #e5e7eb; border-top: none; padding: 6px 10px; font-size: 9px;"></td>`
                   default:
-                    return `<td style="border: 1px solid #dee2e6; padding: 0.5rem 0.75rem;"></td>`
+                    return `<td style="border: 1px solid #e5e7eb; border-top: none; padding: 6px 10px; font-size: 9px;"></td>`
                 }
               })
               .join('')
@@ -338,7 +338,10 @@ export const buildProposalPdfHtml = ({
     companyAddress,
     companyWebsite,
     headerBgColor = '#000000',
-    headerLogo,
+    // Different endpoints / legacy data may provide any of these keys
+    headerLogo, // preferred (may already be absolute from backend controller)
+    logo, // legacy key saved from customization UI (raw filename or path)
+    logoImage, // fallback from main customization table
     pdfFooter,
     headerTxtColor = '#FFFFFF',
   } = pdfCustomization || {}
@@ -355,19 +358,32 @@ export const buildProposalPdfHtml = ({
   const styleName = computeStyleName(manufacturerData, styleData)
   const manufacturerId = manufacturerData?.manufacturer || manufacturerData?.manufacturerId
 
-  const isAbsoluteLogoUrl =
-    typeof headerLogo === 'string' &&
-    (/^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(headerLogo) || headerLogo.startsWith('data:'))
+  // --- Robust logo resolution ---
+  // We accept several possible inputs for the logo, in priority order.
+  // 1. headerLogo (already absolute per backend controller getCustomizationpdf)
+  // 2. headerLogo relative path
+  // 3. logo (legacy field) / logoImage (main customization) -> may be filename or relative path
+  // 4. If none, null => text fallback
+  const candidateLogoRaw = headerLogo || logo || logoImage || null
 
-  const normalizedApiUrl = apiUrl?.replace(/\/+$/, '') || ''
-  const normalizedLogoPath =
-    typeof headerLogo === 'string' && headerLogo.startsWith('/') ? headerLogo : `/${headerLogo || ''}`
+  const resolveLogoUrl = (raw) => {
+    if (!raw || typeof raw !== 'string') return null
+    const trimmed = raw.trim()
+    if (!trimmed) return null
+    // If already a data URI or absolute URL (http(s) or protocol-relative) just return it
+    if (/^(data:|https?:\/\/)/i.test(trimmed) || /^\/\//.test(trimmed)) {
+      return trimmed
+    }
+    // If backend already prepended protocol host (controller does this) we would have matched above.
+    // Handle cases where raw is something like '/uploads/branding/logo.png' or 'uploads/branding/logo.png'
+    const normalized = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
+    // Avoid duplicating the API base if raw already contains '/uploads' and apiUrl also points to same host.
+    const base = apiUrl?.replace(/\/+$/, '') || ''
+    if (!base) return normalized // relative path only (browser print view may still load it)
+    return `${base}${normalized}`
+  }
 
-  const logoUrl = headerLogo
-    ? isAbsoluteLogoUrl
-      ? headerLogo
-      : `${normalizedApiUrl}${normalizedLogoPath}`
-    : null
+  const logoUrl = resolveLogoUrl(candidateLogoRaw)
 
   const selectedCatalog = includeCatalog ? ensureArray(formData?.selectedCatalog) : []
   const footerContent = pdfFooter
@@ -395,12 +411,12 @@ export const buildProposalPdfHtml = ({
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            font-size: 12px;
-            line-height: 1.4;
-            color: #333;
-            background-color: #f5f7fa;
-            padding: 32px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #1f2937;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            padding: 24px;
         }
 
         .page-wrapper {
@@ -408,10 +424,10 @@ export const buildProposalPdfHtml = ({
             max-width: 794px;
             margin: 0 auto;
             background-color: #ffffff;
-            box-shadow: 0 16px 40px rgba(31, 41, 55, 0.18);
-            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
             overflow: hidden;
-            padding: 36px 42px 52px;
+            padding: 32px 38px 48px;
         }
 
         @media screen and (max-width: 1024px) {
@@ -498,15 +514,19 @@ export const buildProposalPdfHtml = ({
             }
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 30px;
-            padding: 20px;
-            border-bottom: 2px solid ${headerBgColor};
-            background-color: ${headerBgColor};
-        }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+      padding: 20px;
+      border-bottom: 2px solid ${headerBgColor};
+      background-color: ${headerBgColor};
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+      /* Ensure inner content (logo, text) respects rounded corners */
+      overflow: hidden;
+    }
 
         .logo {
             max-width: 120px;
@@ -534,72 +554,133 @@ export const buildProposalPdfHtml = ({
         }
 
     .greeting {
-            font-size: 14px;
-            margin-bottom: 15px;
-            color: #333;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #1f2937;
         }
 
     .description {
-            font-size: 12px;
-            margin-bottom: 25px;
-            color: #666;
+            font-size: 11px;
+            margin-bottom: 20px;
+            color: #6b7280;
+            line-height: 1.6;
         }
 
         .summary-table {
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 24px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
 
         .summary-table th {
-            background-color: #f8f9fa;
-            padding: 12px;
-            border: 1px solid #dee2e6;
-            font-weight: bold;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            font-weight: 600;
             text-align: left;
+            font-size: 10px;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .summary-table th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        .summary-table th:last-child {
+            border-top-right-radius: 8px;
         }
 
         .summary-table td {
-            padding: 12px;
-            border: 1px solid #dee2e6;
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            font-size: 10.5px;
+            color: #374151;
+        }
+
+        .summary-table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 8px;
+        }
+
+        .summary-table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 8px;
         }
 
         .section-header {
-            font-size: 16px;
-            font-weight: bold;
-            margin: 25px 0 15px 0;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 24px 0 12px 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            color: #111827;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 6px;
         }
 
         .items-table {
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
         }
 
         .items-table th {
-            background-color: #f8f9fa;
-            padding: 10px 8px;
-            border: 1px solid #dee2e6;
-            font-weight: bold;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            padding: 8px 10px;
+            border: 1px solid #e5e7eb;
+            font-weight: 600;
             text-align: left;
-            font-size: 11px;
+            font-size: 9.5px;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .items-table th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        .items-table th:last-child {
+            border-top-right-radius: 8px;
         }
 
         .items-table td {
-            padding: 8px;
-            border: 1px solid #dee2e6;
-            font-size: 10px;
+            padding: 7px 10px;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            font-size: 9.5px;
+            color: #374151;
+        }
+
+        .items-table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .items-table tbody tr:hover {
+            background-color: #f9fafb;
         }
 
         .items-table tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #fafbfc;
         }
 
         .category-row {
-            background-color: #e6e6e6 !important;
-            font-weight: bold;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%) !important;
+            font-weight: 600;
+        }
+
+        .category-row td {
+            border-top: 1px solid #d1d5db !important;
         }
 
         .text-right {
@@ -611,20 +692,23 @@ export const buildProposalPdfHtml = ({
         }
 
         .main-footer-div {
-            margin-top: 50px;
+            margin-top: 40px;
             text-align: center;
-            color: #666;
-            font-size: 10px;
+            color: #9ca3af;
+            font-size: 9px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
         }
 
         .price-summary {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
-            font-family: 'Arial', sans-serif;
-            font-size: 0.95rem;
+            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 11px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .price-summary table {
@@ -633,32 +717,83 @@ export const buildProposalPdfHtml = ({
         }
 
         .price-summary td {
-            padding: 0.25rem 0;
+            padding: 6px 0;
         }
 
         .price-summary .text-left {
             text-align: left;
-            color: #212529;
+            color: #374151;
             font-weight: 500;
         }
 
         .price-summary .text-right {
             text-align: right;
-            color: #212529;
-            font-weight: 500;
+            color: #111827;
+            font-weight: 600;
         }
 
         .price-summary .total-row {
-            font-weight: bold;
-            border-bottom: 1px solid #ced4da;
-            padding-top: 0.25rem;
+            font-weight: 600;
+            border-top: 1px solid #d1d5db;
+            padding-top: 8px;
+        }
+
+        .price-summary .total-row td {
+            padding-top: 8px;
         }
 
         .price-summary .grand-total {
-            font-weight: bold;
-            font-size: 1.05rem;
-            color: #1a1a1a;
-            padding-top: 0.75rem;
+            font-weight: 700;
+            font-size: 13px;
+            color: #111827;
+            padding-top: 10px;
+            border-top: 2px solid #9ca3af;
+        }
+
+        .price-summary .grand-total td {
+            padding-top: 10px;
+        }
+
+        .style-info {
+            margin: 20px 0;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+            border-left: 3px solid #3b82f6;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        }
+
+        .style-info h4 {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #111827;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .style-details {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .style-detail-item {
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+        }
+
+        .style-detail-label {
+            font-size: 10px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .style-detail-value {
+            font-size: 10.5px;
+            color: #111827;
+            font-weight: 600;
         }
 
         @media print {
@@ -758,7 +893,7 @@ export const buildProposalPdfHtml = ({
             </thead>
             <tbody>
                 <tr class="category-row">
-          <td colspan="${effectiveColumns.length}" style="padding:0.75rem; background-color:#f8f9fa; font-style: italic;"><strong>${t('proposalColumns.items', 'Items')}</strong></td>
+          <td colspan="${effectiveColumns.length}" style="padding: 7px 10px; background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); font-style: italic; font-weight: 600;"><strong>${t('proposalColumns.items', 'Items')}</strong></td>
                 </tr>
                 ${proposalItemRows}
             </tbody>
