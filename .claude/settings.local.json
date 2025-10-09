@@ -218,7 +218,9 @@
       "Read(//c//**)",
       "Bash(cp:*)",
       "Bash(./node_modules/.bin/vite build:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(timeout:*)",
+      "Bash(STATIC_DIR=\"./build\" node -e \"require(''dotenv'').config(); const path = require(''path''); const STATIC_DIR = process.env.STATIC_DIR || path.join(__dirname, ''build''); console.log(''STATIC_DIR resolved to:'', STATIC_DIR); const fs = require(''fs''); console.log(''index.html exists:'', fs.existsSync(path.resolve(STATIC_DIR, ''index.html'')))\")"
     ],
     "deny": [],
     "ask": []

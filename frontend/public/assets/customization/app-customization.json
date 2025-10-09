@@ -1,6 +1,6 @@
 {
   "logoText": "NJ Contractors",
-  "logoImage": "/assets/customization/login-logo.png",
+  "logoImage": "/assets/customization/logo.png",
   "headerBg": "#000000",
   "headerFontColor": "#a1a1a1",
   "sidebarBg": "#000000",
@@ -11,6 +11,6 @@
   "id": 1,
   "createdAt": "2025-09-22T19:51:25.000Z",
   "updatedAt": "2025-10-09T07:00:29.000Z",
-  "_generated": "2025-10-09T15:18:22.275Z",
+  "_generated": "2025-10-09T20:22:39.043Z",
   "_version": "1.0.0"
 }
