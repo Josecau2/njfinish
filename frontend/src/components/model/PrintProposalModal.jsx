@@ -237,12 +237,6 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     const generatePdfForPreview = async () => {
       if (!showPreview || !previewHtml) return
       
-      // Clean up previous blob URL
-      if (previewPdfUrl) {
-        URL.revokeObjectURL(previewPdfUrl)
-        setPreviewPdfUrl(null)
-      }
-      
       const pdfUrl = await convertHtmlToPdfBlob(previewHtml)
       if (pdfUrl) {
         setPreviewPdfUrl(pdfUrl)
@@ -250,7 +244,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     }
     
     generatePdfForPreview()
-  }, [previewHtml, showPreview, convertHtmlToPdfBlob, previewPdfUrl])
+  }, [previewHtml, showPreview, convertHtmlToPdfBlob])
 
   // Cleanup blob URL on unmount or modal close
   useEffect(() => {

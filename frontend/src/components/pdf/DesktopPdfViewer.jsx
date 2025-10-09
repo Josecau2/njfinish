@@ -9,6 +9,7 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react'
+import { Global, css } from '@emotion/react'
 
 // Import CSS for text and annotation layers
 import 'react-pdf/dist/Page/AnnotationLayer.css'
@@ -26,6 +27,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [pageInputValue, setPageInputValue] = useState('1')
+  const scrollContainerRef = React.useRef(null)
 
   const bgOverlay = useColorModeValue('rgba(0, 0, 0, 0.9)', 'rgba(0, 0, 0, 0.95)')
   const bgHeader = useColorModeValue('rgba(0, 0, 0, 0.8)', 'rgba(10, 10, 10, 0.9)')
@@ -101,6 +103,9 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
   }
 
   const handleKeyDown = useCallback((e) => {
+    // Don't interfere if user is typing in an input
+    if (e.target.tagName === 'INPUT') return
+    
     switch (e.key) {
       case 'ArrowLeft':
         e.preventDefault()
@@ -109,6 +114,57 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
       case 'ArrowRight':
         e.preventDefault()
         goToNextPage()
+        break
+      case 'ArrowUp':
+        // Scroll up in the container
+        if (scrollContainerRef.current) {
+          e.preventDefault()
+          scrollContainerRef.current.scrollBy({ top: -50, behavior: 'smooth' })
+        }
+        break
+      case 'ArrowDown':
+        // Scroll down in the container
+        if (scrollContainerRef.current) {
+          e.preventDefault()
+          scrollContainerRef.current.scrollBy({ top: 50, behavior: 'smooth' })
+        }
+        break
+      case 'PageUp':
+        // Page up scrolling
+        if (scrollContainerRef.current) {
+          e.preventDefault()
+          scrollContainerRef.current.scrollBy({ 
+            top: -scrollContainerRef.current.clientHeight * 0.9, 
+            behavior: 'smooth' 
+          })
+        }
+        break
+      case 'PageDown':
+        // Page down scrolling
+        if (scrollContainerRef.current) {
+          e.preventDefault()
+          scrollContainerRef.current.scrollBy({ 
+            top: scrollContainerRef.current.clientHeight * 0.9, 
+            behavior: 'smooth' 
+          })
+        }
+        break
+      case 'Home':
+        // Scroll to top
+        if (scrollContainerRef.current) {
+          e.preventDefault()
+          scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+        break
+      case 'End':
+        // Scroll to bottom
+        if (scrollContainerRef.current) {
+          e.preventDefault()
+          scrollContainerRef.current.scrollTo({ 
+            top: scrollContainerRef.current.scrollHeight, 
+            behavior: 'smooth' 
+          })
+        }
         break
       case 'Escape':
         e.preventDefault()
@@ -140,7 +196,28 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
   }, [pageNumber])
 
   return (
-    <Box
+    <>
+      <Global
+        styles={css`
+          /* Ensure react-pdf elements don't block mouse events */
+          .react-pdf-document,
+          .react-pdf-page,
+          .react-pdf__Document,
+          .react-pdf__Page,
+          .react-pdf__Page__canvas,
+          .react-pdf__Page__textContent,
+          .react-pdf__Page__annotations {
+            pointer-events: auto !important;
+          }
+          
+          /* Ensure the canvas is not blocking scroll */
+          .react-pdf__Page__canvas {
+            display: block;
+            user-select: none;
+          }
+        `}
+      />
+      <Box
       position="fixed"
       top={0}
       left={0}
@@ -258,53 +335,97 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
 
       {/* PDF Content Area */}
       <Box
+        ref={scrollContainerRef}
         flex={1}
-        display="flex"
-        justifyContent="center"
-        alignItems="flex-start"
         p={5}
-        overflow="auto"
+        tabIndex={0}
+        onMouseEnter={(e) => e.currentTarget.focus()}
+        sx={{
+          overflow: 'auto',
+          overflowY: 'scroll',
+          overflowX: 'auto',
+          scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch', // Enable momentum scrolling on iOS
+          '&:focus': {
+            outline: 'none',
+          },
+          '&::-webkit-scrollbar': {
+            width: '12px',
+            height: '12px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '6px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: 'rgba(255, 255, 255, 0.3)',
+            borderRadius: '6px',
+            '&:hover': {
+              background: 'rgba(255, 255, 255, 0.5)',
+            },
+          },
+          // CRITICAL: Ensure all child elements don't block pointer events
+          '& *': {
+            pointerEvents: 'auto',
+          },
+        }}
       >
-        <Box textAlign="center">
-          {/* Force worker override right before Document render */}
-          {(() => {
-            if (pdfjs?.GlobalWorkerOptions) {
-              pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
-            }
-            return null
-          })()}
-          <Document
-            file={documentFile}
-            onLoadSuccess={onDocumentLoadSuccess}
-            onLoadError={onDocumentLoadError}
-            loading={
-              <Text color={textColor} p={5}>
-                Loading PDF document...
-              </Text>
-            }
-            error={
-              <Text color="red.400" p={5}>
-                {error || 'Failed to load PDF document'}
-              </Text>
-            }
+        <Box 
+          display="flex"
+          justifyContent="center"
+          alignItems="flex-start"
+          minHeight="max-content"
+          width="100%"
+        >
+          <Box 
+            textAlign="center"
+            sx={{
+              // Ensure the PDF container doesn't block events
+              pointerEvents: 'auto',
+            }}
           >
-            <Page
-              pageNumber={pageNumber}
-              scale={scale}
+            {/* Force worker override right before Document render */}
+            {(() => {
+              if (pdfjs?.GlobalWorkerOptions) {
+                pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
+              }
+              return null
+            })()}
+            <Document
+              file={documentFile}
+              onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={onDocumentLoadError}
               loading={
                 <Text color={textColor} p={5}>
-                  Loading page...
+                  Loading PDF document...
                 </Text>
               }
               error={
                 <Text color="red.400" p={5}>
-                  Failed to load page
+                  {error || 'Failed to load PDF document'}
                 </Text>
               }
-              renderTextLayer={true}
-              renderAnnotationLayer={true}
-            />
-          </Document>
+              className="react-pdf-document"
+            >
+              <Page
+                pageNumber={pageNumber}
+                scale={scale}
+                loading={
+                  <Text color={textColor} p={5}>
+                    Loading page...
+                  </Text>
+                }
+                error={
+                  <Text color="red.400" p={5}>
+                    Failed to load page
+                  </Text>
+                }
+                renderTextLayer={true}
+                renderAnnotationLayer={true}
+                className="react-pdf-page"
+              />
+            </Document>
+          </Box>
         </Box>
       </Box>
 
@@ -318,9 +439,10 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
         color="gray.500"
         textAlign="center"
       >
-        Keyboard shortcuts: ← → (navigate) | + - 0 (zoom) | ESC (close)
+        Keyboard shortcuts: ← → (navigate) | ↑ ↓ Page Up/Down Home/End (scroll) | + - 0 (zoom) | ESC (close)
       </Box>
     </Box>
+    </>
   )
 }
 
