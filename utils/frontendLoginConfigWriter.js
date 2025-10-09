@@ -57,6 +57,34 @@ function buildDataUriFromFile(filePath) {
   }
 }
 
+function ensureDefaultLoginLogo() {
+  try {
+    if (fs.existsSync(DEFAULT_UPLOAD_LOGO_PATH)) {
+      ensureDir(ASSETS_DIR);
+      const target = path.join(ASSETS_DIR, 'login-logo.png');
+      fs.copyFileSync(DEFAULT_UPLOAD_LOGO_PATH, target);
+      defaultAppLogo = '/assets/customization/login-logo.png';
+      defaultAppLogoDataUri = buildDataUriFromFile(target);
+      return;
+    }
+  } catch (error) {
+    console.warn('Unable to copy default login logo:', error?.message || error);
+  }
+
+  if (defaultAppLogo && defaultAppLogo.startsWith('/assets/')) {
+    const resolved = resolvePublicAsset(defaultAppLogo);
+    defaultAppLogoDataUri = resolved ? buildDataUriFromFile(resolved) : defaultAppLogoDataUri;
+    return;
+  }
+
+  if (!defaultAppLogo) {
+    defaultAppLogo = '';
+    defaultAppLogoDataUri = '';
+  }
+}
+
+ensureDefaultLoginLogo();
+
 function useDefaultLogo() {
   if (!defaultAppLogo) {
     return { path: '', dataUri: defaultAppLogoDataUri || '' };
