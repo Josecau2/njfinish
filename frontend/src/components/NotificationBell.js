@@ -211,11 +211,32 @@ const NotificationBell = () => {
 
   const resolveNotificationUrl = (n) => {
     if (!n) return null
-    if (n.action_url) return n.action_url
+    // If backend already provides a fully-qualified or absolute in-app path, trust it.
+    if (n.action_url) {
+      if (/^https?:\/\//i.test(n.action_url)) {
+        // External link: open in same tab for now (could adapt later)
+        return n.action_url
+      }
+      return n.action_url.startsWith('/') ? n.action_url : `/${n.action_url}`
+    }
+
     const payload = n.payload || {}
-    if (payload.proposalId) return `/proposals/${payload.proposalId}`
-    if (payload.orderId) return `/orders/${payload.orderId}`
-    if (payload.customerId) return `/customers/edit/${payload.customerId}`
+    // Quotes (internally previously referred to as proposals) use /quotes routes now.
+    if (payload.proposalId || payload.quoteId) {
+      const id = payload.proposalId || payload.quoteId
+      return `/quotes/edit/${id}` // canonical redirect path (will redirect to noisy path if needed)
+    }
+    // Orders: prefer admin order path if user is admin, else my-orders if present
+    if (payload.orderId) {
+      const id = payload.orderId
+      // We can't easily know role here besides user.role already loaded
+      const role = String(user?.role || '').toLowerCase()
+      if (role === 'admin' || role === 'super_admin') return `/orders/${id}`
+      return `/my-orders/${id}`
+    }
+    if (payload.customerId) {
+      return `/customers/edit/${payload.customerId}`
+    }
     return null
   }
 
@@ -251,15 +272,19 @@ const NotificationBell = () => {
               <Badge
                 colorScheme="red"
                 position="absolute"
-                top="-1"
-                right="-2"
-                fontSize="xs"
+                top="-4px"
+                right="-6px"
+                fontSize="10px"
                 borderRadius="full"
-                minW="1.1rem"
-                h="1.1rem"
+                minW="18px"
+                h="18px"
+                px="1"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
+                zIndex={2}
+                boxShadow="0 0 0 2px var(--chakra-colors-gray-800, #1A202C)"
+                transform="translate(2px, -2px)"
               >
                 {unreadCount > 99 ? '99+' : unreadCount}
               </Badge>
