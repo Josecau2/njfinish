@@ -35,17 +35,50 @@ const PageHeader = ({
   const subtitleColor = useColorModeValue('gray.600', 'gray.400')
   const iconBg = useColorModeValue('brand.50', 'brand.900')
   const iconColor = useColorModeValue('brand.500', 'brand.300')
-  const titleColor = useColorModeValue('gray.900', 'white')
+
+  // Professional gradient for title text
+  const gradientStart = useColorModeValue('brand.600', 'brand.300')
+  const gradientEnd = useColorModeValue('brand.400', 'brand.500')
+  const titleGradient = `linear-gradient(135deg, var(--chakra-colors-${gradientStart.replace('.', '-')}) 0%, var(--chakra-colors-${gradientEnd.replace('.', '-')}) 100%)`
+
+  // Sophisticated background and shadow for depth
+  const headerBg = useColorModeValue('white', 'gray.800')
+  const headerBorder = useColorModeValue('gray.200', 'gray.700')
+  const headerShadow = useColorModeValue(
+    '0 4px 12px -2px rgba(0, 0, 0, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.08), 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03)',
+    '0 4px 12px -2px rgba(0, 0, 0, 0.35), 0 2px 6px -1px rgba(0, 0, 0, 0.25), 0 1px 3px 0 rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.08)'
+  )
+  const accentGradient = useColorModeValue(
+    'linear-gradient(90deg, rgba(37, 99, 235, 0.08) 0%, rgba(96, 165, 250, 0.04) 100%)',
+    'linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, rgba(96, 165, 250, 0.08) 100%)'
+  )
 
   const content = (
     <Box
-      borderBottom="1px solid"
-      borderColor={borderColor}
-      pb={6}
+      bg={headerBg}
+      border="1px solid"
+      borderColor={headerBorder}
+      borderRadius="xl"
+      boxShadow={headerShadow}
+      p={{ base: 5, md: 6 }}
       mb={6}
+      position="relative"
+      overflow="hidden"
       as="header"
       role="banner"
+      _before={{
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: accentGradient,
+        pointerEvents: 'none',
+        zIndex: 0,
+      }}
     >
+      <Box position="relative" zIndex={1}>
       {breadcrumbs.length > 0 && (
         <Breadcrumb
           spacing="8px"
@@ -98,9 +131,17 @@ const PageHeader = ({
             <Heading
               as="h1"
               size="lg"
-              fontWeight="semibold"
-              color={titleColor}
+              fontWeight="bold"
+              bgGradient={titleGradient}
+              bgClip="text"
+              letterSpacing="-0.02em"
               noOfLines={2}
+              sx={{
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                textFillColor: 'transparent',
+              }}
             >
               {title}
             </Heading>
@@ -128,6 +169,7 @@ const PageHeader = ({
           </Box>
         )}
       </Flex>
+      </Box>
     </Box>
   )
 
