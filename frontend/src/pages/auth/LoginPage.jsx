@@ -27,10 +27,10 @@ const LoginPage = () => {
   const loginBackground = loginBrand.backgroundColor || brandColors.surface || "gray.900";
 
   // Derive accent colors from login background for consistent theming
-  const isLoginBgLight = loginBackground.startsWith('#') ? 
-    (parseInt(loginBackground.slice(1, 3), 16) + parseInt(loginBackground.slice(3, 5), 16) + parseInt(loginBackground.slice(5, 7), 16)) / 3 > 128 : 
+  const isLoginBgLight = loginBackground.startsWith('#') ?
+    (parseInt(loginBackground.slice(1, 3), 16) + parseInt(loginBackground.slice(3, 5), 16) + parseInt(loginBackground.slice(5, 7), 16)) / 3 > 128 :
     false;
-  
+
   // Use login background color as the accent for focus/hover states
   const accentColor = loginBackground.startsWith('#') ? loginBackground : 'blue.500';
   const accentColorLight = loginBackground.startsWith('#') ? `${loginBackground}15` : 'blue.50';

@@ -77,6 +77,10 @@ const refreshClient = axios.create({
 let activeAbortController = new AbortController()
 let refreshPromise = null
 
+// Request queue for handling concurrent refresh
+const pendingRequests = []
+let isRefreshing = false
+
 function handleUnauthorized(originalConfig, reason = 'invalid') {
   if (originalConfig && originalConfig.__suppressAuthLogout) {
     return
@@ -114,14 +118,28 @@ async function fetchApiToken() {
   return refreshPromise
 }
 
+async function processQueue(token, error = null) {
+  pendingRequests.forEach(({ resolve, reject }) => {
+    if (error) {
+      reject(error)
+    } else {
+      resolve(token)
+    }
+  })
+  pendingRequests.length = 0
+}
+
 api.interceptors.request.use(async (config) => {
   try {
     let token = getFreshestToken()
 
     // Lightweight retry loop to bridge the gap between login response and token install
     if (!token) {
-      for (let i = 0; i < 5 && !token; i += 1) {
-        await new Promise((resolve) => setTimeout(resolve, 20))
+      for (let i = 0; i < 10 && !token; i += 1) {
+        if (i > 0 && process.env.NODE_ENV === 'development') {
+          console.debug(`[Auth] Token not ready, retry ${i}/10`)
+        }
+        await new Promise((resolve) => setTimeout(resolve, 30))
         token = getFreshestToken()
       }
     }
@@ -143,10 +161,6 @@ api.interceptors.request.use(async (config) => {
 
 api.interceptors.response.use(
   (res) => {
-    const refreshed = res?.headers?.['x-refresh-token'] || res?.headers?.get?.('x-refresh-token')
-    if (refreshed) {
-      installTokenEverywhere(refreshed)
-    }
     return res
   },
   async (err) => {
@@ -159,30 +173,51 @@ api.interceptors.response.use(
       const isExpired = wwwAuth.includes('jwt expired')
 
       if (isExpired && !originalConfig.__retry) {
-        try {
-          const nextToken = await fetchApiToken()
-          if (!nextToken) {
-            throw new Error('Token refresh failed')
-          }
+        if (!isRefreshing) {
+          isRefreshing = true
 
-          const retryConfig = {
-            ...originalConfig,
-            __retry: true,
-            headers: {
-              ...(originalConfig.headers || {}),
-              Authorization: `Bearer ${nextToken}`,
-            },
-          }
-          // Reattach active abort controller signal
           try {
-            retryConfig.signal = activeAbortController.signal
-          } catch {}
+            const nextToken = await fetchApiToken()
+            processQueue(nextToken)
 
-          return api.request(retryConfig)
-        } catch (refreshError) {
-          handleUnauthorized(originalConfig, 'expired')
-          return Promise.reject(refreshError)
+            const retryConfig = {
+              ...originalConfig,
+              __retry: true,
+              headers: {
+                ...(originalConfig.headers || {}),
+                Authorization: `Bearer ${nextToken}`,
+              },
+            }
+            retryConfig.signal = activeAbortController.signal
+
+            return api.request(retryConfig)
+          } catch (err) {
+            processQueue(null, err)
+            handleUnauthorized(originalConfig, 'expired')
+            return Promise.reject(err)
+          } finally {
+            isRefreshing = false
+          }
         }
+
+        // Queue this request
+        return new Promise((resolve, reject) => {
+          pendingRequests.push({
+            resolve: (token) => {
+              const retryConfig = {
+                ...originalConfig,
+                __retry: true,
+                headers: {
+                  ...(originalConfig.headers || {}),
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+              retryConfig.signal = activeAbortController.signal
+              resolve(api.request(retryConfig))
+            },
+            reject,
+          })
+        })
       }
 
       handleUnauthorized(originalConfig, isExpired ? 'expired' : 'invalid')
@@ -193,3 +228,4 @@ api.interceptors.response.use(
 )
 
 export default api
+export { fetchApiToken }

@@ -32,49 +32,42 @@ export function forceBrowserCleanup() {
       })
     }
 
-    // Clear all cookies by setting them to expire
+    // Clear only non-httpOnly auth cookies (authToken is httpOnly and managed by backend)
     if (typeof document !== 'undefined') {
-      // Get all cookies
-      const cookies = document.cookie.split(';')
+      // Note: httpOnly cookies like 'authToken' cannot be cleared from frontend
+      // They can only be cleared by backend via /api/auth/logout endpoint
+      const authCookiesToClear = ['authSession', 'token', 'auth'] // Only non-httpOnly cookies
 
-      cookies.forEach((cookie) => {
-        const eqPos = cookie.indexOf('=')
-        const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim()
+      authCookiesToClear.forEach((name) => {
+        const domains = [window.location.hostname, `.${window.location.hostname}`]
+        const paths = ['/', '/login', '/dashboard']
 
-        if (name) {
-          // Clear cookie for all possible domain/path combinations
-          const domains = [
-            window.location.hostname,
-            `.${window.location.hostname}`,
-            window.location.hostname.split('.').slice(-2).join('.'),
-            `.${window.location.hostname.split('.').slice(-2).join('.')}`,
-          ]
-
-          const paths = ['/', '/login', '/dashboard']
-
-          domains.forEach((domain) => {
-            paths.forEach((path) => {
-              try {
-                document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; domain=${domain}`
-                document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}`
-              } catch {}
-            })
+        domains.forEach((domain) => {
+          paths.forEach((path) => {
+            try {
+              document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; domain=${domain}`
+              document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}`
+            } catch {}
           })
-        }
-      })
-    }
-
-    // Clear browser cache (if supported)
-    if ('caches' in window) {
-      caches.keys().then((names) => {
-        names.forEach((name) => {
-          caches.delete(name)
         })
       })
     }
 
-    // Clear service worker cache if available
-    if ('serviceWorker' in navigator) {
+    // Clear only auth-related browser cache (if supported)
+    if ('caches' in window) {
+      caches.keys().then((names) => {
+        names.forEach((name) => {
+          // Only clear auth-related caches
+          if (name.toLowerCase().includes('auth') || name.toLowerCase().includes('session')) {
+            caches.delete(name)
+          }
+        })
+      })
+    }
+
+    // Clear service worker cache if available (configurable)
+    const CLEANUP_SERVICE_WORKERS = false // Set to true if needed
+    if (CLEANUP_SERVICE_WORKERS && 'serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then((registrations) => {
         registrations.forEach((registration) => {
           registration.unregister()

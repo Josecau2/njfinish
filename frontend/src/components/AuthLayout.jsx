@@ -21,15 +21,15 @@ const AuthLayout = ({
 
   // Derive gradient colors from accent (login background) or use subtle neutral default
   const derivedAccent = accentColor || leftBg || 'rgba(100, 116, 139, 0.15)' // slate as neutral fallback
-  
+
   // Create subtle gradients from the accent color
-  const gradientBefore = accentColor 
+  const gradientBefore = accentColor
     ? `linear-gradient(135deg, ${accentColor}15 0%, ${accentColor}10 50%, ${accentColor}15 100%)`
     : useColorModeValue(
         'linear-gradient(135deg, rgba(100, 116, 139, 0.08) 0%, rgba(71, 85, 105, 0.08) 100%)',
         'linear-gradient(135deg, rgba(100, 116, 139, 0.15) 0%, rgba(71, 85, 105, 0.15) 100%)',
       )
-  
+
   const gradientAfter = accentColor
     ? `linear-gradient(135deg, ${accentColor}40, ${accentColor}30, ${accentColor}40)`
     : useColorModeValue(

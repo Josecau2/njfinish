@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react'
 import { Bell, BellRing, CheckCircle2, AlertTriangle, Info } from 'lucide-react'
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../helpers/axiosInstance'
 import axios from 'axios'
 import { getContrastColor } from '../utils/colorUtils'
@@ -33,6 +34,7 @@ const ICON_CONFIG = {
 }
 
 const NotificationBell = () => {
+  const navigate = useNavigate()
   const user = useSelector((state) => state.auth?.user)
   const token = getFreshestToken()
   // Show bell for any authenticated user (same as legacy)
@@ -302,7 +304,7 @@ const NotificationBell = () => {
                 if (!isRead && n.id) {
                   handleMarkAsRead(n.id)
                 }
-                window.location.href = url
+                navigate(url)
               }
 
               return (
@@ -355,11 +357,12 @@ const NotificationBell = () => {
         <MenuDivider my={0} />
         <MenuItem
           onClick={() =>
-            (window.location.href =
+            navigate(
               String(user.role).toLowerCase() === 'admin' ||
               String(user.role).toLowerCase() === 'super_admin'
                 ? '/admin/notifications'
-                : '/notifications')
+                : '/notifications'
+            )
           }
         >
           View all notifications

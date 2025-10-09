@@ -33,8 +33,8 @@ const ResetPasswordPage = () => {
   const rightPanelColors = getOptimalColors(loginBackground)
 
   // Derive accent colors from login background
-  const isLoginBgLight = loginBackground.startsWith('#') ? 
-    (parseInt(loginBackground.slice(1, 3), 16) + parseInt(loginBackground.slice(3, 5), 16) + parseInt(loginBackground.slice(5, 7), 16)) / 3 > 128 : 
+  const isLoginBgLight = loginBackground.startsWith('#') ?
+    (parseInt(loginBackground.slice(1, 3), 16) + parseInt(loginBackground.slice(3, 5), 16) + parseInt(loginBackground.slice(5, 7), 16)) / 3 > 128 :
     false;
   const accentColor = loginBackground.startsWith('#') ? loginBackground : 'blue.500';
 

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Alert, AlertDescription, AlertIcon, Badge, Box, Button, ButtonGroup, CardBody, CardHeader, Container, Flex, HStack, Heading, Icon, Select, Spinner, Stack, Text, useColorModeValue } from '@chakra-ui/react'
 import { Bell, Check, CheckCircle2, Info, RefreshCw, UserPlus, XCircle } from 'lucide-react'
 import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../helpers/axiosInstance'
 import EmptyState from '../../components/common/EmptyState'
 import { notifyError, notifySuccess } from '../../helpers/notify'
@@ -11,6 +12,7 @@ import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 
 const NotificationsPage = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const authUser = useSelector((state) => state.auth?.user)
 
   // Local state management instead of Redux
@@ -198,7 +200,7 @@ const NotificationsPage = () => {
     if (!url) return
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      window.location.href = url
+      navigate(url)
     }
   }
 
@@ -355,7 +357,7 @@ const NotificationsPage = () => {
                       _focusVisible={{ boxShadow: 'outline' }}
                       onClick={() => {
                         if (clickable) {
-                          window.location.href = notification.action_url
+                          navigate(notification.action_url)
                         }
                       }}
                       role={clickable ? 'button' : undefined}

@@ -92,7 +92,8 @@ const ProtectedRoute = ({ children }) => {
             colorScheme="brand"
             onClick={() => {
               sessionStorage.clear()
-              window.location.href = '/login'
+              setRedirectLoopDetected(false)
+              setIsValid(false)
             }}
             aria-label="Return to login page"
           >
