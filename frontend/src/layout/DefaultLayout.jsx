@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Flex, Box, Center, Spinner, Text, Link } from '@chakra-ui/react'
-import { AppContent, AppFooter } from '../components/index'
+import { AppContent } from '../components/index'
 import AppShell from './AppShell'
 import TermsModal from '../components/TermsModal'
 import { useSelector, useDispatch } from 'react-redux'
@@ -9,6 +9,7 @@ import { isAdmin as isAdminCheck } from '../helpers/permissions'
 import { logout } from '../store/slices/authSlice'
 import { useLocation } from 'react-router-dom'
 import { setSidebarShow } from '../store/slices/sidebarSlice'
+import { getSidebarWidth } from '../constants/layout'
 import AppBreadcrumb from '../components/AppBreadcrumb'
 
 const DefaultLayout = () => {
@@ -25,7 +26,7 @@ const DefaultLayout = () => {
   // Calculate sidebar width based on state
   const sidebarWidth = useMemo(() => {
     const collapsed = !sidebarPinned && sidebarUnfoldable
-    return collapsed ? '56px' : '256px'
+    return getSidebarWidth(collapsed)
   }, [sidebarPinned, sidebarUnfoldable])
 
   useEffect(() => {
@@ -162,7 +163,7 @@ const DefaultLayout = () => {
         >
           <AppContent />
         </Box>
-        <AppFooter />
+  {/* Footer now rendered inside AppShell for sticky positioning */}
       </AppShell>
     </Box>
   )

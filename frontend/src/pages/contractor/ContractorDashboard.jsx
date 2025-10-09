@@ -6,6 +6,7 @@ import StandardCard from '../../components/StandardCard'
 import { FileText, User } from 'lucide-react'
 import axiosInstance from '../../helpers/axiosInstance'
 import PageContainer from '../../components/PageContainer'
+import { useSelector } from 'react-redux'
 
 const ContractorDashboard = () => {
   const navigate = useNavigate()
@@ -21,20 +22,19 @@ const ContractorDashboard = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  // Stabilize user object to prevent re-renders
-  const user = useMemo(() => {
-    return JSON.parse(localStorage.getItem('user') || '{}')
-  }, [])
+  const user = useSelector((state) => state.auth?.user) || {}
 
-  const groupName = user.group?.name || 'Unknown Group'
+  const groupName = user?.group?.name || 'Unknown Group'
 
-  // Stabilize groupId to prevent re-renders
-  const groupId = useMemo(() => {
-    return user.group?.id ?? user.group_id ?? user.groupId ?? user.group?.group_id ?? null
-  }, [user.group?.id, user.group_id, user.groupId, user.group?.group_id])
+  const groupId =
+    user?.group?.id ??
+    user?.group_id ??
+    user?.groupId ??
+    user?.group?.group_id ??
+    null
 
   const modulesList = useMemo(() => {
-    const raw = user.group?.modules
+    const raw = user?.group?.modules
     try {
       if (Array.isArray(raw)) return raw
       if (typeof raw === 'string' && raw.trim()) {
@@ -58,7 +58,7 @@ const ContractorDashboard = () => {
       console.warn('Failed to parse modules JSON; defaulting to []', e)
       return []
     }
-  }, [JSON.stringify(user.group?.modules)])
+  }, [JSON.stringify(user?.group?.modules)])
 
   useEffect(() => {
     const fetchStats = async () => {

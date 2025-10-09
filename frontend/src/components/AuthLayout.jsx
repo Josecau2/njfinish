@@ -13,10 +13,29 @@ const AuthLayout = ({
   showLanguageSwitcher = true,
   languageSwitcherProps,
   rightContainerProps,
+  accentColor, // New prop for customization-based accent
 }) => {
   const fallbackLeftBg = useColorModeValue('gray.900', 'gray.900')
   const fallbackLeftText = useColorModeValue('white', 'gray.100')
   const fallbackRightBg = useColorModeValue('white', 'gray.800')
+
+  // Derive gradient colors from accent (login background) or use subtle neutral default
+  const derivedAccent = accentColor || leftBg || 'rgba(100, 116, 139, 0.15)' // slate as neutral fallback
+  
+  // Create subtle gradients from the accent color
+  const gradientBefore = accentColor 
+    ? `linear-gradient(135deg, ${accentColor}15 0%, ${accentColor}10 50%, ${accentColor}15 100%)`
+    : useColorModeValue(
+        'linear-gradient(135deg, rgba(100, 116, 139, 0.08) 0%, rgba(71, 85, 105, 0.08) 100%)',
+        'linear-gradient(135deg, rgba(100, 116, 139, 0.15) 0%, rgba(71, 85, 105, 0.15) 100%)',
+      )
+  
+  const gradientAfter = accentColor
+    ? `linear-gradient(135deg, ${accentColor}40, ${accentColor}30, ${accentColor}40)`
+    : useColorModeValue(
+        'linear-gradient(135deg, rgba(100, 116, 139, 0.3), rgba(71, 85, 105, 0.3))',
+        'linear-gradient(135deg, rgba(100, 116, 139, 0.4), rgba(71, 85, 105, 0.4))',
+      )
 
   // Extracted hooks for Box styling
   const boxBg = useColorModeValue('white', 'gray.800')
@@ -28,14 +47,6 @@ const AuthLayout = ({
   const hoverShadow = useColorModeValue(
     '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
     '0 25px 50px -12px rgba(0, 0, 0, 0.6)',
-  )
-  const gradientBefore = useColorModeValue(
-    'linear-gradient(135deg, rgba(66, 153, 225, 0.15) 0%, rgba(159, 122, 234, 0.15) 50%, rgba(237, 100, 166, 0.15) 100%)',
-    'linear-gradient(135deg, rgba(66, 153, 225, 0.2) 0%, rgba(159, 122, 234, 0.2) 50%, rgba(237, 100, 166, 0.2) 100%)',
-  )
-  const gradientAfter = useColorModeValue(
-    'linear-gradient(135deg, rgba(66, 153, 225, 0.4), rgba(159, 122, 234, 0.4), rgba(237, 100, 166, 0.4))',
-    'linear-gradient(135deg, rgba(66, 153, 225, 0.5), rgba(159, 122, 234, 0.5), rgba(237, 100, 166, 0.5))',
   )
 
   return (
@@ -130,6 +141,7 @@ AuthLayout.propTypes = {
   showLanguageSwitcher: PropTypes.bool,
   languageSwitcherProps: PropTypes.object,
   rightContainerProps: PropTypes.object,
+  accentColor: PropTypes.string, // Accent color from login background customization
 }
 
 AuthLayout.defaultProps = {
@@ -141,6 +153,7 @@ AuthLayout.defaultProps = {
   showLanguageSwitcher: true,
   languageSwitcherProps: {},
   rightContainerProps: {},
+  accentColor: null,
 }
 
 export default AuthLayout

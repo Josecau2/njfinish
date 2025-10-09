@@ -447,7 +447,7 @@ const getCustomerOption = useCallback(
                             <Stack spacing={0} align="flex-start">
                               <Text fontWeight="medium">{option.label}</Text>
                               {option.data?.email && (
-                                <Text fontSize="sm" color="gray.500">
+                                <Text fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')}>
                                   {option.data.email}
                                 </Text>
                               )}

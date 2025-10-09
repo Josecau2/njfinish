@@ -10,6 +10,34 @@ require('dotenv').config();
 
 // Centralized token lifetime (default to long-lived sessions)
 const TOKEN_EXPIRES_IN = process.env.JWT_EXPIRES || process.env.JWT_EXPIRES_IN || '8h';
+const API_TOKEN_EXPIRES_IN = process.env.API_JWT_EXPIRES || '15m';
+
+const unwrapUser = (resource) =>
+  (resource && typeof resource.toJSON === 'function' ? resource.toJSON() : resource);
+
+const determineUserRole = (user) => {
+  if (!user) return '';
+  let role = user.role;
+  if (user.group && user.group.group_type === 'contractor' && (!role || role.trim() === '')) {
+    role = 'Contractor';
+  }
+  return role;
+};
+
+const buildJwtPayload = (user, role) => ({
+  id: user.id,
+  email: user.email,
+  name: user.name,
+  role,
+  role_id: user.role_id,
+  group_id: user.group_id,
+});
+
+const createSessionToken = (user, role) =>
+  jwt.sign(buildJwtPayload(user, role), process.env.JWT_SECRET, { expiresIn: TOKEN_EXPIRES_IN, algorithm: 'HS256' });
+
+const createApiToken = (user, role) =>
+  jwt.sign(buildJwtPayload(user, role), process.env.JWT_SECRET, { expiresIn: API_TOKEN_EXPIRES_IN, algorithm: 'HS256' });
 
 // Signup controller
 exports.signup = async (req, res) => {
@@ -78,20 +106,11 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Determine user role - for contractors, use group_type as role
-    let userRole = user.role;
-    if (user.group && user.group.group_type === 'contractor' && (!userRole || userRole.trim() === '')) {
-      userRole = 'Contractor';
-    }
+    const plainUser = unwrapUser(user)
+    const userRole = determineUserRole(plainUser)
 
-    const token = jwt.sign({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: userRole,
-      role_id: user.role_id,
-      group_id: user.group_id
-    }, process.env.JWT_SECRET, { expiresIn: TOKEN_EXPIRES_IN });
+    const token = createSessionToken(plainUser, userRole)
+    const apiToken = createApiToken(plainUser, userRole)
 
     // Debug logging for development
     if (process.env.NODE_ENV === 'development') {
@@ -120,10 +139,16 @@ exports.login = async (req, res) => {
       }
     }
 
-            setAuthCookies(res, token, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
+    try {
+      setAuthCookies(res, token, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
+    } catch (cookieError) {
+      console.error('Failed to set auth cookies', cookieError);
+      return res.status(500).json({ message: 'Unable to establish secure session' });
+    }
 
     res.json({
       sessionActive: true,
+      token: apiToken,
       userId: user.id,
       name: user.name,
       role: userRole,
@@ -139,10 +164,33 @@ exports.login = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
-    clearAuthCookies(res);
+    try {
+      clearAuthCookies(res);
+    } catch (cookieError) {
+      console.error('Failed to clear auth cookies during logout', cookieError);
+      return res.status(500).json({ message: 'Unable to complete logout securely' });
+    }
     res.status(200).json({ message: 'Logged out' });
   } catch (err) {
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.issueApiToken = async (req, res) => {
+  try {
+    const userInstance = req.user;
+    if (!userInstance) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const plainUser = unwrapUser(userInstance);
+    const role = determineUserRole(plainUser);
+    const token = createApiToken(plainUser, role);
+
+    return res.json({ token, expiresIn: API_TOKEN_EXPIRES_IN });
+  } catch (err) {
+    console.error('issueApiToken error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 

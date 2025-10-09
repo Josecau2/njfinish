@@ -16,7 +16,8 @@ const testPayload = {
 
 try {
   const token = jwt.sign(testPayload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '8h'
+    expiresIn: process.env.JWT_EXPIRES_IN || '8h',
+    algorithm: 'HS256'
   });
 
   console.log('\n✅ Token created successfully');
@@ -30,7 +31,7 @@ try {
   console.log('- Time until expiry:', Math.round((decoded.exp - Date.now()/1000)/3600), 'hours');
 
   // Verify the token
-  const verified = jwt.verify(token, process.env.JWT_SECRET);
+  const verified = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
   console.log('\n✅ Token verification successful');
   console.log('Verified payload:', verified);
 

@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { clearAllTokens } from '../utils/authToken'
+import { getFreshestToken, installTokenEverywhere } from '../utils/authToken'
+import { performLogout } from '../utils/logout'
 
 let rawBase = import.meta.env.VITE_API_URL || ''
 
@@ -11,9 +12,15 @@ try {
     }
   }
   // If VITE_API_URL is pointing to localhost:8080 but we're on Vite dev port 3000, prefer proxy
-  if (import.meta.env.DEV && typeof window !== 'undefined' && String(window.location.port) === '3000') {
+  if (
+    import.meta.env.DEV &&
+    typeof window !== 'undefined' &&
+    String(window.location.port) === '3000'
+  ) {
     if (rawBase && /localhost:8080/.test(String(rawBase))) {
-      console.warn('[axiosInstance] Overriding VITE_API_URL (localhost:8080) to use Vite proxy (relative base) for dev')
+      console.warn(
+        '[axiosInstance] Overriding VITE_API_URL (localhost:8080) to use Vite proxy (relative base) for dev',
+      )
       rawBase = ''
     }
   }
@@ -46,7 +53,8 @@ try {
 } catch {}
 
 if (!rawBase) {
-  const msg = '[axiosInstance] Using relative base (Vite proxy) — set VITE_API_URL for absolute base in prod.'
+  const msg =
+    '[axiosInstance] Using relative base (Vite proxy) — set VITE_API_URL for absolute base in prod.'
   if (import.meta.env.DEV) {
     console.info(msg)
   } else {
@@ -61,69 +69,123 @@ const api = axios.create({
   withCredentials: true,
 })
 
+const refreshClient = axios.create({
+  baseURL: base || undefined,
+  withCredentials: true,
+})
+
 let activeAbortController = new AbortController()
-let isLoggingOut = false
+let refreshPromise = null
 
 function handleUnauthorized(originalConfig, reason = 'invalid') {
   if (originalConfig && originalConfig.__suppressAuthLogout) {
     return
   }
 
-  if (isLoggingOut) return
-  isLoggingOut = true
-
   try {
     activeAbortController.abort()
   } catch {}
   activeAbortController = new AbortController()
 
-  try {
-    clearAllTokens()
-  } catch {}
-
-  // Store reason for login page to show appropriate message
-  const logoutReason = reason === 'expired' ? 'expired' : 'auth-error'
-  try {
-    sessionStorage.setItem('logout_reason', logoutReason)
-  } catch {}
-  try {
-    window.localStorage.setItem('__auth_changed__', String(Date.now()))
-  } catch {}
-
-  if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-    try {
-      window.location.replace(`/login?reason=${logoutReason}`)
-    } catch {}
-  }
-
-  setTimeout(() => {
-    isLoggingOut = false
-  }, 1000)
+  performLogout({ reason }).catch(() => {})
 }
 
-api.interceptors.request.use((config) => {
+async function fetchApiToken() {
+  if (!refreshPromise) {
+    refreshPromise = refreshClient
+      .post('/api/auth/token', undefined, {
+        headers: { Accept: 'application/json' },
+        timeout: 10000,
+        __suppressAuthLogout: true,
+      })
+      .then((response) => {
+        const nextToken = response?.data?.token
+        if (!nextToken) {
+          throw new Error('Token refresh response missing token')
+        }
+        installTokenEverywhere(nextToken)
+        return nextToken
+      })
+      .finally(() => {
+        refreshPromise = null
+      })
+  }
+
+  return refreshPromise
+}
+
+api.interceptors.request.use(async (config) => {
   try {
-    config.signal = activeAbortController.signal
+    let token = getFreshestToken()
+
+    // Lightweight retry loop to bridge the gap between login response and token install
+    if (!token) {
+      for (let i = 0; i < 5 && !token; i += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 20))
+        token = getFreshestToken()
+      }
+    }
+
+    if (token) {
+      config.headers = config.headers || {}
+      if (!config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+    }
+
+    try {
+      config.signal = activeAbortController.signal
+    } catch {}
   } catch {}
+
   return config
 })
 
 api.interceptors.response.use(
-  (res) => res,
-  (err) => {
+  (res) => {
+    const refreshed = res?.headers?.['x-refresh-token'] || res?.headers?.get?.('x-refresh-token')
+    if (refreshed) {
+      installTokenEverywhere(refreshed)
+    }
+    return res
+  },
+  async (err) => {
     const status = err?.response?.status
     const originalConfig = err?.config || {}
 
     if (status === 401) {
-      const wwwAuth = err?.response?.headers?.['www-authenticate']
+      const wwwAuthHeader = err?.response?.headers?.['www-authenticate']
+      const wwwAuth = typeof wwwAuthHeader === 'string' ? wwwAuthHeader.toLowerCase() : ''
+      const isExpired = wwwAuth.includes('jwt expired')
 
-      // Check if it's an expired token
-      if (wwwAuth && wwwAuth.toLowerCase().includes('jwt expired')) {
-        handleUnauthorized(originalConfig, 'expired')
-      } else {
-        // Invalid token or other auth error
-        handleUnauthorized(originalConfig, 'invalid')
+      if (isExpired && !originalConfig.__retry) {
+        try {
+          const nextToken = await fetchApiToken()
+          if (!nextToken) {
+            throw new Error('Token refresh failed')
+          }
+
+          const retryConfig = {
+            ...originalConfig,
+            __retry: true,
+            headers: {
+              ...(originalConfig.headers || {}),
+              Authorization: `Bearer ${nextToken}`,
+            },
+          }
+          // Reattach active abort controller signal
+          try {
+            retryConfig.signal = activeAbortController.signal
+          } catch {}
+
+          return api.request(retryConfig)
+        } catch (refreshError) {
+          handleUnauthorized(originalConfig, 'expired')
+          return Promise.reject(refreshError)
+        }
       }
+
+      handleUnauthorized(originalConfig, isExpired ? 'expired' : 'invalid')
     }
 
     return Promise.reject(err)

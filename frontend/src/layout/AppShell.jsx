@@ -1,8 +1,10 @@
 import React, { useMemo } from 'react'
 import { Box, Flex } from '@chakra-ui/react'
 import { useSelector } from 'react-redux'
+import { getSidebarWidth } from '../constants/layout'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
+import { AppFooter } from '../components'
 
 const AppShell = ({ children }) => {
   const { sidebarUnfoldable, sidebarPinned } = useSelector((state) => state.sidebar)
@@ -10,7 +12,7 @@ const AppShell = ({ children }) => {
   // Calculate sidebar width based on state
   const sidebarWidth = useMemo(() => {
     const collapsed = !sidebarPinned && sidebarUnfoldable
-    return collapsed ? "56px" : "256px"
+    return getSidebarWidth(collapsed)
   }, [sidebarPinned, sidebarUnfoldable])
 
   return (
@@ -27,6 +29,7 @@ const AppShell = ({ children }) => {
           <Box flex="1" minW="0">
             {children}
           </Box>
+          <AppFooter />
         </Flex>
       </Box>
     </Box>

@@ -182,9 +182,12 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor, sideba
             as="span"
             flex="1"
             minW="0"
-            whiteSpace="nowrap"
             textAlign="left"
-            lineHeight="1.4"
+            lineHeight="1.3"
+            whiteSpace="normal"
+            display="-webkit-box"
+            sx={{ WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
+            overflow="hidden"
           >
             {item.label}
           </Text>
@@ -466,7 +469,17 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor, sideba
               <Box w="6px" h="6px" borderRadius="full" bg="currentColor" />
             )}
           </Box>
-          <Text as="span" flex="1" minW="0" whiteSpace="nowrap" textAlign="left" lineHeight="1.4">
+          <Text
+            as="span"
+            flex="1"
+            minW="0"
+            textAlign="left"
+            lineHeight="1.3"
+            whiteSpace="normal"
+            display="-webkit-box"
+            sx={{ WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
+            overflow="hidden"
+          >
             {item.label}
           </Text>
           <Box
@@ -516,8 +529,51 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor, sideba
     return renderLink(item, depth)
   }
 
+  // Compute adaptive scrollbar colors (simple luminance check using existing parseColor)
+  const scrollbarColor = useMemo(() => {
+    const rgb = parseColor(sidebarBg)
+    if (!rgb) return { track: 'transparent', thumb: 'rgba(255,255,255,0.25)', thumbHover: 'rgba(255,255,255,0.38)' }
+    const lum = getLuminance(rgb.r, rgb.g, rgb.b)
+    const isDark = lum < 0.5
+    return isDark
+      ? { track: 'transparent', thumb: 'rgba(255,255,255,0.22)', thumbHover: 'rgba(255,255,255,0.38)' }
+      : { track: 'transparent', thumb: 'rgba(0,0,0,0.28)', thumbHover: 'rgba(0,0,0,0.42)' }
+  }, [sidebarBg])
+
   return (
-    <Box maxH="100%" h="100%" overflowY="auto" overflowX="hidden">
+    <Box
+      maxH="100%"
+      h="100%"
+      overflowY="auto"
+      overflowX="hidden"
+      className="app-sidebar-scroll"
+      sx={{
+        scrollbarWidth: 'thin', // Firefox
+        scrollbarColor: `${scrollbarColor.thumb} ${scrollbarColor.track}`,
+        '&::-webkit-scrollbar': {
+          width: '10px',
+          background: 'transparent',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'transparent',
+          margin: '6px 0',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: 'transparent', // start hidden
+          borderRadius: '8px',
+          border: '2px solid transparent',
+          backgroundClip: 'content-box',
+          transition: 'background-color 0.25s ease',
+        },
+        '&:hover::-webkit-scrollbar-thumb': {
+          backgroundColor: scrollbarColor.thumb,
+        },
+        '&:hover::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: scrollbarColor.thumbHover,
+        },
+        // Always show a minimal thumb when actively scrolling (cannot detect directly w/o JS; rely on hover)
+      }}
+    >
       <Box
         as="ul"
         listStyleType="none"

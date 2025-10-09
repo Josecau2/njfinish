@@ -32,6 +32,12 @@ const ResetPasswordPage = () => {
   const loginBackground = loginBrand.backgroundColor || brandColors.surface || 'gray.900'
   const rightPanelColors = getOptimalColors(loginBackground)
 
+  // Derive accent colors from login background
+  const isLoginBgLight = loginBackground.startsWith('#') ? 
+    (parseInt(loginBackground.slice(1, 3), 16) + parseInt(loginBackground.slice(3, 5), 16) + parseInt(loginBackground.slice(5, 7), 16)) / 3 > 128 : 
+    false;
+  const accentColor = loginBackground.startsWith('#') ? loginBackground : 'blue.500';
+
   const bgWhite = useColorModeValue('white', 'gray.800')
   const textGray700 = useColorModeValue('gray.700', 'gray.300')
   const linkBlue = useColorModeValue('blue.600', 'blue.300')
@@ -89,6 +95,7 @@ const ResetPasswordPage = () => {
       leftBg={loginBackground}
       leftTextColor={rightPanelColors.text}
       rightBg={bgWhite}
+      accentColor={accentColor}
       languageSwitcherProps={{ compact: true }}
     >
       <VStack spacing={6} align="stretch">
@@ -137,10 +144,14 @@ const ResetPasswordPage = () => {
 
             <Button
               type="submit"
-              colorScheme="brand"
+              bg={loginBackground.startsWith('#') ? accentColor : 'brand.500'}
+              color={loginBackground.startsWith('#') ? (isLoginBgLight ? 'gray.900' : 'white') : 'white'}
               size="lg"
               width="100%"
               minH="44px"
+              _hover={{
+                bg: loginBackground.startsWith('#') ? (isLoginBgLight ? `${accentColor}E6` : `${accentColor}CC`) : 'brand.600',
+              }}
               isLoading={isSubmitting}
               loadingText={t('auth.resetPassword.submitting')}
             >

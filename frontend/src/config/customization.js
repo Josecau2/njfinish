@@ -4,7 +4,7 @@
 
 export const CUSTOMIZATION_CONFIG = {
   "logoText": "NJ Contractors",
-  "logoImage": "/assets/customization/logo.png",
+  "logoImage": "/assets/customization/logo.jpg",
   "headerBg": "#000000",
   "headerFontColor": "#808080",
   "sidebarBg": "#000000",
@@ -13,8 +13,8 @@ export const CUSTOMIZATION_CONFIG = {
   "companyName": "",
   "id": 1,
   "createdAt": "2025-09-22T19:51:25.000Z",
-  "updatedAt": "2025-10-02T20:53:29.000Z",
-  "_generated": "2025-10-08T20:59:54.480Z",
+  "updatedAt": "2025-10-08T22:05:26.000Z",
+  "_generated": "2025-10-09T01:57:17.523Z",
   "_version": "1.0.0"
 }
 

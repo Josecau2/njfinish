@@ -12,39 +12,23 @@ import {
   Box,
 } from '@chakra-ui/react'
 import { User, LogOut } from 'lucide-react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { logout } from '../../store/slices/authSlice'
-import axiosInstance from '../../helpers/axiosInstance'
-import { clearAllTokens } from '../../utils/authToken'
-import { forceBrowserCleanup } from '../../utils/browserCleanup'
-import { ICON_SIZE_MD, ICON_SIZE_SM } from '../../constants/iconSizes'
+import { ICON_SIZE_MD } from '../../constants/iconSizes'
+import { getContrastColor } from '../../utils/colorUtils'
+import { performLogout } from '../../utils/logout'
 
 const AppHeaderDropdown = () => {
-  const dispatch = useDispatch()
   const navigate = useNavigate()
   const authUser = useSelector((state) => state.auth?.user)
-  const user = authUser || (() => {
-    try {
-      return JSON.parse(localStorage.getItem('user') || 'null')
-    } catch {
-      return null
-    }
-  })()
+  const customization = useSelector((state) => state.customization)
+  const user = authUser || null
 
   const accent = useColorModeValue('brand.500', 'brand.300')
+  const avatarTextColor = getContrastColor(accent)
 
   const handleLogout = async () => {
-    try {
-      await axiosInstance.post('/api/auth/logout')
-    } catch {}
-
-    clearAllTokens()
-    dispatch(logout())
-    forceBrowserCleanup()
-    setTimeout(() => {
-      window.location.href = `/login?_t=${Date.now()}&_fresh=1`
-    }, 100)
+    await performLogout({ reason: 'manual' })
   }
 
   const displayName = user?.name || 'User'
@@ -56,7 +40,7 @@ const AppHeaderDropdown = () => {
           size="sm"
           name={displayName}
           bg={accent}
-          color="white"
+          color={avatarTextColor}
           icon={<User size={ICON_SIZE_MD} />}
         />
       </MenuButton>
@@ -64,7 +48,7 @@ const AppHeaderDropdown = () => {
         {user?.name && (
           <Box px={4} pb={2}>
             <HStack spacing={3} align="center">
-              <Avatar size="sm" name={displayName} bg={accent} color="white" />
+              <Avatar size="sm" name={displayName} bg={accent} color={avatarTextColor} />
               <Box>
                 <Text fontWeight="semibold" fontSize="sm">
                   {user.name}
@@ -91,6 +75,3 @@ const AppHeaderDropdown = () => {
 }
 
 export default AppHeaderDropdown
-
-
-

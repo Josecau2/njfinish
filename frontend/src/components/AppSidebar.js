@@ -27,6 +27,7 @@ import ShowroomModeToggle from './showroom/ShowroomModeToggle'
 import { resolveBrandAssetUrl } from '../utils/brandAssets'
 import { isAdmin } from '../helpers/permissions'
 import { ICON_BOX_MD } from '../constants/iconSizes'
+import { SIDEBAR_WIDTH_COLLAPSED, SIDEBAR_WIDTH_EXPANDED, getSidebarWidth } from '../constants/layout'
 import { generateSubtleGradient } from '../utils/colorUtils'
 
 const AppSidebar = () => {
@@ -34,7 +35,6 @@ const AppSidebar = () => {
   const { t } = useTranslation()
   const { sidebarShow, sidebarUnfoldable, sidebarPinned } = useSelector((state) => state.sidebar)
   const customization = useSelector((state) => state.customization)
-  const authUser = useSelector((state) => state.auth?.user)
   const navItems = useNavItems()
   const sidebarRef = useRef(null)
 
@@ -58,13 +58,7 @@ const AppSidebar = () => {
     }
   }, [sidebarShow, dispatch])
 
-  const user = authUser || (() => {
-    try {
-      return JSON.parse(localStorage.getItem('user') || 'null')
-    } catch {
-      return null
-    }
-  })()
+  const user = authUser || null
 
   // All color mode values at component top
   const defaultSidebarBg = useColorModeValue('white', 'slate.900')
@@ -133,8 +127,8 @@ const AppSidebar = () => {
       direction="column"
       h="100vh"
       w={{
-        base: "100%",  // Mobile: full width of drawer (280px)
-        lg: collapsed ? "72px" : "256px"  // Desktop: 72px collapsed for better icon centering
+        base: '100%', // Mobile drawer full width
+        lg: getSidebarWidth(collapsed),
       }}
       bgGradient={sidebarGradient}
       bg={sidebarGradient ? undefined : sidebarBg}
@@ -143,7 +137,10 @@ const AppSidebar = () => {
       borderRightColor={borderColor}
       borderTopRightRadius={{ base: 0, lg: "16px" }}
       borderBottomRightRadius={{ base: 0, lg: "16px" }}
-      boxShadow="2xl"
+      boxShadow={{
+        base: "none",
+        lg: "0 10px 20px -5px rgba(0, 0, 0, 0.25), 0 6px 10px -3px rgba(0, 0, 0, 0.18), 0 20px 40px -8px rgba(0, 0, 0, 0.2), 0 30px 60px -12px rgba(0, 0, 0, 0.18)"
+      }}
       role="navigation"
       transition="width 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
       overflow="hidden"
@@ -327,7 +324,7 @@ const AppSidebar = () => {
       top="0"
       left="0"
       h="100vh"
-      w={collapsed ? "56px" : "256px"}
+      w={getSidebarWidth(collapsed)}
       transition="width 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

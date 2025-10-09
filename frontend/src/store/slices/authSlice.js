@@ -63,31 +63,6 @@ const authSlice = createSlice({
         } catch {}
       })
 
-      // Clear all cookies that might contain tokens
-      const cookiesToClear = [
-        'token',
-        'auth',
-        'session',
-        'jwt',
-        'access_token',
-        'refresh_token',
-        'user',
-        'authToken',
-        'sessionToken',
-      ]
-
-      cookiesToClear.forEach((name) => {
-        try {
-          if (typeof document !== 'undefined') {
-            // Clear cookie for current domain and path
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname}`
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`
-            // Also try without domain specification
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname}`
-          }
-        } catch {}
-      })
-
       // Clear any axios default headers
       try {
         if (typeof window !== 'undefined' && window.axios) {

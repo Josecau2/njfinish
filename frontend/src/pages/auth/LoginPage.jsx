@@ -26,6 +26,16 @@ const LoginPage = () => {
   const logoHeight = Number(loginBrand.logoHeight) || 60;
   const loginBackground = loginBrand.backgroundColor || brandColors.surface || "gray.900";
 
+  // Derive accent colors from login background for consistent theming
+  const isLoginBgLight = loginBackground.startsWith('#') ? 
+    (parseInt(loginBackground.slice(1, 3), 16) + parseInt(loginBackground.slice(3, 5), 16) + parseInt(loginBackground.slice(5, 7), 16)) / 3 > 128 : 
+    false;
+  
+  // Use login background color as the accent for focus/hover states
+  const accentColor = loginBackground.startsWith('#') ? loginBackground : 'blue.500';
+  const accentColorLight = loginBackground.startsWith('#') ? `${loginBackground}15` : 'blue.50';
+  const accentColorBorder = loginBackground.startsWith('#') ? `${loginBackground}80` : 'blue.400';
+
   // Color mode values
   const bgWhite = useColorModeValue("white", "gray.800")
   const textGray700 = useColorModeValue("gray.700", "gray.300")
@@ -58,9 +68,9 @@ const LoginPage = () => {
   // Checkbox color
   const checkboxColor = useColorModeValue('gray.700', 'gray.300')
 
-  // Link colors
-  const linkColor = useColorModeValue('brand.600', 'brand.300')
-  const linkHoverColor = useColorModeValue('brand.700', 'brand.400')
+  // Link colors - use login background color
+  const linkColor = loginBackground.startsWith('#') ? accentColor : useColorModeValue('blue.600', 'blue.400')
+  const linkHoverColor = loginBackground.startsWith('#') ? accentColor : useColorModeValue('blue.700', 'blue.500')
 
   // Divider color
   const dividerBorderColor = useColorModeValue('gray.100', 'gray.700')
@@ -137,9 +147,6 @@ const LoginPage = () => {
       dispatch(setUser({ user }));
       console.log('[Login] User set in Redux store');
 
-      // Store user in localStorage for components that need it
-      try { localStorage.setItem('user', JSON.stringify(user)); } catch {}
-
       localStorage.setItem('coreui-free-react-admin-template-theme', 'light');
 
       const returnTo = (() => { try { return sessionStorage.getItem('return_to') || '/' } catch { return '/' } })();
@@ -178,6 +185,7 @@ const LoginPage = () => {
       leftBg={loginBackground}
       leftTextColor={rightPanelColors.text}
       rightBg={rightBg}
+      accentColor={accentColor}
       languageSwitcherProps={{ compact: true }}
     >
       <VStack spacing={{ base: 8, md: 10 }} align="stretch" px={{ base: 0, md: 2 }} position="relative" zIndex={2}>
@@ -264,12 +272,12 @@ const LoginPage = () => {
                     border="1px solid"
                     borderColor={inputBorderColor}
                     _hover={{
-                      borderColor: inputHoverBorderColor,
+                      borderColor: loginBackground.startsWith('#') ? accentColorBorder : inputHoverBorderColor,
                       bg: inputHoverBg,
                     }}
                     _focus={{
-                      borderColor: 'brand.500',
-                      boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                      borderColor: loginBackground.startsWith('#') ? accentColor : 'brand.500',
+                      boxShadow: loginBackground.startsWith('#') ? `0 0 0 3px ${accentColorLight}` : '0 0 0 3px rgba(66, 153, 225, 0.1)',
                       bg: inputFocusBg,
                     }}
                     transition="all 0.2s"
@@ -303,12 +311,12 @@ const LoginPage = () => {
                       border="1px solid"
                       borderColor={inputBorderColor}
                       _hover={{
-                        borderColor: inputHoverBorderColor,
+                        borderColor: loginBackground.startsWith('#') ? accentColorBorder : inputHoverBorderColor,
                         bg: inputHoverBg,
                       }}
                       _focus={{
-                        borderColor: 'brand.500',
-                        boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
+                        borderColor: loginBackground.startsWith('#') ? accentColor : 'brand.500',
+                        boxShadow: loginBackground.startsWith('#') ? `0 0 0 3px ${accentColorLight}` : '0 0 0 3px rgba(66, 153, 225, 0.1)',
                         bg: inputFocusBg,
                       }}
                       transition="all 0.2s"
@@ -378,7 +386,8 @@ const LoginPage = () => {
 
                 <Button
                   type="submit"
-                  colorScheme="brand"
+                  bg={loginBackground.startsWith('#') ? accentColor : 'brand.500'}
+                  color={loginBackground.startsWith('#') ? (isLoginBgLight ? 'gray.900' : 'white') : 'white'}
                   size="lg"
                   width="100%"
                   minH={{ base: '52px', md: '56px' }}
@@ -388,6 +397,7 @@ const LoginPage = () => {
                   letterSpacing="tight"
                   boxShadow="0 4px 12px rgba(0, 0, 0, 0.08)"
                   _hover={{
+                    bg: loginBackground.startsWith('#') ? (isLoginBgLight ? `${accentColor}E6` : `${accentColor}CC`) : 'brand.600',
                     transform: 'translateY(-2px)',
                     boxShadow: '0 8px 20px rgba(0, 0, 0, 0.12)',
                   }}

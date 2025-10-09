@@ -359,7 +359,7 @@ const DesignImportStep = ({
                           transition="opacity 0.2s"
                           px={3}
                         >
-                          <Text color="white" fontWeight="medium" fontSize="sm" textAlign="center">
+                          <Text color={useColorModeValue('white', 'gray.100')} fontWeight="medium" fontSize="sm" textAlign="center">
                             {style.style || t('common.na')}
                           </Text>
                         </Box>

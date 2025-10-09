@@ -177,8 +177,8 @@ exports.attachPermissions = async (req, res, next) => {
     }
     next();
   } catch (error) {
-    console.error('Error attaching permissions:', error);
-    next(); // Continue without permissions rather than blocking
+    console.error('CRITICAL: Permission loading failed', error);
+    return res.status(500).json({ message: 'Permission system error' });
   }
 };
 
@@ -253,8 +253,8 @@ exports.injectGroupScoping = (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error('Error injecting group scoping:', error);
-    next(); // Continue without scoping rather than blocking
+    console.error('CRITICAL: Group scoping injection failed', error);
+    return res.status(500).json({ message: 'Access control system error' });
   }
 };
 

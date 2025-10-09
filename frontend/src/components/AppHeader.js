@@ -59,7 +59,7 @@ const AppHeader = () => {
         _dark={{ borderColor: 'whiteAlpha.100' }}
         borderBottomLeftRadius={{ base: 0, md: "12px" }}
         borderBottomRightRadius={{ base: 0, md: "12px" }}
-        boxShadow="lg"
+        boxShadow="0 8px 16px -4px rgba(0, 0, 0, 0.18), 0 4px 8px -2px rgba(0, 0, 0, 0.12), 0 16px 32px -6px rgba(0, 0, 0, 0.15)"
         h="60px"
         px={{ base: 4, md: 6 }}
         align="center"

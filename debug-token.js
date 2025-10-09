@@ -39,7 +39,7 @@ function validateToken(token) {
 
     // Try to verify with JWT_SECRET
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
       console.log('✅ Token verification successful:', decoded);
       return true;
     } catch (e) {

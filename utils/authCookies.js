@@ -36,9 +36,12 @@ function setAuthCookies(res, token, options = {}) {
 
   const secureFlag = typeof options.secure === 'boolean' ? options.secure : SECURE_COOKIE;
   let sameSiteValue = options.sameSite || SAME_SITE;
-  // Browsers require Secure when SameSite=None; if not secure, downgrade to 'lax' to avoid rejection
   if (String(sameSiteValue).toLowerCase() === 'none' && !secureFlag) {
-    sameSiteValue = 'lax';
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('SameSite=None requires HTTPS. Use SameSite=Lax in development or enable HTTPS.');
+    }
+    console.error('SECURITY ERROR: SameSite=None requires Secure flag');
+    throw new Error('Cannot set SameSite=None without Secure flag');
   }
 
   const commonOptions = {
@@ -62,7 +65,11 @@ function clearAuthCookies(res, options = {}) {
   const secureFlag = typeof options.secure === 'boolean' ? options.secure : SECURE_COOKIE;
   let sameSiteValue = options.sameSite || SAME_SITE;
   if (String(sameSiteValue).toLowerCase() === 'none' && !secureFlag) {
-    sameSiteValue = 'lax';
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('SameSite=None requires HTTPS. Use SameSite=Lax in development or enable HTTPS.');
+    }
+    console.error('SECURITY ERROR: SameSite=None requires Secure flag');
+    throw new Error('Cannot set SameSite=None without Secure flag');
   }
 
   const expiredOptions = {

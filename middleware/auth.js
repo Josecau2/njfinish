@@ -5,6 +5,7 @@ const { setAuthCookies, clearAuthCookies, getTokenFromCookies } = require('../ut
 const { getUserPermissions } = require('./permissions');
 require('dotenv').config();
 const TOKEN_EXPIRES_IN = process.env.JWT_EXPIRES || process.env.JWT_EXPIRES_IN || '8h';
+const JWT_VERIFY_OPTIONS = { algorithms: ['HS256'] };
 
 // Throttle noisy expired-token logs (configurable)
 const EXPIRED_LOG_THROTTLE_MS = parseInt(process.env.JWT_EXPIRED_LOG_THROTTLE_MS || '60000', 10); // default 60s per route
@@ -43,6 +44,18 @@ function logExpiredOnce(req, scope = 'auth') {
       console.warn('Token expired for', req.method, req.originalUrl);
     }
   } catch (_) {}
+}
+
+function resolveSecureCookieOption(req) {
+  return { secure: req.secure || req.get('x-forwarded-proto') === 'https' };
+}
+
+function clearAuthCookiesSafely(req, res) {
+  try {
+    clearAuthCookies(res, resolveSecureCookieOption(req));
+  } catch (cookieError) {
+    console.error('Failed to clear auth cookies', cookieError);
+  }
 }
 
 exports.attachTokenFromQuery = (options = {}) => {
@@ -85,15 +98,15 @@ exports.verifyToken = async (req, res, next) => {
       const c = (req.headers.cookie || '').slice(0, 120);
       console.warn('[AUTH] No token provided', { path: req.originalUrl, origin: o, referer: r, cookiePreview: c });
     } catch (_) {}
-    clearAuthCookies(res, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
+    clearAuthCookiesSafely(req, res);
     return res.status(401).json({ message: 'No token provided' });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, JWT_VERIFY_OPTIONS);
     const user = await User.findByPk(decoded.id);
     if (!user) {
-      clearAuthCookies(res, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
+      clearAuthCookiesSafely(req, res);
       return res.status(403).json({ message: 'User not found' });
     }
     req.user = user;
@@ -101,7 +114,7 @@ exports.verifyToken = async (req, res, next) => {
   } catch (error) {
     const isExpired = error && (error.name === 'TokenExpiredError');
     const message = isExpired ? 'jwt expired' : 'Invalid token';
-    clearAuthCookies(res, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
+    clearAuthCookiesSafely(req, res);
     try {
       if (!isExpired) {
         console.error('Token verification error (basic):', error);
@@ -128,12 +141,12 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
   }
 
   if (!token) {
-    clearAuthCookies(res, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
+    clearAuthCookiesSafely(req, res);
     return res.status(401).json({ message: 'No token provided' });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, JWT_VERIFY_OPTIONS);
 
     try {
       const nowSec = Math.floor(Date.now() / 1000);
@@ -151,9 +164,14 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
             group_id: decoded.group_id,
           },
           process.env.JWT_SECRET,
-          { expiresIn: TOKEN_EXPIRES_IN }
+          { expiresIn: TOKEN_EXPIRES_IN, algorithm: 'HS256' }
         );
-        setAuthCookies(res, newToken, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
+        try {
+          setAuthCookies(res, newToken, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
+        } catch (cookieError) {
+          console.error('Failed to set refreshed auth cookies', cookieError);
+          return res.status(500).json({ message: 'Unable to refresh session securely' });
+        }
         req.headers.authorization = `Bearer ${newToken}`;
         token = newToken;
       }
@@ -170,7 +188,7 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
     });
 
     if (!user) {
-      clearAuthCookies(res, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
+      clearAuthCookiesSafely(req, res);
       return res.status(403).json({ message: 'User not found' });
     }
 
@@ -198,7 +216,7 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
       const c = (req.headers.cookie || '').slice(0, 120);
       console.warn('[AUTH] Token verification failed', { path: req.originalUrl, origin: o, referer: r, cookiePreview: c, name: error?.name, message: error?.message });
     } catch (_) {}
-    clearAuthCookies(res, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
+    clearAuthCookiesSafely(req, res);
     try {
       if (!isExpired) {
         console.error('Token verification error:', error);

@@ -1,9 +1,10 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { useEffect, useState } from 'react'
-import { setUser, logout } from '../store/slices/authSlice'
+import { setUser } from '../store/slices/authSlice'
 import { isAuthSessionActive } from '../utils/authSession'
 import axiosInstance from '../helpers/axiosInstance'
+import { performLogout } from '../utils/logout'
 import { Center, Spinner, Box, Text, Button, VStack } from '@chakra-ui/react'
 
 const ProtectedRoute = ({ children }) => {
@@ -42,7 +43,7 @@ const ProtectedRoute = ({ children }) => {
           // Increment redirect counter
           const newCount = redirectCount + 1
           sessionStorage.setItem('auth_redirect_count', String(newCount))
-          dispatch(logout())
+          await performLogout({ reason: 'session-invalid' })
           setIsValid(false)
         }
       } catch (error) {
@@ -51,7 +52,7 @@ const ProtectedRoute = ({ children }) => {
         // Increment redirect counter
         const newCount = redirectCount + 1
         sessionStorage.setItem('auth_redirect_count', String(newCount))
-        dispatch(logout())
+        await performLogout({ reason: 'session-invalid' })
         setIsValid(false)
       } finally {
         setIsValidating(false)

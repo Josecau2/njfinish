@@ -33,13 +33,7 @@ const ICON_CONFIG = {
 }
 
 const NotificationBell = () => {
-  const user = (() => {
-    try {
-      return JSON.parse(localStorage.getItem('user'))
-    } catch {
-      return null
-    }
-  })()
+  const user = useSelector((state) => state.auth?.user)
   const token = getFreshestToken()
   // Show bell for any authenticated user (same as legacy)
   if (!user || !token) return null

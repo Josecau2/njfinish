@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import {
   useProposals,
   useUpdateProposalStatus,
@@ -109,7 +110,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
   const proposal = Array.isArray(proposalsData) ? proposalsData : []
 
   // Get user data for permission checks
-  const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}')
+  const loggedInUser = useSelector((state) => state.auth?.user) || {}
   const canAssignDesigner = hasPermission(loggedInUser, 'admin:users')
 
   const tabs = [
@@ -644,7 +645,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                 <Tr>
                   <Td colSpan={canAssignDesigner ? 7 : 6} textAlign="center" py={8}>
                     <VStack spacing={4}>
-                      <Search size={48} color="gray" />
+                      <Search size={48} color={iconGray500} />
                       <Text>{t('proposals.empty.title')}</Text>
                       <Text fontSize="sm" color={iconGray500}>
                         {t('proposals.empty.subtitle')}
@@ -723,7 +724,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
             <StandardCard>
               <CardBody textAlign="center" py={8}>
                 <VStack spacing={4}>
-                  <Search size={32} color="gray" />
+                  <Search size={32} color={iconGray500} />
                   <Text>{t('proposals.empty.title')}</Text>
                   <Text fontSize="sm" color={iconGray500}>
                     {t('proposals.empty.subtitle')}

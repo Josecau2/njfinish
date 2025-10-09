@@ -12,16 +12,7 @@ import { AuditRoutes } from '../routes/__audit__/index.jsx'
 const AppContent = () => {
   const location = useLocation()
   const prefersReducedMotion = useReducedMotion()
-  const reduxUser = useSelector((state) => state.auth?.user)
-  const user =
-    reduxUser ||
-    (() => {
-      try {
-        return JSON.parse(localStorage.getItem('user')) || null
-      } catch {
-        return null
-      }
-    })()
+  const user = useSelector((state) => state.auth?.user) || null
 
   const allowedRoutes = user ? filterRoutesByPermission(routes, user) : []
 

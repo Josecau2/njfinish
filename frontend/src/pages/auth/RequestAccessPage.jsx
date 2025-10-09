@@ -49,6 +49,13 @@ const RequestAccessPage = () => {
   const loginBackground = loginBrand.backgroundColor || brandColors.surface || 'gray.900'
   const rightPanelColors = getOptimalColors(loginBackground)
 
+  // Derive accent colors from login background
+  const isLoginBgLight = loginBackground.startsWith('#') ? 
+    (parseInt(loginBackground.slice(1, 3), 16) + parseInt(loginBackground.slice(3, 5), 16) + parseInt(loginBackground.slice(5, 7), 16)) / 3 > 128 : 
+    false;
+  const accentColor = loginBackground.startsWith('#') ? loginBackground : 'blue.500';
+  const accentColorForIcons = loginBackground.startsWith('#') ? accentColor : useColorModeValue('blue.500', 'blue.300');
+
   // Layout colors
   const bgWhite = useColorModeValue('white', 'gray.800')
   const textGray700 = useColorModeValue('gray.700', 'gray.300')
@@ -64,7 +71,7 @@ const RequestAccessPage = () => {
   const benefitsBgColor = useColorModeValue('gray.50', 'gray.750')
   const benefitsBorderColor = useColorModeValue('gray.200', 'gray.600')
   const benefitsHeadingColor = useColorModeValue('gray.700', 'gray.300')
-  const benefitsIconFill = useColorModeValue('brand.500', 'brand.300')
+  const benefitsIconFill = accentColorForIcons
   const benefitsTextColor = useColorModeValue('gray.600', 'gray.400')
 
   // Alert colors - Success
@@ -204,6 +211,7 @@ const RequestAccessPage = () => {
       leftBg={loginBackground}
       leftTextColor={rightPanelColors.text}
       rightBg={rightBgColor}
+      accentColor={accentColor}
       languageSwitcherProps={{ compact: true }}
       rightContainerProps={{ maxW: 'lg' }}
     >
@@ -674,7 +682,8 @@ const RequestAccessPage = () => {
 
             <Button
               type="submit"
-              colorScheme="brand"
+              bg={loginBackground.startsWith('#') ? accentColor : 'brand.500'}
+              color={loginBackground.startsWith('#') ? (isLoginBgLight ? 'gray.900' : 'white') : 'white'}
               size="lg"
               width="100%"
               minH={{ base: '52px', md: '56px' }}
@@ -684,6 +693,7 @@ const RequestAccessPage = () => {
               letterSpacing="tight"
               boxShadow="0 4px 12px rgba(0, 0, 0, 0.08)"
               _hover={{
+                bg: loginBackground.startsWith('#') ? (isLoginBgLight ? `${accentColor}E6` : `${accentColor}CC`) : 'brand.600',
                 transform: 'translateY(-2px)',
                 boxShadow: '0 8px 20px rgba(0, 0, 0, 0.12)',
               }}

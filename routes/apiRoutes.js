@@ -70,7 +70,7 @@ router.get('/auth/ping', verifyTokenWithGroup, (req, res) => {
 			group_id: req.user?.group_id,
 			role: req.user?.role,
 		};
-		const next = jwt.sign(claims, process.env.JWT_SECRET, { expiresIn: TTL });
+		const next = jwt.sign(claims, process.env.JWT_SECRET, { expiresIn: TTL, algorithm: 'HS256' });
 		res.set('x-refresh-token', next);
 		res.set('Access-Control-Expose-Headers', 'x-refresh-token');
 		return res.status(204).end();

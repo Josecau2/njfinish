@@ -4,18 +4,18 @@ const jwt = require('jsonwebtoken');
 // Use the JWT secret from the app
 const JWT_SECRET = 'dev-jwt-secret-change-in-production';
 
-// Generate admin token (user_id: 1 - has group_id: 1 which is Admin)  
+// Generate admin token (user_id: 1 - has group_id: 1 which is Admin)
 const adminToken = jwt.sign(
     { userId: 1, username: 'joseca' },
     JWT_SECRET,
-    { expiresIn: '24h' }
+    { expiresIn: '24h', algorithm: 'HS256' }
 );
 
 // Generate contractor token (user_id: 46 - has role_id: 3 which is contractor)
 const contractorToken = jwt.sign(
     { userId: 46, username: 'contractor' },
     JWT_SECRET,
-    { expiresIn: '24h' }
+    { expiresIn: '24h', algorithm: 'HS256' }
 );
 
 console.log('🔑 Fresh tokens generated:');
@@ -27,14 +27,14 @@ console.log(adminToken);
 // Test the tokens by decoding them
 console.log('\n🔍 Token verification:');
 try {
-    const contractorDecoded = jwt.verify(contractorToken, JWT_SECRET);
+    const contractorDecoded = jwt.verify(contractorToken, JWT_SECRET, { algorithms: ['HS256'] });
     console.log('✅ Contractor token valid:', contractorDecoded);
 } catch (error) {
     console.log('❌ Contractor token invalid:', error.message);
 }
 
 try {
-    const adminDecoded = jwt.verify(adminToken, JWT_SECRET);
+    const adminDecoded = jwt.verify(adminToken, JWT_SECRET, { algorithms: ['HS256'] });
     console.log('✅ Admin token valid:', adminDecoded);
 } catch (error) {
     console.log('❌ Admin token invalid:', error.message);

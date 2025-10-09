@@ -5,12 +5,12 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import 'core-js'
 // CSS Load Order - All styles loaded before React tree to prevent FOUC
-import './styles/reset.css'        // 1. Reset - box-sizing, overflow guards
-import './styles/utilities.css'    // 2. Utilities - spacing scale, helpers
-import './styles/fixes.css'         // 3. Fixes - overflow guards, iOS safe area
-import './styles/base.css'          // 4. Base - typography, accessibility
-import './main.css'                 // 5. Main - login, PDF, modals
-import './responsive.css'           // 6. Responsive - overrides (must be last)
+import './styles/reset.css' // 1. Reset - box-sizing, overflow guards
+import './styles/utilities.css' // 2. Utilities - spacing scale, helpers
+import './styles/fixes.css' // 3. Fixes - overflow guards, iOS safe area
+import './styles/base.css' // 4. Base - typography, accessibility
+import './main.css' // 5. Main - login, PDF, modals
+import './responsive.css' // 6. Responsive - overrides (must be last)
 import './i18n'
 
 import App from './App.jsx'
@@ -20,61 +20,61 @@ import { getBrand } from './brand/useBrand'
 import { detoxAuthStorage, getFreshestToken, debugAuthSnapshot } from './utils/authToken'
 import i18n from './i18n'
 import store from './store'
-import { logout } from './store/slices/authSlice'
+import { performLogout } from './utils/logout'
 import { enableProtectedAssetInterceptor } from './utils/protectedAssets'
 import { createThemeWithBrand } from './theme'
 import performanceMonitor from './utils/performanceMonitor'
 
 async function hydrateCustomizationGlobals() {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') return
 
   const loadJson = async (url) => {
     try {
-      const res = await fetch(url, { cache: 'no-store' });
-      if (!res.ok) return null;
-      return await res.json();
+      const res = await fetch(url, { cache: 'no-store' })
+      if (!res.ok) return null
+      return await res.json()
     } catch (error) {
-      console.warn('[customization] fetch failed', url, error?.message);
-      return null;
+      console.warn('[customization] fetch failed', url, error?.message)
+      return null
     }
-  };
+  }
 
   if (typeof window.__APP_CUSTOMIZATION__ === 'undefined') {
-    const data = await loadJson(`/assets/customization/app-customization.json?_=${Date.now()}`);
-    if (data) window.__APP_CUSTOMIZATION__ = data;
+    const data = await loadJson(`/assets/customization/app-customization.json?_=${Date.now()}`)
+    if (data) window.__APP_CUSTOMIZATION__ = data
   }
 
   if (typeof window.__LOGIN_CUSTOMIZATION__ === 'undefined') {
-    const data = await loadJson(`/assets/customization/login-customization.json?_=${Date.now()}`);
-    if (data) window.__LOGIN_CUSTOMIZATION__ = data;
+    const data = await loadJson(`/assets/customization/login-customization.json?_=${Date.now()}`)
+    if (data) window.__LOGIN_CUSTOMIZATION__ = data
   }
 
   if (typeof window.__BRAND__ === 'undefined') {
-    const { buildBrandFromGlobals } = await import('./brand/useBrandLegacy.mjs');
-    const brand = buildBrandFromGlobals();
+    const { buildBrandFromGlobals } = await import('./brand/useBrandLegacy.js')
+    const brand = buildBrandFromGlobals()
     if (brand) {
-      window.__BRAND__ = brand;
+      window.__BRAND__ = brand
     }
   }
 
   if (typeof document !== 'undefined') {
-    const root = document.documentElement;
-    const appCfg = window.__APP_CUSTOMIZATION__ || {};
-    if (appCfg.headerBg) root.style.setProperty('--header-bg', appCfg.headerBg);
-    if (appCfg.headerFontColor) root.style.setProperty('--header-fg', appCfg.headerFontColor);
-    if (appCfg.sidebarBg) root.style.setProperty('--sidebar-bg', appCfg.sidebarBg);
-    if (appCfg.sidebarFontColor) root.style.setProperty('--sidebar-fg', appCfg.sidebarFontColor);
-    if (appCfg.logoBg) root.style.setProperty('--brand-logo-bg', appCfg.logoBg);
+    const root = document.documentElement
+    const appCfg = window.__APP_CUSTOMIZATION__ || {}
+    if (appCfg.headerBg) root.style.setProperty('--header-bg', appCfg.headerBg)
+    if (appCfg.headerFontColor) root.style.setProperty('--header-fg', appCfg.headerFontColor)
+    if (appCfg.sidebarBg) root.style.setProperty('--sidebar-bg', appCfg.sidebarBg)
+    if (appCfg.sidebarFontColor) root.style.setProperty('--sidebar-fg', appCfg.sidebarFontColor)
+    if (appCfg.logoBg) root.style.setProperty('--brand-logo-bg', appCfg.logoBg)
 
-    const loginCfg = window.__LOGIN_CUSTOMIZATION__ || {};
+    const loginCfg = window.__LOGIN_CUSTOMIZATION__ || {}
     if (loginCfg.backgroundColor) {
-      root.style.setProperty('--login-bg', loginCfg.backgroundColor);
+      root.style.setProperty('--login-bg', loginCfg.backgroundColor)
     }
   }
 }
 
 async function bootstrap() {
-  await hydrateCustomizationGlobals();
+  await hydrateCustomizationGlobals()
 
   // Early detox: unify to a single freshest token & clear stale persisted shards
   try {
@@ -111,22 +111,17 @@ async function bootstrap() {
           const now = Math.floor(Date.now() / 1000)
           if (payload?.exp && payload.exp <= now && !window.__SESSION_EXPIRY_HANDLED__) {
             window.__SESSION_EXPIRY_HANDLED__ = true
-            store.dispatch(logout())
-            // Session expiry notification will be handled by App component with Chakra toast
-            if (window.location.pathname !== '/login') {
-              window.location.replace('/login')
-            } else {
-              try {
-                delete window.__SESSION_EXPIRY_HANDLED__
-              } catch {}
-            }
+            performLogout({ reason: 'token-expired-boot' }).catch(() => {})
           }
         } catch {}
       }
     } else {
       // No token at boot: ensure no stale cookie interferes then optionally redirect if on protected page
       try {
-        if (window.location.pathname !== '/login' && window.location.pathname !== '/reset-password') {
+        if (
+          window.location.pathname !== '/login' &&
+          window.location.pathname !== '/reset-password'
+        ) {
           // Let route guards handle it or redirect to login depending on app flow
         }
       } catch {}
