@@ -136,11 +136,12 @@ api.interceptors.request.use(async (config) => {
     // Lightweight retry loop to bridge the gap between login response and token install
     if (!token) {
       for (let i = 0; i < 10 && !token; i += 1) {
-        if (i > 0 && process.env.NODE_ENV === 'development') {
-          console.debug(`[Auth] Token not ready, retry ${i}/10`)
-        }
         await new Promise((resolve) => setTimeout(resolve, 30))
         token = getFreshestToken()
+      }
+      // Only log if retries were needed and still no token
+      if (!token && process.env.NODE_ENV === 'development') {
+        console.warn('[Auth] Token not available after 300ms retry window')
       }
     }
 
