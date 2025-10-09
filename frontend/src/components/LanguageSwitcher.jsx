@@ -2,11 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {
   Button,
-  MenuRoot,
-  MenuTrigger,
-  MenuContent,
-  MenuRadioItem,
-  MenuRadioItemGroup,
+  Menu,
+  MenuButton,
+  MenuItemOption,
+  MenuList,
+  MenuOptionGroup,
 } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
@@ -31,28 +31,27 @@ const LanguageSwitcher = ({ compact = false }) => {
   const currentLabel = t(`languages.${current === 'en' ? 'english' : 'spanish'}`)
 
   return (
-    <MenuRoot placement="bottom-end">
-      <MenuTrigger asChild>
-        <Button
-          size="sm"
-          minH="44px"
-          minW={minWidth}
-          variant={compact ? 'ghost' : 'outline'}
-        >
-          {currentLabel}
-          <ChevronDown size={14} />
-        </Button>
-      </MenuTrigger>
-      <MenuContent minW={minWidth}>
-        <MenuRadioItemGroup value={current} onValueChange={(e) => handleChange(e.value)}>
+    <Menu placement="bottom-end">
+      <MenuButton
+        as={Button}
+        size="sm"
+        minH="44px"
+        minW={minWidth}
+        variant={compact ? 'ghost' : 'outline'}
+        rightIcon={<ChevronDown size={14} />}
+      >
+        {currentLabel}
+      </MenuButton>
+      <MenuList minW={minWidth}>
+        <MenuOptionGroup type="radio" value={current} onChange={handleChange}>
           {languages.map((lang) => (
-            <MenuRadioItem key={lang} value={lang}>
+            <MenuItemOption key={lang} value={lang}>
               {t(`languages.${lang === 'en' ? 'english' : 'spanish'}`)}
-            </MenuRadioItem>
+            </MenuItemOption>
           ))}
-        </MenuRadioItemGroup>
-      </MenuContent>
-    </MenuRoot>
+        </MenuOptionGroup>
+      </MenuList>
+    </Menu>
   )
 }
 
