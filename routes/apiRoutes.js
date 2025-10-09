@@ -385,7 +385,8 @@ router.post('/settings/customization', verifyTokenWithGroup, requirePermission(P
 router.post('/settings/customization/pdf', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), upload.single('logo'), customizationController.saveCustomizationpdf);
 router.get('/settings/customization/pdf', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), customizationController.getCustomizationpdf);
 router.delete('/settings/customization/logo', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), customizationController.getCustomizationdeletelogo);
-router.post('/generate-pdf', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.SETTINGS), customizationController.generatepdf);
+// PDF generation for proposal previews - requires proposals read permission
+router.post('/generate-pdf', verifyTokenWithGroup, requirePermission(PERMISSIONS.PROPOSALS.READ), customizationController.generatepdf);
 
 
 
