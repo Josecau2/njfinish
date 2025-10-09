@@ -11,6 +11,7 @@ import {
   Box,
   Button,
   CardBody,
+  CloseButton,
   Flex,
   FormControl,
   FormLabel,
@@ -132,7 +133,7 @@ const EditProposal = ({
       duration: 10000,
       isClosable: true,
       position: 'top',
-      render: () => (
+      render: ({ onClose }) => (
         <Alert
           status='warning'
           variant='left-accent'
@@ -144,9 +145,10 @@ const EditProposal = ({
           alignItems='flex-start'
           px={4}
           py={5}
+          position='relative'
         >
           <AlertIcon />
-          <Box ml={3}>
+          <Box ml={3} flex={1}>
             <Text fontWeight='bold'>
               {t('proposals.errors.cannotAccept', 'Cannot accept quote')}
             </Text>
@@ -168,6 +170,13 @@ const EditProposal = ({
               )}
             </Text>
           </Box>
+          <CloseButton
+            position='absolute'
+            right={2}
+            top={2}
+            onClick={onClose}
+            aria-label={t('common.close', 'Close')}
+          />
         </Alert>
       ),
     })

@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, Suspense, lazy } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import {
   Box,
   Button,
+  Center,
   Checkbox,
   CheckboxGroup,
   Divider,
@@ -35,6 +36,9 @@ import {
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 import { getContrastColor } from '../../utils/colorUtils'
 
+const MobilePdfViewer = lazy(() => import('../pdf/MobilePdfViewer'))
+const DesktopPdfViewer = lazy(() => import('../pdf/DesktopPdfViewer'))
+
 const BASE_PAGE_WIDTH_PX = 794
 const MotionButton = motion.create(Button)
 
@@ -60,6 +64,8 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [previewHtml, setPreviewHtml] = useState('')
+  const [previewPdfUrl, setPreviewPdfUrl] = useState(null)
+  const [isGeneratingPreview, setIsGeneratingPreview] = useState(false)
 
   const previewIframeRef = useRef(null)
 
@@ -85,6 +91,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
       reset(defaultValues)
       setShowPreview(false)
       setPreviewHtml('')
+      setPreviewPdfUrl(null)
     }
   }, [show, defaultValues, reset])
 
@@ -191,12 +198,70 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     [buildHtml, getValues, showPreview],
   )
 
+  // Convert HTML to PDF blob using backend
+    const convertHtmlToPdfBlob = useCallback(async (html) => {
+    if (!html) return null;
+    
+    try {
+      setIsGeneratingPreview(true);
+      const response = await axiosInstance.post(
+        '/api/generate-pdf',
+        { 
+          html,
+          options: {
+            format: 'A4',
+            margin: { top: '20mm', right: '20mm', bottom: '20mm', left: '20mm' }
+          }
+        },
+        { responseType: 'blob' }
+      );
+      
+      const blob = response.data;
+      const url = URL.createObjectURL(blob);
+      return url;
+    } catch (error) {
+      console.error('Failed to convert HTML to PDF:', error);
+      return null;
+    } finally {
+      setIsGeneratingPreview(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!showPreview) return
     refreshPreview()
   }, [showPreview, pdfCustomization, styleData, manufacturerNameData, refreshPreview])
 
-  // Legacy iframe height adjustment
+  // Generate PDF blob when preview HTML changes
+  useEffect(() => {
+    const generatePdfForPreview = async () => {
+      if (!showPreview || !previewHtml) return
+      
+      // Clean up previous blob URL
+      if (previewPdfUrl) {
+        URL.revokeObjectURL(previewPdfUrl)
+        setPreviewPdfUrl(null)
+      }
+      
+      const pdfUrl = await convertHtmlToPdfBlob(previewHtml)
+      if (pdfUrl) {
+        setPreviewPdfUrl(pdfUrl)
+      }
+    }
+    
+    generatePdfForPreview()
+  }, [previewHtml, showPreview, convertHtmlToPdfBlob, previewPdfUrl])
+
+  // Cleanup blob URL on unmount or modal close
+  useEffect(() => {
+    return () => {
+      if (previewPdfUrl) {
+        URL.revokeObjectURL(previewPdfUrl)
+      }
+    }
+  }, [previewPdfUrl])
+
+  // Legacy iframe height adjustment - now only used for print
   useEffect(() => {
     const iframe = previewIframeRef.current
     if (!iframe) return
@@ -655,32 +720,38 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             aria-label={t('common.ariaLabels.closeModal', 'Close modal')}
           />
           <ModalBody p={0}>
-            <Box
-              px={previewPadding}
-              py={4}
-              bg={previewContainerBg}
-              maxH={previewMaxHeight}
-              overflow="auto"
-            >
-              <Box display="flex" justifyContent="center">
-                <Box
-                  as="iframe"
-                  ref={previewIframeRef}
-                  title="quote-preview-frame"
-                  srcDoc={
-                    previewHtml ||
-                    '<html><body style="font-family:sans-serif;padding:2rem;">Loading...</body></html>'
+            {isGeneratingPreview || !previewPdfUrl ? (
+              <Center h="70vh" bg={previewContainerBg}>
+                <Spinner size="xl" color={spinnerColor} />
+                <Text ml={4}>{t('proposalCommon.generatingPreview', 'Generating preview...')}</Text>
+              </Center>
+            ) : (
+              <Box
+                h="70vh"
+                bg={previewContainerBg}
+                overflow="hidden"
+              >
+                <Suspense
+                  fallback={
+                    <Center h="100%">
+                      <Spinner size="xl" color={spinnerColor} />
+                    </Center>
                   }
-                  w="100%"
-                  maxW={`${BASE_PAGE_WIDTH_PX}px`}
-                  minH="1120px"
-                  border="1px solid"
-                  borderColor="gray.200"
-                  bg="white"
-                  boxShadow="0 4px 6px rgba(0,0,0,0.1)"
-                />
+                >
+                  {isMobile ? (
+                    <MobilePdfViewer 
+                      fileUrl={previewPdfUrl} 
+                      onClose={() => setShowPreview(false)} 
+                    />
+                  ) : (
+                    <DesktopPdfViewer 
+                      fileUrl={previewPdfUrl} 
+                      onClose={() => setShowPreview(false)} 
+                    />
+                  )}
+                </Suspense>
               </Box>
-            </Box>
+            )}
           </ModalBody>
           <Divider />
           <ModalFooter>
