@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react'
+import React, { useCallback, useState, useMemo, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Document, Page, pdfjs } from 'react-pdf'
 import workerSrc from 'react-pdf/dist/pdf.worker.entry.js?url'
@@ -16,6 +16,12 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
   const [pageNumber, setPageNumber] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+
+  // Dual-scale zoom system for responsive gestures
+  const [committedScale, setCommittedScale] = useState(1.0)
+  const [displayScale, setDisplayScale] = useState(1.0)
+  const containerRef = useRef(null)
+  const zoomDebounceRef = useRef(null)
 
   // Memoize file descriptor to prevent unnecessary reloads
   const documentFile = useMemo(() => ({
@@ -43,6 +49,73 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
   const goToNextPage = useCallback(() => {
     setPageNumber((prev) => Math.min(numPages || 1, prev + 1))
   }, [numPages])
+
+  // Clamp scale helper
+  const clampScale = useCallback(v => Math.min(3, Math.max(0.5, v)), [])
+
+  // Pinch gesture support for zoom
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    let pinchStartDist = null
+    let pinchStartScale = null
+    let pinchActive = false
+    let pinchCommitTimeout = null
+
+    const distance = (t1, t2) => {
+      const dx = t2.clientX - t1.clientX
+      const dy = t2.clientY - t1.clientY
+      return Math.hypot(dx, dy)
+    }
+
+    const onTouchStart = (e) => {
+      if (e.touches.length === 2) {
+        pinchActive = true
+        pinchStartDist = distance(e.touches[0], e.touches[1])
+        pinchStartScale = displayScale
+        if (pinchCommitTimeout) { clearTimeout(pinchCommitTimeout); pinchCommitTimeout = null }
+      }
+    }
+
+    const onTouchMove = (e) => {
+      if (!pinchActive || e.touches.length !== 2 || !pinchStartDist) return
+      e.preventDefault()
+      const dist = distance(e.touches[0], e.touches[1])
+      const scaleFactor = dist / pinchStartDist
+      const next = clampScale(pinchStartScale * scaleFactor)
+      setDisplayScale(next)
+    }
+
+    const finishPinchCommit = () => {
+      setCommittedScale(displayScale)
+    }
+
+    const onTouchEnd = (e) => {
+      if (pinchActive && e.touches.length < 2) {
+        pinchActive = false
+        pinchStartDist = null
+        pinchStartScale = null
+        // Commit after brief pause
+        pinchCommitTimeout = setTimeout(finishPinchCommit, 120)
+      }
+    }
+
+    el.addEventListener('touchstart', onTouchStart, { passive: false })
+    el.addEventListener('touchmove', onTouchMove, { passive: false })
+    el.addEventListener('touchend', onTouchEnd, { passive: true })
+    el.addEventListener('touchcancel', onTouchEnd, { passive: true })
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart)
+      el.removeEventListener('touchmove', onTouchMove)
+      el.removeEventListener('touchend', onTouchEnd)
+      el.removeEventListener('touchcancel', onTouchEnd)
+      if (pinchCommitTimeout) clearTimeout(pinchCommitTimeout)
+    }
+  }, [displayScale, clampScale])
+
+  // Keep displayScale aligned if committedScale changes externally
+  useEffect(() => { setDisplayScale(committedScale) }, [committedScale])
 
   return (
     <Box
@@ -114,6 +187,7 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
 
       {/* PDF Content */}
       <Box
+        ref={containerRef}
         flex={1}
         display="flex"
         justifyContent="center"
@@ -121,6 +195,9 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
         p={2}
         overflow="auto"
         bg="#2a2a2a"
+        sx={{
+          touchAction: 'pan-x pan-y pinch-zoom',
+        }}
       >
         <Box textAlign="center" maxW="100%">
           {/* Force worker override right before Document render */}
@@ -145,22 +222,31 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
               </Box>
             }
           >
-            <Page
-              pageNumber={pageNumber}
-              width={Math.min(window.innerWidth - 20, 800)}
-              renderTextLayer={false}
-              renderAnnotationLayer={false}
-              loading={
-                <Box color="white" p={5}>
-                  Loading page...
-                </Box>
-              }
-              error={
-                <Box color="#dc3545" p={5}>
-                  Failed to load page
-                </Box>
-              }
-            />
+            <Box
+              style={{
+                display: 'inline-block',
+                transform: `scale(${displayScale / committedScale})`,
+                transformOrigin: 'center center',
+              }}
+            >
+              <Page
+                pageNumber={pageNumber}
+                width={Math.min(window.innerWidth - 20, 800)}
+                scale={committedScale}
+                renderTextLayer={false}
+                renderAnnotationLayer={false}
+                loading={
+                  <Box color="white" p={5}>
+                    Loading page...
+                  </Box>
+                }
+                error={
+                  <Box color="#dc3545" p={5}>
+                    Failed to load page
+                  </Box>
+                }
+              />
+            </Box>
           </Document>
         </Box>
       </Box>

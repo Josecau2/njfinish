@@ -93,8 +93,18 @@ exports.saveCustomizationpdf = async (req, res) => {
 
 exports.getCustomizationpdf = async (req, res) => {
   try {
-    const customization = await PdfCustomization.findOne({ order: [['updatedAt', 'DESC']] })
-    res.json(customization || {})
+    const pdfCustomization = await PdfCustomization.findOne({ order: [['updatedAt', 'DESC']] })
+    const pdfData = pdfCustomization ? pdfCustomization.toJSON() : {}
+
+    // If no PDF-specific logo is set, fallback to main app customization logo
+    if (!pdfData.headerLogo) {
+      const mainCustomization = await Customization.findOne({ order: [['updatedAt', 'DESC']] })
+      if (mainCustomization && mainCustomization.logoImage) {
+        pdfData.headerLogo = mainCustomization.logoImage
+      }
+    }
+
+    res.json(pdfData)
   } catch (err) {
     console.error('Error fetching customization:', err)
     res.status(500).json({ error: 'Failed to fetch customization' })

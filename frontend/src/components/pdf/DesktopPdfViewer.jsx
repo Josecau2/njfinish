@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react'
+import React, { useState, useCallback, useMemo, useEffect, useLayoutEffect, useRef } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import workerSrc from 'react-pdf/dist/pdf.worker.entry.js?url'
 import {
@@ -23,7 +23,10 @@ if (pdfjs?.GlobalWorkerOptions) {
 const DesktopPdfViewer = ({ fileUrl, onClose }) => {
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(1)
-  const [scale, setScale] = useState(1.2)
+  const [committedScale, setCommittedScale] = useState(1.2) // applied to <Page/>
+  const [displayScale, setDisplayScale] = useState(1.2)     // instant CSS-feedback
+  const zoomDebounceRef = useRef(null)
+  const lastZoomTsRef = useRef(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [pageInputValue, setPageInputValue] = useState('1')
@@ -71,17 +74,53 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
     })
   }, [numPages])
 
-  const zoomIn = useCallback(() => {
-    setScale(prev => Math.min(3, prev + 0.2))
+  // New center-anchor + debounced zoom system
+  const anchorRef = useRef(null)
+  const recordAnchor = useCallback(() => {
+    const el = scrollContainerRef.current
+    if (!el) return
+    anchorRef.current = { mid: el.scrollTop + el.clientHeight / 2, prevScale: committedScale }
+  }, [committedScale])
+  const applyAnchorAfterCommit = useCallback((nextScale) => {
+    const el = scrollContainerRef.current
+    if (!el || !anchorRef.current) return
+    const { mid, prevScale } = anchorRef.current
+    const ratio = nextScale / prevScale
+    let targetScrollTop = (mid * ratio) - el.clientHeight / 2
+    if (targetScrollTop < 0) targetScrollTop = 0
+    const maxScroll = el.scrollHeight - el.clientHeight
+    if (targetScrollTop > maxScroll) targetScrollTop = maxScroll
+    el.scrollTop = targetScrollTop
+    anchorRef.current = null
   }, [])
-
-  const zoomOut = useCallback(() => {
-    setScale(prev => Math.max(0.5, prev - 0.2))
-  }, [])
-
-  const resetZoom = useCallback(() => {
-    setScale(1.2)
-  }, [])
+  const clampScale = useCallback(v => Math.min(3, Math.max(0.5, v)), [])
+  const scheduleCommit = useCallback((target) => {
+    if (zoomDebounceRef.current) clearTimeout(zoomDebounceRef.current)
+    zoomDebounceRef.current = setTimeout(() => {
+      setCommittedScale(prev => {
+        if (prev === target) return prev
+        requestAnimationFrame(() => applyAnchorAfterCommit(target))
+        return target
+      })
+    }, 140)
+  }, [applyAnchorAfterCommit])
+  const applyDisplayScale = useCallback((next) => {
+    setDisplayScale(next)
+    scheduleCommit(next)
+  }, [scheduleCommit])
+  const changeScale = useCallback((delta, absolute = false) => {
+    recordAnchor()
+    setDisplayScale(prev => {
+      const base = absolute ? delta : prev + delta
+      const next = clampScale(base)
+      applyDisplayScale(next)
+      return next
+    })
+    lastZoomTsRef.current = Date.now()
+  }, [recordAnchor, clampScale, applyDisplayScale])
+  const zoomIn = useCallback(() => changeScale(0.25), [changeScale])
+  const zoomOut = useCallback(() => changeScale(-0.25), [changeScale])
+  const resetZoom = useCallback(() => changeScale(1.2, true), [changeScale])
 
   const handlePageInputChange = (e) => {
     setPageInputValue(e.target.value)
@@ -195,24 +234,154 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
     setPageInputValue(String(pageNumber))
   }, [pageNumber])
 
-  // Wheel listener with silent fallback (no console logs) to ensure scrolling always works
+  // Keep displayScale aligned if committedScale changes externally
+    useEffect(() => { setDisplayScale(committedScale) }, [committedScale])
+
+    // Pinch gesture support (mobile/tablet)
+    useEffect(() => {
+      const el = scrollContainerRef.current
+      if (!el) return
+
+      let pinchStartDist = null
+      let pinchStartScale = null
+      let pinchAnchor = null // { mid, prevScale }
+      let pinchActive = false
+      let pinchCommitTimeout = null
+
+      const distance = (t1, t2) => {
+        const dx = t2.clientX - t1.clientX
+        const dy = t2.clientY - t1.clientY
+        return Math.hypot(dx, dy)
+      }
+
+      const getMidpoint = (t1, t2) => ({
+        x: (t1.clientX + t2.clientX) / 2,
+        y: (t1.clientY + t2.clientY) / 2,
+      })
+
+      const onTouchStart = (e) => {
+        if (e.touches.length === 2) {
+          pinchActive = true
+          pinchStartDist = distance(e.touches[0], e.touches[1])
+          pinchStartScale = displayScale
+          const mid = getMidpoint(e.touches[0], e.touches[1])
+          // Compute content midpoint relative to scroll container for anchoring
+          const rect = el.getBoundingClientRect()
+          const contentMidY = el.scrollTop + (mid.y - rect.top)
+          pinchAnchor = { mid: contentMidY, prevScale: committedScale }
+          if (pinchCommitTimeout) { clearTimeout(pinchCommitTimeout); pinchCommitTimeout = null }
+        }
+      }
+
+      const onTouchMove = (e) => {
+        if (!pinchActive || e.touches.length !== 2 || !pinchStartDist) return
+        e.preventDefault()
+        const dist = distance(e.touches[0], e.touches[1])
+        const scaleFactor = dist / pinchStartDist
+        const next = clampScale(pinchStartScale * scaleFactor)
+        setDisplayScale(next)
+        // Do not schedule commit yet; we commit after gesture ends (debounced)
+      }
+
+      const finishPinchCommit = () => {
+        const target = displayScale
+        setCommittedScale(prev => {
+          if (prev === target) return prev
+          // Apply anchor based on pinchAnchor
+          requestAnimationFrame(() => {
+            if (pinchAnchor) {
+              const el2 = scrollContainerRef.current
+              if (el2) {
+                const ratio = target / pinchAnchor.prevScale
+                let targetScrollTop = (pinchAnchor.mid * ratio) - el2.clientHeight / 2
+                if (targetScrollTop < 0) targetScrollTop = 0
+                const maxScroll = el2.scrollHeight - el2.clientHeight
+                if (targetScrollTop > maxScroll) targetScrollTop = maxScroll
+                el2.scrollTop = targetScrollTop
+              }
+            }
+            pinchAnchor = null
+          })
+          return target
+        })
+      }
+
+      const onTouchEnd = (e) => {
+        if (pinchActive && e.touches.length < 2) {
+          pinchActive = false
+          pinchStartDist = null
+          pinchStartScale = null
+          // Debounce commit slightly in case fingers re-engage quickly
+          pinchCommitTimeout = setTimeout(finishPinchCommit, 120)
+        }
+      }
+
+      el.addEventListener('touchstart', onTouchStart, { passive: false })
+      el.addEventListener('touchmove', onTouchMove, { passive: false })
+      el.addEventListener('touchend', onTouchEnd, { passive: true })
+      el.addEventListener('touchcancel', onTouchEnd, { passive: true })
+      return () => {
+        el.removeEventListener('touchstart', onTouchStart)
+        el.removeEventListener('touchmove', onTouchMove)
+        el.removeEventListener('touchend', onTouchEnd)
+        el.removeEventListener('touchcancel', onTouchEnd)
+        if (pinchCommitTimeout) clearTimeout(pinchCommitTimeout)
+      }
+    }, [displayScale, committedScale, clampScale])
+
+  // Config: tune fallback scroll feel
+  const FALLBACK_SCROLL_SPEED = 2.2   // Multiplier applied when native scroll blocked
+  const INERTIA_DECAY = 0.085         // Higher -> stops sooner (0.08 - 0.12 reasonable)
+  const MIN_VELOCITY = 0.25           // Stop threshold
+
+  // Inertial wheel fallback that animates when native scroll is blocked
   useEffect(() => {
     const el = scrollContainerRef.current
     if (!el) return
 
+    let animating = false
+    let velocity = 0
+
+    const step = () => {
+      if (Math.abs(velocity) < MIN_VELOCITY) {
+        animating = false
+        velocity = 0
+        return
+      }
+      el.scrollTop += velocity
+      velocity *= (1 - INERTIA_DECAY)
+      requestAnimationFrame(step)
+    }
+
+    const ensureAnim = () => {
+      if (!animating) {
+        animating = true
+        requestAnimationFrame(step)
+      }
+    }
+
     const wheelListener = (e) => {
       if (e.defaultPrevented) return
       const startTop = el.scrollTop
+      // Allow native first
       requestAnimationFrame(() => {
-        if (el.scrollTop === startTop) {
-          el.scrollTop += e.deltaY
+        const afterTop = el.scrollTop
+        if (afterTop === startTop) {
+          // Native did not move – apply accelerated velocity-based scroll
+            // Accumulate velocity (clamp to avoid runaway)
+          velocity += e.deltaY * FALLBACK_SCROLL_SPEED
+          if (velocity > 200) velocity = 200
+          if (velocity < -200) velocity = -200
+          ensureAnim()
         }
       })
     }
 
     el.addEventListener('wheel', wheelListener, { passive: false })
-    return () => el.removeEventListener('wheel', wheelListener, { passive: false })
-  }, [scale])
+    return () => {
+      el.removeEventListener('wheel', wheelListener, { passive: false })
+    }
+  }, [committedScale])
 
   return (
     <>
@@ -308,23 +477,23 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
           <HStack spacing={2} ml={5}>
             <Button
               onClick={zoomOut}
-              isDisabled={scale <= 0.5}
+              isDisabled={displayScale <= 0.5}
               size="sm"
-              colorScheme={scale <= 0.5 ? 'gray' : 'green'}
+              colorScheme={displayScale <= 0.5 ? 'gray' : 'green'}
               minH="36px"
             >
               -
             </Button>
 
             <Text color={textColor} fontSize="sm" minW="60px" textAlign="center">
-              {Math.round(scale * 100)}%
+              {Math.round(displayScale * 100)}%
             </Text>
 
             <Button
               onClick={zoomIn}
-              isDisabled={scale >= 3}
+              isDisabled={displayScale >= 3}
               size="sm"
-              colorScheme={scale >= 3 ? 'gray' : 'green'}
+              colorScheme={displayScale >= 3 ? 'gray' : 'green'}
               minH="36px"
             >
               +
@@ -426,23 +595,31 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
               }
               className="react-pdf-document"
             >
-              <Page
-                pageNumber={pageNumber}
-                scale={scale}
-                loading={
-                  <Text color={textColor} p={5}>
-                    Loading page...
-                  </Text>
-                }
-                error={
-                  <Text color="red.400" p={5}>
-                    Failed to load page
-                  </Text>
-                }
-                renderTextLayer={true}
-                renderAnnotationLayer={true}
-                className="react-pdf-page"
-              />
+              <Box
+                style={{
+                  display: 'inline-block',
+                  transform: `scale(${displayScale / committedScale})`,
+                  transformOrigin: 'top center',
+                }}
+              >
+                <Page
+                  pageNumber={pageNumber}
+                  scale={committedScale}
+                  loading={
+                    <Text color={textColor} p={5}>
+                      Loading page...
+                    </Text>
+                  }
+                  error={
+                    <Text color="red.400" p={5}>
+                      Failed to load page
+                    </Text>
+                  }
+                  renderTextLayer={true}
+                  renderAnnotationLayer={true}
+                  className="react-pdf-page"
+                />
+              </Box>
             </Document>
           </Box>
         </Box>
