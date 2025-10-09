@@ -221,21 +221,26 @@ const NotificationBell = () => {
     }
 
     const payload = n.payload || {}
-    // Quotes (internally previously referred to as proposals) use /quotes routes now.
-    if (payload.proposalId || payload.quoteId) {
-      const id = payload.proposalId || payload.quoteId
-      return `/quotes/edit/${id}` // canonical redirect path (will redirect to noisy path if needed)
+    const role = String(user?.role || '').toLowerCase()
+    const proposalId = payload.proposalId || payload.quoteId || payload.proposal_id || payload.quote_id
+    if (proposalId) {
+      // If notification type suggests admin view (e.g., proposal_accepted) and user is admin, send to admin-view.
+      const isAdmin = role === 'admin' || role === 'super_admin'
+      if (isAdmin && /accepted|rejected|admin_view/i.test(n.type || '')) {
+        return `/proposals/${proposalId}/admin-view`
+      }
+      // Base edit path (redirect component will noisify)
+      return `/proposals/edit/${proposalId}`
     }
     // Orders: prefer admin order path if user is admin, else my-orders if present
-    if (payload.orderId) {
-      const id = payload.orderId
-      // We can't easily know role here besides user.role already loaded
-      const role = String(user?.role || '').toLowerCase()
-      if (role === 'admin' || role === 'super_admin') return `/orders/${id}`
-      return `/my-orders/${id}`
+    const orderId = payload.orderId || payload.order_id
+    if (orderId) {
+      const isAdmin = role === 'admin' || role === 'super_admin'
+      return isAdmin ? `/orders/${orderId}` : `/my-orders/${orderId}`
     }
-    if (payload.customerId) {
-      return `/customers/edit/${payload.customerId}`
+    const customerId = payload.customerId || payload.customer_id
+    if (customerId) {
+      return `/customers/edit/${customerId}`
     }
     return null
   }
@@ -262,7 +267,7 @@ const NotificationBell = () => {
           unreadCount > 0 ? `You have ${unreadCount} unread notifications` : 'Open notifications'
         }
         icon={
-          <Box position="relative">
+          <Box position="relative" zIndex={1}>
             {unreadCount > 0 ? (
               <BellRing size={22} color={optimalTextColor} />
             ) : (
