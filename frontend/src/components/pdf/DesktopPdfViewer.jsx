@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect, useLayoutEffect, useRef } from 'react'
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import workerSrc from 'react-pdf/dist/pdf.worker.entry.js?url'
 import {
@@ -9,7 +9,7 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { Global, css } from '@emotion/react'
+import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pan-pinch'
 
 // Import CSS for text and annotation layers
 import 'react-pdf/dist/Page/AnnotationLayer.css'
@@ -23,14 +23,10 @@ if (pdfjs?.GlobalWorkerOptions) {
 const DesktopPdfViewer = ({ fileUrl, onClose }) => {
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(1)
-  const [committedScale, setCommittedScale] = useState(1.2) // applied to <Page/>
-  const [displayScale, setDisplayScale] = useState(1.2)     // instant CSS-feedback
-  const zoomDebounceRef = useRef(null)
-  const lastZoomTsRef = useRef(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [pageInputValue, setPageInputValue] = useState('1')
-  const scrollContainerRef = React.useRef(null)
+  const transformRef = useRef(null)
 
   const bgOverlay = useColorModeValue('rgba(0, 0, 0, 0.9)', 'rgba(0, 0, 0, 0.95)')
   const bgHeader = useColorModeValue('rgba(0, 0, 0, 0.8)', 'rgba(10, 10, 10, 0.9)')

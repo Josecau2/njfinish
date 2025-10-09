@@ -104,6 +104,14 @@ exports.getCustomizationpdf = async (req, res) => {
       }
     }
 
+    // Convert relative logo path to absolute URL for PDF generation
+    // This ensures Puppeteer can access the image when generating the PDF
+    if (pdfData.headerLogo && !pdfData.headerLogo.startsWith('data:') && !pdfData.headerLogo.startsWith('http')) {
+      const protocol = req.protocol || 'http'
+      const host = req.get('host') || 'localhost:8080'
+      pdfData.headerLogo = `${protocol}://${host}${pdfData.headerLogo}`
+    }
+
     res.json(pdfData)
   } catch (err) {
     console.error('Error fetching customization:', err)
