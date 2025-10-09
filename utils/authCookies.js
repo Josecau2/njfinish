@@ -3,7 +3,10 @@ const DEFAULT_MAX_AGE_MS = 8 * 60 * 60 * 1000; // 8 hours
 const AUTH_COOKIE_NAME = process.env.AUTH_COOKIE_NAME || 'authToken';
 const SESSION_COOKIE_NAME = process.env.AUTH_SESSION_COOKIE_NAME || 'authSession';
 const SECURE_COOKIE = String(process.env.AUTH_COOKIE_SECURE || '').toLowerCase() === 'true' || process.env.NODE_ENV === 'production';
-const SAME_SITE = process.env.AUTH_COOKIE_SAMESITE || 'strict';
+// In development (often split-origin localhost:3000 -> localhost:8080),
+// use SameSite=None so browsers will send cookies on XHR/fetch with credentials.
+// In production, default to 'strict' unless overridden by env.
+const SAME_SITE = process.env.AUTH_COOKIE_SAMESITE || (process.env.NODE_ENV === 'production' ? 'strict' : 'none');
 
 function parseExpiresToMs(value) {
   if (!value) return DEFAULT_MAX_AGE_MS;
@@ -32,7 +35,11 @@ function setAuthCookies(res, token, options = {}) {
   }
 
   const secureFlag = typeof options.secure === 'boolean' ? options.secure : SECURE_COOKIE;
-  const sameSiteValue = options.sameSite || SAME_SITE;
+  let sameSiteValue = options.sameSite || SAME_SITE;
+  // Browsers require Secure when SameSite=None; if not secure, downgrade to 'lax' to avoid rejection
+  if (String(sameSiteValue).toLowerCase() === 'none' && !secureFlag) {
+    sameSiteValue = 'lax';
+  }
 
   const commonOptions = {
     secure: secureFlag,
@@ -53,7 +60,10 @@ function setAuthCookies(res, token, options = {}) {
 
 function clearAuthCookies(res, options = {}) {
   const secureFlag = typeof options.secure === 'boolean' ? options.secure : SECURE_COOKIE;
-  const sameSiteValue = options.sameSite || SAME_SITE;
+  let sameSiteValue = options.sameSite || SAME_SITE;
+  if (String(sameSiteValue).toLowerCase() === 'none' && !secureFlag) {
+    sameSiteValue = 'lax';
+  }
 
   const expiredOptions = {
     secure: secureFlag,

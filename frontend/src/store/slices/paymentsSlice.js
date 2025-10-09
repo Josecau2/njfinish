@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
+import { normalizeError } from '../../utils/errorUtils'
 
 // Async thunks
 export const fetchPayments = createAsyncThunk(
@@ -158,6 +159,7 @@ const paymentsSlice = createSlice({
   name: 'payments',
   initialState,
   reducers: {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     clearError: (state) => {
       state.error = null
     },
@@ -173,6 +175,7 @@ const paymentsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     builder
       // Fetch payments
       .addCase(fetchPayments.pending, (state) => {
@@ -186,7 +189,7 @@ const paymentsSlice = createSlice({
       })
       .addCase(fetchPayments.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload?.error || 'Failed to fetch payments'
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Fetch payment by ID
@@ -200,7 +203,7 @@ const paymentsSlice = createSlice({
       })
       .addCase(fetchPaymentById.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload?.error || 'Failed to fetch payment'
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Create payment
@@ -214,7 +217,7 @@ const paymentsSlice = createSlice({
       })
       .addCase(createPayment.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload?.error || 'Failed to create payment'
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Update payment status
@@ -253,14 +256,14 @@ const paymentsSlice = createSlice({
       })
       .addCase(fetchPaymentConfig.rejected, (state, action) => {
         state.configLoading = false
-        state.configError = action.payload?.error || 'Failed to fetch payment configuration'
+        state.configError = normalizeError(action.payload || action.error)
       })
 
       // Public payment configuration
       .addCase(fetchPublicPaymentConfig.fulfilled, (state, action) => {
         state.publicPaymentConfig = action.payload
       })
-      .addCase(fetchPublicPaymentConfig.rejected, (state) => {
+      .addCase(fetchPublicPaymentConfig.rejected, (state, action) => {
         state.publicPaymentConfig = null
       })
 
@@ -275,7 +278,7 @@ const paymentsSlice = createSlice({
       })
       .addCase(savePaymentConfig.rejected, (state, action) => {
         state.configLoading = false
-        state.configError = action.payload?.error || 'Failed to save payment configuration'
+        state.configError = normalizeError(action.payload || action.error)
       })
 
       // Update payment configuration

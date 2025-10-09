@@ -3,13 +3,9 @@
 
 let memoryToken = null
 
-const SESSION_FLAG_KEY = 'session_active'
 const SESSION_COOKIE_NAME = 'authSession'
 
 function clearSessionIndicator() {
-  try {
-    localStorage.removeItem(SESSION_FLAG_KEY)
-  } catch {}
   try {
     if (typeof document !== 'undefined') {
       document.cookie = `${SESSION_COOKIE_NAME}=; Max-Age=0; path=/`
@@ -66,7 +62,6 @@ export function detoxAuthStorage() {
 
 export function debugAuthSnapshot() {
   try {
-    const flag = localStorage.getItem(SESSION_FLAG_KEY)
     return {
       now: new Date().toISOString(),
       memory: memoryToken
@@ -74,7 +69,6 @@ export function debugAuthSnapshot() {
             tail: memoryToken.slice(-10),
           }
         : null,
-      sessionFlag: flag,
     }
   } catch (error) {
     console.error('debugAuthSnapshot error', error)

@@ -6,6 +6,7 @@ const tableItemsEditSlice = createSlice({
     data: [],
   },
   reducers: {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     setTableItemsEdit(state, action) {
       state.data = action.payload // Replace the whole tableItems list
     },

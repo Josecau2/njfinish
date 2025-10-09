@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { logout } from '../store/slices/authSlice'
 import { clearAllTokens } from '../utils/authToken'
-import { clearSessionFlag } from '../utils/authSession'
 
 const SessionRefresher = ({ children }) => {
   const dispatch = useDispatch()
@@ -14,7 +13,6 @@ const SessionRefresher = ({ children }) => {
 
     if (isFreshLogin || isLogoutReload) {
       clearAllTokens()
-      clearSessionFlag()
       dispatch(logout())
 
       try {

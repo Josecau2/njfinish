@@ -74,8 +74,11 @@ const allowedOrigins = env.CORS_ALLOWED_ORIGINS;
 // Configure CORS based on environment
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    // Allow no-origin requests (same-origin requests, Postman, server-to-server)
+    // Browsers don't send Origin header for same-origin requests
+    if (!origin) {
+      return callback(null, true);
+    }
 
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);

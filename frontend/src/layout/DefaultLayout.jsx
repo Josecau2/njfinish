@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { getLatestTerms } from '../helpers/termsApi'
 import { isAdmin as isAdminCheck } from '../helpers/permissions'
 import { logout } from '../store/slices/authSlice'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { setSidebarShow } from '../store/slices/sidebarSlice'
 import AppBreadcrumb from '../components/AppBreadcrumb'
 
@@ -21,12 +21,11 @@ const DefaultLayout = () => {
   const [hasInitialized, setHasInitialized] = useState(false)
   const dispatch = useDispatch()
   const location = useLocation()
-  const navigate = useNavigate()
 
   // Calculate sidebar width based on state
   const sidebarWidth = useMemo(() => {
     const collapsed = !sidebarPinned && sidebarUnfoldable
-    return collapsed ? "56px" : "256px"
+    return collapsed ? '56px' : '256px'
   }, [sidebarPinned, sidebarUnfoldable])
 
   useEffect(() => {
@@ -44,16 +43,6 @@ const DefaultLayout = () => {
   }, [])
 
   useEffect(() => {
-    if (!user) {
-      if (!hasInitialized) {
-        setLoading(true)
-        return
-      }
-      setLoading(false)
-      navigate('/login', { replace: true })
-      return
-    }
-
     if (!hasInitialized) {
       setHasInitialized(true)
     }
@@ -89,7 +78,7 @@ const DefaultLayout = () => {
         setLoading(false)
       }
     })()
-  }, [user, isAdmin, hasInitialized, navigate])
+  }, [user, isAdmin, hasInitialized])
 
   const handleAccepted = () => {
     if (latestVersion) {
@@ -114,10 +103,6 @@ const DefaultLayout = () => {
         <Spinner size="lg" color="brand.500" />
       </Center>
     )
-  }
-
-  if (!user) {
-    return null
   }
 
   if (!isAdmin && forceTerms) {
@@ -157,8 +142,8 @@ const DefaultLayout = () => {
         borderRadius="md"
         fontWeight="semibold"
         _focus={{
-          left: "10px",
-          top: "10px",
+          left: '10px',
+          top: '10px',
         }}
       >
         Skip to main content

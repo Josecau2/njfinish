@@ -79,6 +79,12 @@ exports.attachTokenFromQuery = (options = {}) => {
 exports.verifyToken = async (req, res, next) => {
   const token = extractAuthToken(req);
   if (!token) {
+    try {
+      const o = req.get('origin') || req.headers.origin;
+      const r = req.get('referer') || req.headers.referer;
+      const c = (req.headers.cookie || '').slice(0, 120);
+      console.warn('[AUTH] No token provided', { path: req.originalUrl, origin: o, referer: r, cookiePreview: c });
+    } catch (_) {}
     clearAuthCookies(res, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
     return res.status(401).json({ message: 'No token provided' });
   }
@@ -186,6 +192,12 @@ exports.verifyTokenWithGroup = async (req, res, next) => {
     next();
   } catch (error) {
     const isExpired = error && (error.name === 'TokenExpiredError');
+    try {
+      const o = req.get('origin') || req.headers.origin;
+      const r = req.get('referer') || req.headers.referer;
+      const c = (req.headers.cookie || '').slice(0, 120);
+      console.warn('[AUTH] Token verification failed', { path: req.originalUrl, origin: o, referer: r, cookiePreview: c, name: error?.name, message: error?.message });
+    } catch (_) {}
     clearAuthCookies(res, { secure: req.secure || req.get('x-forwarded-proto') === 'https' });
     try {
       if (!isExpired) {

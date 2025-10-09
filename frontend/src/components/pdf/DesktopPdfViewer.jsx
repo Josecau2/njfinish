@@ -149,7 +149,7 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
       bg={bgOverlay}
       display="flex"
       flexDirection="column"
-      zIndex={10000}
+      zIndex={1500}
     >
       {/* Header Controls */}
       <HStack

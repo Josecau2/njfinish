@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
+import { normalizeError } from '../../utils/errorUtils'
 
 export const fetchManufacturers = createAsyncThunk('manufacturers/fetchManufacturers', async () => {
   try {
@@ -97,6 +98,7 @@ const manufacturersSlice = createSlice({
   },
   reducers: {},
   extraReducers: (builder) => {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     builder
       .addCase(fetchManufacturers.pending, (state) => {
         state.loading = true
@@ -108,7 +110,7 @@ const manufacturersSlice = createSlice({
       })
       .addCase(fetchManufacturers.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message
+        state.error = normalizeError(action.payload || action.error)
       })
       .addCase(updateManufacturerStatus.pending, (state) => {
         state.error = null
@@ -121,7 +123,7 @@ const manufacturersSlice = createSlice({
         }
       })
       .addCase(updateManufacturerStatus.rejected, (state, action) => {
-        state.error = action.payload || 'Failed to update manufacturer status'
+        state.error = normalizeError(action.payload || action.error)
       })
       .addCase(updateManufacturer.pending, (state) => {
         state.error = null
@@ -134,7 +136,7 @@ const manufacturersSlice = createSlice({
         }
       })
       .addCase(updateManufacturer.rejected, (state, action) => {
-        state.error = action.payload || 'Failed to update manufacturer'
+        state.error = normalizeError(action.payload || action.error)
       })
       .addCase(fetchManufacturerById.pending, (state) => {
         state.loading = true
@@ -153,7 +155,7 @@ const manufacturersSlice = createSlice({
       })
       .addCase(fetchManufacturerById.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload || 'Failed to fetch manufacturer'
+        state.error = normalizeError(action.payload || action.error)
       })
       .addCase(addManufacturer.pending, (state) => {
         state.loading = true
@@ -167,7 +169,7 @@ const manufacturersSlice = createSlice({
       })
       .addCase(addManufacturer.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload || 'Failed to add manufacturer'
+        state.error = normalizeError(action.payload || action.error)
       })
   },
 })

@@ -42,7 +42,10 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
   const { t, i18n } = useTranslation()
   const customization = useSelector((state) => state.customization) || {}
   const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
-  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const resolvedHeaderBg =
+    customization.headerBg && customization.headerBg.trim()
+      ? customization.headerBg
+      : headerBgFallback
   const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   // Color mode values - MUST be before useState
@@ -192,6 +195,28 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
     if (!showPreview) return
     refreshPreview()
   }, [showPreview, pdfCustomization, styleData, manufacturerNameData, refreshPreview])
+
+  // Legacy iframe height adjustment
+  useEffect(() => {
+    const iframe = previewIframeRef.current
+    if (!iframe) return
+
+    const adjustHeight = () => {
+      try {
+        const body = iframe.contentDocument?.body
+        if (body) iframe.style.height = `${body.scrollHeight}px`
+      } catch (error) {
+        /* ignore cross-domain errors */
+      }
+    }
+
+    iframe.addEventListener('load', adjustHeight)
+    const timeoutId = setTimeout(adjustHeight, 150)
+    return () => {
+      iframe.removeEventListener('load', adjustHeight)
+      clearTimeout(timeoutId)
+    }
+  }, [previewHtml, showPreview])
 
   const handleDownload = useCallback(
     async (values) => {
@@ -371,7 +396,10 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
               {t('proposalCommon.printTitle')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton color={headerTextColor} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+          <ModalCloseButton
+            color={headerTextColor}
+            aria-label={t('common.ariaLabels.closeModal', 'Close modal')}
+          />
           <ModalBody>
             <Stack spacing={6}>
               <Box borderWidth="1px" borderRadius="lg" p={4}>
@@ -561,6 +589,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                 flex={isMobile ? '1' : 'unset'}
                 minH="44px"
                 fontSize={{ base: 'sm', md: 'md' }}
+                display="flex"
               >
                 <HStack spacing={4} justify="center" width="100%">
                   <Icon as={Eye} boxSize={ICON_BOX_MD} />
@@ -615,26 +644,25 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px">
+        <ModalContent borderRadius={{ base: '0', md: '12px' }} maxH="90vh">
           <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
             <Text fontSize="lg" fontWeight="semibold">
               {t('proposalCommon.previewTitle', 'Quote Preview')}
             </Text>
           </ModalHeader>
-          <ModalCloseButton color={headerTextColor} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
+          <ModalCloseButton
+            color={headerTextColor}
+            aria-label={t('common.ariaLabels.closeModal', 'Close modal')}
+          />
           <ModalBody p={0}>
-            <Box px={previewPadding} py={4} bg={previewContainerBg}>
-              <Box
-                maxH={previewMaxHeight}
-                overflow="auto"
-                bg="white"
-                borderWidth="1px"
-                borderRadius="lg"
-                boxShadow="base"
-                display="flex"
-                justifyContent="center"
-                p={4}
-              >
+            <Box
+              px={previewPadding}
+              py={4}
+              bg={previewContainerBg}
+              maxH={previewMaxHeight}
+              overflow="auto"
+            >
+              <Box display="flex" justifyContent="center">
                 <Box
                   as="iframe"
                   ref={previewIframeRef}
@@ -643,9 +671,13 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
                     previewHtml ||
                     '<html><body style="font-family:sans-serif;padding:2rem;">Loading...</body></html>'
                   }
-                  w={BASE_PAGE_WIDTH_PX}
+                  w="100%"
+                  maxW={`${BASE_PAGE_WIDTH_PX}px`}
                   minH="1120px"
-                  border="none"
+                  border="1px solid"
+                  borderColor="gray.200"
+                  bg="white"
+                  boxShadow="0 4px 6px rgba(0,0,0,0.1)"
                 />
               </Box>
             </Box>

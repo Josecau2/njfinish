@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
+import { normalizeError } from '../../utils/errorUtils'
 
 // Fetch all taxes
 export const fetchTaxes = createAsyncThunk('taxes/fetchTaxes', async (_, { rejectWithValue }) => {
@@ -53,6 +54,7 @@ const taxSlice = createSlice({
   },
   reducers: {},
   extraReducers: (builder) => {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     builder
       // Fetch taxes
       .addCase(fetchTaxes.pending, (state) => {
@@ -65,7 +67,7 @@ const taxSlice = createSlice({
       })
       .addCase(fetchTaxes.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Add tax
@@ -79,7 +81,7 @@ const taxSlice = createSlice({
       })
       .addCase(addTax.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Delete tax
@@ -93,7 +95,7 @@ const taxSlice = createSlice({
       })
       .addCase(deleteTax.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Set default tax
@@ -107,7 +109,7 @@ const taxSlice = createSlice({
       })
       .addCase(setDefaultTax.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
   },
 })

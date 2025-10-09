@@ -1,7 +1,7 @@
 import StandardCard from '../../components/StandardCard'
 import PageContainer from '../../components/PageContainer'
-import { useEffect, useState, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useEffect, useState, useRef, useMemo, lazy, Suspense } from 'react'
+import { useParams } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
 import { useTranslation } from 'react-i18next'
 import {
@@ -68,15 +68,16 @@ import {
 // Removed Swal - using Chakra useToast
 import ItemSelectionContentEdit from '../../components/ItemSelectionContentEdit'
 import FileUploadSection from './CreateProposal/FileUploadSection'
-import PrintProposalModal from '../../components/model/PrintProposalModal'
-import EmailProposalModal from '../../components/model/EmailProposalModal'
-import EmailContractModal from '../../components/model/EmailContractModal'
 import Loader from '../../components/Loader'
 import axiosInstance from '../../helpers/axiosInstance'
 import {
   validateProposalSubTypeRequirements,
   getMissingRequirementMessages
 } from '../../helpers/subTypeValidation'
+
+const PrintProposalModal = lazy(() => import('../../components/model/PrintProposalModal'))
+const EmailProposalModal = lazy(() => import('../../components/model/EmailProposalModal'))
+const EmailContractModal = lazy(() => import('../../components/model/EmailContractModal'))
 
 // Removed Yup validation schema - using simple form validation
 
@@ -103,7 +104,6 @@ const EditProposal = ({
   const decodedId = decodeParam(id)
   const numericId = Number(decodedId)
   const requestId = Number.isFinite(numericId) ? numericId : decodedId
-  const navigate = useNavigate()
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const toast = useToast()
@@ -174,7 +174,17 @@ const EditProposal = ({
   }
 
   // Get user info from store/localStorage
-  const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
+  const storedUserJson = useMemo(() => localStorage.getItem('user'), [])
+  const parsedStoredUser = useMemo(() => {
+    if (!storedUserJson) return null
+    try {
+      return JSON.parse(storedUserJson)
+    } catch (error) {
+      if (import.meta?.env?.DEV) console.error('Failed to parse stored user JSON:', error)
+      return null
+    }
+  }, [storedUserJson])
+  const userInfo = useMemo(() => parsedStoredUser || {}, [parsedStoredUser])
   const isAdmin = userInfo.role === 'Admin' || userInfo.role === 'admin'
   const [initialData, setInitialData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -197,9 +207,10 @@ const EditProposal = ({
   const [customStatusInput, setCustomStatusInput] = useState('')
   // Use manufacturers map from Redux so we can attach full manufacturer data
   const manufacturersByIdMap = useSelector((state) => state.manufacturers.byId)
-  const loggedInUser = JSON.parse(localStorage.getItem('user'))
+  const loggedInUser = parsedStoredUser
   const loggedInUserId = loggedInUser?.userId
   const hasSetInitialVersion = useRef(false)
+  const requestedManufacturerIdsRef = useRef(new Set())
 
   // Check if user is a contractor (should not see manufacturer version names)
   const isContractor =
@@ -226,14 +237,16 @@ const EditProposal = ({
   const isFormDisabled = !!formData?.is_locked || (isAccepted && !isAdmin)
 
   // Debug logging to see current state
-  console.log('🔍 EditProposal Debug:', {
-    'formData.is_locked': formData?.is_locked,
-    'formData.status': formData?.status,
-    userRole: userInfo?.role,
-    isAdmin: isAdmin,
-    isFormDisabled: isFormDisabled,
-    proposal_id: formData?.id,
-  })
+  if (import.meta?.env?.DEV) {
+    console.log('🔍 EditProposal Debug:', {
+      'formData.is_locked': formData?.is_locked,
+      'formData.status': formData?.status,
+      userRole: userInfo?.role,
+      isAdmin: isAdmin,
+      isFormDisabled: isFormDisabled,
+      proposal_id: formData?.id,
+    })
+  }
   // Parse manufacturersData if it's a string
   const parseManufacturersData = (data) => {
     if (!data) return []
@@ -301,54 +314,80 @@ const EditProposal = ({
     }
   }, [initialData])
 
-  // Fetch manufacturers data
-  useEffect(() => {
-    if (formData?.manufacturersData?.length > 0) {
-      // Initialize index; actual selectedVersion will be set when details are ready
-      if (selectedVersionIndex === null) setSelectedVersionIndex(0)
-
-      formData.manufacturersData.forEach((item) => {
-        if (item.manufacturer && !manufacturersByIdMap[item.manufacturer]) {
-          // Don't load full catalog data for quote editing - only manufacturer info needed
-          dispatch(fetchManufacturerById({ id: item.manufacturer, includeCatalog: false }))
-        }
-      })
+  const versionDetails = useMemo(() => {
+    if (!Array.isArray(formData?.manufacturersData)) {
+      return []
     }
-  }, [formData?.manufacturersData, dispatch, manufacturersByIdMap, selectedVersionIndex])
-
-  useEffect(() => {
-    if (!Array.isArray(formData.manufacturersData) || formData.manufacturersData.length === 0)
-      return
-
-    const details = formData.manufacturersData.map((item) => ({
+    return formData.manufacturersData.map((item) => ({
       ...item,
       manufacturerData: manufacturersByIdMap[item.manufacturer],
     }))
-
-    if (details.length === 0) return
-
-    // First-time init
-    if (selectedVersionIndex === null && !hasSetInitialVersion.current) {
-      setSelectedVersionIndex(0)
-      setSelectedVersion(details[0])
-      hasSetInitialVersion.current = true
-      dispatch(setSelectVersionNewEdit(details[0]))
+  }, [formData?.manufacturersData, manufacturersByIdMap])
+  // Fetch manufacturers data while avoiding duplicate network requests
+  useEffect(() => {
+    if (!Array.isArray(formData?.manufacturersData) || formData.manufacturersData.length === 0) {
       return
     }
 
-    // Keep selectedVersion in sync when manufacturer data loads or index changes
-    if (selectedVersionIndex !== null) {
-      const next = details[selectedVersionIndex] || details[0]
-      if (
-        !selectedVersion ||
-        selectedVersion.versionName !== next.versionName ||
-        (!selectedVersion.manufacturerData && next.manufacturerData)
-      ) {
-        setSelectedVersion(next)
-        dispatch(setSelectVersionNewEdit(next))
-      }
+    if (selectedVersionIndex === null) {
+      setSelectedVersionIndex(0)
     }
-  }, [formData.manufacturersData, manufacturersByIdMap, selectedVersionIndex])
+
+    formData.manufacturersData.forEach((item) => {
+      const manufacturerId = item?.manufacturer
+      if (!manufacturerId) return
+
+      if (manufacturersByIdMap[manufacturerId]) {
+        if (requestedManufacturerIdsRef.current.has(manufacturerId)) {
+          requestedManufacturerIdsRef.current.delete(manufacturerId)
+        }
+        return
+      }
+
+      if (requestedManufacturerIdsRef.current.has(manufacturerId)) return
+
+      requestedManufacturerIdsRef.current.add(manufacturerId)
+      dispatch(fetchManufacturerById({ id: manufacturerId, includeCatalog: false }))
+    })
+  }, [formData?.manufacturersData, manufacturersByIdMap, dispatch, selectedVersionIndex])
+
+  useEffect(() => {
+    if (!versionDetails.length) {
+      hasSetInitialVersion.current = false
+      return
+    }
+
+    if (selectedVersionIndex === null && !hasSetInitialVersion.current) {
+      setSelectedVersionIndex(0)
+      hasSetInitialVersion.current = true
+    } else if (selectedVersionIndex !== null && selectedVersionIndex >= versionDetails.length) {
+      setSelectedVersionIndex(0)
+    }
+  }, [selectedVersionIndex, versionDetails])
+
+  useEffect(() => {
+    if (!versionDetails.length) {
+      setSelectedVersion(null)
+      return
+    }
+
+    const targetIndex = selectedVersionIndex ?? 0
+    const next = versionDetails[targetIndex] ?? versionDetails[0]
+    if (!next) return
+
+    const selectedManufacturerId = selectedVersion?.manufacturerData?.id
+    const nextManufacturerId = next.manufacturerData?.id
+
+    if (
+      !selectedVersion ||
+      selectedVersion.versionName !== next.versionName ||
+      selectedVersion.manufacturer !== next.manufacturer ||
+      selectedManufacturerId !== nextManufacturerId
+    ) {
+      setSelectedVersion(next)
+      dispatch(setSelectVersionNewEdit(next))
+    }
+  }, [versionDetails, selectedVersionIndex, selectedVersion, dispatch])
 
   // Update selected version in Redux
   useEffect(() => {
@@ -428,13 +467,7 @@ const EditProposal = ({
     updateFormData({ manufacturersData: [...formData.manufacturersData, copy] })
   }
 
-  const versionDetails =
-    (formData?.manufacturersData || []).map((item) => ({
-      ...item,
-      manufacturerData: manufacturersByIdMap[item.manufacturer],
-    }))
-
-  const selectVersion = versionDetails[selectedVersionIndex] || null
+  const selectVersion = selectedVersion ?? (versionDetails[selectedVersionIndex] || null)
 
   const validateForm = () => {
     const errors = []
@@ -524,6 +557,11 @@ const EditProposal = ({
       const response = await sendFormDataToBackend(payload)
 
       if (response.data.success) {
+        const savedPayload = { ...(response.data?.data || finalData) }
+        if (savedPayload.manufacturersData) {
+          savedPayload.manufacturersData = parseManufacturersData(savedPayload.manufacturersData)
+        }
+
         if (action === 'reject') {
           toast({
             title: t('common.success', 'Success'),
@@ -532,9 +570,6 @@ const EditProposal = ({
             duration: 5000,
             isClosable: true,
           })
-          setTimeout(() => {
-            window.location.reload()
-          }, 1000)
         } else {
           if (import.meta?.env?.DEV) console.log('Quote updated successfully')
           toast({
@@ -544,13 +579,10 @@ const EditProposal = ({
             duration: 5000,
             isClosable: true,
           })
-          const savedData = response.data.data || finalData
-          // Ensure manufacturersData is parsed after save
-          if (savedData.manufacturersData) {
-            savedData.manufacturersData = parseManufacturersData(savedData.manufacturersData)
-          }
-          setFormData(savedData)
         }
+
+        setFormData(savedPayload)
+        setInitialData(savedPayload)
       } else {
         const apiMsg = response.data?.message
         toast({
@@ -1142,17 +1174,32 @@ const EditProposal = ({
       </PageContainer>
 
       {/* Modals */}
-      <PrintProposalModal
-        show={showPrintModal}
-        onClose={() => setShowPrintModal(false)}
-        formData={formData}
-      />
-      <EmailProposalModal
-        show={showEmailModal}
-        onClose={() => setShowEmailModal(false)}
-        formData={formData}
-      />
-      <EmailContractModal show={showContractModal} onClose={() => setShowContractModal(false)} />
+      <Suspense fallback={null}>
+        {showPrintModal && (
+          <PrintProposalModal
+            show={showPrintModal}
+            onClose={() => setShowPrintModal(false)}
+            formData={formData}
+          />
+        )}
+      </Suspense>
+      <Suspense fallback={null}>
+        {showEmailModal && (
+          <EmailProposalModal
+            show={showEmailModal}
+            onClose={() => setShowEmailModal(false)}
+            formData={formData}
+          />
+        )}
+      </Suspense>
+      <Suspense fallback={null}>
+        {showContractModal && (
+          <EmailContractModal
+            show={showContractModal}
+            onClose={() => setShowContractModal(false)}
+          />
+        )}
+      </Suspense>
 
       <Modal
         isOpen={editModalOpen}

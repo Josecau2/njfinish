@@ -51,6 +51,10 @@ const UsersPage = () => {
   const loggedInUser = JSON.parse(localStorage.getItem('user') || '{}')
   const loggedInUserId = loggedInUser?.userId
 
+  // Extract specific loading states
+  const isFetching = loading.fetch
+  const isDeleting = loading.delete
+
   // Delete confirmation dialog
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [deleteUserId, setDeleteUserId] = useState(null)
@@ -285,7 +289,7 @@ const UsersPage = () => {
       )}
 
       {/* Loading State */}
-      {loading && (
+      {isFetching && (
         <StandardCard shadow="sm" borderRadius="lg" mb={6}>
           <CardBody p={16}>
             <Flex direction="column" align="center" justify="center" gap={4}>
@@ -297,7 +301,7 @@ const UsersPage = () => {
       )}
 
       {/* Table */}
-      {!loading && (
+      {!isFetching && (
         <StandardCard
           shadow="sm"
           borderRadius="lg"
@@ -589,7 +593,10 @@ const UsersPage = () => {
                 ml={3}
                 as={motion.button}
                 whileTap={{ scale: 0.98 }}
-               minH="44px">
+                minH="44px"
+                isLoading={isDeleting}
+                loadingText={t('common.deleting', 'Deleting...')}
+              >
                 {t('settings.users.confirm.confirmYes')}
               </Button>
             </AlertDialogFooter>

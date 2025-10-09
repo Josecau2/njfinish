@@ -27,6 +27,60 @@ import { resolveAssetUrl } from '../utils/assetUtils'
 import { CUSTOMIZATION_CONFIG as FALLBACK_APP_CUSTOMIZATION } from '../config/customization'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../constants/iconSizes'
 
+// ButtonLike component - extracted to prevent recreation on every render
+const ButtonLike = ({ children, headerBg, buttonTextColor, ...props }) => (
+  <Button
+    w="full"
+    minH="44px"
+    border="none"
+    _hover={{ bg: headerBg }}
+    _active={{ bg: headerBg }}
+    bg={headerBg}
+    color={buttonTextColor}
+    {...props}
+  >
+    {children}
+  </Button>
+)
+
+// PreviewWrapper component - extracted to prevent recreation on every render
+const PreviewWrapper = ({ children, bgGray50 }) => (
+  <Flex
+    direction={{ base: 'column', lg: 'row' }}
+    minH={{ lg: '75vh' }}
+    borderWidth="1px"
+    borderRadius="lg"
+    boxShadow="lg"
+    overflow="hidden"
+    bg={bgGray50}
+  >
+    {children}
+  </Flex>
+)
+
+// MarketingPanel component - extracted to prevent recreation on every render
+const MarketingPanel = ({ config, marketingColors }) => (
+  <Flex
+    align="center"
+    justify="center"
+    w={{ base: '100%', lg: '50%' }}
+    px={{ base: 6, lg: 12 }}
+    py={{ base: 10, lg: 12 }}
+    bg={config.backgroundColor || 'gray.900'}
+  >
+    <Stack spacing={4} textAlign="center" maxW="md">
+      <Heading size="lg" color={marketingColors.text} fontWeight="bold">
+        {config.rightTitle}
+      </Heading>
+      {config.rightSubtitle && <Text color={marketingColors.subtitle}>{config.rightSubtitle}</Text>}
+      {config.rightTagline && <Text color={marketingColors.subtitle}>{config.rightTagline}</Text>}
+      {config.rightDescription && (
+        <Text color={marketingColors.subtitle}>{config.rightDescription}</Text>
+      )}
+    </Stack>
+  </Flex>
+)
+
 const LoginPreview = ({ config }) => {
   const { t } = useTranslation()
 
@@ -48,10 +102,10 @@ const LoginPreview = ({ config }) => {
     }
   }, [activeView, config.showForgotPassword])
 
-  const headerBg = config.headerBg || "purple.500"
+  const headerBg = config.headerBg || 'purple.500'
   const buttonTextColor = getContrastColor(headerBg)
   const marketingColors = useMemo(
-    () => getOptimalColors(config.backgroundColor || "gray.900"),
+    () => getOptimalColors(config.backgroundColor || 'gray.900'),
     [config.backgroundColor],
   )
   const rawLogo = config.logo || resolvedAppCustomization.logoImage || ''
@@ -83,90 +137,31 @@ const LoginPreview = ({ config }) => {
     return []
   }, [config.requestAccessBenefits])
 
-  const ButtonLike = ({ children, ...props }) => (
-    <Button
-      w="full"
-      minH="44px"
-      border="none"
-      _hover={{ bg: headerBg }}
-      _active={{ bg: headerBg }}
-      bg={headerBg}
-      color={buttonTextColor}
-      {...props}
-    >
-      {children}
-    </Button>
-  )
-
-  const PreviewWrapper = ({ children }) => (
-    <Flex
-      direction={{ base: 'column', lg: 'row' }}
-      minH={{ lg: '75vh' }}
-      borderWidth="1px"
-      borderRadius="lg"
-      boxShadow="lg"
-      overflow="hidden"
-      bg={bgGray50}
-    >
-      {children}
-    </Flex>
-  )
-
-  const MarketingPanel = () => (
-    <Flex
-      align="center"
-      justify="center"
-      w={{ base: '100%', lg: '50%' }}
-      px={{ base: 6, lg: 12 }}
-      py={{ base: 10, lg: 12 }}
-      bg={config.backgroundColor || "gray.900"}
-    >
-      <Stack spacing={4} textAlign="center" maxW="md">
-        <Heading size="lg" color={marketingColors.text} fontWeight="bold">
-          {config.rightTitle}
-        </Heading>
-        {config.rightSubtitle && (
-          <Text color={marketingColors.subtitle}>{config.rightSubtitle}</Text>
-        )}
-        {config.rightTagline && (
-          <Text color={marketingColors.subtitle}>{config.rightTagline}</Text>
-        )}
-        {config.rightDescription && (
-          <Text color={marketingColors.subtitle}>{config.rightDescription}</Text>
-        )}
-      </Stack>
-    </Flex>
-  )
-
   const renderLoginForm = () => (
     <Stack spacing={6} w="full" maxW="400px">
       {brandLogo && (
         <Image
           src={brandLogo}
-          alt='Logo preview'
+          alt="Logo preview"
           h={`${logoHeight}px`}
-          objectFit='contain'
+          objectFit="contain"
           mb={2}
         />
       )}
       <Stack spacing={4}>
-        <Heading size='md'>{config.title}</Heading>
-        <Text color='gray.500'>{config.subtitle}</Text>
+        <Heading size="md">{config.title}</Heading>
+        <Text color="gray.500">{config.subtitle}</Text>
       </Stack>
-      <Stack
-        as='form'
-        spacing={4}
-        onSubmit={(event) => event.preventDefault()}
-      >
+      <Stack as="form" spacing={4} onSubmit={(event) => event.preventDefault()}>
         <FormControl>
-          <FormLabel htmlFor='login-preview-email'>{t('auth.email')}</FormLabel>
-          <Input id='login-preview-email' type='email' isDisabled />
+          <FormLabel htmlFor="login-preview-email">{t('auth.email')}</FormLabel>
+          <Input id="login-preview-email" type="email" isDisabled />
         </FormControl>
         <FormControl>
-          <FormLabel htmlFor='login-preview-password'>{t('auth.password')}</FormLabel>
+          <FormLabel htmlFor="login-preview-password">{t('auth.password')}</FormLabel>
           <InputGroup>
             <Input
-              id='login-preview-password'
+              id="login-preview-password"
               type={showPassword ? 'text' : 'password'}
               isDisabled
             />
@@ -174,7 +169,7 @@ const LoginPreview = ({ config }) => {
               <IconButton
                 minW="44px"
                 minH="44px"
-                variant='ghost'
+                variant="ghost"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                 icon={<Icon as={showPassword ? EyeOff : Eye} boxSize={ICON_BOX_MD} />}
                 onClick={() => setShowPassword((prev) => !prev)}
@@ -183,15 +178,20 @@ const LoginPreview = ({ config }) => {
             </InputRightElement>
           </InputGroup>
         </FormControl>
-        <Flex justify='space-between' align='center' fontSize='sm' color='gray.600'>
-          {config.showKeepLoggedIn && (
-            <Checkbox isDisabled>{t('auth.keepMeLoggedIn')}</Checkbox>
-          )}
+        <Flex justify="space-between" align="center" fontSize="sm" color="gray.600">
+          {config.showKeepLoggedIn && <Checkbox isDisabled>{t('auth.keepMeLoggedIn')}</Checkbox>}
           {config.showForgotPassword && (
-            <Text color='brand.600' fontWeight='semibold'>Forgot password?</Text>
+            <Text color="brand.600" fontWeight="semibold">
+              Forgot password?
+            </Text>
           )}
         </Flex>
-        <ButtonLike aria-label='Sign in (preview only)' isDisabled>
+        <ButtonLike
+          headerBg={headerBg}
+          buttonTextColor={buttonTextColor}
+          aria-label="Sign in (preview only)"
+          isDisabled
+        >
           {t('auth.signIn')}
         </ButtonLike>
       </Stack>
@@ -199,57 +199,63 @@ const LoginPreview = ({ config }) => {
   )
 
   const renderForgotPasswordForm = () => (
-    <Stack spacing={6} w='full' maxW='420px'>
+    <Stack spacing={6} w="full" maxW="420px">
       {brandLogo && (
         <Image
           src={brandLogo}
-          alt='Logo preview'
+          alt="Logo preview"
           h={`${logoHeight}px`}
-          objectFit='contain'
+          objectFit="contain"
           mb={2}
         />
       )}
       <Stack spacing={4}>
-        <Heading size='md'>{t('auth.forgotPassword.title')}</Heading>
-        <Text color='gray.500'>{t('auth.forgotPassword.subtitle')}</Text>
+        <Heading size="md">{t('auth.forgotPassword.title')}</Heading>
+        <Text color="gray.500">{t('auth.forgotPassword.subtitle')}</Text>
       </Stack>
-      <Stack as='form' spacing={4} onSubmit={(event) => event.preventDefault()}>
+      <Stack as="form" spacing={4} onSubmit={(event) => event.preventDefault()}>
         <FormControl>
-          <FormLabel htmlFor='login-preview-forgot-email'>{t('auth.forgotPassword.emailLabel')}</FormLabel>
-          <Input id='login-preview-forgot-email' type='email' isDisabled />
+          <FormLabel htmlFor="login-preview-forgot-email">
+            {t('auth.forgotPassword.emailLabel')}
+          </FormLabel>
+          <Input id="login-preview-forgot-email" type="email" isDisabled />
         </FormControl>
-        <ButtonLike isDisabled>{t('auth.forgotPassword.submit')}</ButtonLike>
+        <ButtonLike headerBg={headerBg} buttonTextColor={buttonTextColor} isDisabled>
+          {t('auth.forgotPassword.submit')}
+        </ButtonLike>
       </Stack>
-      <Text color='gray.500' fontSize='sm'>
+      <Text color="gray.500" fontSize="sm">
         {t('auth.forgotPassword.remember')}{' '}
-        <Text as='span' color='brand.600' fontWeight='semibold'>{t('auth.signIn')}</Text>
+        <Text as="span" color="brand.600" fontWeight="semibold">
+          {t('auth.signIn')}
+        </Text>
       </Text>
     </Stack>
   )
 
   const renderRequestAccessForm = () => (
-    <Stack spacing={6} w='full' maxW='520px'>
+    <Stack spacing={6} w="full" maxW="520px">
       {brandLogo && (
         <Image
           src={brandLogo}
-          alt='Logo preview'
+          alt="Logo preview"
           h={`${logoHeight}px`}
-          objectFit='contain'
+          objectFit="contain"
           mb={2}
         />
       )}
       <Stack spacing={4}>
-        <Heading size='md'>{config.requestAccessTitle || 'Request Access'}</Heading>
+        <Heading size="md">{config.requestAccessTitle || 'Request Access'}</Heading>
         {config.requestAccessSubtitle && (
-          <Text color='gray.500'>{config.requestAccessSubtitle}</Text>
+          <Text color="gray.500">{config.requestAccessSubtitle}</Text>
         )}
         {config.requestAccessDescription && (
-          <Text color='gray.500'>{config.requestAccessDescription}</Text>
+          <Text color="gray.500">{config.requestAccessDescription}</Text>
         )}
       </Stack>
       {benefits.length > 0 && (
-        <Stack spacing={4} fontSize='sm' color='gray.600'>
-          <Text fontWeight='medium'>{t('auth.benefits')}</Text>
+        <Stack spacing={4} fontSize="sm" color="gray.600">
+          <Text fontWeight="medium">{t('auth.benefits')}</Text>
           <Stack spacing={4} pl={2}>
             {benefits.map((item, index) => (
               <Text key={index}>• {item}</Text>
@@ -257,67 +263,57 @@ const LoginPreview = ({ config }) => {
           </Stack>
         </Stack>
       )}
-      <Stack as='form' spacing={4} onSubmit={(event) => event.preventDefault()}>
+      <Stack as="form" spacing={4} onSubmit={(event) => event.preventDefault()}>
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
           <FormControl>
-            <FormLabel htmlFor='login-preview-first'>{t('auth.firstName')}</FormLabel>
-            <Input id='login-preview-first' placeholder='Jane' isDisabled />
+            <FormLabel htmlFor="login-preview-first">{t('auth.firstName')}</FormLabel>
+            <Input id="login-preview-first" placeholder="Jane" isDisabled />
           </FormControl>
           <FormControl>
-            <FormLabel htmlFor='login-preview-last'>{t('auth.lastName')}</FormLabel>
-            <Input id='login-preview-last' placeholder='Doe' isDisabled />
+            <FormLabel htmlFor="login-preview-last">{t('auth.lastName')}</FormLabel>
+            <Input id="login-preview-last" placeholder="Doe" isDisabled />
           </FormControl>
         </SimpleGrid>
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
           <FormControl>
-            <FormLabel htmlFor='login-preview-req-email'>{t('auth.email')}</FormLabel>
-            <Input
-              id='login-preview-req-email'
-              placeholder='dealer@example.com'
-              isDisabled
-            />
+            <FormLabel htmlFor="login-preview-req-email">{t('auth.email')}</FormLabel>
+            <Input id="login-preview-req-email" placeholder="dealer@example.com" isDisabled />
           </FormControl>
           <FormControl>
-            <FormLabel htmlFor='login-preview-req-phone'>{t('auth.phone')}</FormLabel>
-            <Input
-              id='login-preview-req-phone'
-              placeholder='(555) 123-4567'
-              isDisabled
-            />
+            <FormLabel htmlFor="login-preview-req-phone">{t('auth.phone')}</FormLabel>
+            <Input id="login-preview-req-phone" placeholder="(555) 123-4567" isDisabled />
           </FormControl>
         </SimpleGrid>
         <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
           <FormControl>
-            <FormLabel htmlFor='login-preview-req-city'>{t('auth.city')}</FormLabel>
-            <Input id='login-preview-req-city' placeholder='City' isDisabled />
+            <FormLabel htmlFor="login-preview-req-city">{t('auth.city')}</FormLabel>
+            <Input id="login-preview-req-city" placeholder="City" isDisabled />
           </FormControl>
           <FormControl>
-            <FormLabel htmlFor='login-preview-req-state'>{t('auth.state')}</FormLabel>
-            <Input id='login-preview-req-state' placeholder='NJ' isDisabled />
+            <FormLabel htmlFor="login-preview-req-state">{t('auth.state')}</FormLabel>
+            <Input id="login-preview-req-state" placeholder="NJ" isDisabled />
           </FormControl>
           <FormControl>
-            <FormLabel htmlFor='login-preview-req-zip'>{t('auth.zip')}</FormLabel>
-            <Input id='login-preview-req-zip' placeholder='07030' isDisabled />
+            <FormLabel htmlFor="login-preview-req-zip">{t('auth.zip')}</FormLabel>
+            <Input id="login-preview-req-zip" placeholder="07030" isDisabled />
           </FormControl>
         </SimpleGrid>
         <FormControl>
-          <FormLabel htmlFor='login-preview-req-company'>{t('auth.company')}</FormLabel>
-          <Input
-            id='login-preview-req-company'
-            placeholder='Your business name'
-            isDisabled
-          />
+          <FormLabel htmlFor="login-preview-req-company">{t('auth.company')}</FormLabel>
+          <Input id="login-preview-req-company" placeholder="Your business name" isDisabled />
         </FormControl>
         <FormControl>
-          <FormLabel htmlFor='login-preview-req-about'>{t('auth.projectDescription')}</FormLabel>
+          <FormLabel htmlFor="login-preview-req-about">{t('auth.projectDescription')}</FormLabel>
           <Textarea
-            id='login-preview-req-about'
+            id="login-preview-req-about"
             rows={3}
-            placeholder='Share a brief overview'
+            placeholder="Share a brief overview"
             isDisabled
           />
         </FormControl>
-        <ButtonLike isDisabled>{t('auth.submitRequest')}</ButtonLike>
+        <ButtonLike headerBg={headerBg} buttonTextColor={buttonTextColor} isDisabled>
+          {t('auth.submitRequest')}
+        </ButtonLike>
       </Stack>
     </Stack>
   )
@@ -336,13 +332,13 @@ const LoginPreview = ({ config }) => {
 
   return (
     <Stack spacing={6}>
-      <Flex justify='center' wrap='wrap' gap={4}>
+      <Flex justify="center" wrap="wrap" gap={4}>
         {previewOptions.map((option) => (
           <Button
             key={option.key}
-            size='sm'
+            size="sm"
             variant={activeView === option.key ? 'solid' : 'outline'}
-            colorScheme='brand'
+            colorScheme="brand"
             onClick={() => !option.disabled && setActiveView(option.key)}
             isDisabled={option.disabled}
           >
@@ -350,10 +346,10 @@ const LoginPreview = ({ config }) => {
           </Button>
         ))}
       </Flex>
-      <PreviewWrapper>
+      <PreviewWrapper bgGray50={bgGray50}>
         <Flex
-          align='center'
-          justify='center'
+          align="center"
+          justify="center"
           w={{ base: '100%', lg: '50%' }}
           px={{ base: 6, lg: 12 }}
           py={{ base: 10, lg: 12 }}
@@ -361,7 +357,7 @@ const LoginPreview = ({ config }) => {
         >
           {renderActiveView()}
         </Flex>
-        <MarketingPanel />
+        <MarketingPanel config={config} marketingColors={marketingColors} />
       </PreviewWrapper>
     </Stack>
   )

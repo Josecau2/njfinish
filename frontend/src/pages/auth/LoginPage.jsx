@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { getOptimalColors } from '../../utils/colorUtils';
 import BrandLogo from '../../components/BrandLogo';
 import { getBrand, getLoginBrand, getBrandColors } from '../../brand/useBrand';
-import { clearAllTokens, installTokenEverywhere } from '../../utils/authToken';
+import { installTokenEverywhere } from '../../utils/authToken';
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
 import AuthLayout from '../../components/AuthLayout';
 
@@ -127,7 +127,6 @@ const LoginPage = () => {
         throw new Error('Session not established');
       }
 
-      clearAllTokens({ preserveUser: false });
       try { window.localStorage.setItem('__auth_changed__', String(Date.now())); } catch {}
 
       // Install token in memory for components that check getFreshestToken()

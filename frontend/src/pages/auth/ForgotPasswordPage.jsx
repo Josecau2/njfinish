@@ -39,6 +39,30 @@ const ForgotPasswordPage = () => {
   const textGray700 = useColorModeValue('gray.700', 'gray.300')
   const linkBlue = useColorModeValue('blue.600', 'blue.300')
 
+  // Color mode values for layout and UI elements
+  const rightBg = useColorModeValue('gray.50', 'gray.900')
+  const headingColor = useColorModeValue('gray.900', 'white')
+  const subtitleColor = useColorModeValue('gray.600', 'gray.400')
+
+  // Alert colors
+  const successAlertBg = useColorModeValue('green.50', 'green.900')
+  const successAlertBorder = useColorModeValue('green.200', 'green.700')
+  const errorAlertBg = useColorModeValue('red.50', 'red.900')
+  const errorAlertBorder = useColorModeValue('red.200', 'red.700')
+
+  // Form colors
+  const labelColor = useColorModeValue('gray.700', 'gray.300')
+  const inputBg = useColorModeValue('gray.50', 'gray.700')
+  const inputBorder = useColorModeValue('gray.200', 'gray.600')
+  const inputHoverBorder = useColorModeValue('gray.300', 'gray.500')
+  const inputHoverBg = useColorModeValue('white', 'gray.650')
+  const inputFocusBg = useColorModeValue('white', 'gray.700')
+
+  // Border and link colors
+  const dividerBorder = useColorModeValue('gray.100', 'gray.700')
+  const linkColor = useColorModeValue('brand.600', 'brand.300')
+  const linkHoverColor = useColorModeValue('brand.700', 'brand.400')
+
   const [form, setForm] = useState({ ...EMPTY_FORM })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState('')
@@ -71,7 +95,7 @@ const ForgotPasswordPage = () => {
         return
       }
 
-      const response = await axios.post(`${apiUrl}/api/forgot-password`, { email: trimmedEmail })
+      const response = await axios.post(`${apiUrl}/api/auth/forgot-password`, { email: trimmedEmail })
       const data = response?.data || {}
       setMessage(data.message || t('auth.forgotPassword.success'))
       setForm({ ...EMPTY_FORM })
@@ -102,7 +126,7 @@ const ForgotPasswordPage = () => {
       leftContent={leftPanel}
       leftBg={loginBackground}
       leftTextColor={rightPanelColors.text}
-      rightBg={useColorModeValue('gray.50', 'gray.900')}
+      rightBg={rightBg}
       languageSwitcherProps={{ compact: true }}
     >
       <VStack spacing={{ base: 8, md: 10 }} align="stretch" px={{ base: 0, md: 2 }} position="relative" zIndex={2}>
@@ -116,13 +140,13 @@ const ForgotPasswordPage = () => {
             size={{ base: 'xl', md: '2xl' }}
             fontWeight="700"
             letterSpacing="-0.02em"
-            color={useColorModeValue('gray.900', 'white')}
+            color={headingColor}
             mb={3}
           >
             {loginBrand.resetTitle || t('auth.forgotPassword.title')}
           </Heading>
           <Text
-            color={useColorModeValue('gray.600', 'gray.400')}
+            color={subtitleColor}
             fontSize={{ base: 'md', md: 'lg' }}
             fontWeight="400"
             lineHeight="1.6"
@@ -137,9 +161,9 @@ const ForgotPasswordPage = () => {
             borderRadius="xl"
             boxShadow="sm"
             fontSize={{ base: 'sm', md: 'md' }}
-            bg={useColorModeValue('green.50', 'green.900')}
+            bg={successAlertBg}
             border="1px solid"
-            borderColor={useColorModeValue('green.200', 'green.700')}
+            borderColor={successAlertBorder}
           >
             <AlertIcon />
             {message}
@@ -152,9 +176,9 @@ const ForgotPasswordPage = () => {
             borderRadius="xl"
             boxShadow="sm"
             fontSize={{ base: 'sm', md: 'md' }}
-            bg={useColorModeValue('red.50', 'red.900')}
+            bg={errorAlertBg}
             border="1px solid"
-            borderColor={useColorModeValue('red.200', 'red.700')}
+            borderColor={errorAlertBorder}
           >
             <AlertIcon />
             {error}
@@ -169,7 +193,7 @@ const ForgotPasswordPage = () => {
                 fontWeight="600"
                 fontSize={{ base: 'sm', md: 'md' }}
                 mb={2}
-                color={useColorModeValue('gray.700', 'gray.300')}
+                color={labelColor}
                 letterSpacing="tight"
               >
                 {t('auth.email')}
@@ -185,17 +209,17 @@ const ForgotPasswordPage = () => {
                 minH={{ base: '52px', md: '56px' }}
                 borderRadius="xl"
                 fontSize={{ base: 'md', md: 'lg' }}
-                bg={useColorModeValue('gray.50', 'gray.700')}
+                bg={inputBg}
                 border="1px solid"
-                borderColor={useColorModeValue('gray.200', 'gray.600')}
+                borderColor={inputBorder}
                 _hover={{
-                  borderColor: useColorModeValue('gray.300', 'gray.500'),
-                  bg: useColorModeValue('white', 'gray.650'),
+                  borderColor: inputHoverBorder,
+                  bg: inputHoverBg,
                 }}
                 _focus={{
                   borderColor: 'brand.500',
                   boxShadow: '0 0 0 3px rgba(66, 153, 225, 0.1)',
-                  bg: useColorModeValue('white', 'gray.700'),
+                  bg: inputFocusBg,
                 }}
                 transition="all 0.2s"
               />
@@ -234,17 +258,17 @@ const ForgotPasswordPage = () => {
           textAlign="center"
           pt={{ base: 4, md: 2 }}
           borderTop="1px solid"
-          borderColor={useColorModeValue('gray.100', 'gray.700')}
+          borderColor={dividerBorder}
         >
           <Link
             as={RouterLink}
             to="/login"
-            color={useColorModeValue('brand.600', 'brand.300')}
+            color={linkColor}
             fontWeight="600"
             fontSize={{ base: 'sm', md: 'md' }}
             _hover={{
               textDecoration: 'underline',
-              color: useColorModeValue('brand.700', 'brand.400'),
+              color: linkHoverColor,
             }}
             transition="color 0.2s"
           >

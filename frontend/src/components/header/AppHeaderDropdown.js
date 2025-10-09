@@ -17,7 +17,6 @@ import { useNavigate } from 'react-router-dom'
 import { logout } from '../../store/slices/authSlice'
 import axiosInstance from '../../helpers/axiosInstance'
 import { clearAllTokens } from '../../utils/authToken'
-import { clearSessionFlag } from '../../utils/authSession'
 import { forceBrowserCleanup } from '../../utils/browserCleanup'
 import { ICON_SIZE_MD, ICON_SIZE_SM } from '../../constants/iconSizes'
 
@@ -41,7 +40,6 @@ const AppHeaderDropdown = () => {
     } catch {}
 
     clearAllTokens()
-    clearSessionFlag()
     dispatch(logout())
     forceBrowserCleanup()
     setTimeout(() => {

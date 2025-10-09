@@ -19,6 +19,7 @@ const customizationSlice = createSlice({
   name: 'customization',
   initialState,
   reducers: {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     setCustomization: (state, action) => {
       return { ...state, ...action.payload }
     },

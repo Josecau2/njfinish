@@ -36,6 +36,8 @@
       "right": "Der.",
       "both": "Ambos"
     },
+    "items": "elementos",
+    "item": "Artículo",
     "none": "Ninguno",
     "style": "Estilo",
     "loadMore": "Cargar más",
@@ -87,7 +89,6 @@
     "egThreeToSevenDays": "ej., 3-7 días",
     "continue": "Continuar",
     "description": "Descripción",
-    "items": "elementos",
     "saving": "Guardando...",
     "uploading": "Subiendo...",
     "toggleTheme": "Alternar modo de color",
@@ -1492,6 +1493,13 @@
       "catalogItems": "Ítems del catálogo"
     },
     "modifications": "Modificaciones:",
+    "itemColumns": {
+      "assembled": "Ensamblado",
+      "hingeSide": "Lado de bisagra",
+      "exposedSide": "Lado expuesto",
+      "price": "Precio",
+      "assemblyFee": "Costo de ensamblaje"
+    },
     "priceSummary": {
       "cabinets": "Gabinetes y piezas:",
       "assembly": "Tarifa de ensamblaje:",
@@ -1847,7 +1855,8 @@
           "labels": {
             "logoText": "Texto del logo",
             "uploadLogo": "Subir logo",
-            "preview": "Vista previa"
+            "preview": "Vista previa",
+            "removeLogo": "Eliminar logo"
           },
           "placeholders": {
             "logoText": "Ingrese el nombre de su marca"
@@ -1872,6 +1881,10 @@
           },
           "sidebarBadge": "BARRA LATERAL",
           "sidebarTitle": "Barra lateral"
+        },
+        "preview": {
+          "header": "Vista previa",
+          "description": "Vea cómo se verá su personalización en la aplicación"
         }
       },
       "pdf": {
@@ -2856,6 +2869,120 @@
         "costMultiplierHelp": "El multiplicador de costo controla el precio que paga al fabricante. Puede ver su costo en la Cotización cuando desactiva el multiplicador del cliente.",
         "customerMultiplierTitle": "Multiplicador de precio al cliente",
         "customerMultiplierHelp": "El multiplicador de precio al cliente controla el precio al que vende a sus clientes. Esto es lo que determina su ganancia.",
+        "customization": {
+          "pdf": {
+            "headerTitle": "Personalización del diseño PDF",
+            "headerSubtitle": "Personaliza la apariencia de tus cotizaciones PDF",
+            "sections": {
+              "headerFooter": {
+                "title": "Contenido de encabezado y pie de página",
+                "subtitle": "Personaliza el texto del encabezado y pie de página del PDF"
+              },
+              "companyInfo": {
+                "title": "Información de la empresa",
+                "subtitle": "Detalles de tu negocio para documentos PDF"
+              }
+            },
+            "labels": {
+              "headerText": "Texto del encabezado",
+              "footerTerms": "Términos y condiciones del pie de página",
+              "headerColors": "Colores del encabezado",
+              "backgroundColor": "Color de fondo",
+              "textColor": "Color del texto",
+              "companyLogo": "Logo de la empresa",
+              "logoPreview": "Vista previa del logo",
+              "companyName": "Nombre de la empresa",
+              "phoneNumber": "Número de teléfono",
+              "email": "Correo electrónico",
+              "website": "Sitio web",
+              "address": "Dirección del negocio"
+            },
+            "placeholders": {
+              "headerText": "ej., Cotización profesional",
+              "footerTerms": "Ingrese términos y condiciones, términos de pago o notas de pie de página...",
+              "companyName": "Nombre de tu empresa",
+              "phoneNumber": "+1 (555) 123-4567",
+              "email": "info@empresa.com",
+              "website": "https://www.tuempresa.com",
+              "address": "Calle Comercial 123\nCiudad, Estado CP"
+            },
+            "badges": {
+              "colors": "Colores"
+            },
+            "buttons": {
+              "preview": "Vista previa",
+              "saving": "Guardando...",
+              "saveChanges": "Guardar cambios"
+            },
+            "alerts": {
+              "loadFailed": "Error al cargar la configuración de personalización del PDF",
+              "imageType": "Por favor seleccione un archivo de imagen (JPG, PNG, GIF, WebP)",
+              "fileTooLarge": "El archivo es demasiado grande. El tamaño máximo es 5MB",
+              "saveSuccess": "¡Personalización del PDF guardada exitosamente!",
+              "invalidData": "Datos proporcionados no válidos",
+              "serverError": "Ocurrió un error del servidor al guardar",
+              "saveFailedGeneric": "Error al guardar la configuración de personalización"
+            },
+            "validation": {
+              "companyNameRequired": "El nombre de la empresa es obligatorio"
+            },
+            "preview": {
+              "title": "Vista previa del PDF"
+            },
+            "dropHere": "Suelta el archivo aquí para subir",
+            "chooseLogo": "Haz clic para subir el logo de la empresa o arrastra y suelta",
+            "supportedTypes": "Soportado: JPG, PNG, GIF, WebP (máx 5MB)"
+          },
+          "ui": {
+            "headerTitle": "Personalización de la interfaz",
+            "headerSubtitle": "Personaliza la apariencia de tu aplicación",
+            "brandLogo": {
+              "title": "Logo de marca",
+              "subtitle": "Configura el logo y la marca de tu aplicación",
+              "labels": {
+                "logoText": "Texto del logo",
+                "removeLogo": "Eliminar logo"
+              },
+              "placeholders": {
+                "logoText": "NJ Contractors"
+              },
+              "chooseImageCta": "Elegir imagen",
+              "supportedTypes": "JPG, PNG, SVG hasta 5MB",
+              "alt": {
+                "logoPreview": "Vista previa del logo"
+              }
+            },
+            "colorPalette": {
+              "title": "Paleta de colores",
+              "subtitle": "Personaliza los colores de diferentes elementos de la interfaz",
+              "headerTitle": "Encabezado y navegación",
+              "sidebarTitle": "Barra lateral",
+              "labels": {
+                "logoBg": "Fondo del logo",
+                "headerBg": "Fondo del encabezado",
+                "headerText": "Texto del encabezado",
+                "sidebarBg": "Fondo",
+                "sidebarText": "Color del texto"
+              }
+            },
+            "preview": {
+              "header": "Vista previa del encabezado",
+              "description": "Así se verá tu encabezado personalizado"
+            },
+            "buttons": {
+              "saving": "Guardando...",
+              "saveChanges": "Guardar cambios"
+            },
+            "alerts": {
+              "fileTooLarge": "El archivo es demasiado grande. El tamaño máximo es 5MB",
+              "invalidImage": "Por favor selecciona un archivo de imagen válido",
+              "removeLogoSuccess": "Logo eliminado exitosamente",
+              "removeLogoFailed": "Error al eliminar el logo",
+              "saveSuccess": "¡Personalización guardada exitosamente!",
+              "saveFailed": "Error al guardar la personalización"
+            }
+          }
+        },
         "users": {
           "form": {
             "validation": {

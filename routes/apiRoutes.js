@@ -52,47 +52,9 @@ const proposalEmailLimiter = createRateLimiter({
 	keyGenerator: (req) => `proposal-email:${req.user?.id || req.ip}`,
 });
 
-const toPositiveInt = (value, fallback) => {
-	const parsed = parseInt(value, 10);
-	return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-};
-
-const loginLimiter = createRateLimiter({
-	windowMs: toPositiveInt(process.env.AUTH_LOGIN_WINDOW_MS, 10 * 60 * 1000),
-	max: toPositiveInt(process.env.AUTH_LOGIN_MAX_ATTEMPTS, 10),
-	keyGenerator: (req) => {
-		const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
-		return email ? `auth-login:${req.ip}:${email}` : `auth-login:${req.ip}`;
-	},
-});
-
-const signupLimiter = createRateLimiter({
-	windowMs: toPositiveInt(process.env.AUTH_SIGNUP_WINDOW_MS, 60 * 60 * 1000),
-	max: toPositiveInt(process.env.AUTH_SIGNUP_MAX_ATTEMPTS, 20),
-	keyGenerator: (req) => `auth-signup:${req.ip}`,
-});
-
-const forgotPasswordLimiter = createRateLimiter({
-	windowMs: toPositiveInt(process.env.AUTH_FORGOT_WINDOW_MS, 30 * 60 * 1000),
-	max: toPositiveInt(process.env.AUTH_FORGOT_MAX_ATTEMPTS, 5),
-	keyGenerator: (req) => `auth-forgot:${req.ip}`,
-});
-
-const resetPasswordLimiter = createRateLimiter({
-	windowMs: toPositiveInt(process.env.AUTH_RESET_WINDOW_MS, 30 * 60 * 1000),
-	max: toPositiveInt(process.env.AUTH_RESET_MAX_ATTEMPTS, 5),
-	keyGenerator: (req) => {
-		const token = typeof req.body?.token === 'string' ? req.body.token.slice(0, 12) : '';
-		return token ? `auth-reset:${token}` : `auth-reset:${req.ip}`;
-	},
-});
-
-// Auth route
-router.post('/login', loginLimiter, authController.login);
-router.post('/logout', authController.logout);
-router.post('/signup', signupLimiter, authController.signup);
-router.post('/forgot-password', forgotPasswordLimiter, authController.forgotPassword);
-router.post('/reset-password', resetPasswordLimiter, authController.resetPassword);
+// Auth routes are now centralized in /api/auth/* - see routes/authRoutes.js
+// Auth rate limiters have been moved to routes/authRoutes.js
+// Removed duplicate routes to prevent rate limit bypass vulnerability
 router.post('/request-access', requestAccessLimiter, sanitizeBodyStrings(5000), leadController.submitLead);
 router.get('/admin/leads', verifyTokenWithGroup, requirePermission('admin:leads'), leadController.listLeads);
 router.patch('/admin/leads/:id', verifyTokenWithGroup, requirePermission('admin:leads'), validateIdParam('id'), sanitizeBodyStrings(5000), leadController.updateLead);

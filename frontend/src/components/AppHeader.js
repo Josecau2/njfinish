@@ -19,7 +19,7 @@ import {
   setSidebarUnfoldable,
   setSidebarPinned,
 } from '../store/slices/sidebarSlice'
-import { getContrastColor } from '../utils/colorUtils'
+import { getContrastColor, generateSubtleGradient } from '../utils/colorUtils'
 import { ICON_SIZE_MD } from '../constants/iconSizes'
 
 const AppHeader = () => {
@@ -36,6 +36,9 @@ const AppHeader = () => {
   const headerBg = customization.headerBg || 'slate.900'
   const headerTextColor = customization.headerFontColor || getContrastColor(headerBg)
 
+  // Generate gradient only if we have a hex color (not Chakra token)
+  const headerGradient = generateSubtleGradient(customization.headerBg, 'to right')
+
   const hoverBg = useColorModeValue('blackAlpha.100', 'whiteAlpha.200')
 
   // Desktop collapse toggle removed for legacy parity. Sidebar is controlled via hover/pin and mobile menu.
@@ -48,11 +51,15 @@ const AppHeader = () => {
         top="0"
         w="full"
         zIndex="1020"
-        bg={headerBg}
+        bgGradient={headerGradient}
+        bg={headerGradient ? undefined : headerBg}
         color={headerTextColor}
         borderBottom="1px solid"
         borderColor="blackAlpha.200"
         _dark={{ borderColor: 'whiteAlpha.100' }}
+        borderBottomLeftRadius={{ base: 0, md: "12px" }}
+        borderBottomRightRadius={{ base: 0, md: "12px" }}
+        boxShadow="lg"
         h="60px"
         px={{ base: 4, md: 6 }}
         align="center"

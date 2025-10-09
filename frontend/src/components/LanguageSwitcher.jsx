@@ -1,5 +1,13 @@
 import React from 'react'
-import { Button, Menu, MenuButton, MenuItemOption, MenuList, MenuOptionGroup } from '@chakra-ui/react'
+import PropTypes from 'prop-types'
+import {
+  Button,
+  Menu,
+  MenuButton,
+  MenuItemOption,
+  MenuList,
+  MenuOptionGroup,
+} from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
 import { ChevronDown } from 'lucide-react'
@@ -23,11 +31,11 @@ const LanguageSwitcher = ({ compact = false }) => {
   const currentLabel = t(`languages.${current === 'en' ? 'english' : 'spanish'}`)
 
   return (
-    <Menu placement='bottom-end'>
+    <Menu placement="bottom-end">
       <MenuButton
         as={Button}
-        size='sm'
-        minH='44px'
+        size="sm"
+        minH="44px"
         minW={minWidth}
         variant={compact ? 'ghost' : 'outline'}
         rightIcon={<ChevronDown size={14} />}
@@ -35,7 +43,7 @@ const LanguageSwitcher = ({ compact = false }) => {
         {currentLabel}
       </MenuButton>
       <MenuList minW={minWidth}>
-        <MenuOptionGroup type='radio' value={current} onChange={handleChange}>
+        <MenuOptionGroup type="radio" value={current} onChange={handleChange}>
           {languages.map((lang) => (
             <MenuItemOption key={lang} value={lang}>
               {t(`languages.${lang === 'en' ? 'english' : 'spanish'}`)}
@@ -45,6 +53,14 @@ const LanguageSwitcher = ({ compact = false }) => {
       </MenuList>
     </Menu>
   )
+}
+
+LanguageSwitcher.propTypes = {
+  compact: PropTypes.bool,
+}
+
+LanguageSwitcher.defaultProps = {
+  compact: false,
 }
 
 export default LanguageSwitcher

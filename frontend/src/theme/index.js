@@ -1,3 +1,10 @@
+// Import professional component themes
+import { Modal as ModalTheme } from './components/Modal'
+import { Table as TableTheme } from './components/Table'
+import { Input as InputTheme, Textarea as TextareaTheme, Select as SelectTheme } from './components/Input'
+import { Form, FormLabel, FormError } from './components/Form'
+import { Card as CardTheme } from './components/Card'
+
 import { extendTheme } from '@chakra-ui/react'
 
 const NAMED_COLOR_MAP = {
@@ -405,31 +412,17 @@ const inputLikeComponent = {
   },
 }
 
-const Input = inputLikeComponent
-const Select = inputLikeComponent
-const Textarea = inputLikeComponent
+// Use professional input themes
+const Input = InputTheme
+const Select = SelectTheme
+const Textarea = TextareaTheme
 
-const Modal = {
-  baseStyle: {
-    dialog: {
-      borderRadius: { base: '0', md: 'lg' },  // Full-screen on mobile
-      boxShadow: 'lg',
-      border: '1px solid',
-      borderColor: 'border',
-      bg: 'surface',
-      maxH: { base: '100vh', md: '90vh' },
-      my: { base: 0, md: '3.75rem' },
-    },
-    dialogContainer: {
-      alignItems: { base: 'stretch', md: 'center' },
-    },
-    closeButton: {
-      minW: '44px',  // WCAG AA tap target
-      minH: '44px',
-    },
-  },
-}
+// Use professional theme components
+const Modal = ModalTheme
+const Table = TableTheme
+const Card = CardTheme
 
+// Keep legacy drawer and tabs
 const Drawer = {
   baseStyle: {
     dialog: {
@@ -475,80 +468,7 @@ const Badge = {
   },
 }
 
-const Table = {
-  baseStyle: {
-    table: {
-      borderSpacing: 0,
-      width: '100%',
-      minWidth: '100%',
-      tableLayout: { base: 'fixed', xl: 'auto' },
-      border: '1px solid',
-      borderColor: 'borderStrong',
-      boxShadow: '0 2px 8px rgba(15, 23, 42, 0.08)',
-      backgroundColor: 'surface',
-    },
-    thead: {
-      th: {
-        whiteSpace: 'normal',
-        wordBreak: 'break-word',
-      },
-    },
-    tbody: {
-      td: {
-        whiteSpace: 'normal',
-        wordBreak: 'break-word',
-      },
-      tr: {
-        _last: {
-          td: {
-            borderBottomWidth: 0,
-          },
-        },
-      },
-    },
-    th: {
-      fontWeight: '600',
-      textTransform: 'none',
-      fontSize: 'sm',
-      color: 'muted',
-      borderColor: 'border',
-      borderBottomWidth: '1px',
-      whiteSpace: 'normal',
-      wordBreak: 'break-word',
-    },
-    td: {
-      borderColor: 'border',
-      borderBottomWidth: '1px',
-      fontSize: 'sm',
-      whiteSpace: 'normal',
-      wordBreak: 'break-word',
-    },
-  },
-  variants: {
-    simple: {
-      th: {
-        bg: 'brand.50',
-        _dark: {
-          bg: 'gray.800',
-        },
-      },
-      tbody: {
-        tr: {
-          _hover: {
-            bg: 'brand.50',
-            _dark: {
-              bg: 'whiteAlpha.100',
-            },
-          },
-        },
-      },
-    },
-  },
-  defaultProps: {
-    variant: 'simple',
-    size: 'md',
-  },
-}
+// Table theme is imported from components/Table.js
 
 const Menu = {
   baseStyle: {
@@ -656,12 +576,16 @@ const components = {
   Tabs,
   Badge,
   Table,
+  Card,
   Menu,
   IconButton,
   Checkbox,
   Radio,
   Switch,
   Link,
+  Form,
+  FormLabel,
+  FormError,
 }
 
 const buildBaseGlobalStyles = () => ({

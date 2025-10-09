@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Box, Container, Flex, useColorModeValue } from '@chakra-ui/react'
 import LanguageSwitcher from './LanguageSwitcher'
 
@@ -16,6 +17,26 @@ const AuthLayout = ({
   const fallbackLeftBg = useColorModeValue('gray.900', 'gray.900')
   const fallbackLeftText = useColorModeValue('white', 'gray.100')
   const fallbackRightBg = useColorModeValue('white', 'gray.800')
+
+  // Extracted hooks for Box styling
+  const boxBg = useColorModeValue('white', 'gray.800')
+  const boxShadow = useColorModeValue(
+    '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2)',
+  )
+  const borderColorValue = useColorModeValue('gray.200', 'gray.700')
+  const hoverShadow = useColorModeValue(
+    '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+    '0 25px 50px -12px rgba(0, 0, 0, 0.6)',
+  )
+  const gradientBefore = useColorModeValue(
+    'linear-gradient(135deg, rgba(66, 153, 225, 0.15) 0%, rgba(159, 122, 234, 0.15) 50%, rgba(237, 100, 166, 0.15) 100%)',
+    'linear-gradient(135deg, rgba(66, 153, 225, 0.2) 0%, rgba(159, 122, 234, 0.2) 50%, rgba(237, 100, 166, 0.2) 100%)',
+  )
+  const gradientAfter = useColorModeValue(
+    'linear-gradient(135deg, rgba(66, 153, 225, 0.4), rgba(159, 122, 234, 0.4), rgba(237, 100, 166, 0.4))',
+    'linear-gradient(135deg, rgba(66, 153, 225, 0.5), rgba(159, 122, 234, 0.5), rgba(237, 100, 166, 0.5))',
+  )
 
   return (
     <Flex minH="100vh" direction={{ base: 'column', lg: 'row' }}>
@@ -52,22 +73,16 @@ const AuthLayout = ({
         <Container maxW="md" p={0} {...rightContainerProps}>
           <Box
             position="relative"
-            bg={useColorModeValue('white', 'gray.800')}
+            bg={boxBg}
             borderRadius="3xl"
             p={{ base: 8, md: 10 }}
             mt={{ base: 12, md: 0 }}
-            boxShadow={useColorModeValue(
-              '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-              '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2)'
-            )}
+            boxShadow={boxShadow}
             border="1px solid"
-            borderColor={useColorModeValue('gray.200', 'gray.700')}
+            borderColor={borderColorValue}
             transition="all 0.3s ease-in-out"
             _hover={{
-              boxShadow: useColorModeValue(
-                '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                '0 25px 50px -12px rgba(0, 0, 0, 0.6)'
-              ),
+              boxShadow: hoverShadow,
               transform: 'translateY(-2px)',
             }}
             _before={{
@@ -78,10 +93,7 @@ const AuthLayout = ({
               right: '-2px',
               bottom: '-2px',
               borderRadius: '3xl',
-              background: useColorModeValue(
-                'linear-gradient(135deg, rgba(66, 153, 225, 0.15) 0%, rgba(159, 122, 234, 0.15) 50%, rgba(237, 100, 166, 0.15) 100%)',
-                'linear-gradient(135deg, rgba(66, 153, 225, 0.2) 0%, rgba(159, 122, 234, 0.2) 50%, rgba(237, 100, 166, 0.2) 100%)'
-              ),
+              background: gradientBefore,
               zIndex: -1,
               opacity: 0.6,
               filter: 'blur(12px)',
@@ -92,10 +104,7 @@ const AuthLayout = ({
               inset: 0,
               borderRadius: '3xl',
               padding: '2px',
-              background: useColorModeValue(
-                'linear-gradient(135deg, rgba(66, 153, 225, 0.4), rgba(159, 122, 234, 0.4), rgba(237, 100, 166, 0.4))',
-                'linear-gradient(135deg, rgba(66, 153, 225, 0.5), rgba(159, 122, 234, 0.5), rgba(237, 100, 166, 0.5))'
-              ),
+              background: gradientAfter,
               WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
               WebkitMaskComposite: 'xor',
               maskComposite: 'exclude',
@@ -109,6 +118,29 @@ const AuthLayout = ({
       </Flex>
     </Flex>
   )
+}
+
+AuthLayout.propTypes = {
+  leftContent: PropTypes.node,
+  leftBg: PropTypes.string,
+  leftTextColor: PropTypes.string,
+  leftProps: PropTypes.object,
+  rightBg: PropTypes.string,
+  children: PropTypes.node.isRequired,
+  showLanguageSwitcher: PropTypes.bool,
+  languageSwitcherProps: PropTypes.object,
+  rightContainerProps: PropTypes.object,
+}
+
+AuthLayout.defaultProps = {
+  leftContent: null,
+  leftBg: null,
+  leftTextColor: null,
+  leftProps: {},
+  rightBg: null,
+  showLanguageSwitcher: true,
+  languageSwitcherProps: {},
+  rightContainerProps: {},
 }
 
 export default AuthLayout

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
+import { normalizeError } from '../../utils/errorUtils'
 
 // Fetch all user groups
 export const fetchUsers = createAsyncThunk(
@@ -103,6 +104,7 @@ const userGroupSlice = createSlice({
   },
   reducers: {},
   extraReducers: (builder) => {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     builder
       // Fetch all user groups
       .addCase(fetchUsers.pending, (state) => {
@@ -118,7 +120,7 @@ const userGroupSlice = createSlice({
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Fetch user multipliers
@@ -132,7 +134,7 @@ const userGroupSlice = createSlice({
       })
       .addCase(fetchUserMultipliers.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Fetch one
@@ -147,7 +149,7 @@ const userGroupSlice = createSlice({
       })
       .addCase(fetchUserById.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Add
@@ -158,9 +160,7 @@ const userGroupSlice = createSlice({
         state.list.push(action.payload)
       })
       .addCase(addUser.rejected, (state, action) => {
-        const payload = action.payload
-        state.error =
-          typeof payload === 'string' ? payload : payload?.message || 'Failed to add user'
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Update
@@ -174,7 +174,7 @@ const userGroupSlice = createSlice({
         if (i2 !== -1) state.allGroups[i2] = { ...state.allGroups[i2], ...updated }
       })
       .addCase(updateUser.rejected, (state, action) => {
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Delete
@@ -183,7 +183,7 @@ const userGroupSlice = createSlice({
         state.allGroups = state.allGroups.filter((user) => user.id !== action.payload)
       })
       .addCase(deleteUser.rejected, (state, action) => {
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
   },
 })

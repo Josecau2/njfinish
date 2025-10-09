@@ -211,7 +211,12 @@
       "Bash(do sed -i 's/overflow=\"\"hidden\"\"//' \"$file\")",
       "Bash(cd:*)",
       "Bash(powershell:*)",
-      "Bash(npm audit:*)"
+      "Bash(npm audit:*)",
+      "Bash(rm:*)",
+      "Bash(timeout 8 npx vite)",
+      "Bash(timeout 5 npx vite)",
+      "Read(//c//**)",
+      "Bash(cp:*)"
     ],
     "deny": [],
     "ask": []

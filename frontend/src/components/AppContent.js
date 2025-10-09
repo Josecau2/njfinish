@@ -34,13 +34,7 @@ const AppContent = () => {
   const exit = prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -12 }
 
   return (
-    <Box
-      w="full"
-      maxW="100%"
-      mx="auto"
-      px={{ base: 2, md: 3, lg: 4, xl: 6 }}
-      overflowX="hidden"
-    >
+    <Box w="full" maxW="100%" mx="auto" px={{ base: 2, md: 3, lg: 4, xl: 6 }} overflowX="hidden">
       <Suspense
         fallback={
           <Center py={10}>
@@ -64,6 +58,7 @@ const AppContent = () => {
                           permission={route.permission}
                           module={route.module}
                           adminOnly={route.adminOnly}
+                          contractorBlock={route.contractorBlock}
                         >
                           <Box
                             as={motion.div}
@@ -84,9 +79,7 @@ const AppContent = () => {
                 )
               )
             })}
-            {import.meta.env.DEV && (
-              <Route path="__audit__/*" element={<AuditRoutes />} />
-            )}
+            {import.meta.env.DEV && <Route path="__audit__/*" element={<AuditRoutes />} />}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AnimatePresence>

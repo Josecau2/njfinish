@@ -206,6 +206,107 @@ export const useDynamicColors = (customization) => {
   }
 }
 
+/**
+ * Check if a color is a hex color (not a Chakra token)
+ * @param {string} color - Color string
+ * @returns {boolean} - True if hex color
+ */
+export const isHexColor = (color) => {
+  if (!color) return false
+  return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)
+}
+
+/**
+ * Convert hex color to RGB object
+ * @param {string} hex - Hex color string (e.g., '#ffffff')
+ * @returns {object} - Object with r, g, b values (0-255)
+ */
+export const hexToRgb = (hex) => {
+  const cleanHex = hex.replace('#', '')
+  return {
+    r: parseInt(cleanHex.substr(0, 2), 16),
+    g: parseInt(cleanHex.substr(2, 2), 16),
+    b: parseInt(cleanHex.substr(4, 2), 16),
+  }
+}
+
+/**
+ * Convert RGB values to hex color
+ * @param {number} r - Red value (0-255)
+ * @param {number} g - Green value (0-255)
+ * @param {number} b - Blue value (0-255)
+ * @returns {string} - Hex color string
+ */
+export const rgbToHex = (r, g, b) => {
+  const toHex = (n) => {
+    const hex = Math.round(Math.max(0, Math.min(255, n))).toString(16)
+    return hex.length === 1 ? '0' + hex : hex
+  }
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+}
+
+/**
+ * Adjust color brightness by a factor
+ * @param {string} hex - Hex color string
+ * @param {number} factor - Brightness factor (< 1 = darker, > 1 = lighter)
+ * @returns {string} - Adjusted hex color string
+ */
+export const adjustBrightness = (hex, factor) => {
+  const rgb = hexToRgb(hex)
+  return rgbToHex(rgb.r * factor, rgb.g * factor, rgb.b * factor)
+}
+
+/**
+ * Generate a gradient from a single color (theme-aware)
+ * Creates a gradient with lighter and darker variations of the color
+ * Only works with hex colors - returns undefined for Chakra tokens
+ * @param {string} color - Hex color string or Chakra token
+ * @param {string} direction - CSS gradient direction (default: 'to bottom right')
+ * @param {object} options - Gradient options
+ * @param {number} options.lightFactor - Factor for lighter color (default: 1.2)
+ * @param {number} options.darkFactor - Factor for darker color (default: 0.85)
+ * @returns {string|undefined} - CSS linear-gradient string or undefined for non-hex colors
+ */
+export const generateGradientFromColor = (color, direction = 'to bottom right', options = {}) => {
+  // Return undefined for non-hex colors (Chakra tokens) - let Chakra handle them
+  if (!color || !isHexColor(color)) return undefined
+
+  const { lightFactor = 1.2, darkFactor = 0.85 } = options
+
+  const lighterColor = adjustBrightness(color, lightFactor)
+  const darkerColor = adjustBrightness(color, darkFactor)
+
+  return `linear-gradient(${direction}, ${lighterColor}, ${color}, ${darkerColor})`
+}
+
+/**
+ * Generate a subtle gradient from a single color (less contrast, theme-aware)
+ * @param {string} color - Hex color string or Chakra token
+ * @param {string} direction - CSS gradient direction (default: 'to bottom right')
+ * @returns {string|undefined} - CSS linear-gradient string or undefined for non-hex colors
+ */
+export const generateSubtleGradient = (color, direction = 'to bottom right') => {
+  if (!isHexColor(color)) return undefined
+  return generateGradientFromColor(color, direction, {
+    lightFactor: 1.1,
+    darkFactor: 0.95,
+  })
+}
+
+/**
+ * Generate a vibrant gradient from a single color (more contrast, theme-aware)
+ * @param {string} color - Hex color string or Chakra token
+ * @param {string} direction - CSS gradient direction (default: 'to bottom right')
+ * @returns {string|undefined} - CSS linear-gradient string or undefined for non-hex colors
+ */
+export const generateVibrantGradient = (color, direction = 'to bottom right') => {
+  if (!isHexColor(color)) return undefined
+  return generateGradientFromColor(color, direction, {
+    lightFactor: 1.3,
+    darkFactor: 0.75,
+  })
+}
+
 export default {
   calculateLuminance,
   getContrastColor,
@@ -214,4 +315,11 @@ export default {
   generateDynamicCSSProperties,
   applyDynamicTheme,
   useDynamicColors,
+  isHexColor,
+  hexToRgb,
+  rgbToHex,
+  adjustBrightness,
+  generateGradientFromColor,
+  generateSubtleGradient,
+  generateVibrantGradient,
 }

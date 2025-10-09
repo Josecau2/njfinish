@@ -27,6 +27,7 @@ import ShowroomModeToggle from './showroom/ShowroomModeToggle'
 import { resolveBrandAssetUrl } from '../utils/brandAssets'
 import { isAdmin } from '../helpers/permissions'
 import { ICON_BOX_MD } from '../constants/iconSizes'
+import { generateSubtleGradient } from '../utils/colorUtils'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -70,9 +71,6 @@ const AppSidebar = () => {
   const defaultSidebarColor = useColorModeValue('gray.800', 'slate.50')
   const overlayColor = useColorModeValue('blackAlpha.400', 'blackAlpha.600')
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100')
-  const pinButtonColor = useColorModeValue('gray.600', 'whiteAlpha.800')
-  const pinButtonHoverBg = useColorModeValue('gray.100', 'whiteAlpha.100')
-  const pinButtonBorderColor = useColorModeValue('gray.300', 'whiteAlpha.300')
 
   const isDesktop = useBreakpointValue({ base: false, lg: true })
   // Mobile is NEVER collapsed - always show full nav with icons + labels
@@ -80,6 +78,14 @@ const AppSidebar = () => {
 
   const sidebarBg = customization.sidebarBg || defaultSidebarBg
   const sidebarColor = customization.sidebarFontColor || defaultSidebarColor
+
+  // Pin button uses sidebar colors (not hardcoded gray)
+  const pinButtonColor = sidebarColor
+  const pinButtonHoverBg = useColorModeValue('blackAlpha.50', 'whiteAlpha.100')
+  const pinButtonBorderColor = borderColor
+
+  // Generate gradient only if we have a hex color (not Chakra token)
+  const sidebarGradient = generateSubtleGradient(customization.sidebarBg, 'to bottom')
 
   const resolvedLogo = resolveBrandAssetUrl(customization.logoImage)
 
@@ -128,12 +134,16 @@ const AppSidebar = () => {
       h="100vh"
       w={{
         base: "100%",  // Mobile: full width of drawer (280px)
-        lg: collapsed ? "56px" : "256px"  // Desktop: responsive to collapsed state
+        lg: collapsed ? "72px" : "256px"  // Desktop: 72px collapsed for better icon centering
       }}
-      bg={sidebarBg}
+      bgGradient={sidebarGradient}
+      bg={sidebarGradient ? undefined : sidebarBg}
       color={sidebarColor}
       borderRight="1px solid"
       borderRightColor={borderColor}
+      borderTopRightRadius={{ base: 0, lg: "16px" }}
+      borderBottomRightRadius={{ base: 0, lg: "16px" }}
+      boxShadow="2xl"
       role="navigation"
       transition="width 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
       overflow="hidden"
@@ -233,12 +243,12 @@ const AppSidebar = () => {
         p={2}
       >
         {/* Footer buttons row - both buttons side by side when expanded */}
-        <Flex align="center" justify="space-between" w="100%" gap={2}>
+        <Flex align="center" justify={collapsed ? "center" : "space-between"} w="100%" gap={2}>
           {/* Showroom Mode Toggle - Admin only */}
           {isAdmin(user) && !collapsed ? (
             <ShowroomModeToggle compact collapsed={collapsed} />
           ) : (
-            <Box flex="1" />
+            !collapsed && <Box flex="1" />
           )}
 
           {/* Pin button */}

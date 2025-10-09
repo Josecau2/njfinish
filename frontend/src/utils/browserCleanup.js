@@ -2,12 +2,34 @@
 
 export function forceBrowserCleanup() {
   try {
-    // Clear all storage
+    // Define auth-related keys to clear
+    const authKeys = [
+      'user',
+      'token',
+      'session_active',
+      '__auth_logout__',
+      '__auth_changed__',
+      'auth_redirect_count',
+      'return_to',
+      'logout_reason',
+    ]
+
+    // Clear only auth-related localStorage keys
     if (typeof localStorage !== 'undefined') {
-      localStorage.clear()
+      authKeys.forEach((key) => {
+        try {
+          localStorage.removeItem(key)
+        } catch {}
+      })
     }
+
+    // Clear only auth-related sessionStorage keys
     if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.clear()
+      authKeys.forEach((key) => {
+        try {
+          sessionStorage.removeItem(key)
+        } catch {}
+      })
     }
 
     // Clear all cookies by setting them to expire
@@ -84,22 +106,51 @@ export function forcePageReload() {
 export function addLogoutListener() {
   // Listen for logout events from other tabs
   if (typeof window !== 'undefined') {
-    const handleStorageChange = (e) => {
-      if (e.key === '__auth_logout__' && e.newValue) {
-        // Another tab logged out, force cleanup
-        forceBrowserCleanup()
-        // Avoid reload loop if already on login page
-        if (window.location.pathname !== '/login') {
-          forcePageReload()
+    // Use BroadcastChannel API if available (modern browsers)
+    if ('BroadcastChannel' in window) {
+      const logoutChannel = new BroadcastChannel('auth_logout_channel')
+
+      logoutChannel.onmessage = (event) => {
+        if (event.data.type === 'LOGOUT') {
+          // Another tab logged out, force cleanup
+          forceBrowserCleanup()
+          // Avoid reload loop if already on login page
+          if (window.location.pathname !== '/login') {
+            forcePageReload()
+          }
         }
       }
-    }
 
-    window.addEventListener('storage', handleStorageChange)
+      // Cleanup on window unload
+      const handleBeforeUnload = () => {
+        logoutChannel.close()
+      }
+      window.addEventListener('beforeunload', handleBeforeUnload)
 
-    // Return cleanup function
-    return () => {
-      window.removeEventListener('storage', handleStorageChange)
+      // Return cleanup function
+      return () => {
+        logoutChannel.close()
+        window.removeEventListener('beforeunload', handleBeforeUnload)
+      }
+    } else {
+      // Fallback to localStorage events for older browsers
+      const handleStorageChange = (e) => {
+        if (e.key === '__auth_logout__' && e.newValue) {
+          // Another tab logged out, force cleanup
+          forceBrowserCleanup()
+          // Avoid reload loop if already on login page
+          if (window.location.pathname !== '/login') {
+            forcePageReload()
+          }
+        }
+      }
+
+      window.addEventListener('storage', handleStorageChange)
+
+      // Return cleanup function
+      return () => {
+        window.removeEventListener('storage', handleStorageChange)
+      }
     }
   }
 

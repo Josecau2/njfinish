@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
+import { normalizeError } from '../../utils/errorUtils'
 
 // Fetch all locations
 export const fetchLocations = createAsyncThunk(
@@ -76,6 +77,7 @@ const locationSlice = createSlice({
   },
   reducers: {},
   extraReducers: (builder) => {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     builder
       // Fetch all
       .addCase(fetchLocations.pending, (state) => {
@@ -88,7 +90,7 @@ const locationSlice = createSlice({
       })
       .addCase(fetchLocations.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Fetch one
@@ -103,7 +105,7 @@ const locationSlice = createSlice({
       })
       .addCase(fetchLocationById.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Add
@@ -114,7 +116,7 @@ const locationSlice = createSlice({
         state.list.push(action.payload)
       })
       .addCase(addLocation.rejected, (state, action) => {
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Update
@@ -125,7 +127,7 @@ const locationSlice = createSlice({
         }
       })
       .addCase(updateLocation.rejected, (state, action) => {
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       // Delete
@@ -133,7 +135,7 @@ const locationSlice = createSlice({
         state.list = state.list.filter((loc) => loc.id !== action.payload)
       })
       .addCase(deleteLocation.rejected, (state, action) => {
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
   },
 })

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
+import { normalizeError } from '../../utils/errorUtils'
 
 export const fetchMultiManufacturers = createAsyncThunk(
   'multiManufacturer/fetchManufacturers',
@@ -58,6 +59,7 @@ const manufacturersSlice = createSlice({
   },
   reducers: {},
   extraReducers: (builder) => {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     builder
       .addCase(fetchMultiManufacturers.pending, (state) => {
         state.loading = true
@@ -69,7 +71,7 @@ const manufacturersSlice = createSlice({
       })
       .addCase(fetchMultiManufacturers.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message
+        state.error = normalizeError(action.payload || action.error)
       })
       .addCase(updateManufacturerStatus.pending, (state) => {
         state.error = null
@@ -82,7 +84,7 @@ const manufacturersSlice = createSlice({
         }
       })
       .addCase(updateManufacturerStatus.rejected, (state, action) => {
-        state.error = action.payload || 'Failed to update manufacturer status'
+        state.error = normalizeError(action.payload || action.error)
       })
       .addCase(updateMultiManufacturer.pending, (state) => {
         state.error = null
@@ -95,7 +97,7 @@ const manufacturersSlice = createSlice({
         }
       })
       .addCase(updateMultiManufacturer.rejected, (state, action) => {
-        state.error = action.payload || 'Failed to update manufacturer'
+        state.error = normalizeError(action.payload || action.error)
       })
       .addCase(createMultiManufacturer.pending, (state) => {
         state.error = null
@@ -104,7 +106,7 @@ const manufacturersSlice = createSlice({
         state.list.push(action.payload.manufacturer)
       })
       .addCase(createMultiManufacturer.rejected, (state, action) => {
-        state.error = action.payload || 'Failed to create manufacturer'
+        state.error = normalizeError(action.payload || action.error)
       })
   },
 })

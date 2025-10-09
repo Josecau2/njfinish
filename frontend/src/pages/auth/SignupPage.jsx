@@ -71,7 +71,7 @@ const SignupPage = () => {
     setIsSubmitting(true)
 
     try {
-      await axios.post(`${apiUrl}/api/signup`, formData)
+      await axios.post(`${apiUrl}/api/auth/signup`, formData)
       setSuccess(t('auth.signUp.success'))
       setFormData({ username: '', email: '', password: '' })
       setShowPassword(false)

@@ -1,5 +1,5 @@
-import { CUSTOMIZATION_CONFIG } from "../config/customization"
-import { LOGIN_CUSTOMIZATION } from "../config/loginCustomization"
+import { CUSTOMIZATION_CONFIG } from '../config/customization.js'
+import { LOGIN_CUSTOMIZATION } from '../config/loginCustomization.js'
 
 export function buildBrandFromGlobals() {
   try {

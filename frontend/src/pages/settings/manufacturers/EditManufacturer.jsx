@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Box,
   Tab,
@@ -55,32 +55,40 @@ const EditManufacturer = () => {
 
   const tabColumns = useBreakpointValue({ base: 'repeat(2, minmax(0, 1fr))', md: 'none' })
 
-  const tabs = [
-    {
-      label: t('settings.manufacturers.tabs.editDetails', 'Edit Manufacturer Details'),
-      render: () => <EditManufacturerTab manufacturer={manufacturer} id={id} />,
-    },
-    {
-      label: t('settings.manufacturers.tabs.settings', 'Settings'),
-      render: () => <SettingsTab manufacturer={manufacturer} />,
-    },
-    {
-      label: t('settings.manufacturers.tabs.catalogMapping', 'Catalog Mapping'),
-      render: () => <CatalogMappingTab manufacturer={manufacturer} id={id} />,
-    },
-    {
-      label: t('settings.manufacturers.tabs.stylePictures', 'Style Pictures'),
-      render: () => <StylePicturesTab manufacturer={manufacturer} />,
-    },
-    {
-      label: t('settings.manufacturers.tabs.typePictures', 'Type Pictures'),
-      render: () => <TypesTab manufacturer={manufacturer} />,
-    },
-    {
-      label: t('settings.manufacturers.tabs.filesHistory', 'Files & History'),
-      render: () => <FilesHistoryTab manufacturer={manufacturer} />,
-    },
-  ]
+  const tabs = useMemo(() => (
+    [
+      {
+        key: 'details',
+        label: t('settings.manufacturers.tabs.editDetails', 'Edit Manufacturer Details'),
+        render: () => <EditManufacturerTab manufacturer={manufacturer} id={id} />,
+      },
+      {
+        key: 'settings',
+        label: t('settings.manufacturers.tabs.settings', 'Settings'),
+        render: () => <SettingsTab manufacturer={manufacturer} />,
+      },
+      {
+        key: 'catalogMapping',
+        label: t('settings.manufacturers.tabs.catalogMapping', 'Catalog Mapping'),
+        render: () => <CatalogMappingTab manufacturer={manufacturer} id={id} />,
+      },
+      {
+        key: 'stylePictures',
+        label: t('settings.manufacturers.tabs.stylePictures', 'Style Pictures'),
+        render: () => <StylePicturesTab manufacturer={manufacturer} />,
+      },
+      {
+        key: 'typePictures',
+        label: t('settings.manufacturers.tabs.typePictures', 'Type Pictures'),
+        render: () => <TypesTab manufacturer={manufacturer} />,
+      },
+      {
+        key: 'filesHistory',
+        label: t('settings.manufacturers.tabs.filesHistory', 'Files & History'),
+        render: () => <FilesHistoryTab manufacturer={manufacturer} />,
+      },
+    ]
+  ), [id, manufacturer, t])
 
   return (
     <Box>
@@ -162,7 +170,7 @@ const EditManufacturer = () => {
           }}
         >
           {tabs.map((tab) => (
-            <Tab key={tab.label} justifyContent="center">
+            <Tab key={tab.key} justifyContent="center">
               {tab.label}
             </Tab>
           ))}
@@ -170,7 +178,7 @@ const EditManufacturer = () => {
 
         <TabPanels mt={{ base: 4, md: 6 }}>
           {tabs.map((tab) => (
-            <TabPanel key={tab.label} px={0}>
+            <TabPanel key={tab.key} px={0}>
               {tab.render()}
             </TabPanel>
           ))}

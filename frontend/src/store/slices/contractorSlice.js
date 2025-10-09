@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
+import { normalizeError } from '../../utils/errorUtils'
 
 export const fetchContractors = createAsyncThunk(
   'contractors/fetchContractors',
@@ -92,6 +93,7 @@ const contractorSlice = createSlice({
     },
   },
   reducers: {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     clearSelectedContractor: (state) => {
       state.selectedContractor = null
     },
@@ -105,6 +107,7 @@ const contractorSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     builder
       // Fetch contractors list
       .addCase(fetchContractors.pending, (state) => {
@@ -118,7 +121,7 @@ const contractorSlice = createSlice({
       })
       .addCase(fetchContractors.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload || action.error.message
+        state.error = normalizeError(action.payload || action.error)
       })
       // Fetch single contractor
       .addCase(fetchContractor.pending, (state) => {
@@ -131,7 +134,7 @@ const contractorSlice = createSlice({
       })
       .addCase(fetchContractor.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload || action.error.message
+        state.error = normalizeError(action.payload || action.error)
       })
       // Fetch contractor proposals
       .addCase(fetchContractorProposals.pending, (state) => {
@@ -145,7 +148,7 @@ const contractorSlice = createSlice({
       })
       .addCase(fetchContractorProposals.rejected, (state, action) => {
         state.contractorProposals.loading = false
-        state.contractorProposals.error = action.error.message
+        state.contractorProposals.error = normalizeError(action.payload || action.error)
       })
       // Fetch contractor customers
       .addCase(fetchContractorCustomers.pending, (state) => {
@@ -159,7 +162,7 @@ const contractorSlice = createSlice({
       })
       .addCase(fetchContractorCustomers.rejected, (state, action) => {
         state.contractorCustomers.loading = false
-        state.contractorCustomers.error = action.error.message
+        state.contractorCustomers.error = normalizeError(action.payload || action.error)
       })
       // Fetch proposal details
       .addCase(fetchProposalDetails.pending, (state) => {
@@ -172,7 +175,7 @@ const contractorSlice = createSlice({
       })
       .addCase(fetchProposalDetails.rejected, (state, action) => {
         state.proposalDetails.loading = false
-        state.proposalDetails.error = action.error.message
+        state.proposalDetails.error = normalizeError(action.payload || action.error)
       })
   },
 })

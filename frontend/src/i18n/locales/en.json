@@ -37,6 +37,7 @@
       "both": "B"
     },
     "items": "items",
+    "item": "Item",
     "none": "None",
     "style": "Style",
     "loadMore": "Load more",
@@ -1788,6 +1789,13 @@
       "catalogItems": "Catalog Items"
     },
     "modifications": "Modifications:",
+    "itemColumns": {
+      "assembled": "Assembled",
+      "hingeSide": "Hinge Side",
+      "exposedSide": "Exposed Side",
+      "price": "Price",
+      "assemblyFee": "Assembly Fee"
+    },
     "priceSummary": {
       "cabinets": "Cabinets & Parts:",
       "assembly": "Assembly fee:",
@@ -2143,7 +2151,8 @@
           "labels": {
             "logoText": "Logo Text",
             "uploadLogo": "Upload Logo",
-            "preview": "Preview"
+            "preview": "Preview",
+            "removeLogo": "Remove Logo"
           },
           "placeholders": {
             "logoText": "Enter your brand name"
@@ -2168,6 +2177,10 @@
           },
           "sidebarBadge": "SIDEBAR",
           "sidebarTitle": "Sidebar"
+        },
+        "preview": {
+          "header": "Preview",
+          "description": "See how your customization will look in the application"
         }
       },
       "users": {
@@ -3208,7 +3221,121 @@
         "costMultiplierTitle": "Your cost multiplier",
         "costMultiplierHelp": "Cost multiplier controls the price you pay to manufacturer. You can see your cost in Proposal when you turn off Customer multiplier.",
         "customerMultiplierTitle": "Customer price multiplier",
-        "customerMultiplierHelp": "Customer price multiplier controls the price at which you sell to your customers. This is what determines your profit."
+        "customerMultiplierHelp": "Customer price multiplier controls the price at which you sell to your customers. This is what determines your profit.",
+        "customization": {
+          "pdf": {
+            "headerTitle": "PDF Layout Customization",
+            "headerSubtitle": "Customize the appearance of your PDF quotes",
+            "sections": {
+              "headerFooter": {
+                "title": "Header & Footer Content",
+                "subtitle": "Customize PDF header and footer text"
+              },
+              "companyInfo": {
+                "title": "Company Information",
+                "subtitle": "Your business details for PDF documents"
+              }
+            },
+            "labels": {
+              "headerText": "Header Text",
+              "footerTerms": "Footer Terms & Conditions",
+              "headerColors": "Header Colors",
+              "backgroundColor": "Background Color",
+              "textColor": "Text Color",
+              "companyLogo": "Company Logo",
+              "logoPreview": "Logo Preview",
+              "companyName": "Company Name",
+              "phoneNumber": "Phone Number",
+              "email": "Email Address",
+              "website": "Website",
+              "address": "Business Address"
+            },
+            "placeholders": {
+              "headerText": "e.g., Professional Quote",
+              "footerTerms": "Enter terms and conditions, payment terms, or any footer notes...",
+              "companyName": "Your Company Name",
+              "phoneNumber": "+1 (555) 123-4567",
+              "email": "info@company.com",
+              "website": "https://www.yourcompany.com",
+              "address": "123 Business St.\nCity, State ZIP"
+            },
+            "badges": {
+              "colors": "Colors"
+            },
+            "buttons": {
+              "preview": "Preview",
+              "saving": "Saving...",
+              "saveChanges": "Save Changes"
+            },
+            "alerts": {
+              "loadFailed": "Failed to load PDF customization settings",
+              "imageType": "Please select an image file (JPG, PNG, GIF, WebP)",
+              "fileTooLarge": "File is too large. Maximum size is 5MB",
+              "saveSuccess": "PDF customization saved successfully!",
+              "invalidData": "Invalid data provided",
+              "serverError": "Server error occurred while saving",
+              "saveFailedGeneric": "Failed to save customization settings"
+            },
+            "validation": {
+              "companyNameRequired": "Company name is required"
+            },
+            "preview": {
+              "title": "PDF Preview"
+            },
+            "dropHere": "Drop file here to upload",
+            "chooseLogo": "Click to upload company logo or drag and drop",
+            "supportedTypes": "Supported: JPG, PNG, GIF, WebP (max 5MB)"
+          },
+          "ui": {
+            "headerTitle": "UI Customization",
+            "headerSubtitle": "Customize the look and feel of your application",
+            "brandLogo": {
+              "title": "Brand Logo",
+              "subtitle": "Configure your application's logo and branding",
+              "labels": {
+                "logoText": "Logo Text",
+                "removeLogo": "Remove Logo"
+              },
+              "placeholders": {
+                "logoText": "NJ Contractors"
+              },
+              "chooseImageCta": "Choose Image",
+              "supportedTypes": "JPG, PNG, SVG up to 5MB",
+              "alt": {
+                "logoPreview": "Logo Preview"
+              }
+            },
+            "colorPalette": {
+              "title": "Color Palette",
+              "subtitle": "Customize colors for different UI elements",
+              "headerTitle": "Header & Navigation",
+              "sidebarTitle": "Sidebar",
+              "labels": {
+                "logoBg": "Logo Background",
+                "headerBg": "Header Background",
+                "headerText": "Header Text",
+                "sidebarBg": "Background",
+                "sidebarText": "Text Color"
+              }
+            },
+            "preview": {
+              "header": "Preview Header",
+              "description": "This is how your customized header will look"
+            },
+            "buttons": {
+              "saving": "Saving...",
+              "saveChanges": "Save Changes"
+            },
+            "alerts": {
+              "fileTooLarge": "File is too large. Maximum size is 5MB",
+              "invalidImage": "Please select a valid image file",
+              "removeLogoSuccess": "Logo removed successfully",
+              "removeLogoFailed": "Failed to remove logo",
+              "saveSuccess": "Customization saved successfully!",
+              "saveFailed": "Failed to save customization"
+            }
+          }
+        }
       },
       "filesHistory": {
         "title": "Uploaded Catalog Files",

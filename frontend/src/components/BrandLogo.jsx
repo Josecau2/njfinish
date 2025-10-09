@@ -1,8 +1,15 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Box, Image } from '@chakra-ui/react'
 import { getBrand } from '../brand/useBrand'
 
-const BrandLogo = ({ size = 48, alt = '', maxWidth = '100%', containerProps = {}, imageProps = {} }) => {
+const BrandLogo = ({
+  size = 48,
+  alt = '',
+  maxWidth = '100%',
+  containerProps = {},
+  imageProps = {},
+}) => {
   const brand = getBrand()
   const dataUri = brand?.logoDataURI || brand?.logo?.dataURI || ''
   const resolvedAlt = brand?.logoAlt || alt || ''
@@ -49,6 +56,22 @@ const BrandLogo = ({ size = 48, alt = '', maxWidth = '100%', containerProps = {}
       />
     </Box>
   )
+}
+
+BrandLogo.propTypes = {
+  size: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  alt: PropTypes.string,
+  maxWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  containerProps: PropTypes.object,
+  imageProps: PropTypes.object,
+}
+
+BrandLogo.defaultProps = {
+  size: 48,
+  alt: '',
+  maxWidth: '100%',
+  containerProps: {},
+  imageProps: {},
 }
 
 export default BrandLogo

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
+import { normalizeError } from '../../utils/errorUtils'
 
 export const fetchDashboardCounts = createAsyncThunk('dashboard/fetchCounts', async () => {
   // Suppress global logout on a brief race (token not yet attached)
@@ -26,6 +27,7 @@ const dashboardSlice = createSlice({
   },
   reducers: {},
   extraReducers: (builder) => {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     builder
       .addCase(fetchDashboardCounts.pending, (state) => {
         state.loading = true
@@ -38,7 +40,7 @@ const dashboardSlice = createSlice({
       })
       .addCase(fetchDashboardCounts.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message
+        state.error = normalizeError(action.payload || action.error)
       })
       .addCase(fetchLatestProposals.pending, (state) => {
         state.loading = true
@@ -50,7 +52,7 @@ const dashboardSlice = createSlice({
       })
       .addCase(fetchLatestProposals.rejected, (state, action) => {
         state.loading = false
-        state.error = action.error.message
+        state.error = normalizeError(action.payload || action.error)
       })
   },
 })

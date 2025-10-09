@@ -3,8 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import axiosInstance from '../../helpers/axiosInstance'
-import { isAuthSessionActive } from '../../utils/authSession'
 import { getContrastColor } from '../../utils/colorUtils'
+import { getFreshestToken } from '../../utils/authToken'
 import {
   Alert,
   AspectRatio,
@@ -312,6 +312,11 @@ const getColorWithAlpha = (color, alpha) => {
 const Resources = ({ isContractor, contractorGroupName }) => {
   const { t } = useTranslation()
   const customization = useSelector((state) => state.customization)
+  const token = getFreshestToken()
+  const authHeaders = useMemo(
+    () => (token ? { Authorization: `Bearer ${token}` } : {}),
+    [token],
+  )
   const toast = useToast()
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(null)
@@ -400,12 +405,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
         return null
       }
     },
-    [apiBaseUrl],
+    [apiBaseUrl, token],
   )
 
   const resolveCategoryThumbUrl = useCallback(
     (categoryOrUrl) => {
-            let urlStr = null
+      let urlStr = null
       if (!categoryOrUrl) return null
       if (typeof categoryOrUrl === 'string') {
         urlStr = categoryOrUrl
@@ -930,7 +935,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
     try {
       setActionLoading(true)
             await axiosInstance.delete(`${CATEGORY_ENDPOINT}/${category.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: authHeaders,
       })
       await fetchResources()
       if (isAdmin) await fetchCategories()
@@ -956,7 +961,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
         SCAFFOLD_ENDPOINT,
         {},
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: authHeaders,
         },
       )
       await fetchResources()
@@ -1526,7 +1531,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                                                                 await axiosInstance.delete(
                                           `${ANNOUNCEMENTS_ENDPOINT}/${announcement.id}`,
                                           {
-                                            headers: { Authorization: `Bearer ${token}` },
+                                            headers: authHeaders,
                                           },
                                         )
                                         await fetchResources()
@@ -1659,7 +1664,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                       try {
                                         setDeleteLoading((prev) => ({ ...prev, [`link-${link.id}`]: true }))
                                                                                 await axiosInstance.delete(`${LINKS_ENDPOINT}/${link.id}`, {
-                                          headers: { Authorization: `Bearer ${token}` },
+                                          headers: authHeaders,
                                         })
                                         await fetchResources()
                                         showFeedback(
@@ -1825,7 +1830,7 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                                                                                         await axiosInstance.delete(
                                               `${FILES_ENDPOINT}/${file.id}`,
                                               {
-                                                headers: { Authorization: `Bearer ${token}` },
+                                                headers: authHeaders,
                                               },
                                             )
                                             await fetchResources()
@@ -2350,11 +2355,11 @@ const Resources = ({ isContractor, contractorGroupName }) => {
 
                   if (linkModal.isEdit) {
                     await axiosInstance.put(`${LINKS_ENDPOINT}/${linkModal.form.id}`, payload, {
-                      headers: { Authorization: `Bearer ${token}` },
+                      headers: authHeaders,
                     })
                   } else {
                     await axiosInstance.post(LINKS_ENDPOINT, payload, {
-                      headers: { Authorization: `Bearer ${token}` },
+                      headers: authHeaders,
                     })
                   }
 
@@ -2932,12 +2937,12 @@ const Resources = ({ isContractor, contractorGroupName }) => {
                       `${ANNOUNCEMENTS_ENDPOINT}/${announcementModal.form.id}`,
                       payload,
                       {
-                        headers: { Authorization: `Bearer ${token}` },
+                        headers: authHeaders,
                       },
                     )
                   } else {
                     await axiosInstance.post(ANNOUNCEMENTS_ENDPOINT, payload, {
-                      headers: { Authorization: `Bearer ${token}` },
+                      headers: authHeaders,
                     })
                   }
 

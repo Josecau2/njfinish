@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import axiosInstance from '../../helpers/axiosInstance'
+import { normalizeError } from '../../utils/errorUtils'
 
 export const fetchOrders = createAsyncThunk(
   'orders/fetchOrders',
@@ -39,11 +40,13 @@ const ordersSlice = createSlice({
     current: null,
   },
   reducers: {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     clearCurrentOrder: (state) => {
       state.current = null
     },
   },
   extraReducers: (builder) => {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     builder
       .addCase(fetchOrders.pending, (state) => {
         state.loading = true
@@ -55,7 +58,7 @@ const ordersSlice = createSlice({
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
 
       .addCase(fetchOrderById.pending, (state) => {
@@ -68,7 +71,7 @@ const ordersSlice = createSlice({
       })
       .addCase(fetchOrderById.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload
+        state.error = normalizeError(action.payload || action.error)
       })
   },
 })

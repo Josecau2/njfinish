@@ -11,9 +11,17 @@ import { hasPermission, isContractor, hasModuleAccess } from '../helpers/permiss
  * @param {string} props.module - Required module for contractors
  * @param {string} props.fallbackPath - Path to redirect to if access denied (default: '/')
  * @param {boolean} props.adminOnly - Whether route is admin-only
+ * @param {boolean} props.contractorBlock - Whether route is blocked for contractors
  * @returns {ReactNode} - Child components or redirect
  */
-const RouteGuard = ({ children, permission, module, fallbackPath = '/', adminOnly = false }) => {
+const RouteGuard = ({
+  children,
+  permission,
+  module,
+  fallbackPath = '/',
+  adminOnly = false,
+  contractorBlock = false,
+}) => {
   const user = useSelector((state) => state.auth?.user)
   const location = useLocation()
 
@@ -34,6 +42,11 @@ const RouteGuard = ({ children, permission, module, fallbackPath = '/', adminOnl
 
   // Check specific permission
   if (permission && !hasPermission(user, permission)) {
+    return <Navigate to={fallbackPath} replace />
+  }
+
+  // Check contractorBlock flag - prevent contractors from accessing admin routes
+  if (contractorBlock && isContractor(user)) {
     return <Navigate to={fallbackPath} replace />
   }
 

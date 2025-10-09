@@ -83,6 +83,39 @@ const TypesTab = ({ manufacturer }) => {
   const [modalCatalogItems, setModalCatalogItems] = useState([])
   const [modalCatalogLoading, setModalCatalogLoading] = useState(false)
   const [modalTypeFilter, setModalTypeFilter] = useState('')
+  const handleOpenBulkEdit = useCallback(() => {
+    setBulkEditModalVisible(true)
+  }, [])
+
+  const handleOpenRenameModal = useCallback(() => {
+    const firstType = types.find((type) => selectedItems.includes(type.id))
+    if (firstType) {
+      setTypeNameEditForm({
+        oldTypeName: firstType.type,
+        newTypeName: '',
+      })
+      setRenameModalVisible(true)
+    }
+  }, [selectedItems, types])
+
+  const bulkActionItems = useMemo(
+    () => [
+      {
+        key: 'bulkEdit',
+        label: t('types.ui.bulkEdit', 'Bulk Edit'),
+        onClick: handleOpenBulkEdit,
+        isDisabled: false,
+      },
+      {
+        key: 'renameGlobal',
+        label: t('types.ui.renameType', 'Rename Type Globally'),
+        onClick: handleOpenRenameModal,
+        isDisabled: !selectedItems.length,
+      },
+    ],
+    [handleOpenBulkEdit, handleOpenRenameModal, selectedItems.length, t],
+  )
+
   const [selectedModalItems, setSelectedModalItems] = useState([])
   const [modalSearchTerm, setModalSearchTerm] = useState('')
   const [assignSuccess, setAssignSuccess] = useState(null) // { count, type }
@@ -731,23 +764,15 @@ const TypesTab = ({ manufacturer }) => {
                     {t('types.ui.actions', 'Actions')} ({selectedItems.length})
                   </MenuButton>
                   <MenuList>
-                    <MenuItem onClick={() => setBulkEditModalVisible(true)}>
-                      {t('types.ui.bulkEdit', 'Bulk Edit')}
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        const firstType = types.find((t) => selectedItems.includes(t.id))
-                        if (firstType) {
-                          setTypeNameEditForm({
-                            oldTypeName: firstType.type,
-                            newTypeName: '',
-                          })
-                          setRenameModalVisible(true)
-                        }
-                      }}
-                    >
-                      {t('types.ui.renameType', 'Rename Type Globally')}
-                    </MenuItem>
+                    {bulkActionItems.map((action) => (
+                      <MenuItem
+                        key={action.key}
+                        onClick={action.onClick}
+                        isDisabled={action.isDisabled}
+                      >
+                        {action.label}
+                      </MenuItem>
+                    ))}
                   </MenuList>
                 </Menu>
               )}

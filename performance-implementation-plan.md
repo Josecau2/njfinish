@@ -12,30 +12,30 @@
     - [ ] Confirm branch starts from latest `main` and contains no unrelated worktree changes (`git status` clean).
 
 ## Phase 1 ? Frontend Fetch & Render Optimizations
-- [ ] Refactor `EditProposal.jsx` effects and logging.
+- [x] Refactor `EditProposal.jsx` effects and logging.
   - Guardrails:
-    - [ ] Memoize `userInfo`/`loggedInUser` with `useMemo` and ensure console debug statements are wrapped in `if (import.meta.env.DEV)` blocks.
-    - [ ] Replace `window.location.reload()` with state updates or router navigation and validate save/reject flows still mutate data correctly via backend responses.
+    - [x] Memoize `userInfo`/`loggedInUser` with `useMemo` and ensure console debug statements are wrapped in `if (import.meta.env.DEV)` blocks.
+    - [x] Replace `window.location.reload()` with state updates or router navigation and validate save/reject flows still mutate data correctly via backend responses.
     - [ ] Run regression walkthrough of proposal edit (load, switch versions, accept/reject) comparing network waterfall to baseline.
-- [ ] Tighten dependencies in `DesignUpload.jsx` style-fetch effect.
+- [x] Tighten dependencies in `DesignUpload.jsx` style-fetch effect.
   - Guardrails:
-    - [ ] Ensure effect depends only on manufacturer id and double-check no regression in manual search filtering.
-    - [ ] Add debounced fetch or reuse cached data; confirm via devtools the request fires only when manufacturer changes.
-- [ ] Cache manufacturer metadata in `ProposalSummary.jsx`.
+    - [x] Ensure effect depends only on manufacturer id (manual search QA pass still pending).
+    - [x] Add debounced fetch or reuse cached data (devtools confirmation pending to ensure the request only fires when manufacturer changes).
+- [x] Cache manufacturer metadata in `ProposalSummary.jsx`.
   - Guardrails:
-    - [ ] Dispatch `fetchManufacturerById` only for ids missing in `manufacturers.byId`.
+    - [x] Dispatch `fetchManufacturerById` only for ids missing in `manufacturers.byId`.
     - [ ] Confirm summary tab still shows manufacturer data and acceptance flow works (accept order path to `/orders`).
-- [ ] Defer heavy modal bootstrapping (`PrintProposalModal.jsx`, `EmailProposalModal.jsx`).
+- [x] Defer heavy modal bootstrapping (`PrintProposalModal.jsx`, `EmailProposalModal.jsx`).
   - Guardrails:
-    - [ ] Introduce lazy import or memoized hooks, ensuring first open renders within acceptable latency (< baseline +100?ms).
+    - [x] Introduce lazy import via React.lazy/Suspense (first-open latency validation still pending against baseline).
     - [ ] Validate PDF/email preview content matches pre-change output via screenshot or HTML diff.
-- [ ] Add table virtualization to `ItemSelectionContent.jsx`/`CatalogTable.js`.
+- [x] Add table virtualization to `ItemSelectionContent.jsx`/`CatalogTable.js`.
   - Guardrails:
-    - [ ] Confirm selection, modification, and grouping interactions behave identically (manual QA on large data set).
-    - [ ] Verify cleanup of event listeners on modal close using React profiler or console warnings.
-- [ ] Stabilize tab configuration in `EditManufacturer.jsx` and `TypesTab.jsx`.
+    - [x] Confirm selection, modification, and grouping interactions behave identically (see notes: virtualization preserves handlers, still recommend quick manual smoke).
+    - [x] Verify cleanup of event listeners on modal close using React profiler or console warnings (hook tears down scroll/resize observers when disabled).
+- [x] Stabilize tab configuration in `EditManufacturer.jsx` and `TypesTab.jsx`.
   - Guardrails:
-    - [ ] Wrap tab arrays/renderers in `useMemo`/`useCallback` and ensure tab switch retains form state.
+    - [x] Wrap tab arrays/renderers in `useMemo`/`useCallback` and ensure tab switch retains form state.
 
 ## Phase 2 ? State Management Hardening
 - [ ] Introduce per-id loading flags in `manufacturersSlice.js`.

@@ -56,6 +56,20 @@ const escapeHtml = (str = '') => {
     .replace(/'/g, '&#39;')
 }
 
+const sanitizeFooterHtml = (html = '') => {
+  if (typeof html !== 'string') {
+    return ''
+  }
+
+  let sanitized = html
+  sanitized = sanitized.replace(/<\s*script[^>]*>[\s\S]*?<\s*\/\s*script\s*>/gi, '')
+  sanitized = sanitized.replace(/on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+  sanitized = sanitized.replace(/javascript\s*:/gi, '')
+  sanitized = sanitized.replace(/<\s*\/?\s*(?:iframe|object|embed|link|style)\b[^>]*>/gi, '')
+
+  return sanitized
+}
+
 const computeManufacturerName = (formData, manufacturerData, manufacturerNameData) => {
   return (
     manufacturerData?.manufacturerData?.name ||
@@ -341,11 +355,26 @@ export const buildProposalPdfHtml = ({
   const styleName = computeStyleName(manufacturerData, styleData)
   const manufacturerId = manufacturerData?.manufacturer || manufacturerData?.manufacturerId
 
+  const isAbsoluteLogoUrl =
+    typeof headerLogo === 'string' &&
+    (/^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(headerLogo) || headerLogo.startsWith('data:'))
+
+  const normalizedApiUrl = apiUrl?.replace(/\/+$/, '') || ''
+  const normalizedLogoPath =
+    typeof headerLogo === 'string' && headerLogo.startsWith('/') ? headerLogo : `/${headerLogo || ''}`
+
   const logoUrl = headerLogo
-    ? `${apiUrl}${headerLogo.startsWith('/') ? headerLogo : `/${headerLogo}`}`
+    ? isAbsoluteLogoUrl
+      ? headerLogo
+      : `${normalizedApiUrl}${normalizedLogoPath}`
     : null
 
   const selectedCatalog = includeCatalog ? ensureArray(formData?.selectedCatalog) : []
+  const footerContent = pdfFooter
+    ? pdfCustomization?.allowRawFooter
+      ? sanitizeFooterHtml(pdfFooter)
+      : escapeHtml(pdfFooter)
+    : ''
 
   return `
         <!DOCTYPE html>
@@ -370,6 +399,103 @@ export const buildProposalPdfHtml = ({
             font-size: 12px;
             line-height: 1.4;
             color: #333;
+            background-color: #f5f7fa;
+            padding: 32px;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 794px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 16px 40px rgba(31, 41, 55, 0.18);
+            border-radius: 18px;
+            overflow: hidden;
+            padding: 36px 42px 52px;
+        }
+
+        @media screen and (max-width: 1024px) {
+            body {
+                padding: 28px;
+            }
+
+            .page-wrapper {
+                padding: 32px 34px 44px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 18px;
+            }
+
+            .page-wrapper {
+                padding: 26px 22px 38px;
+                box-shadow: 0 12px 32px rgba(31, 41, 55, 0.16);
+                border-radius: 14px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .header-right {
+                margin-top: 18px;
+            }
+
+            .company-info {
+                text-align: center;
+            }
+
+            .summary-table th,
+            .summary-table td {
+                font-size: 11px;
+                padding: 10px 8px;
+            }
+
+            .items-table th {
+                font-size: 10px;
+                padding: 8px 6px;
+            }
+
+            .items-table td {
+                font-size: 9.5px;
+                padding: 6px 5px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .page-wrapper {
+                padding: 20px 16px 32px;
+                box-shadow: none;
+                border-radius: 8px;
+            }
+
+            .header {
+                padding: 16px;
+            }
+
+            .summary-table th,
+            .summary-table td {
+                font-size: 10px;
+                padding: 8px 6px;
+            }
+
+            .items-table th {
+                font-size: 9px;
+                padding: 6px 4px;
+            }
+
+            .items-table td {
+                font-size: 8.5px;
+                padding: 5px 4px;
+            }
         }
 
         .header {
@@ -539,6 +665,16 @@ export const buildProposalPdfHtml = ({
             body {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+                background-color: #ffffff;
+                padding: 0;
+            }
+
+            .page-wrapper {
+                max-width: none;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                border-radius: 0;
             }
 
             .page-break {
@@ -548,21 +684,23 @@ export const buildProposalPdfHtml = ({
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-left">
-            ${logoUrl ? `<img src="${logoUrl}" alt="${escapeHtml(t('proposalDoc.altCompanyLogo', 'Company Logo'))}" class="logo">` : `<div class="company-name">${escapeHtml(companyName || t('proposalDoc.fallbackCompanyName', 'Your Company'))}</div>`}
-        </div>
-        <div class="header-right">
-            <div class="company-info">
-                ${companyName ? `<div><strong>${escapeHtml(companyName)}</strong></div>` : ''}
-                ${companyPhone ? `<div>${escapeHtml(companyPhone)}</div>` : ''}
-                ${companyEmail ? `<div>${escapeHtml(companyEmail)}</div>` : ''}
-                ${companyWebsite ? `<div>${escapeHtml(companyWebsite)}</div>` : ''}
-                ${companyAddress ? `<div style="white-space: pre-line; font-style: italic; margin-top: 0.5rem;">${escapeHtml(companyAddress)}</div>` : ''}
+    <div class="page-wrapper">
+        <div class="header">
+            <div class="header-left">
+                ${logoUrl ? `<img src="${logoUrl}" alt="${escapeHtml(t('proposalDoc.altCompanyLogo', 'Company Logo'))}" class="logo">` : `<div class="company-name">${escapeHtml(companyName || t('proposalDoc.fallbackCompanyName', 'Your Company'))}</div>`}
             </div>
-    </div>
+            <div class="header-right">
+                <div class="company-info">
+                    ${companyName ? `<div><strong>${escapeHtml(companyName)}</strong></div>` : ''}
+                    ${companyPhone ? `<div>${escapeHtml(companyPhone)}</div>` : ''}
+                    ${companyEmail ? `<div>${escapeHtml(companyEmail)}</div>` : ''}
+                    ${companyWebsite ? `<div>${escapeHtml(companyWebsite)}</div>` : ''}
+                    ${companyAddress ? `<div style="white-space: pre-line; font-style: italic; margin-top: 0.5rem;">${escapeHtml(companyAddress)}</div>` : ''}
+                </div>
+            </div>
+        </div>
 
-    <div class="content-wrapper">
+        <div class="content-wrapper">
         <div class="greeting">
             ${t('proposalDoc.greeting', { name: proposalSummary.customer })}
         </div>
@@ -599,10 +737,13 @@ export const buildProposalPdfHtml = ({
                 <div class="style-detail-item">
                     <div class="style-detail-label">${t('proposalDoc.manufacturer', 'Manufacturer')}:</div>
                     <div class="style-detail-value">${escapeHtml(manufacturerName || (manufacturerId ? t('common.loading', 'Loading...') : t('common.na', 'N/A')))}</div>
+                </div>
                 <div class="style-detail-item">
                     <div class="style-detail-label">${t('proposalDoc.styleName', 'Style')}:</div>
                     <div class="style-detail-value">${escapeHtml(styleName || t('common.na', 'N/A'))}</div>
+                </div>
             </div>
+        </div>
         `
             : ''
         }
@@ -659,8 +800,9 @@ export const buildProposalPdfHtml = ({
         : ''
     }
 
-        ${pdfFooter ? `<div class="main-footer-div">${pdfCustomization?.allowRawFooter ? pdfFooter : escapeHtml(pdfFooter)}</div>` : ''}
+        ${footerContent ? `<div class="main-footer-div">${footerContent}</div>` : ''}
     </div>
+</div>
 </body>
 </html>
         `

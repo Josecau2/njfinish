@@ -45,6 +45,7 @@ const sidebarSlice = createSlice({
   name: 'sidebar',
   initialState,
   reducers: {
+    // Redux Toolkit uses Immer - direct state assignments are safe and converted to immutable updates
     setSidebarShow(state, action) {
       state.sidebarShow = action.payload
       // Only store sidebar state for desktop to avoid mobile/desktop conflicts

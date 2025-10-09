@@ -45,6 +45,14 @@ const DesignImportStep = ({
   const [stylesMeta, setStylesMeta] = useState([])
   const [isFetchingStyles, setIsFetchingStyles] = useState(false)
 
+  const stylesCacheRef = useRef(new Map())
+  const fetchDebounceRef = useRef(null)
+  const activeRequestRef = useRef(null)
+  const selectedManufacturerId = useMemo(() => {
+    const manufacturer = formData?.manufacturersData?.[0]?.manufacturer
+    return typeof manufacturer === 'number' || typeof manufacturer === 'string' ? manufacturer : null
+  }, [formData?.manufacturersData])
+
   const isMobile = useBreakpointValue({ base: true, md: false })
   const tabIndex = activeTab === 'import' ? 1 : 0
 
@@ -96,35 +104,77 @@ const DesignImportStep = ({
   }, [stylesMeta, searchTerm])
 
   useEffect(() => {
-    const selectedManufacturerId = formData?.manufacturersData?.[0]?.manufacturer
+    if (fetchDebounceRef.current) {
+      clearTimeout(fetchDebounceRef.current)
+      fetchDebounceRef.current = null
+    }
+
+    if (activeRequestRef.current) {
+      activeRequestRef.current.abort()
+      activeRequestRef.current = null
+    }
+
     if (!selectedManufacturerId) {
       setStylesMeta([])
+      setIsFetchingStyles(false)
       return
     }
 
-    const fetchStyles = async () => {
-      try {
-        setIsFetchingStyles(true)
-        const response = await axiosInstance.get(
-          `/api/manufacturers/${selectedManufacturerId}/styles-meta`,
-        )
-        if (response?.data?.styles && Array.isArray(response.data.styles)) {
-          setStylesMeta(response.data.styles)
-        } else if (Array.isArray(response?.data)) {
-          setStylesMeta(response.data)
-        } else {
-          setStylesMeta([])
-        }
-      } catch (error) {
-        console.error('Error fetching styles meta', error)
-        setStylesMeta([])
-      } finally {
-        setIsFetchingStyles(false)
-      }
+    if (stylesCacheRef.current.has(selectedManufacturerId)) {
+      setStylesMeta(stylesCacheRef.current.get(selectedManufacturerId) || [])
+      setIsFetchingStyles(false)
+      return
     }
 
-    fetchStyles()
-  }, [formData])
+    const controller = new AbortController()
+    activeRequestRef.current = controller
+    setIsFetchingStyles(true)
+    const manufacturerIdForRequest = selectedManufacturerId
+
+    fetchDebounceRef.current = setTimeout(async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/api/manufacturers/${manufacturerIdForRequest}/styles-meta`,
+          { signal: controller.signal },
+        )
+        let nextStyles = []
+        if (response?.data?.styles && Array.isArray(response.data.styles)) {
+          nextStyles = response.data.styles
+        } else if (Array.isArray(response?.data)) {
+          nextStyles = response.data
+        }
+        stylesCacheRef.current.set(manufacturerIdForRequest, nextStyles)
+        setStylesMeta(nextStyles)
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.error('Error fetching styles meta', error)
+          setStylesMeta([])
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsFetchingStyles(false)
+        }
+        if (activeRequestRef.current === controller) {
+          activeRequestRef.current = null
+        }
+        fetchDebounceRef.current = null
+      }
+    }, 200)
+
+    return () => {
+      if (fetchDebounceRef.current) {
+        clearTimeout(fetchDebounceRef.current)
+        fetchDebounceRef.current = null
+      }
+      controller.abort()
+      if (!controller.signal.aborted) {
+        setIsFetchingStyles(false)
+      }
+      if (activeRequestRef.current === controller) {
+        activeRequestRef.current = null
+      }
+    }
+  }, [selectedManufacturerId])
 
   return (
     <Box w="full">
