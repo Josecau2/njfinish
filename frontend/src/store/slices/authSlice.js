@@ -1,6 +1,7 @@
 // redux/authSlice.js
 import { createSlice } from '@reduxjs/toolkit'
 import { normalizeError } from '../../utils/errorUtils'
+import { getAuthTabId } from '../../utils/browserCleanup'
 
 const initialState = {
   user: null,
@@ -73,38 +74,42 @@ const authSlice = createSlice({
 
       // Cross-tab logout using BroadcastChannel API
       try {
-        if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        if (typeof window !== 'undefined') {
           const suppress = window.__SUPPRESS_LOGOUT_BROADCAST__
           const onLogin = window.location && window.location.pathname === '/login'
 
           if (!suppress && !onLogin) {
-            // Create a broadcast channel for cross-tab communication
-            const logoutChannel = new BroadcastChannel('auth_logout_channel')
+            const senderId = getAuthTabId()
 
-            // Broadcast logout event to other tabs
-            logoutChannel.postMessage({
-              type: 'LOGOUT',
-              timestamp: Date.now(),
-            })
+            if ('BroadcastChannel' in window) {
+              try {
+                const logoutChannel = new BroadcastChannel('auth_logout_channel')
 
-            // Close channel after broadcasting
-            setTimeout(() => {
-              logoutChannel.close()
-            }, 100)
-          }
-        } else {
-          // Fallback to localStorage for older browsers
-          if (typeof window !== 'undefined') {
-            const suppress = window.__SUPPRESS_LOGOUT_BROADCAST__
-            const onLogin = window.location && window.location.pathname === '/login'
+                // Broadcast logout event to other tabs
+                logoutChannel.postMessage({
+                  type: 'LOGOUT',
+                  timestamp: Date.now(),
+                  senderId,
+                })
 
-            if (!suppress && !onLogin) {
-              window.localStorage.setItem('__auth_logout__', String(Date.now()))
-              setTimeout(() => {
-                try {
-                  window.localStorage.removeItem('__auth_logout__')
-                } catch {}
-              }, 1000)
+                // Close channel after broadcasting
+                setTimeout(() => {
+                  logoutChannel.close()
+                }, 100)
+              } catch {}
+            } else {
+              // Fallback to localStorage for older browsers
+              try {
+                window.localStorage.setItem(
+                  '__auth_logout__',
+                  JSON.stringify({ timestamp: Date.now(), senderId }),
+                )
+                setTimeout(() => {
+                  try {
+                    window.localStorage.removeItem('__auth_logout__')
+                  } catch {}
+                }, 1000)
+              } catch {}
             }
           }
         }

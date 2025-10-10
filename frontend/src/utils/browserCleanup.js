@@ -1,5 +1,45 @@
 // Browser cleanup utilities for forcing fresh sessions
 
+const LOGOUT_STORAGE_KEY = '__auth_logout__'
+const TAB_ID_STORAGE_KEY = '__auth_tab_id__'
+
+function createTabId() {
+  try {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID()
+    }
+  } catch {}
+
+  return `tab-${Math.random().toString(36).slice(2)}-${Date.now()}`
+}
+
+export function getAuthTabId() {
+  if (typeof window === 'undefined') return 'server'
+  if (window.__AUTH_TAB_ID__) return window.__AUTH_TAB_ID__
+
+  let tabId = null
+
+  try {
+    tabId = sessionStorage.getItem(TAB_ID_STORAGE_KEY)
+    if (!tabId) {
+      tabId = createTabId()
+      sessionStorage.setItem(TAB_ID_STORAGE_KEY, tabId)
+    }
+  } catch {
+    tabId = createTabId()
+  }
+
+  window.__AUTH_TAB_ID__ = tabId
+  return tabId
+}
+
+function handleCrossTabLogout() {
+  forceBrowserCleanup()
+  if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+    forcePageReload()
+  }
+}
+
 export function forceBrowserCleanup() {
   try {
     // Define auth-related keys to clear
@@ -99,18 +139,18 @@ export function forcePageReload() {
 export function addLogoutListener() {
   // Listen for logout events from other tabs
   if (typeof window !== 'undefined') {
+    const currentTabId = getAuthTabId()
     // Use BroadcastChannel API if available (modern browsers)
     if ('BroadcastChannel' in window) {
       const logoutChannel = new BroadcastChannel('auth_logout_channel')
 
       logoutChannel.onmessage = (event) => {
-        if (event.data.type === 'LOGOUT') {
-          // Another tab logged out, force cleanup
-          forceBrowserCleanup()
-          // Avoid reload loop if already on login page
-          if (window.location.pathname !== '/login') {
-            forcePageReload()
+        const payload = event?.data || {}
+        if (payload.type === 'LOGOUT') {
+          if (payload.senderId && payload.senderId === currentTabId) {
+            return
           }
+          handleCrossTabLogout()
         }
       }
 
@@ -128,13 +168,20 @@ export function addLogoutListener() {
     } else {
       // Fallback to localStorage events for older browsers
       const handleStorageChange = (e) => {
-        if (e.key === '__auth_logout__' && e.newValue) {
-          // Another tab logged out, force cleanup
-          forceBrowserCleanup()
-          // Avoid reload loop if already on login page
-          if (window.location.pathname !== '/login') {
-            forcePageReload()
+        if (e.key === LOGOUT_STORAGE_KEY && e.newValue) {
+          let senderId = null
+          try {
+            const parsed = JSON.parse(e.newValue)
+            senderId = parsed?.senderId || null
+          } catch {
+            senderId = null
           }
+
+          if (senderId && senderId === currentTabId) {
+            return
+          }
+
+          handleCrossTabLogout()
         }
       }
 
