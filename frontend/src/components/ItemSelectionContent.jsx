@@ -71,10 +71,10 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     // Dark mode colors
     const bgGray50 = useColorModeValue("gray.50", "gray.800");
     const summaryTableMaxWidth = useBreakpointValue({ base: '100%', md: '440px', lg: '500px' }) || '100%';
-    const styleCarouselMinHeight = useBreakpointValue({ base: '216px', md: '200px', lg: '210px' }) || '200px';
-    const styleImageContainerWidth = useBreakpointValue({ base: 110, md: 180, lg: 200 }) || 180;
-    const styleImageContainerHeight = useBreakpointValue({ base: 165, md: 160, lg: 180 }) || 160;
-    const styleImageMaxHeight = useBreakpointValue({ base: 155, md: 140, lg: 160 }) || 140;
+    const styleCarouselMinHeight = useBreakpointValue({ base: '237px', md: '200px', lg: '210px' }) || '200px';
+    const styleImageContainerWidth = useBreakpointValue({ base: 121, md: 180, lg: 200 }) || 180;
+    const styleImageContainerHeight = useBreakpointValue({ base: 182, md: 160, lg: 180 }) || 160;
+    const styleImageMaxHeight = useBreakpointValue({ base: 171, md: 140, lg: 160 }) || 140;
     const styleImagePadding = useBreakpointValue({ base: 1, md: 2.5 }) || 2;
     const colorGray500 = useColorModeValue("gray.500", "gray.400");
     const colorGray600 = useColorModeValue("gray.600", "gray.400");
@@ -1616,7 +1616,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             <Flex
                                 justify="space-between"
                                 align="center"
-                                mb={3}
+                                mb={5}
                             >
                                 <Heading size="sm" mb={0}>
                                     {t('proposalUI.otherStyles')}
@@ -1823,12 +1823,16 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                 borderStyle="solid"
                                                                 borderColor={styleItem.id === selectedStyleData?.id ? styleCardBorderSelected : styleCardBorderUnselected}
                                                                 fontWeight={styleItem.id === selectedStyleData?.id ? '600' : 'normal'}
+                                                                minH="40px"
+                                                                display="flex"
+                                                                flexDirection="column"
+                                                                justifyContent="center"
                                                             >
-                                                                <Text fontSize="xs" mb={0} color={styleCardTextColor} noOfLines={1}>
+                                                                <Text fontSize="xs" mb={0} color={styleCardTextColor} textAlign="center" lineHeight="1.2">
                                                                     {styleItem.style}
                                                                 </Text>
                                                                 {styleItem.id === selectedStyleData?.id && (
-                                                                    <Text fontSize="2xs" color={styleCardLabelColor} mt={0.5}>
+                                                                    <Text fontSize="2xs" color={styleCardLabelColor} mt={0.5} textAlign="center">
                                                                         {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
                                                                     </Text>
                                                                 )}
