@@ -696,7 +696,6 @@ const ModificationBrowserModal = ({
             />
           </HStack>
         </ModalHeader>
-        <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} color={headerTextColor} />
 
         <ModalBody px={6} py={4} bg={bgGray50}>
           <Stack spacing={6}>
