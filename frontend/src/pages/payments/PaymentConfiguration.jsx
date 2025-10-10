@@ -344,6 +344,10 @@ const PaymentConfiguration = () => {
                           }
                           placeholder="pk_live_..."
                           minH="44px"
+                          fontFamily="mono"
+                          fontSize="sm"
+                          bg={useColorModeValue('gray.50', 'gray.800')}
+                          _placeholder={{ color: useColorModeValue('gray.400', 'gray.500') }}
                         />
                       </FormControl>
 

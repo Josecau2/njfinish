@@ -49,7 +49,7 @@ const StripeCheckoutForm = ({
   const stripe = useStripe()
   const elements = useElements()
 
-  // Theme-aware color values
+  // Color mode values
   const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
   const iconGray500 = useColorModeValue('gray.500', 'gray.400')
   const [submitting, setSubmitting] = useState(false)
@@ -88,38 +88,14 @@ const StripeCheckoutForm = ({
   }
 
   return (
-    <Stack as="form" onSubmit={handleSubmit} spacing={6}>
-      <Box>
-        <PaymentElement 
-          options={{ 
-            layout: 'tabs',
-            defaultValues: {
-              billingDetails: {}
-            }
-          }} 
-        />
-      </Box>
-      <Flex justify="flex-end" pt={2}>
+    <Stack as="form" onSubmit={handleSubmit} spacing={4}>
+      <PaymentElement options={{ layout: 'tabs' }} />
+      <Flex justify="flex-end">
         <Button
           type="submit"
           colorScheme="brand"
           isDisabled={!stripe || !elements || submitting}
-          minH="52px"
-          px={10}
-          fontSize="lg"
-          fontWeight="bold"
-          borderRadius="xl"
-          shadow="md"
-          _hover={{
-            transform: 'translateY(-2px)',
-            shadow: 'lg'
-          }}
-          _active={{
-            transform: 'translateY(0)',
-            shadow: 'md'
-          }}
-          transition="all 0.2s"
-          w={{ base: 'full', sm: 'auto' }}
+          minH="44px"
         >
           {submitting && <Spinner size="sm" mr={2} />}
           {submitLabel}
@@ -136,17 +112,9 @@ const PaymentPage = () => {
   const toast = useToast()
   const { id } = useParams()
 
-  // Theme-aware color values
+  // Color mode values - MUST be before useState
   const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
   const iconGray500 = useColorModeValue('gray.500', 'gray.400')
-  const cardBg = useColorModeValue('white', 'gray.800')
-  const borderColor = useColorModeValue('gray.200', 'gray.700')
-  const headerBg = useColorModeValue('gray.50', 'gray.900')
-  const textSecondary = useColorModeValue('gray.600', 'gray.400')
-  const textPrimary = useColorModeValue('gray.900', 'gray.100')
-  const shadowColor = useColorModeValue('lg', 'dark-lg')
-  const amountBg = useColorModeValue('blue.50', 'blue.900')
-  const amountBorder = useColorModeValue('blue.200', 'blue.700')
 
   const { currentPayment, publicPaymentConfig, loading } = useSelector((state) => state.payments)
   const [stripePromise, setStripePromise] = useState(null)
@@ -307,20 +275,8 @@ const PaymentPage = () => {
 
   if (loading || !currentPayment) {
     return (
-      <PageContainer>
-        <Flex justify="center" align="center" minH="60vh">
-          <Stack align="center" spacing={4}>
-            <Spinner 
-              size="xl" 
-              color={iconBlue500} 
-              thickness="4px" 
-              speed="0.65s" 
-            />
-            <Text color={useColorModeValue('gray.600', 'gray.400')} fontSize="lg">
-              Loading payment details...
-            </Text>
-          </Stack>
-        </Flex>
+      <PageContainer textAlign="center">
+        <Spinner size="lg" color={iconBlue500} thickness="4px" speed="0.7s" />
       </PageContainer>
     )
   }
@@ -333,54 +289,27 @@ const PaymentPage = () => {
           subtitle={t('payment.unavailable.subtitle', 'Card payments are currently disabled')}
           icon={CreditCard}
         />
-        <Flex justify="center" px={{ base: 4, md: 0 }}>
-          <StandardCard 
-            w="full" 
-            maxW="2xl" 
-            borderRadius="2xl" 
-            shadow={shadowColor}
-            bg={cardBg}
-            borderWidth="1px"
-            borderColor={borderColor}
-          >
-            <CardBody textAlign="center" py={12} px={{ base: 4, md: 8 }}>
-              <Alert 
-                status="warning" 
-                borderRadius="xl" 
-                mb={8}
-                bg={useColorModeValue('orange.50', 'orange.900')}
-                borderWidth="1px"
-                borderColor={useColorModeValue('orange.200', 'orange.700')}
-                py={4}
-              >
-                <AlertIcon />
-                <Text fontWeight="medium">
-                  {t(
-                    'payment.unavailable.configuration',
-                    'Please contact an administrator to enable Stripe payments.',
-                  )}
-                </Text>
-              </Alert>
-              <Button
-                colorScheme="brand"
-                onClick={handleGoBack}
-                minH="48px"
-                px={8}
-                borderRadius="lg"
-                fontWeight="semibold"
-                fontSize="md"
-                leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
-                _hover={{
-                  transform: 'translateY(-2px)',
-                  shadow: 'lg'
-                }}
-                transition="all 0.2s"
-              >
-                {t('common.goBack', 'Go Back')}
-              </Button>
-            </CardBody>
-          </StandardCard>
-        </Flex>
+        <StandardCard variant="outline" borderRadius="xl" shadow="sm">
+          <CardBody textAlign="center" py={10}>
+            <Alert status="warning" borderRadius="md" mb={6}>
+              <AlertIcon />
+              {t(
+                'payment.unavailable.configuration',
+                'Please contact an administrator to enable Stripe payments.',
+              )}
+            </Alert>
+            <Button
+              colorScheme="brand"
+              onClick={handleGoBack}
+              minH="44px"
+              maxW={{ base: '140px', md: 'none' }}
+              leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
+              fontSize={{ base: 'sm', md: 'md' }}
+            >
+              {t('common.goBack', 'Go Back')}
+            </Button>
+          </CardBody>
+        </StandardCard>
       </PageContainer>
     )
   }
@@ -400,96 +329,52 @@ const PaymentPage = () => {
         icon={CreditCard}
       />
 
-      <Flex justify="center" px={{ base: 4, md: 0 }}>
-        <StandardCard 
-          w="full" 
-          maxW="2xl" 
-          borderRadius="2xl" 
-          shadow={shadowColor}
-          bg={cardBg}
-          borderWidth="1px"
-          borderColor={borderColor}
-          overflow="hidden"
-        >
-          <CardHeader 
-            bg={headerBg}
-            borderBottomWidth="1px" 
-            borderColor={borderColor}
-            py={6}
-            px={{ base: 4, md: 8 }}
-          >
+      <Flex justify="center">
+        <StandardCard w="full" maxW="xl" borderRadius="xl" shadow="sm">
+          <CardHeader borderBottomWidth="1px">
             <Flex justify="space-between" align="center" gap={4} wrap="wrap">
-              <Box flex="1">
-                <Heading as="h5" size="md" mb={2} color={textPrimary} fontWeight="bold">
+              <Box>
+                <Heading as="h5" size="sm" mb={1}>
                   {t('payment.details.title', 'Payment Details')}
                 </Heading>
-                <Text fontSize="sm" color={textSecondary} fontWeight="medium">
+                <Text fontSize="sm" color={iconGray500}>
                   {t('payment.order', 'Order')} #{currentPayment.orderId}
                 </Text>
               </Box>
-              <Box 
-                textAlign="right" 
-                bg={amountBg}
-                px={6}
-                py={4}
-                borderRadius="xl"
-                borderWidth="1px"
-                borderColor={amountBorder}
-                minW={{ base: 'full', sm: 'auto' }}
-              >
-                <Heading as="h4" size="lg" color={iconBlue500} fontWeight="bold" mb={1}>
+              <Box textAlign="right">
+                <Heading as="h4" size="md" color={iconBlue500}>
                   {formatCurrency(amountCents, currentPayment.currency)}
                 </Heading>
-                <Text fontSize="xs" color={textSecondary} textTransform="uppercase" fontWeight="semibold" letterSpacing="wider">
+                <Text fontSize="xs" color={iconGray500} textTransform="uppercase">
                   {currentPayment.currency || 'USD'}
                 </Text>
               </Box>
             </Flex>
           </CardHeader>
-          <CardBody py={8} px={{ base: 4, md: 8 }}>
-            <Stack spacing={6}>
+          <CardBody>
+            <Stack spacing={4}>
               {processing && (
-                <Alert 
-                  status="info" 
-                  borderRadius="xl"
-                  bg={useColorModeValue('blue.50', 'blue.900')}
-                  borderWidth="1px"
-                  borderColor={useColorModeValue('blue.200', 'blue.700')}
-                  py={4}
-                >
-                  <AlertIcon color={iconBlue500} />
-                  <Text fontWeight="medium" color={textPrimary}>
-                    {t('payment.processing', 'Processing payment...')}
-                  </Text>
+                <Alert status="info" borderRadius="md">
+                  <AlertIcon />
+                  {t('payment.processing', 'Processing payment...')}
                 </Alert>
               )}
 
               {statusMessage && (
-                <Alert 
-                  status={alertStatus} 
-                  borderRadius="xl"
-                  borderWidth="1px"
-                  py={4}
-                >
+                <Alert status={alertStatus} borderRadius="md">
                   <AlertIcon />
-                  <Flex justify="space-between" align="center" gap={4} wrap="wrap" w="full">
-                    <Text fontWeight="medium">{statusMessage}</Text>
+                  <Flex justify="space-between" align="center" gap={4} wrap="wrap">
+                    <Text>{statusMessage}</Text>
                     {isFailed && (
                       <Button
-                        size="md"
+                        size="sm"
                         colorScheme="red"
-                        variant="solid"
+                        variant="outline"
                         onClick={handleRetryPayment}
                         isLoading={intentLoading}
                         minH="44px"
-                        borderRadius="lg"
-                        fontWeight="semibold"
-                        px={6}
-                        _hover={{
-                          transform: 'translateY(-2px)',
-                          shadow: 'md'
-                        }}
-                        transition="all 0.2s"
+                        maxW={{ base: '180px', md: 'none' }}
+                        fontSize={{ base: 'sm', md: 'md' }}
                       >
                         {t('payment.retry', 'Retry Payment')}
                       </Button>
@@ -500,31 +385,18 @@ const PaymentPage = () => {
 
               {intentError && (
                 <Stack spacing={4}>
-                  <Alert 
-                    status="error" 
-                    borderRadius="xl"
-                    bg={useColorModeValue('red.50', 'red.900')}
-                    borderWidth="1px"
-                    borderColor={useColorModeValue('red.200', 'red.700')}
-                    py={4}
-                  >
+                  <Alert status="error" borderRadius="md">
                     <AlertIcon />
-                    <Text fontWeight="medium">{intentError}</Text>
+                    {intentError}
                   </Alert>
                   <Button
                     colorScheme="brand"
-                    variant="solid"
+                    variant="outline"
                     onClick={initializeIntent}
                     isLoading={intentLoading}
                     minH="44px"
-                    borderRadius="lg"
-                    fontWeight="semibold"
-                    px={6}
-                    _hover={{
-                      transform: 'translateY(-2px)',
-                      shadow: 'md'
-                    }}
-                    transition="all 0.2s"
+                    maxW={{ base: '180px', md: 'none' }}
+                    fontSize={{ base: 'sm', md: 'md' }}
                   >
                     {t('payment.retry', 'Retry Payment')}
                   </Button>
@@ -532,30 +404,19 @@ const PaymentPage = () => {
               )}
 
               {receiptUrl && (
-                <Alert 
-                  status="success" 
-                  borderRadius="xl"
-                  bg={useColorModeValue('green.50', 'green.900')}
-                  borderWidth="1px"
-                  borderColor={useColorModeValue('green.200', 'green.700')}
-                  py={4}
-                >
+                <Alert status="success" borderRadius="md">
                   <AlertIcon />
-                  <HStack spacing={4} wrap="wrap">
-                    <Text fontWeight="medium">{t('payment.receipt.available', 'Receipt available')}:</Text>
+                  <HStack spacing={4}>
+                    <Text>{t('payment.receipt.available', 'Receipt available')}:</Text>
                     <Button
                       as="a"
                       href={receiptUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       variant="link"
-                      colorScheme="green"
-                      fontWeight="bold"
+                      colorScheme="brand"
+                      fontWeight="semibold"
                       minH="44px"
-                      fontSize="md"
-                      _hover={{
-                        textDecoration: 'underline'
-                      }}
                     >
                       {t('payment.receipt.view', 'View Receipt')}
                     </Button>
@@ -564,94 +425,56 @@ const PaymentPage = () => {
               )}
 
               {!clientSecret && intentLoading && (
-                <Flex justify="center" py={8}>
-                  <Spinner 
-                    color={iconBlue500} 
-                    size="xl" 
-                    thickness="4px" 
-                    speed="0.65s" 
-                  />
+                <Flex justify="center" py={6}>
+                  <Spinner color={iconBlue500} />
                 </Flex>
               )}
 
               {showPaymentForm && (
-                <Box
-                  p={{ base: 4, md: 6 }}
-                  bg={useColorModeValue('gray.50', 'gray.900')}
-                  borderRadius="xl"
-                  borderWidth="1px"
-                  borderColor={borderColor}
-                >
-                  <Elements stripe={stripePromise} options={options}>
-                    <StripeCheckoutForm
-                      paymentId={currentPayment.id}
-                      onProcessingChange={setProcessing}
-                      onPaymentComplete={handlePaymentComplete}
-                      onError={setIntentError}
-                      submitLabel={t('payment.confirm', 'Confirm Payment')}
-                    />
-                  </Elements>
-                </Box>
+                <Elements stripe={stripePromise} options={options}>
+                  <StripeCheckoutForm
+                    paymentId={currentPayment.id}
+                    onProcessingChange={setProcessing}
+                    onPaymentComplete={handlePaymentComplete}
+                    onError={setIntentError}
+                    submitLabel={t('payment.confirm', 'Confirm Payment')}
+                  />
+                </Elements>
               )}
 
               {showUnavailableAlert && (
-                <Alert 
-                  status="warning" 
-                  borderRadius="xl"
-                  bg={useColorModeValue('orange.50', 'orange.900')}
-                  borderWidth="1px"
-                  borderColor={useColorModeValue('orange.200', 'orange.700')}
-                  py={4}
-                >
+                <Alert status="warning" borderRadius="md">
                   <AlertIcon />
-                  <Text fontWeight="medium">
-                    {t(
-                      'payment.unavailable.status',
-                      'This payment is not available for processing right now. Current status:',
-                    )}{' '}
-                    <Text as="span" fontWeight="bold" color={iconBlue500}>
-                      {currentPayment.status}
-                    </Text>
+                  {t(
+                    'payment.unavailable.status',
+                    'This payment is not available for processing right now. Current status:',
+                  )}{' '}
+                  <Text as="span" fontWeight="semibold">
+                    {currentPayment.status}
                   </Text>
                 </Alert>
               )}
 
-              <HStack justify="flex-end" spacing={4} wrap="wrap" pt={4}>
+              <HStack justify="flex-end" spacing={4} wrap="wrap">
                 {isCompleted && (
                   <Button
                     colorScheme="brand"
                     onClick={handleViewPayments}
-                    minH="48px"
-                    px={8}
-                    borderRadius="lg"
-                    fontWeight="semibold"
-                    fontSize="md"
-                    _hover={{
-                      transform: 'translateY(-2px)',
-                      shadow: 'lg'
-                    }}
-                    transition="all 0.2s"
+                    minH="44px"
+                    maxW={{ base: '180px', md: 'none' }}
+                    fontSize={{ base: 'sm', md: 'md' }}
                   >
                     {t('payment.viewPayments', 'View Payments')}
                   </Button>
                 )}
                 <Button
+                  colorScheme="gray"
                   variant="outline"
                   onClick={handleGoBack}
-                  minH="48px"
-                  px={8}
-                  borderRadius="lg"
-                  fontWeight="semibold"
-                  fontSize="md"
+                  minH="44px"
+                  maxW={{ base: '140px', md: 'none' }}
                   leftIcon={<Icon as={ArrowLeft} boxSize={ICON_BOX_MD} aria-hidden="true" />}
-                  borderColor={borderColor}
-                  color={textSecondary}
-                  _hover={{
-                    bg: useColorModeValue('gray.100', 'gray.700'),
-                    transform: 'translateY(-2px)',
-                    shadow: 'md'
-                  }}
-                  transition="all 0.2s"
+                  fontSize={{ base: 'sm', md: 'md' }}
                 >
                   {t('common.goBack', 'Go Back')}
                 </Button>
