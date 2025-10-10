@@ -381,13 +381,9 @@ const CatalogTableEdit = ({
         isCentered
       >
         <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" />
-        <ModalContent 
-          borderRadius={{ base: '0', md: '16px' }}
-          boxShadow="2xl"
-          overflow="hidden"
-        >
-          <ModalHeader 
-            bg={resolvedHeaderBg} 
+        <ModalContent borderRadius={{ base: '0', md: '16px' }} boxShadow="2xl" overflow="hidden">
+          <ModalHeader
+            bg={resolvedHeaderBg}
             color={headerTextColor}
             py={4}
             px={6}
@@ -408,8 +404,8 @@ const CatalogTableEdit = ({
           />
           <ModalBody p={{ base: 4, md: 6 }} bg={bgGray900}>
             {selectedTypeInfo ? (
-              <Flex 
-                flexDir={{ base: 'column', md: 'row' }} 
+              <Flex
+                flexDir={{ base: 'column', md: 'row' }}
                 gap={6}
                 align={{ base: 'center', md: 'flex-start' }}
               >
@@ -460,11 +456,11 @@ const CatalogTableEdit = ({
                   minW={0}
                 >
                   <Flex mb={4} align="center" gap={3} flexWrap="wrap">
-                    <Badge 
-                      colorScheme="blue" 
-                      fontSize="sm" 
-                      px={3} 
-                      py={1} 
+                    <Badge
+                      colorScheme="blue"
+                      fontSize="sm"
+                      px={3}
+                      py={1}
                       borderRadius="full"
                       textTransform="uppercase"
                       letterSpacing="wide"
@@ -476,12 +472,7 @@ const CatalogTableEdit = ({
                     </Text>
                   </Flex>
                   {selectedTypeInfo.code && (
-                    <Box 
-                      mb={3} 
-                      borderBottom="1px solid" 
-                      borderColor={borderGray200} 
-                      pb={3}
-                    >
+                    <Box mb={3} borderBottom="1px solid" borderColor={borderGray200} pb={3}>
                       <Text as="span" color={textGray600} fontWeight="600" fontSize="sm">
                         {t('catalog.labels.code', 'Code')}:
                       </Text>{' '}
@@ -491,12 +482,7 @@ const CatalogTableEdit = ({
                     </Box>
                   )}
                   {selectedTypeInfo.name && (
-                    <Box 
-                      mb={3} 
-                      borderBottom="1px solid" 
-                      borderColor={borderGray200} 
-                      pb={3}
-                    >
+                    <Box mb={3} borderBottom="1px solid" borderColor={borderGray200} pb={3}>
                       <Text as="span" color={textGray600} fontWeight="600" fontSize="sm">
                         {t('catalog.labels.name', 'Name')}:
                       </Text>{' '}
@@ -506,12 +492,7 @@ const CatalogTableEdit = ({
                     </Box>
                   )}
                   {selectedTypeInfo.shortName && (
-                    <Box 
-                      mb={3} 
-                      borderBottom="1px solid" 
-                      borderColor={borderGray200} 
-                      pb={3}
-                    >
+                    <Box mb={3} borderBottom="1px solid" borderColor={borderGray200} pb={3}>
                       <Text as="span" color={textGray600} fontWeight="600" fontSize="sm">
                         {t('catalog.labels.short', 'Short')}:
                       </Text>{' '}
@@ -521,24 +502,19 @@ const CatalogTableEdit = ({
                     </Box>
                   )}
                   <Box mt={4}>
-                    <Text 
-                      as="strong" 
-                      color={textGray600} 
-                      display="block" 
+                    <Text
+                      as="strong"
+                      color={textGray600}
+                      display="block"
                       mb={3}
-                      fontSize="sm" 
+                      fontSize="sm"
                       fontWeight="600"
                       textTransform="uppercase"
                       letterSpacing="wide"
                     >
                       {t('catalog.labels.description', 'Description')}:
                     </Text>
-                    <Text 
-                      whiteSpace="pre-wrap" 
-                      lineHeight="1.7" 
-                      fontSize="md"
-                      color={textGray300}
-                    >
+                    <Text whiteSpace="pre-wrap" lineHeight="1.7" fontSize="md" color={textGray300}>
                       {selectedTypeInfo.longDescription ||
                         selectedTypeInfo.description ||
                         t('No description available for this type.')}
@@ -561,9 +537,9 @@ const CatalogTableEdit = ({
               </Box>
             )}
           </ModalBody>
-          <ModalFooter 
-            bg={bgGray900} 
-            borderTop="1px solid" 
+          <ModalFooter
+            bg={bgGray900}
+            borderTop="1px solid"
             borderTopColor={borderGray300}
             py={4}
             px={6}
@@ -899,12 +875,31 @@ const CatalogTableEdit = ({
                                     py={1}
                                     borderRadius="md"
                                     fontSize="xs"
-                                    cursor={readOnly || !subTypeRequirements.itemRequirements[idx]?.requiresHinge ? 'not-allowed' : 'pointer'}
+                                    cursor={
+                                      readOnly ||
+                                      !subTypeRequirements.itemRequirements[idx]?.requiresHinge
+                                        ? 'not-allowed'
+                                        : 'pointer'
+                                    }
                                     variant={item.hingeSide === opt ? 'solid' : 'outline'}
                                     colorScheme={item.hingeSide === opt ? 'brand' : 'gray'}
-                                    onClick={() => !readOnly && subTypeRequirements.itemRequirements[idx]?.requiresHinge && updateHingeSide(idx, opt)}
-                                    opacity={readOnly || !subTypeRequirements.itemRequirements[idx]?.requiresHinge ? 0.5 : 1}
-                                    _hover={!readOnly && subTypeRequirements.itemRequirements[idx]?.requiresHinge ? { opacity: 0.8 } : undefined}
+                                    onClick={() =>
+                                      !readOnly &&
+                                      subTypeRequirements.itemRequirements[idx]?.requiresHinge &&
+                                      updateHingeSide(idx, opt)
+                                    }
+                                    opacity={
+                                      readOnly ||
+                                      !subTypeRequirements.itemRequirements[idx]?.requiresHinge
+                                        ? 0.5
+                                        : 1
+                                    }
+                                    _hover={
+                                      !readOnly &&
+                                      subTypeRequirements.itemRequirements[idx]?.requiresHinge
+                                        ? { opacity: 0.8 }
+                                        : undefined
+                                    }
                                   >
                                     {codeToLabel(opt)}
                                   </Badge>
@@ -950,12 +945,31 @@ const CatalogTableEdit = ({
                                     py={1}
                                     borderRadius="md"
                                     fontSize="xs"
-                                    cursor={readOnly || !subTypeRequirements.itemRequirements[idx]?.requiresExposed ? 'not-allowed' : 'pointer'}
+                                    cursor={
+                                      readOnly ||
+                                      !subTypeRequirements.itemRequirements[idx]?.requiresExposed
+                                        ? 'not-allowed'
+                                        : 'pointer'
+                                    }
                                     variant={item.exposedSide === opt ? 'solid' : 'outline'}
                                     colorScheme={item.exposedSide === opt ? 'brand' : 'gray'}
-                                    onClick={() => !readOnly && subTypeRequirements.itemRequirements[idx]?.requiresExposed && updateExposedSide(idx, opt)}
-                                    opacity={readOnly || !subTypeRequirements.itemRequirements[idx]?.requiresExposed ? 0.5 : 1}
-                                    _hover={!readOnly && subTypeRequirements.itemRequirements[idx]?.requiresExposed ? { opacity: 0.8 } : undefined}
+                                    onClick={() =>
+                                      !readOnly &&
+                                      subTypeRequirements.itemRequirements[idx]?.requiresExposed &&
+                                      updateExposedSide(idx, opt)
+                                    }
+                                    opacity={
+                                      readOnly ||
+                                      !subTypeRequirements.itemRequirements[idx]?.requiresExposed
+                                        ? 0.5
+                                        : 1
+                                    }
+                                    _hover={
+                                      !readOnly &&
+                                      subTypeRequirements.itemRequirements[idx]?.requiresExposed
+                                        ? { opacity: 0.8 }
+                                        : undefined
+                                    }
                                   >
                                     {codeToLabel(opt)}
                                   </Badge>
@@ -1215,7 +1229,10 @@ const CatalogTableEdit = ({
               const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
               const assemblyFee = unitAssembly * qty
               const modsTotal = Array.isArray(item.modifications)
-                ? item.modifications.reduce((sum, mod) => sum + Number(mod.price || 0) * Number(mod.qty || 1), 0)
+                ? item.modifications.reduce(
+                    (sum, mod) => sum + Number(mod.price || 0) * Number(mod.qty || 1),
+                    0,
+                  )
                 : 0
               const total = Number(item.price || 0) * qty + assemblyFee + modsTotal
               const mobileTextProps = buildUnavailableTextProps(item)
@@ -1333,7 +1350,9 @@ const CatalogTableEdit = ({
                       <Text fontWeight="medium" color={textGray600}>
                         {t('proposalColumns.price')}
                       </Text>
-                      <Text {...mobileTextProps}>{formatPrice(item.unavailable ? 0 : item.price)}</Text>
+                      <Text {...mobileTextProps}>
+                        {formatPrice(item.unavailable ? 0 : item.price)}
+                      </Text>
                     </Flex>
 
                     {assembled && (
@@ -1356,7 +1375,9 @@ const CatalogTableEdit = ({
                             {subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge &&
                               (!item.hingeSide || item.hingeSide === '-') && (
                                 <Box color={textRed500} mb={2} fontSize="12px" fontWeight="bold">
-                                  {t('validation.selectHingeSide', { defaultValue: 'Select hinge side' })}
+                                  {t('validation.selectHingeSide', {
+                                    defaultValue: 'Select hinge side',
+                                  })}
                                 </Box>
                               )}
                             <Flex gap={2}>
@@ -1369,9 +1390,21 @@ const CatalogTableEdit = ({
                                   bg={item.hingeSide === opt ? headerBg : undefined}
                                   color={item.hingeSide === opt ? textColor : undefined}
                                   borderColor={item.hingeSide === opt ? headerBg : undefined}
-                                  onClick={() => !readOnly && subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge && updateHingeSide(rowIndex, opt)}
-                                  isDisabled={readOnly || !subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge}
-                                  opacity={readOnly || !subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge ? 0.5 : 1}
+                                  onClick={() =>
+                                    !readOnly &&
+                                    subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge &&
+                                    updateHingeSide(rowIndex, opt)
+                                  }
+                                  isDisabled={
+                                    readOnly ||
+                                    !subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge
+                                  }
+                                  opacity={
+                                    readOnly ||
+                                    !subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge
+                                      ? 0.5
+                                      : 1
+                                  }
                                 >
                                   {codeToLabel(opt)}
                                 </Button>
@@ -1398,7 +1431,9 @@ const CatalogTableEdit = ({
                             {subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed &&
                               (!item.exposedSide || item.exposedSide === '-') && (
                                 <Box color={textRed500} mb={2} fontSize="12px" fontWeight="bold">
-                                  {t('validation.selectExposedSide', { defaultValue: 'Select exposed finished side' })}
+                                  {t('validation.selectExposedSide', {
+                                    defaultValue: 'Select exposed finished side',
+                                  })}
                                 </Box>
                               )}
                             <Flex gap={2}>
@@ -1411,9 +1446,22 @@ const CatalogTableEdit = ({
                                   bg={item.exposedSide === opt ? headerBg : undefined}
                                   color={item.exposedSide === opt ? textColor : undefined}
                                   borderColor={item.exposedSide === opt ? headerBg : undefined}
-                                  onClick={() => !readOnly && subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed && updateExposedSide(rowIndex, opt)}
-                                  isDisabled={readOnly || !subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed}
-                                  opacity={readOnly || !subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed ? 0.5 : 1}
+                                  onClick={() =>
+                                    !readOnly &&
+                                    subTypeRequirements.itemRequirements[rowIndex]
+                                      ?.requiresExposed &&
+                                    updateExposedSide(rowIndex, opt)
+                                  }
+                                  isDisabled={
+                                    readOnly ||
+                                    !subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed
+                                  }
+                                  opacity={
+                                    readOnly ||
+                                    !subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed
+                                      ? 0.5
+                                      : 1
+                                  }
                                 >
                                   {codeToLabel(opt)}
                                 </Button>
@@ -1426,7 +1474,9 @@ const CatalogTableEdit = ({
                           <Text fontWeight="medium" color={textGray600}>
                             {t('proposalColumns.assemblyCost')}
                           </Text>
-                          <Text {...mobileTextProps}>{formatPrice(item.unavailable ? 0 : assemblyFee)}</Text>
+                          <Text {...mobileTextProps}>
+                            {formatPrice(item.unavailable ? 0 : assemblyFee)}
+                          </Text>
                         </Flex>
                       </>
                     )}
@@ -1509,7 +1559,9 @@ const CatalogTableEdit = ({
                             const details = buildSelectedOptionsText(mod?.selectedOptions)
                             return details ? <Text opacity={0.7}> - {details}</Text> : null
                           })()}
-                          <Text>{t('common.qty', 'Qty')}: {mod.qty}</Text>
+                          <Text>
+                            {t('common.qty', 'Qty')}: {mod.qty}
+                          </Text>
                         </Flex>
                         <Flex justify="space-between" fontSize="14px" mb={0}>
                           <Text>
@@ -1532,7 +1584,6 @@ const CatalogTableEdit = ({
           )}
         </Box>
       </Box>
-
     </Box>
   )
 }

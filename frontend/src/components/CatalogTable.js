@@ -5,7 +5,36 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { getContrastColor } from '../utils/colorUtils'
 import { checkSubTypeRequirements } from '../helpers/subTypeValidation'
-import { Badge, Checkbox, Image, Input, InputGroup, Modal, ModalBody, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalFooter, Icon, IconButton, Table, TableContainer, Thead, Tbody, Tr, Th, Td, Text, Button, Flex, Box, VStack, HStack, useColorModeValue } from '@chakra-ui/react'
+import {
+  Badge,
+  Checkbox,
+  Image,
+  Input,
+  InputGroup,
+  Modal,
+  ModalBody,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalFooter,
+  Icon,
+  IconButton,
+  Table,
+  TableContainer,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Text,
+  Button,
+  Flex,
+  Box,
+  VStack,
+  HStack,
+  useColorModeValue,
+} from '@chakra-ui/react'
 import { Copy, Settings, Trash, Wrench } from 'lucide-react'
 import axiosInstance from '../helpers/axiosInstance'
 import PageHeader from './PageHeader'
@@ -82,8 +111,6 @@ const DESKTOP_ROW_ESTIMATE = 340
 const MOBILE_VIRTUALIZATION_THRESHOLD = 60
 const MOBILE_CARD_ESTIMATE = 420
 
-
-
 const CatalogTable = ({
   catalogData,
   handleCatalogSelect,
@@ -123,37 +150,40 @@ const CatalogTable = ({
   const textColor = getContrastColor(headerBg)
 
   const headerBgFallback = useColorModeValue('brand.500', 'brand.400')
-  const resolvedHeaderBg = customization.headerBg && customization.headerBg.trim() ? customization.headerBg : headerBgFallback
+  const resolvedHeaderBg =
+    customization.headerBg && customization.headerBg.trim()
+      ? customization.headerBg
+      : headerBgFallback
   const headerTextColor = customization.headerFontColor || getContrastColor(resolvedHeaderBg)
 
   // Dark mode colors
-  const descriptionColor = useColorModeValue("gray.600", "gray.400")
-  const textRed500 = useColorModeValue("red.500", "red.300")
-  const textGreen500 = useColorModeValue("green.500", "green.300")
-  const borderGray400 = useColorModeValue("gray.400", "gray.600")
-  const rowBgEven = useColorModeValue("gray.50", "gray.700")
-  const rowBgOdd = useColorModeValue("white", "gray.800")
-  const rowBorder = useColorModeValue("gray.200", "gray.600")
-  const modalBorderColor = useColorModeValue("gray.300", "gray.600")
-  const modalBg = useColorModeValue("gray.50", "gray.800")
-  const borderColor = useColorModeValue("gray.200", "gray.600")
-  const labelColor = useColorModeValue("gray.600", "gray.400")
-  const modBg = useColorModeValue("gray.100", "gray.700")
-  const modTextColor = useColorModeValue("gray.800", "gray.200")
-  const modLabelColor = useColorModeValue("gray.600", "gray.400")
-  const modContainerBg = useColorModeValue("gray.50", "gray.800")
-  const cellTextColor = useColorModeValue("gray.500", "gray.400")
-  const dropdownBg = useColorModeValue("white", "gray.800")
-  const dropdownHoverBg = useColorModeValue("gray.100", "gray.700")
-  const textDanger = useColorModeValue("red.600", "red.400")
-  const textMuted = useColorModeValue("gray.500", "gray.400")
-  const modCategoryBg = useColorModeValue("gray.100", "gray.700")
-  const modItemBg = useColorModeValue("gray.50", "gray.800")
-  const modBorderColor = useColorModeValue("gray.300", "gray.600")
-  const settingsIconColor = useColorModeValue("blue.500", "blue.300")
-  const bgUnavailableRow = useColorModeValue("red.50", "red.900")
-  const textUnavailable = useColorModeValue("red.600", "red.400")
-  const bgValidationWarning = useColorModeValue("orange.50", "orange.900")
+  const descriptionColor = useColorModeValue('gray.600', 'gray.400')
+  const textRed500 = useColorModeValue('red.500', 'red.300')
+  const textGreen500 = useColorModeValue('green.500', 'green.300')
+  const borderGray400 = useColorModeValue('gray.400', 'gray.600')
+  const rowBgEven = useColorModeValue('gray.50', 'gray.700')
+  const rowBgOdd = useColorModeValue('white', 'gray.800')
+  const rowBorder = useColorModeValue('gray.200', 'gray.600')
+  const modalBorderColor = useColorModeValue('gray.300', 'gray.600')
+  const modalBg = useColorModeValue('gray.50', 'gray.800')
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const labelColor = useColorModeValue('gray.600', 'gray.400')
+  const modBg = useColorModeValue('gray.100', 'gray.700')
+  const modTextColor = useColorModeValue('gray.800', 'gray.200')
+  const modLabelColor = useColorModeValue('gray.600', 'gray.400')
+  const modContainerBg = useColorModeValue('gray.50', 'gray.800')
+  const cellTextColor = useColorModeValue('gray.500', 'gray.400')
+  const dropdownBg = useColorModeValue('white', 'gray.800')
+  const dropdownHoverBg = useColorModeValue('gray.100', 'gray.700')
+  const textDanger = useColorModeValue('red.600', 'red.400')
+  const textMuted = useColorModeValue('gray.500', 'gray.400')
+  const modCategoryBg = useColorModeValue('gray.100', 'gray.700')
+  const modItemBg = useColorModeValue('gray.50', 'gray.800')
+  const modBorderColor = useColorModeValue('gray.300', 'gray.600')
+  const settingsIconColor = useColorModeValue('blue.500', 'blue.300')
+  const bgUnavailableRow = useColorModeValue('red.50', 'red.900')
+  const textUnavailable = useColorModeValue('red.600', 'red.400')
+  const bgValidationWarning = useColorModeValue('orange.50', 'orange.900')
 
   const [partQuery, setPartQuery] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -350,9 +380,9 @@ const CatalogTable = ({
         <Box
           position="relative"
           flex="1"
-          minW={{ base: "100%", md: "200px" }}
-          maxW={{ base: "100%", md: "600px" }}
-          w={{ base: "100%", md: "auto" }}
+          minW={{ base: '100%', md: '200px' }}
+          maxW={{ base: '100%', md: '600px' }}
+          w={{ base: '100%', md: 'auto' }}
           ref={searchContainerRef}
         >
           <InputGroup>
@@ -407,7 +437,10 @@ const CatalogTable = ({
                     py={1}
                     fontWeight="normal"
                   >
-                    <Text as="span" fontWeight="bold">{item.code}</Text> - {item.description}
+                    <Text as="span" fontWeight="bold">
+                      {item.code}
+                    </Text>{' '}
+                    - {item.description}
                   </Button>
                   {hasTypeMetadata(item.type) && (
                     <Button
@@ -452,7 +485,9 @@ const CatalogTable = ({
               onClick={handleCopy}
               _hover={{ bg: useColorModeValue('blue.50', 'blue.900') }}
             />
-            <Text fontWeight="bold" fontSize="md">{t('proposalUI.copy')}</Text>
+            <Text fontWeight="bold" fontSize="md">
+              {t('proposalUI.copy')}
+            </Text>
           </Flex>
 
           <Checkbox
@@ -465,9 +500,9 @@ const CatalogTable = ({
 
         <Box
           flexShrink={0}
-          minW={{ base: "100%", md: "200px" }}
-          maxW={{ base: "100%", md: "240px" }}
-          w={{ base: "100%", md: "full" }}
+          minW={{ base: '100%', md: '200px' }}
+          maxW={{ base: '100%', md: '240px' }}
+          w={{ base: '100%', md: 'full' }}
         >
           <InputGroup>
             <Input
@@ -490,13 +525,9 @@ const CatalogTable = ({
         isCentered
       >
         <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" />
-        <ModalContent 
-          borderRadius={{ base: '0', md: '16px' }}
-          boxShadow="2xl"
-          overflow="hidden"
-        >
-          <ModalHeader 
-            bg={resolvedHeaderBg} 
+        <ModalContent borderRadius={{ base: '0', md: '16px' }} boxShadow="2xl" overflow="hidden">
+          <ModalHeader
+            bg={resolvedHeaderBg}
             color={headerTextColor}
             py={4}
             px={6}
@@ -507,8 +538,8 @@ const CatalogTable = ({
               {selectedTypeInfo?.type || 'Type Specifications'}
             </Text>
           </ModalHeader>
-          <ModalCloseButton 
-            aria-label={t('common.ariaLabels.closeModal', 'Close modal')} 
+          <ModalCloseButton
+            aria-label={t('common.ariaLabels.closeModal', 'Close modal')}
             color={headerTextColor}
             size="lg"
             top={4}
@@ -516,163 +547,148 @@ const CatalogTable = ({
             _hover={{ bg: 'whiteAlpha.200' }}
           />
           <ModalBody p={{ base: 4, md: 6 }} bg={useColorModeValue('gray.50', 'gray.900')}>
-          {selectedTypeInfo ? (
-            <Flex 
-              flexDir={{ base: 'column', md: 'row' }} 
-              gap={6}
-              align={{ base: 'center', md: 'flex-start' }}
-            >
+            {selectedTypeInfo ? (
+              <Flex
+                flexDir={{ base: 'column', md: 'row' }}
+                gap={6}
+                align={{ base: 'center', md: 'flex-start' }}
+              >
+                <Box
+                  textAlign="center"
+                  border="2px solid"
+                  borderColor={modalBorderColor}
+                  borderRadius="xl"
+                  p={4}
+                  bg={useColorModeValue('white', 'gray.800')}
+                  w="full"
+                  maxW={{ base: '100%', md: '420px' }}
+                  boxShadow="md"
+                  transition="all 0.2s"
+                  _hover={{ boxShadow: 'lg' }}
+                >
+                  <Image
+                    src={
+                      selectedTypeInfo.image
+                        ? `${api_url}/uploads/types/${selectedTypeInfo.image}`
+                        : '/images/nologo.png'
+                    }
+                    alt={selectedTypeInfo.type}
+                    maxW="100%"
+                    h="auto"
+                    maxH="400px"
+                    objectFit="contain"
+                    bg="white"
+                    borderRadius="lg"
+                    onError={(e) => {
+                      if (selectedTypeInfo.image && !e.target.dataset.fallbackTried) {
+                        e.target.dataset.fallbackTried = '1'
+                        e.target.src = `${api_url}/uploads/manufacturer_catalogs/${selectedTypeInfo.image}`
+                      } else {
+                        e.target.src = '/images/nologo.png'
+                      }
+                    }}
+                  />
+                </Box>
+                <Box
+                  flex="1"
+                  border="2px solid"
+                  borderColor={modalBorderColor}
+                  borderRadius="xl"
+                  p={5}
+                  bg={useColorModeValue('white', 'gray.800')}
+                  boxShadow="md"
+                  minW={0}
+                >
+                  <Flex mb={4} align="center" gap={3} flexWrap="wrap">
+                    <Badge
+                      colorScheme="blue"
+                      fontSize="sm"
+                      px={3}
+                      py={1}
+                      borderRadius="full"
+                      textTransform="uppercase"
+                      letterSpacing="wide"
+                    >
+                      {t('Type')}
+                    </Badge>
+                    <Text as="strong" fontSize="xl" fontWeight="600">
+                      {selectedTypeInfo.type}
+                    </Text>
+                  </Flex>
+                  {selectedTypeInfo.code && (
+                    <Box mb={3} borderBottom="1px solid" borderColor={borderColor} pb={3}>
+                      <Text as="span" color={labelColor} fontWeight="600" fontSize="sm">
+                        {t('catalog.labels.code', 'Code')}:
+                      </Text>{' '}
+                      <Text as="span" fontWeight="600" fontSize="md">
+                        {selectedTypeInfo.code}
+                      </Text>
+                    </Box>
+                  )}
+                  {selectedTypeInfo.name && (
+                    <Box mb={3} borderBottom="1px solid" borderColor={borderColor} pb={3}>
+                      <Text as="span" color={labelColor} fontWeight="600" fontSize="sm">
+                        {t('catalog.labels.name', 'Name')}:
+                      </Text>{' '}
+                      <Text as="span" fontWeight="600" fontSize="md">
+                        {selectedTypeInfo.name}
+                      </Text>
+                    </Box>
+                  )}
+                  {selectedTypeInfo.shortName && (
+                    <Box mb={3} borderBottom="1px solid" borderColor={borderColor} pb={3}>
+                      <Text as="span" color={labelColor} fontWeight="600" fontSize="sm">
+                        {t('catalog.labels.short', 'Short')}:
+                      </Text>{' '}
+                      <Text as="span" fontWeight="600" fontSize="md">
+                        {selectedTypeInfo.shortName}
+                      </Text>
+                    </Box>
+                  )}
+                  <Box mt={4}>
+                    <Text
+                      as="strong"
+                      color={labelColor}
+                      display="block"
+                      mb={3}
+                      fontSize="sm"
+                      fontWeight="600"
+                      textTransform="uppercase"
+                      letterSpacing="wide"
+                    >
+                      {t('catalog.labels.description', 'Description')}
+                    </Text>
+                    <Text
+                      whiteSpace="pre-wrap"
+                      lineHeight="1.7"
+                      fontSize="md"
+                      color={useColorModeValue('gray.700', 'gray.300')}
+                    >
+                      {selectedTypeInfo.longDescription ||
+                        selectedTypeInfo.description ||
+                        t('No description available for this type.')}
+                    </Text>
+                  </Box>
+                </Box>
+              </Flex>
+            ) : (
               <Box
+                color={labelColor}
                 textAlign="center"
+                p={6}
                 border="2px solid"
                 borderColor={modalBorderColor}
                 borderRadius="xl"
-                p={4}
-                bg={useColorModeValue('white', 'gray.800')}
-                w="full"
-                maxW={{ base: '100%', md: '420px' }}
-                boxShadow="md"
-                transition="all 0.2s"
-                _hover={{ boxShadow: 'lg' }}
-              >
-                <Image
-                  src={
-                    selectedTypeInfo.image
-                      ? `${api_url}/uploads/types/${selectedTypeInfo.image}`
-                      : '/images/nologo.png'
-                  }
-                  alt={selectedTypeInfo.type}
-                  maxW="100%"
-                  h="auto"
-                  maxH="400px"
-                  objectFit="contain"
-                  bg="white"
-                  borderRadius="lg"
-                  onError={(e) => {
-                    if (selectedTypeInfo.image && !e.target.dataset.fallbackTried) {
-                      e.target.dataset.fallbackTried = '1'
-                      e.target.src = `${api_url}/uploads/manufacturer_catalogs/${selectedTypeInfo.image}`
-                    } else {
-                      e.target.src = '/images/nologo.png'
-                    }
-                  }}
-                />
-              </Box>
-              <Box 
-                flex="1" 
-                border="2px solid" 
-                borderColor={modalBorderColor} 
-                borderRadius="xl" 
-                p={5} 
                 bg={useColorModeValue('white', 'gray.800')}
                 boxShadow="md"
-                minW={0}
               >
-                <Flex mb={4} align="center" gap={3} flexWrap="wrap">
-                  <Badge 
-                    colorScheme="blue" 
-                    fontSize="sm" 
-                    px={3} 
-                    py={1} 
-                    borderRadius="full"
-                    textTransform="uppercase"
-                    letterSpacing="wide"
-                  >
-                    {t('Type')}
-                  </Badge>
-                  <Text as="strong" fontSize="xl" fontWeight="600">
-                    {selectedTypeInfo.type}
-                  </Text>
-                </Flex>
-                {selectedTypeInfo.code && (
-                  <Box 
-                    mb={3} 
-                    borderBottom="1px solid" 
-                    borderColor={borderColor} 
-                    pb={3}
-                  >
-                    <Text as="span" color={labelColor} fontWeight="600" fontSize="sm">
-                      {t('catalog.labels.code', 'Code')}:
-                    </Text>{' '}
-                    <Text as="span" fontWeight="600" fontSize="md">
-                      {selectedTypeInfo.code}
-                    </Text>
-                  </Box>
-                )}
-                {selectedTypeInfo.name && (
-                  <Box 
-                    mb={3} 
-                    borderBottom="1px solid" 
-                    borderColor={borderColor} 
-                    pb={3}
-                  >
-                    <Text as="span" color={labelColor} fontWeight="600" fontSize="sm">
-                      {t('catalog.labels.name', 'Name')}:
-                    </Text>{' '}
-                    <Text as="span" fontWeight="600" fontSize="md">
-                      {selectedTypeInfo.name}
-                    </Text>
-                  </Box>
-                )}
-                {selectedTypeInfo.shortName && (
-                  <Box 
-                    mb={3} 
-                    borderBottom="1px solid" 
-                    borderColor={borderColor} 
-                    pb={3}
-                  >
-                    <Text as="span" color={labelColor} fontWeight="600" fontSize="sm">
-                      {t('catalog.labels.short', 'Short')}:
-                    </Text>{' '}
-                    <Text as="span" fontWeight="600" fontSize="md">
-                      {selectedTypeInfo.shortName}
-                    </Text>
-                  </Box>
-                )}
-                <Box mt={4}>
-                  <Text 
-                    as="strong" 
-                    color={labelColor} 
-                    display="block" 
-                    mb={3} 
-                    fontSize="sm" 
-                    fontWeight="600"
-                    textTransform="uppercase"
-                    letterSpacing="wide"
-                  >
-                    {t('catalog.labels.description', 'Description')}
-                  </Text>
-                  <Text 
-                    whiteSpace="pre-wrap" 
-                    lineHeight="1.7" 
-                    fontSize="md"
-                    color={useColorModeValue('gray.700', 'gray.300')}
-                  >
-                    {selectedTypeInfo.longDescription ||
-                      selectedTypeInfo.description ||
-                      t('No description available for this type.')}
-                  </Text>
-                </Box>
+                {t('No type information available.')}
               </Box>
-            </Flex>
-          ) : (
-            <Box 
-              color={labelColor} 
-              textAlign="center" 
-              p={6} 
-              border="2px solid" 
-              borderColor={modalBorderColor} 
-              borderRadius="xl" 
-              bg={useColorModeValue('white', 'gray.800')}
-              boxShadow="md"
-            >
-              {t('No type information available.')}
-            </Box>
-          )}
+            )}
           </ModalBody>
-          <ModalFooter 
-            bg={useColorModeValue('gray.50', 'gray.900')} 
-            borderTop="1px solid" 
+          <ModalFooter
+            bg={useColorModeValue('gray.50', 'gray.900')}
+            borderTop="1px solid"
             borderTopColor={modalBorderColor}
             py={4}
             px={6}
@@ -699,540 +715,576 @@ const CatalogTable = ({
         <TableCard
           containerProps={{
             ref: desktopVirtual.containerRef,
-            maxH: desktopVirtual.enabled ? { base: "unset", lg: "70vh" } : undefined,
-            overflowY: desktopVirtual.enabled ? "auto" : "visible",
+            maxH: desktopVirtual.enabled ? { base: 'unset', lg: '70vh' } : undefined,
+            overflowY: desktopVirtual.enabled ? 'auto' : 'visible',
           }}
         >
           <Table variant="simple" layout="auto" w="full">
-          <Thead>
-            <Tr>
-              <Th>{t('proposalColumns.no')}</Th>
-              <Th>{t('proposalColumns.qty')}</Th>
-              <Th>{t('proposalColumns.item')}</Th>
-              {subTypeRequirements.requiresHinge && (
-                <Th
-                  bg="red.50"
-                  color="red.600"
-                  fontWeight="bold"
-                >
-                  {t('proposalColumns.hingeSide')}
-                </Th>
-              )}
-              {subTypeRequirements.requiresExposed && (
-                <Th
-                  bg="red.50"
-                  color="red.600"
-                  fontWeight="bold"
-                >
-                  {t('proposalColumns.exposedSide')}
-                </Th>
-              )}
-              <Th textAlign="right">{t('proposalColumns.price')}</Th>
-              <Th textAlign="right">{t('proposalColumns.assemblyCost')}</Th>
-              <Th textAlign="right">
-                {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
-              </Th>
-              <Th textAlign="right">{t('proposalColumns.total')}</Th>
-              <Th>{t('proposals.headers.actions')}</Th>
-            </Tr>
-          </Thead>
-
-          <Tbody>
-            {desktopVirtual.enabled && desktopVirtual.paddingTop > 0 && (
+            <Thead>
               <Tr>
-                <Td colSpan={tableColumnCount} p={0} style={{ height: `${desktopVirtual.paddingTop}px` }} />
+                <Th>{t('proposalColumns.no')}</Th>
+                <Th>{t('proposalColumns.qty')}</Th>
+                <Th>{t('proposalColumns.item')}</Th>
+                {subTypeRequirements.requiresHinge && (
+                  <Th bg="red.50" color="red.600" fontWeight="bold">
+                    {t('proposalColumns.hingeSide')}
+                  </Th>
+                )}
+                {subTypeRequirements.requiresExposed && (
+                  <Th bg="red.50" color="red.600" fontWeight="bold">
+                    {t('proposalColumns.exposedSide')}
+                  </Th>
+                )}
+                <Th textAlign="right">{t('proposalColumns.price')}</Th>
+                <Th textAlign="right">{t('proposalColumns.assemblyCost')}</Th>
+                <Th textAlign="right">
+                  {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
+                </Th>
+                <Th textAlign="right">{t('proposalColumns.total')}</Th>
+                <Th>{t('proposals.headers.actions')}</Th>
               </Tr>
-            )}
-            {desktopItems.map((item, virtualIdx) => {
-              const rowIndex = desktopStartIndex + virtualIdx
-              // Use global assembled toggle only; assembly fee applies automatically when on
-              const assembled = !!isAssembled
-              const qty = Number(item.qty || 1)
-              const isUnavailable = !!item.unavailable
-              const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
-              const assemblyFee = isUnavailable ? 0 : unitAssembly * qty
-              const modsTotal = Array.isArray(item.modifications)
-                ? item.modifications.reduce(
-                    (s, m) => s + Number(m.price || 0) * Number(m.qty || 1),
-                    0,
-                  )
-                : 0
-              const total =
-                (isUnavailable ? 0 : Number(item.price || 0) * qty) + assemblyFee + modsTotal
+            </Thead>
 
-              return (
-                <React.Fragment key={`desktop-${rowIndex}`}>
-                  <Tr
-                    bg={rowIndex % 2 === 0 ? rowBgEven : rowBgOdd}
-                    borderBottom="2px solid"
-                    borderBottomColor={rowBorder}
-                    borderTop={rowIndex === 0 ? "2px solid" : "none"}
-                    borderTopColor={rowIndex === 0 ? rowBorder : "transparent"}
-                  >
-                    <Td w="56px">
-                      <Flex
-                        display="inline-flex"
-                        align="center"
-                        justify="center"
-                        minW="36px"
-                        h="28px"
-                        px="10px"
-                        borderRadius="full"
-                        bg={headerBg}
-                        color={textColor}
-                        fontWeight={700}
-                        fontSize="16px"
-                        letterSpacing="0.2px"
-                        boxShadow="sm"
-                        title={`Row ${rowIndex + 1}`}
-                      >
-                        {rowIndex + 1}
-                      </Flex>
-                    </Td>
-                    <Td>
-                      <Input
-                        type="number"
-                        min="1"
-                        value={item.qty}
-                        onChange={(e) => updateQty(rowIndex, parseInt(e.target.value))}
-                        w="70px"
-                        textAlign="center"
-                      />
-                    </Td>
+            <Tbody>
+              {desktopVirtual.enabled && desktopVirtual.paddingTop > 0 && (
+                <Tr>
+                  <Td
+                    colSpan={tableColumnCount}
+                    p={0}
+                    style={{ height: `${desktopVirtual.paddingTop}px` }}
+                  />
+                </Tr>
+              )}
+              {desktopItems.map((item, virtualIdx) => {
+                const rowIndex = desktopStartIndex + virtualIdx
+                // Use global assembled toggle only; assembly fee applies automatically when on
+                const assembled = !!isAssembled
+                const qty = Number(item.qty || 1)
+                const isUnavailable = !!item.unavailable
+                const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
+                const assemblyFee = isUnavailable ? 0 : unitAssembly * qty
+                const modsTotal = Array.isArray(item.modifications)
+                  ? item.modifications.reduce(
+                      (s, m) => s + Number(m.price || 0) * Number(m.qty || 1),
+                      0,
+                    )
+                  : 0
+                const total =
+                  (isUnavailable ? 0 : Number(item.price || 0) * qty) + assemblyFee + modsTotal
 
-                    <Td
-                      color={isUnavailable ? textUnavailable : undefined}
-                      textDecoration={isUnavailable ? 'line-through' : undefined}
+                return (
+                  <React.Fragment key={`desktop-${rowIndex}`}>
+                    <Tr
+                      bg={rowIndex % 2 === 0 ? rowBgEven : rowBgOdd}
+                      borderBottom="2px solid"
+                      borderBottomColor={rowBorder}
+                      borderTop={rowIndex === 0 ? '2px solid' : 'none'}
+                      borderTopColor={rowIndex === 0 ? rowBorder : 'transparent'}
                     >
-                      <Flex
-                        align="center"
-                        gap={2}
-                        flexWrap="wrap"
-                        minW={0}
-                      >
-                        <Text
-                          whiteSpace="nowrap"
-                          overflow="hidden"
-                          textOverflow="ellipsis"
-                          maxW="320px"
+                      <Td w="56px">
+                        <Flex
+                          display="inline-flex"
+                          align="center"
+                          justify="center"
+                          minW="36px"
+                          h="28px"
+                          px="10px"
+                          borderRadius="full"
+                          bg={headerBg}
+                          color={textColor}
+                          fontWeight={700}
+                          fontSize="16px"
+                          letterSpacing="0.2px"
+                          boxShadow="sm"
+                          title={`Row ${rowIndex + 1}`}
                         >
-                          <Text as="span" fontWeight="bold">{item.code}</Text>
-                          {item.description ? (
-                            <Text as="span" color={descriptionColor} ml={1}>- {item.description}</Text>
-                          ) : null}
-                        </Text>
-                        {(() => {
-                          try {
-                            const attachmentsCount = Array.isArray(item.modifications)
-                              ? item.modifications.reduce(
-                                  (n, m) =>
-                                    n + (Array.isArray(m.attachments) ? m.attachments.length : 0),
-                                  0,
-                                )
-                              : 0
-                            return attachmentsCount > 0 ? (
-                              <Badge
-                                colorScheme="blue"
-                                title={`${attachmentsCount} attachment${attachmentsCount > 1 ? 's' : ''}`}
-                              >
-                                {attachmentsCount}
-                              </Badge>
-                            ) : null
-                          } catch (_) {
-                            return null
-                          }
-                        })()}
-                        {hasTypeMetadata(item.type) && (
-                          <Button
-                            size="xs"
-                            variant="solid"
-                            colorScheme="blue"
-                            fontSize="xs"
-                            px={3}
-                            py={1.5}
-                            onClick={() => openTypeModal(item.type)}
-                            title={`View ${item.type} specifications`}
-                            borderRadius="md"
-                            fontWeight="600"
-                            boxShadow="sm"
-                            _hover={{ boxShadow: 'md', transform: 'translateY(-1px)' }}
-                            transition="all 0.2s"
+                          {rowIndex + 1}
+                        </Flex>
+                      </Td>
+                      <Td>
+                        <Input
+                          type="number"
+                          min="1"
+                          value={item.qty}
+                          onChange={(e) => updateQty(rowIndex, parseInt(e.target.value))}
+                          w="70px"
+                          textAlign="center"
+                        />
+                      </Td>
+
+                      <Td
+                        color={isUnavailable ? textUnavailable : undefined}
+                        textDecoration={isUnavailable ? 'line-through' : undefined}
+                      >
+                        <Flex align="center" gap={2} flexWrap="wrap" minW={0}>
+                          <Text
+                            whiteSpace="nowrap"
+                            overflow="hidden"
+                            textOverflow="ellipsis"
+                            maxW="320px"
                           >
-                            Specs
-                          </Button>
-                        )}
-                      </Flex>
-                    </Td>
-
-                    {subTypeRequirements.requiresHinge && (
-                      <Td
-                        bg={
-                          subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge &&
-                          (!item.hingeSide || item.hingeSide === '-')
-                            ? bgValidationWarning
-                            : 'transparent'
-                        }
-                        px={2}
-                        py={2}
-                      >
-                        {assembled ? (
-                          <VStack align="stretch" spacing={1}>
-                            {subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge &&
-                              (!item.hingeSide || item.hingeSide === '-') && (
-                                <Text
-                                  color={textRed500}
-                                  fontSize="2xs"
-                                  fontWeight="medium"
-                                  lineHeight="1.2"
-                                  mb={1}
-                                >
-                                  {t('validation.selectHingeSide', {
-                                    defaultValue: 'Select hinge side',
-                                  })}
-                                </Text>
-                              )}
-                            <HStack spacing={1} flexWrap="wrap">
-                              {hingeOptions.map((opt) => (
+                            <Text as="span" fontWeight="bold">
+                              {item.code}
+                            </Text>
+                            {item.description ? (
+                              <Text as="span" color={descriptionColor} ml={1}>
+                                - {item.description}
+                              </Text>
+                            ) : null}
+                          </Text>
+                          {(() => {
+                            try {
+                              const attachmentsCount = Array.isArray(item.modifications)
+                                ? item.modifications.reduce(
+                                    (n, m) =>
+                                      n + (Array.isArray(m.attachments) ? m.attachments.length : 0),
+                                    0,
+                                  )
+                                : 0
+                              return attachmentsCount > 0 ? (
                                 <Badge
-                                  key={opt}
-                                  px={2}
-                                  py={1}
-                                  borderRadius="md"
-                                  fontSize="xs"
-                                  cursor={subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge ? "pointer" : "not-allowed"}
-                                  variant={item.hingeSide === opt ? 'solid' : 'outline'}
-                                  colorScheme={item.hingeSide === opt ? 'brand' : 'gray'}
-                                  onClick={() => subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge && updateHingeSide(rowIndex, opt)}
-                                  opacity={subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge ? 1 : 0.5}
-                                  _hover={subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge ? { opacity: 0.8 } : {}}
+                                  colorScheme="blue"
+                                  title={`${attachmentsCount} attachment${attachmentsCount > 1 ? 's' : ''}`}
                                 >
-                                  {codeToLabel(opt)}
+                                  {attachmentsCount}
                                 </Badge>
-                              ))}
-                            </HStack>
-                          </VStack>
-                        ) : (
-                          t('common.na')
-                        )}
-                      </Td>
-                    )}
-
-                    {subTypeRequirements.requiresExposed && (
-                      <Td
-                        px={2}
-                        py={2}
-                        bg={
-                          subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed &&
-                          (!item.exposedSide || item.exposedSide === '-')
-                            ? bgValidationWarning
-                            : 'transparent'
-                        }
-                      >
-                        {assembled ? (
-                          <VStack align="stretch" spacing={1}>
-                            {subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed &&
-                              (!item.exposedSide || item.exposedSide === '-') && (
-                                <Text
-                                  color={textRed500}
-                                  fontSize="2xs"
-                                  fontWeight="medium"
-                                  lineHeight="1.2"
-                                  mb={1}
-                                >
-                                  {t('validation.selectExposedSide', {
-                                    defaultValue: 'Select exposed finished side',
-                                  })}
-                                </Text>
-                              )}
-                            <HStack spacing={1} flexWrap="wrap">
-                              {exposedOptions.map((opt) => (
-                                <Badge
-                                  key={opt}
-                                  px={2}
-                                  py={1}
-                                  borderRadius="md"
-                                  fontSize="xs"
-                                  cursor={subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed ? "pointer" : "not-allowed"}
-                                  variant={item.exposedSide === opt ? 'solid' : 'outline'}
-                                  colorScheme={item.exposedSide === opt ? 'brand' : 'gray'}
-                                  onClick={() => subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed && updateExposedSide(rowIndex, opt)}
-                                  opacity={subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed ? 1 : 0.5}
-                                  _hover={subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed ? { opacity: 0.8 } : {}}
-                                >
-                                  {codeToLabel(opt)}
-                                </Badge>
-                              ))}
-                            </HStack>
-                          </VStack>
-                        ) : (
-                          t('common.na')
-                        )}
-                      </Td>
-                    )}
-
-                    <Td
-                      textAlign="right"
-                      color={isUnavailable ? textUnavailable : undefined}
-                      textDecoration={isUnavailable ? 'line-through' : undefined}
-                    >
-                      {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
-                    </Td>
-
-                    <Td textAlign="right">
-                      {assembled ? (
-                        <Text as="span">{formatPrice(assemblyFee)}</Text>
-                      ) : (
-                        <Text as="span" color={textMuted}>{formatPrice(0)}</Text>
-                      )}
-                    </Td>
-
-                    <Td textAlign="right">{formatPrice(modsTotal)}</Td>
-
-                    <Td
-                      textAlign="right"
-                      color={isUnavailable ? textUnavailable : undefined}
-                      textDecoration={isUnavailable ? 'line-through' : undefined}
-                    >
-                      {formatPrice(total)}
-                    </Td>
-
-                    <Td>
-                      <Flex align="center" gap={2}>
-                        <IconButton
-                          icon={<Icon as={Settings} />}
-                          size="md"
-                          variant="ghost"
-                          colorScheme="blue"
-                          aria-label={t('proposalUI.modifications', 'Modifications')}
-                          onClick={() => handleOpenModificationModal(rowIndex, item.id)}
-                          _hover={{ bg: useColorModeValue('blue.50', 'blue.900') }}
-                        />
-                        <IconButton
-                          icon={<Icon as={Trash} />}
-                          size="md"
-                          variant="ghost"
-                          colorScheme="red"
-                          aria-label={t('common.delete', 'Delete')}
-                          onClick={() => handleDelete(rowIndex)}
-                          _hover={{ bg: useColorModeValue('red.50', 'red.900') }}
-                        />
-                      </Flex>
-                    </Td>
-                  </Tr>
-                  {Array.isArray(item.modifications) &&
-                    item.modifications.length > 0 &&
-                    (() => {
-                      const groups = item.modifications.reduce((acc, m) => {
-                        const key = m.categoryName || 'Other'
-                        acc[key] = acc[key] || []
-                        acc[key].push(m)
-                        return acc
-                      }, {})
-                      const groupKeys = Object.keys(groups)
-                      return (
-                        <>
-                          <Tr>
-                            <Td
-                              colSpan={10}
-                              fontSize="sm"
-                              bg={headerBg}
-                              color={textColor}
-                              p="8px 16px"
-                              pl="56px"
-                              borderTop={`2px solid ${headerBg}`}
-                              borderLeft={`6px solid ${headerBg}`}
-                              borderTopLeftRadius="6px"
-                              borderTopRightRadius="6px"
-                              boxShadow="inset 0 0 0 1px var(--chakra-colors-blackAlpha-50)"
+                              ) : null
+                            } catch (_) {
+                              return null
+                            }
+                          })()}
+                          {hasTypeMetadata(item.type) && (
+                            <Button
+                              size="xs"
+                              variant="solid"
+                              colorScheme="blue"
+                              fontSize="xs"
+                              px={3}
+                              py={1.5}
+                              onClick={() => openTypeModal(item.type)}
+                              title={`View ${item.type} specifications`}
+                              borderRadius="md"
+                              fontWeight="600"
+                              boxShadow="sm"
+                              _hover={{ boxShadow: 'md', transform: 'translateY(-1px)' }}
+                              transition="all 0.2s"
                             >
-                              <Icon
-                                as={Wrench}
-                                mr={2}
-                                boxSize={3.5}
+                              Specs
+                            </Button>
+                          )}
+                        </Flex>
+                      </Td>
+
+                      {subTypeRequirements.requiresHinge && (
+                        <Td
+                          bg={
+                            subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge &&
+                            (!item.hingeSide || item.hingeSide === '-')
+                              ? bgValidationWarning
+                              : 'transparent'
+                          }
+                          px={2}
+                          py={2}
+                        >
+                          {assembled ? (
+                            <VStack align="stretch" spacing={1}>
+                              {subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge &&
+                                (!item.hingeSide || item.hingeSide === '-') && (
+                                  <Text
+                                    color={textRed500}
+                                    fontSize="2xs"
+                                    fontWeight="medium"
+                                    lineHeight="1.2"
+                                    mb={1}
+                                  >
+                                    {t('validation.selectHingeSide', {
+                                      defaultValue: 'Select hinge side',
+                                    })}
+                                  </Text>
+                                )}
+                              <HStack spacing={1} flexWrap="wrap">
+                                {hingeOptions.map((opt) => (
+                                  <Badge
+                                    key={opt}
+                                    px={2}
+                                    py={1}
+                                    borderRadius="md"
+                                    fontSize="xs"
+                                    cursor={
+                                      subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge
+                                        ? 'pointer'
+                                        : 'not-allowed'
+                                    }
+                                    variant={item.hingeSide === opt ? 'solid' : 'outline'}
+                                    colorScheme={item.hingeSide === opt ? 'brand' : 'gray'}
+                                    onClick={() =>
+                                      subTypeRequirements.itemRequirements[rowIndex]
+                                        ?.requiresHinge && updateHingeSide(rowIndex, opt)
+                                    }
+                                    opacity={
+                                      subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge
+                                        ? 1
+                                        : 0.5
+                                    }
+                                    _hover={
+                                      subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge
+                                        ? { opacity: 0.8 }
+                                        : {}
+                                    }
+                                  >
+                                    {codeToLabel(opt)}
+                                  </Badge>
+                                ))}
+                              </HStack>
+                            </VStack>
+                          ) : (
+                            t('common.na')
+                          )}
+                        </Td>
+                      )}
+
+                      {subTypeRequirements.requiresExposed && (
+                        <Td
+                          px={2}
+                          py={2}
+                          bg={
+                            subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed &&
+                            (!item.exposedSide || item.exposedSide === '-')
+                              ? bgValidationWarning
+                              : 'transparent'
+                          }
+                        >
+                          {assembled ? (
+                            <VStack align="stretch" spacing={1}>
+                              {subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed &&
+                                (!item.exposedSide || item.exposedSide === '-') && (
+                                  <Text
+                                    color={textRed500}
+                                    fontSize="2xs"
+                                    fontWeight="medium"
+                                    lineHeight="1.2"
+                                    mb={1}
+                                  >
+                                    {t('validation.selectExposedSide', {
+                                      defaultValue: 'Select exposed finished side',
+                                    })}
+                                  </Text>
+                                )}
+                              <HStack spacing={1} flexWrap="wrap">
+                                {exposedOptions.map((opt) => (
+                                  <Badge
+                                    key={opt}
+                                    px={2}
+                                    py={1}
+                                    borderRadius="md"
+                                    fontSize="xs"
+                                    cursor={
+                                      subTypeRequirements.itemRequirements[rowIndex]
+                                        ?.requiresExposed
+                                        ? 'pointer'
+                                        : 'not-allowed'
+                                    }
+                                    variant={item.exposedSide === opt ? 'solid' : 'outline'}
+                                    colorScheme={item.exposedSide === opt ? 'brand' : 'gray'}
+                                    onClick={() =>
+                                      subTypeRequirements.itemRequirements[rowIndex]
+                                        ?.requiresExposed && updateExposedSide(rowIndex, opt)
+                                    }
+                                    opacity={
+                                      subTypeRequirements.itemRequirements[rowIndex]
+                                        ?.requiresExposed
+                                        ? 1
+                                        : 0.5
+                                    }
+                                    _hover={
+                                      subTypeRequirements.itemRequirements[rowIndex]
+                                        ?.requiresExposed
+                                        ? { opacity: 0.8 }
+                                        : {}
+                                    }
+                                  >
+                                    {codeToLabel(opt)}
+                                  </Badge>
+                                ))}
+                              </HStack>
+                            </VStack>
+                          ) : (
+                            t('common.na')
+                          )}
+                        </Td>
+                      )}
+
+                      <Td
+                        textAlign="right"
+                        color={isUnavailable ? textUnavailable : undefined}
+                        textDecoration={isUnavailable ? 'line-through' : undefined}
+                      >
+                        {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
+                      </Td>
+
+                      <Td textAlign="right">
+                        {assembled ? (
+                          <Text as="span">{formatPrice(assemblyFee)}</Text>
+                        ) : (
+                          <Text as="span" color={textMuted}>
+                            {formatPrice(0)}
+                          </Text>
+                        )}
+                      </Td>
+
+                      <Td textAlign="right">{formatPrice(modsTotal)}</Td>
+
+                      <Td
+                        textAlign="right"
+                        color={isUnavailable ? textUnavailable : undefined}
+                        textDecoration={isUnavailable ? 'line-through' : undefined}
+                      >
+                        {formatPrice(total)}
+                      </Td>
+
+                      <Td>
+                        <Flex align="center" gap={2}>
+                          <IconButton
+                            icon={<Icon as={Settings} />}
+                            size="md"
+                            variant="ghost"
+                            colorScheme="blue"
+                            aria-label={t('proposalUI.modifications', 'Modifications')}
+                            onClick={() => handleOpenModificationModal(rowIndex, item.id)}
+                            _hover={{ bg: useColorModeValue('blue.50', 'blue.900') }}
+                          />
+                          <IconButton
+                            icon={<Icon as={Trash} />}
+                            size="md"
+                            variant="ghost"
+                            colorScheme="red"
+                            aria-label={t('common.delete', 'Delete')}
+                            onClick={() => handleDelete(rowIndex)}
+                            _hover={{ bg: useColorModeValue('red.50', 'red.900') }}
+                          />
+                        </Flex>
+                      </Td>
+                    </Tr>
+                    {Array.isArray(item.modifications) &&
+                      item.modifications.length > 0 &&
+                      (() => {
+                        const groups = item.modifications.reduce((acc, m) => {
+                          const key = m.categoryName || 'Other'
+                          acc[key] = acc[key] || []
+                          acc[key].push(m)
+                          return acc
+                        }, {})
+                        const groupKeys = Object.keys(groups)
+                        return (
+                          <>
+                            <Tr>
+                              <Td
+                                colSpan={10}
+                                fontSize="sm"
+                                bg={headerBg}
                                 color={textColor}
-                              />
-                              <Text as="span" fontWeight="bold">{t('proposalDoc.modifications')}</Text>
-                            </Td>
-                          </Tr>
-                          {groupKeys.map((gkey, gi) => (
-                            <React.Fragment key={`modgrp-${rowIndex}-${gkey}`}>
-                              <Tr
-                                bg={modCategoryBg}
+                                p="8px 16px"
+                                pl="56px"
+                                borderTop={`2px solid ${headerBg}`}
+                                borderLeft={`6px solid ${headerBg}`}
+                                borderTopLeftRadius="6px"
+                                borderTopRightRadius="6px"
+                                boxShadow="inset 0 0 0 1px var(--chakra-colors-blackAlpha-50)"
                               >
-                                <Td
-                                  colSpan={10}
-                                  fontWeight="semibold"
-                                  color={descriptionColor}
-                                  pl="72px"
-                                  fontSize="14px"
-                                  borderLeft={`6px solid ${headerBg}`}
-                                  borderBottom="1px solid"
-                                  borderBottomColor="gray.300"
-                                >
-                                  📂 {gkey}
-                                </Td>
-                              </Tr>
-                              {groups[gkey].map((mod, modIdx) => {
-                                const isLastRow =
-                                  gi === groupKeys.length - 1 && modIdx === groups[gkey].length - 1
-                                return (
-                                  <React.Fragment key={`mod-${rowIndex}-${gkey}-${modIdx}`}>
-                                    <Tr
-                                      bg={modItemBg}
-                                      borderLeft={`6px solid ${headerBg}`}
-                                      fontSize="14px"
-                                      borderBottom={isLastRow ? `2px solid ${headerBg}` : `1px solid`}
-                                      borderBottomColor={isLastRow ? undefined : modBorderColor}
-                                    >
-                                      <Td
-                                        pl="88px"
-                                        color={cellTextColor}
+                                <Icon as={Wrench} mr={2} boxSize={3.5} color={textColor} />
+                                <Text as="span" fontWeight="bold">
+                                  {t('proposalDoc.modifications')}
+                                </Text>
+                              </Td>
+                            </Tr>
+                            {groupKeys.map((gkey, gi) => (
+                              <React.Fragment key={`modgrp-${rowIndex}-${gkey}`}>
+                                <Tr bg={modCategoryBg}>
+                                  <Td
+                                    colSpan={10}
+                                    fontWeight="semibold"
+                                    color={descriptionColor}
+                                    pl="72px"
+                                    fontSize="14px"
+                                    borderLeft={`6px solid ${headerBg}`}
+                                    borderBottom="1px solid"
+                                    borderBottomColor="gray.300"
+                                  >
+                                    📂 {gkey}
+                                  </Td>
+                                </Tr>
+                                {groups[gkey].map((mod, modIdx) => {
+                                  const isLastRow =
+                                    gi === groupKeys.length - 1 &&
+                                    modIdx === groups[gkey].length - 1
+                                  return (
+                                    <React.Fragment key={`mod-${rowIndex}-${gkey}-${modIdx}`}>
+                                      <Tr
+                                        bg={modItemBg}
+                                        borderLeft={`6px solid ${headerBg}`}
+                                        fontSize="14px"
+                                        borderBottom={
+                                          isLastRow ? `2px solid ${headerBg}` : `1px solid`
+                                        }
+                                        borderBottomColor={isLastRow ? undefined : modBorderColor}
                                       >
-                                        ↳
-                                      </Td>
-                                      <Td fontWeight="500">
-                                        {mod.qty}
-                                      </Td>
-                                      <Td colSpan={3} pl={2}>
-                                        <Flex align="center" flexWrap="wrap" gap={2}>
-                                          <Badge
-                                            display="inline-flex"
-                                            alignItems="center"
-                                            px={2.5}
-                                            py={0.5}
-                                            borderRadius="full"
-                                            bg={modBg}
-                                            border={`1px solid ${headerBg}`}
-                                            color={modTextColor}
-                                            fontWeight="600"
-                                            lineHeight={1.2}
-                                            boxShadow="sm"
-                                          >
-                                            {mod.name || t('proposalUI.mod.unnamed')}
-                                          </Badge>
-                                          {(() => {
-                                            const details = buildSelectedOptionsText(
-                                              mod?.selectedOptions,
-                                            )
-                                            return details ? (
-                                              <Text
-                                                as="span"
-                                                color={modLabelColor}
-                                                fontSize="14px"
-                                                px={2}
-                                                py={0.5}
-                                                borderRadius="md"
-                                                bg={modContainerBg}
-                                                border="1px dashed"
-                                                borderColor={borderGray400}
-                                              >
-                                                {details}
-                                              </Text>
-                                            ) : null
-                                          })()}
-                                        </Flex>
-                                        {Array.isArray(mod.attachments) &&
-                                          mod.attachments.length > 0 && (
-                                            <Flex mt={1} flexWrap="wrap" gap={1}>
-                                              {mod.attachments.slice(0, 3).map((att, ai) => (
-                                                <Badge
-                                                  key={ai}
-                                                  as="a"
-                                                  href={att.url}
-                                                  target="_blank"
-                                                  rel="noreferrer"
-                                                  colorScheme="blue"
-                                                  textDecoration="none"
-                                                  title={att.name || 'Attachment'}
-                                                  display="inline-flex"
-                                                  alignItems="center"
-                                                  gap={1.5}
+                                        <Td pl="88px" color={cellTextColor}>
+                                          ↳
+                                        </Td>
+                                        <Td fontWeight="500">{mod.qty}</Td>
+                                        <Td colSpan={3} pl={2}>
+                                          <Flex align="center" flexWrap="wrap" gap={2}>
+                                            <Badge
+                                              display="inline-flex"
+                                              alignItems="center"
+                                              px={2.5}
+                                              py={0.5}
+                                              borderRadius="full"
+                                              bg={modBg}
+                                              border={`1px solid ${headerBg}`}
+                                              color={modTextColor}
+                                              fontWeight="600"
+                                              lineHeight={1.2}
+                                              boxShadow="sm"
+                                            >
+                                              {mod.name || t('proposalUI.mod.unnamed')}
+                                            </Badge>
+                                            {(() => {
+                                              const details = buildSelectedOptionsText(
+                                                mod?.selectedOptions,
+                                              )
+                                              return details ? (
+                                                <Text
+                                                  as="span"
+                                                  color={modLabelColor}
+                                                  fontSize="14px"
+                                                  px={2}
+                                                  py={0.5}
+                                                  borderRadius="md"
+                                                  bg={modContainerBg}
+                                                  border="1px dashed"
+                                                  borderColor={borderGray400}
                                                 >
-                                                  {String(att.mimeType || '').startsWith(
-                                                    'image/',
-                                                  ) ? (
-                                                    <Image
-                                                      src={att.url}
-                                                      alt={att.name || 'img'}
-                                                      w="18px"
-                                                      h="18px"
-                                                      objectFit="cover"
-                                                      borderRadius="2px"
-                                                    />
-                                                  ) : null}
-                                                  <Text
-                                                    as="span"
-                                                    maxW="120px"
-                                                    overflow="hidden"
-                                                    textOverflow="ellipsis"
-                                                    whiteSpace="nowrap"
+                                                  {details}
+                                                </Text>
+                                              ) : null
+                                            })()}
+                                          </Flex>
+                                          {Array.isArray(mod.attachments) &&
+                                            mod.attachments.length > 0 && (
+                                              <Flex mt={1} flexWrap="wrap" gap={1}>
+                                                {mod.attachments.slice(0, 3).map((att, ai) => (
+                                                  <Badge
+                                                    key={ai}
+                                                    as="a"
+                                                    href={att.url}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    colorScheme="blue"
+                                                    textDecoration="none"
+                                                    title={att.name || 'Attachment'}
+                                                    display="inline-flex"
+                                                    alignItems="center"
+                                                    gap={1.5}
                                                   >
-                                                    {att.name || 'File'}
-                                                  </Text>
-                                                </Badge>
-                                              ))}
-                                              {mod.attachments.length > 3 && (
-                                                <Badge colorScheme="gray">
-                                                  +{mod.attachments.length - 3}
-                                                </Badge>
-                                              )}
-                                            </Flex>
-                                          )}
-                                      </Td>
-                                      <Td textAlign="right" fontWeight="medium" color={textGreen500}>
-                                        {formatPrice(mod.price || 0)}
-                                      </Td>
-                                      <Td textAlign="right" color={cellTextColor}>
-                                        -
-                                      </Td>
-                                      <Td textAlign="right">
-                                        {/* Modifications column (per-item summary) not applicable on sub-rows */}
-                                      </Td>
-                                      <Td textAlign="right" fontWeight="semibold" color={textGreen500}>
-                                        {formatPrice((mod.price || 0) * (mod.qty || 1))}
-                                      </Td>
-                                      <Td textAlign="center">
-                                        <IconButton
-                                          icon={<Icon as={Trash} />}
-                                          size="sm"
-                                          variant="ghost"
-                                          colorScheme="red"
-                                          aria-label="Remove modification"
-                                          onClick={() => handleDeleteModification(rowIndex, modIdx)}
-                                          _hover={{ bg: useColorModeValue('red.50', 'red.900') }}
-                                        />
-                                      </Td>
-                                    </Tr>
-                                    {isLastRow && (
-                                      <Tr>
-                                        <Td colSpan={10} p={0}>
-                                          <Box
-                                            h="10px"
-                                            borderBottom="1px dashed"
-                                            borderBottomColor={borderGray400}
+                                                    {String(att.mimeType || '').startsWith(
+                                                      'image/',
+                                                    ) ? (
+                                                      <Image
+                                                        src={att.url}
+                                                        alt={att.name || 'img'}
+                                                        w="18px"
+                                                        h="18px"
+                                                        objectFit="cover"
+                                                        borderRadius="2px"
+                                                      />
+                                                    ) : null}
+                                                    <Text
+                                                      as="span"
+                                                      maxW="120px"
+                                                      overflow="hidden"
+                                                      textOverflow="ellipsis"
+                                                      whiteSpace="nowrap"
+                                                    >
+                                                      {att.name || 'File'}
+                                                    </Text>
+                                                  </Badge>
+                                                ))}
+                                                {mod.attachments.length > 3 && (
+                                                  <Badge colorScheme="gray">
+                                                    +{mod.attachments.length - 3}
+                                                  </Badge>
+                                                )}
+                                              </Flex>
+                                            )}
+                                        </Td>
+                                        <Td
+                                          textAlign="right"
+                                          fontWeight="medium"
+                                          color={textGreen500}
+                                        >
+                                          {formatPrice(mod.price || 0)}
+                                        </Td>
+                                        <Td textAlign="right" color={cellTextColor}>
+                                          -
+                                        </Td>
+                                        <Td textAlign="right">
+                                          {/* Modifications column (per-item summary) not applicable on sub-rows */}
+                                        </Td>
+                                        <Td
+                                          textAlign="right"
+                                          fontWeight="semibold"
+                                          color={textGreen500}
+                                        >
+                                          {formatPrice((mod.price || 0) * (mod.qty || 1))}
+                                        </Td>
+                                        <Td textAlign="center">
+                                          <IconButton
+                                            icon={<Icon as={Trash} />}
+                                            size="sm"
+                                            variant="ghost"
+                                            colorScheme="red"
+                                            aria-label="Remove modification"
+                                            onClick={() =>
+                                              handleDeleteModification(rowIndex, modIdx)
+                                            }
+                                            _hover={{ bg: useColorModeValue('red.50', 'red.900') }}
                                           />
                                         </Td>
                                       </Tr>
-                                    )}
-                                  </React.Fragment>
-                                )
-                              })}
-                            </React.Fragment>
-                          ))}
-                        </>
-                      )
-                    })()}
-                </React.Fragment>
-              )
-            })}
-            {desktopVirtual.enabled && desktopVirtual.paddingBottom > 0 && (
-              <Tr>
-                <Td colSpan={tableColumnCount} p={0} style={{ height: `${desktopVirtual.paddingBottom}px` }} />
-              </Tr>
-            )}
-
-          </Tbody>
-        </Table>
+                                      {isLastRow && (
+                                        <Tr>
+                                          <Td colSpan={10} p={0}>
+                                            <Box
+                                              h="10px"
+                                              borderBottom="1px dashed"
+                                              borderBottomColor={borderGray400}
+                                            />
+                                          </Td>
+                                        </Tr>
+                                      )}
+                                    </React.Fragment>
+                                  )
+                                })}
+                              </React.Fragment>
+                            ))}
+                          </>
+                        )
+                      })()}
+                  </React.Fragment>
+                )
+              })}
+              {desktopVirtual.enabled && desktopVirtual.paddingBottom > 0 && (
+                <Tr>
+                  <Td
+                    colSpan={tableColumnCount}
+                    p={0}
+                    style={{ height: `${desktopVirtual.paddingBottom}px` }}
+                  />
+                </Tr>
+              )}
+            </Tbody>
+          </Table>
         </TableCard>
       </Box>
 
@@ -1256,9 +1308,13 @@ const CatalogTable = ({
               const unitAssembly = assembled ? Number(item.assemblyFee || 0) : 0
               const assemblyFee = isUnavailable ? 0 : unitAssembly * qty
               const modsTotal = Array.isArray(item.modifications)
-                ? item.modifications.reduce((sum, mod) => sum + Number(mod.price || 0) * Number(mod.qty || 1), 0)
+                ? item.modifications.reduce(
+                    (sum, mod) => sum + Number(mod.price || 0) * Number(mod.qty || 1),
+                    0,
+                  )
                 : 0
-              const total = (isUnavailable ? 0 : Number(item.price || 0) * qty) + assemblyFee + modsTotal
+              const total =
+                (isUnavailable ? 0 : Number(item.price || 0) * qty) + assemblyFee + modsTotal
 
               return (
                 <React.Fragment key={`mobile-${rowIndex}`}>
@@ -1412,9 +1468,18 @@ const CatalogTable = ({
                                   bg={item.hingeSide === opt ? headerBg : undefined}
                                   color={item.hingeSide === opt ? textColor : undefined}
                                   borderColor={item.hingeSide === opt ? headerBg : undefined}
-                                  onClick={() => subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge && updateHingeSide(rowIndex, opt)}
-                                  isDisabled={!subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge}
-                                  opacity={subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge ? 1 : 0.5}
+                                  onClick={() =>
+                                    subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge &&
+                                    updateHingeSide(rowIndex, opt)
+                                  }
+                                  isDisabled={
+                                    !subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge
+                                  }
+                                  opacity={
+                                    subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge
+                                      ? 1
+                                      : 0.5
+                                  }
                                 >
                                   {codeToLabel(opt)}
                                 </Button>
@@ -1456,9 +1521,18 @@ const CatalogTable = ({
                                   bg={item.exposedSide === opt ? headerBg : undefined}
                                   color={item.exposedSide === opt ? textColor : undefined}
                                   borderColor={item.exposedSide === opt ? headerBg : undefined}
-                                  onClick={() => subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed && updateExposedSide(rowIndex, opt)}
-                                  isDisabled={!subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed}
-                                  opacity={subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed ? 1 : 0.5}
+                                  onClick={() =>
+                                    subTypeRequirements.itemRequirements[rowIndex]
+                                      ?.requiresExposed && updateExposedSide(rowIndex, opt)
+                                  }
+                                  isDisabled={
+                                    !subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed
+                                  }
+                                  opacity={
+                                    subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed
+                                      ? 1
+                                      : 0.5
+                                  }
                                 >
                                   {codeToLabel(opt)}
                                 </Button>
@@ -1486,8 +1560,7 @@ const CatalogTable = ({
                       <Text fontWeight="600" color={labelColor} fontSize="sm">
                         {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
                       </Text>
-                      <Text fontSize="sm">{formatPrice(modsTotal)}
-                      </Text>
+                      <Text fontSize="sm">{formatPrice(modsTotal)}</Text>
                     </Flex>
 
                     <Box
@@ -1566,7 +1639,9 @@ const CatalogTable = ({
                             const details = buildSelectedOptionsText(mod?.selectedOptions)
                             return details ? <Text opacity={0.7}> - {details}</Text> : null
                           })()}
-                          <Text>{t('common.qty', 'Qty')}: {mod.qty}</Text>
+                          <Text>
+                            {t('common.qty', 'Qty')}: {mod.qty}
+                          </Text>
                         </Flex>
                         <Flex justify="space-between" fontSize="14px">
                           <Text>
@@ -1589,11 +1664,8 @@ const CatalogTable = ({
           )}
         </Box>
       </Box>
-
     </Box>
   )
 }
 
 export default CatalogTable
-
-
