@@ -17,6 +17,7 @@ import {
   Spinner,
   Stack,
   Text,
+  useColorMode,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react'
@@ -135,6 +136,7 @@ const PaymentPage = () => {
   const navigate = useNavigate()
   const toast = useToast()
   const { id } = useParams()
+  const { colorMode } = useColorMode()
 
   // Theme-aware color values
   const iconBlue500 = useColorModeValue('blue.500', 'blue.300')
@@ -293,10 +295,64 @@ const PaymentPage = () => {
       clientSecret
         ? {
             clientSecret,
-            appearance: { theme: 'stripe' },
+            appearance: {
+              theme: colorMode === 'dark' ? 'night' : 'stripe',
+              variables: {
+                colorPrimary: colorMode === 'dark' ? '#63b3ed' : '#3182ce',
+                colorBackground: colorMode === 'dark' ? '#1a202c' : '#ffffff',
+                colorText: colorMode === 'dark' ? '#e2e8f0' : '#1a202c',
+                colorDanger: colorMode === 'dark' ? '#fc8181' : '#e53e3e',
+                fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                spacingUnit: '4px',
+                borderRadius: '8px',
+                fontSizeBase: '16px',
+                fontWeightNormal: '400',
+                fontWeightMedium: '500',
+                fontWeightBold: '600',
+              },
+              rules: {
+                '.Input': {
+                  backgroundColor: colorMode === 'dark' ? '#2d3748' : '#f7fafc',
+                  border: colorMode === 'dark' ? '1px solid #4a5568' : '1px solid #e2e8f0',
+                  color: colorMode === 'dark' ? '#e2e8f0' : '#1a202c',
+                  boxShadow: 'none',
+                },
+                '.Input:focus': {
+                  border: colorMode === 'dark' ? '1px solid #63b3ed' : '1px solid #3182ce',
+                  boxShadow: colorMode === 'dark' 
+                    ? '0 0 0 1px #63b3ed' 
+                    : '0 0 0 1px #3182ce',
+                },
+                '.Label': {
+                  color: colorMode === 'dark' ? '#a0aec0' : '#4a5568',
+                  fontWeight: '500',
+                  fontSize: '14px',
+                },
+                '.Tab': {
+                  backgroundColor: colorMode === 'dark' ? '#2d3748' : '#f7fafc',
+                  border: colorMode === 'dark' ? '1px solid #4a5568' : '1px solid #e2e8f0',
+                  color: colorMode === 'dark' ? '#a0aec0' : '#4a5568',
+                },
+                '.Tab:hover': {
+                  backgroundColor: colorMode === 'dark' ? '#4a5568' : '#edf2f7',
+                  color: colorMode === 'dark' ? '#e2e8f0' : '#2d3748',
+                },
+                '.Tab--selected': {
+                  backgroundColor: colorMode === 'dark' ? '#2b6cb0' : '#3182ce',
+                  color: '#ffffff',
+                  border: colorMode === 'dark' ? '1px solid #2b6cb0' : '1px solid #3182ce',
+                },
+                '.TabIcon--selected': {
+                  fill: '#ffffff',
+                },
+                '.Error': {
+                  color: colorMode === 'dark' ? '#fc8181' : '#e53e3e',
+                },
+              },
+            },
           }
         : null,
-    [clientSecret],
+    [clientSecret, colorMode],
   )
 
   useEffect(() => {
