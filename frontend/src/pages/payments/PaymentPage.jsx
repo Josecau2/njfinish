@@ -91,13 +91,13 @@ const StripeCheckoutForm = ({
   return (
     <Stack as="form" onSubmit={handleSubmit} spacing={6}>
       <Box>
-        <PaymentElement 
-          options={{ 
+        <PaymentElement
+          options={{
             layout: 'tabs',
             defaultValues: {
               billingDetails: {}
             }
-          }} 
+          }}
         />
       </Box>
       <Flex justify="flex-end" pt={2}>
@@ -319,8 +319,8 @@ const PaymentPage = () => {
                 },
                 '.Input:focus': {
                   border: colorMode === 'dark' ? '1px solid #63b3ed' : '1px solid #3182ce',
-                  boxShadow: colorMode === 'dark' 
-                    ? '0 0 0 1px #63b3ed' 
+                  boxShadow: colorMode === 'dark'
+                    ? '0 0 0 1px #63b3ed'
                     : '0 0 0 1px #3182ce',
                 },
                 '.Label': {
@@ -366,11 +366,11 @@ const PaymentPage = () => {
       <PageContainer>
         <Flex justify="center" align="center" minH="60vh">
           <Stack align="center" spacing={4}>
-            <Spinner 
-              size="xl" 
-              color={iconBlue500} 
-              thickness="4px" 
-              speed="0.65s" 
+            <Spinner
+              size="xl"
+              color={iconBlue500}
+              thickness="4px"
+              speed="0.65s"
             />
             <Text color={useColorModeValue('gray.600', 'gray.400')} fontSize="lg">
               Loading payment details...
@@ -390,19 +390,19 @@ const PaymentPage = () => {
           icon={CreditCard}
         />
         <Flex justify="center" px={{ base: 4, md: 0 }}>
-          <StandardCard 
-            w="full" 
-            maxW="2xl" 
-            borderRadius="2xl" 
+          <StandardCard
+            w="full"
+            maxW="2xl"
+            borderRadius="2xl"
             shadow={shadowColor}
             bg={cardBg}
             borderWidth="1px"
             borderColor={borderColor}
           >
             <CardBody textAlign="center" py={12} px={{ base: 4, md: 8 }}>
-              <Alert 
-                status="warning" 
-                borderRadius="xl" 
+              <Alert
+                status="warning"
+                borderRadius="xl"
                 mb={8}
                 bg={useColorModeValue('orange.50', 'orange.900')}
                 borderWidth="1px"
@@ -457,19 +457,19 @@ const PaymentPage = () => {
       />
 
       <Flex justify="center" px={{ base: 4, md: 0 }}>
-        <StandardCard 
-          w="full" 
-          maxW="2xl" 
-          borderRadius="2xl" 
+        <StandardCard
+          w="full"
+          maxW="2xl"
+          borderRadius="2xl"
           shadow={shadowColor}
           bg={cardBg}
           borderWidth="1px"
           borderColor={borderColor}
           overflow="hidden"
         >
-          <CardHeader 
+          <CardHeader
             bg={headerBg}
-            borderBottomWidth="1px" 
+            borderBottomWidth="1px"
             borderColor={borderColor}
             py={6}
             px={{ base: 4, md: 8 }}
@@ -483,8 +483,8 @@ const PaymentPage = () => {
                   {t('payment.order', 'Order')} #{currentPayment.orderId}
                 </Text>
               </Box>
-              <Box 
-                textAlign="right" 
+              <Box
+                textAlign="right"
                 bg={amountBg}
                 px={6}
                 py={4}
@@ -505,8 +505,8 @@ const PaymentPage = () => {
           <CardBody py={8} px={{ base: 4, md: 8 }}>
             <Stack spacing={6}>
               {processing && (
-                <Alert 
-                  status="info" 
+                <Alert
+                  status="info"
                   borderRadius="xl"
                   bg={useColorModeValue('blue.50', 'blue.900')}
                   borderWidth="1px"
@@ -521,8 +521,8 @@ const PaymentPage = () => {
               )}
 
               {statusMessage && (
-                <Alert 
-                  status={alertStatus} 
+                <Alert
+                  status={alertStatus}
                   borderRadius="xl"
                   borderWidth="1px"
                   py={4}
@@ -556,8 +556,8 @@ const PaymentPage = () => {
 
               {intentError && (
                 <Stack spacing={4}>
-                  <Alert 
-                    status="error" 
+                  <Alert
+                    status="error"
                     borderRadius="xl"
                     bg={useColorModeValue('red.50', 'red.900')}
                     borderWidth="1px"
@@ -588,8 +588,8 @@ const PaymentPage = () => {
               )}
 
               {receiptUrl && (
-                <Alert 
-                  status="success" 
+                <Alert
+                  status="success"
                   borderRadius="xl"
                   bg={useColorModeValue('green.50', 'green.900')}
                   borderWidth="1px"
@@ -621,11 +621,11 @@ const PaymentPage = () => {
 
               {!clientSecret && intentLoading && (
                 <Flex justify="center" py={8}>
-                  <Spinner 
-                    color={iconBlue500} 
-                    size="xl" 
-                    thickness="4px" 
-                    speed="0.65s" 
+                  <Spinner
+                    color={iconBlue500}
+                    size="xl"
+                    thickness="4px"
+                    speed="0.65s"
                   />
                 </Flex>
               )}
@@ -651,8 +651,8 @@ const PaymentPage = () => {
               )}
 
               {showUnavailableAlert && (
-                <Alert 
-                  status="warning" 
+                <Alert
+                  status="warning"
                   borderRadius="xl"
                   bg={useColorModeValue('orange.50', 'orange.900')}
                   borderWidth="1px"
