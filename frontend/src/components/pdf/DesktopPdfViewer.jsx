@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
-// Use pdfjs worker via Vite. Prefer workerPort (constructor) with fallback to URL string
-import PdfJsWorker from 'pdfjs-dist/build/pdf.worker.mjs?worker'
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url'
+// Leverage react-pdf's worker entry so runtime and worker pdf.js versions stay aligned
+import ReactPdfWorker from 'react-pdf/dist/pdf.worker.entry.js?worker'
+import reactPdfWorkerUrl from 'react-pdf/dist/pdf.worker.entry.js?url'
 import {
   Box,
   Button,
@@ -21,11 +21,11 @@ import 'react-pdf/dist/Page/TextLayer.css'
 // Configure pdf.js worker explicitly for Vite
 if (pdfjs?.GlobalWorkerOptions) {
   try {
-    // Preferred: pass a Worker instance
-    pdfjs.GlobalWorkerOptions.workerPort = new PdfJsWorker()
+    // Preferred: pass a Worker instance that matches react-pdf's bundled pdf.js version
+    pdfjs.GlobalWorkerOptions.workerPort = new ReactPdfWorker()
   } catch (_) {
-    // Fallback: URL string
-    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+    // Fallback: use URL string for environments without Worker constructor support
+    pdfjs.GlobalWorkerOptions.workerSrc = reactPdfWorkerUrl
   }
 }
 
@@ -391,9 +391,9 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
               {(() => {
                 if (pdfjs?.GlobalWorkerOptions && !pdfjs.GlobalWorkerOptions.workerPort && !pdfjs.GlobalWorkerOptions.workerSrc) {
                   try {
-                    pdfjs.GlobalWorkerOptions.workerPort = new PdfJsWorker()
+                    pdfjs.GlobalWorkerOptions.workerPort = new ReactPdfWorker()
                   } catch (_) {
-                    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+                    pdfjs.GlobalWorkerOptions.workerSrc = reactPdfWorkerUrl
                   }
                 }
                 return null

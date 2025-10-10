@@ -292,10 +292,14 @@ const saveProposal = async (req, res) => {
 
         const numbering = await assignProposalNumber();
 
+        // Determine contractor role once for clarity
+        const isContractor = user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor');
+
         const dataToSave = {
             ...formData,
             customerId,
-            owner_group_id: user.group_id || null, // Set owner group for contractors
+            // Only set owner_group_id for contractor users to satisfy FK constraints
+            owner_group_id: isContractor ? user.group_id : null,
             created_by_user_id: user.id,
             ...(numbering.ok ? numbering.fields : {})
         };

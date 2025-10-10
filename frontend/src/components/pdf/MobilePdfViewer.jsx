@@ -1,8 +1,9 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Document, Page, pdfjs } from 'react-pdf'
-import PdfJsWorker from 'pdfjs-dist/build/pdf.worker.mjs?worker'
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url'
+// Match react-pdf's bundled pdf.js version when instantiating the worker
+import ReactPdfWorker from 'react-pdf/dist/pdf.worker.entry.js?worker'
+import reactPdfWorkerUrl from 'react-pdf/dist/pdf.worker.entry.js?url'
 import { Box, Button, HStack, useColorModeValue } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight, X } from '@/icons-lucide'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
@@ -10,9 +11,9 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 // Configure pdf.js worker explicitly for Vite
 if (pdfjs?.GlobalWorkerOptions) {
   try {
-    pdfjs.GlobalWorkerOptions.workerPort = new PdfJsWorker()
+    pdfjs.GlobalWorkerOptions.workerPort = new ReactPdfWorker()
   } catch (_) {
-    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+    pdfjs.GlobalWorkerOptions.workerSrc = reactPdfWorkerUrl
   }
 }
 
@@ -176,9 +177,9 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
               {(() => {
                 if (pdfjs?.GlobalWorkerOptions && !pdfjs.GlobalWorkerOptions.workerPort && !pdfjs.GlobalWorkerOptions.workerSrc) {
                   try {
-                    pdfjs.GlobalWorkerOptions.workerPort = new PdfJsWorker()
+                    pdfjs.GlobalWorkerOptions.workerPort = new ReactPdfWorker()
                   } catch (_) {
-                    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+                    pdfjs.GlobalWorkerOptions.workerSrc = reactPdfWorkerUrl
                   }
                 }
                 return null
