@@ -47,8 +47,7 @@ import {
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturerById } from '../../../store/slices/manufacturersSlice'
-import { sendFormDataToBackend } from '../../../queries/proposalQueries'
-import axiosInstance from '../../../helpers/axiosInstance'
+import { useCreateProposal, useAcceptProposal } from '../../../queries/proposalQueries'
 import { useForm, Controller } from 'react-hook-form'
 import { Copy, Edit, File, List, MoreHorizontal, Trash, Trash2, Calendar } from 'lucide-react'
 import ItemSelectionContent from '../../../components/ItemSelectionContent'
@@ -71,6 +70,8 @@ const ItemSelectionStep = ({
   const { t } = useTranslation()
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const createProposalMutation = useCreateProposal()
+  const acceptProposalMutation = useAcceptProposal()
   const alertCancelRef = useRef(null)
   const requestedManufacturerIdsRef = useRef(new Set())
   const [alertState, setAlertState] = useState({ isOpen: false, title: '', body: null, onConfirm: null })
@@ -312,29 +313,29 @@ const ItemSelectionStep = ({
         formData: { ...formData, type: '0' },
       }
 
-      const createResponse = await sendFormDataToBackend(createPayload)
+      const createResponse = await createProposalMutation.mutateAsync(createPayload)
 
-      if (!createResponse.data?.success) {
-        throw new Error(createResponse.data?.message || 'Failed to create quote')
+      if (!createResponse?.success) {
+        throw new Error(createResponse?.message || 'Failed to create quote')
       }
 
-      const newProposalId = createResponse.data?.data?.id
+      const newProposalId = createResponse?.data?.id
 
       if (!newProposalId) {
         throw new Error('Quote created but no ID returned')
       }
 
       // Step 2: Now accept the newly created proposal using the acceptance API
-      const acceptResponse = await axiosInstance.post(`/api/proposals/${newProposalId}/accept`, {})
+      const acceptResponse = await acceptProposalMutation.mutateAsync({ id: newProposalId })
 
-      if (acceptResponse.data.success) {
+      if (acceptResponse?.success) {
         showAlert(
           t('common.success', 'Success'),
           <Text>{t('proposals.success.acceptConverted', 'Quote accepted and converted to order!')}</Text>,
           () => navigate('/orders'),
         )
       } else {
-        throw new Error(acceptResponse.data.message || 'Failed to accept quote')
+        throw new Error(acceptResponse?.message || 'Failed to accept quote')
       }
     } catch (error) {
       if (import.meta?.env?.DEV)
@@ -828,8 +829,6 @@ const ItemSelectionStep = ({
 }
 
 export default ItemSelectionStep
-
-
 
 
 

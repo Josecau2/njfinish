@@ -66,6 +66,7 @@ const ModificationBrowserModal = ({
   const color6 = useColorModeValue('white', 'gray.700')
   const bgGray100 = useColorModeValue('gray.100', 'gray.700')
   const iconGray400 = useColorModeValue('gray.400', 'gray.500')
+  const hoverBg = useColorModeValue('whiteAlpha.200', 'whiteAlpha.300')
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [gallery, setGallery] = useState([])
@@ -677,7 +678,7 @@ const ModificationBrowserModal = ({
                   aria-label={t('modificationBrowser.buttons.back', 'Back')}
                   onClick={handleBack}
                   color={headerTextColor}
-                  _hover={{ bg: 'whiteAlpha.200' }}
+                  _hover={{ bg: hoverBg }}
                 />
               )}
               <Text fontWeight="semibold" fontSize="lg">
@@ -692,7 +693,7 @@ const ModificationBrowserModal = ({
               aria-label={t('modificationBrowser.buttons.close', 'Close')}
               onClick={onClose}
               color={headerTextColor}
-              _hover={{ bg: 'whiteAlpha.200' }}
+              _hover={{ bg: hoverBg }}
             />
           </HStack>
         </ModalHeader>

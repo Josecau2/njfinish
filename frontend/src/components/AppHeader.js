@@ -41,6 +41,9 @@ const AppHeader = () => {
 
   const hoverBg = useColorModeValue('blackAlpha.100', 'whiteAlpha.200')
 
+  // Extract first name from user.name
+  const firstName = authUser?.name ? authUser.name.split(' ')[0] : null
+
   // Desktop collapse toggle removed for legacy parity. Sidebar is controlled via hover/pin and mobile menu.
 
   return (
@@ -83,6 +86,18 @@ const AppHeader = () => {
             minW="44px"
             minH="44px"
           />
+          {firstName && (
+            <Text
+              fontWeight="500"
+              fontSize={{ base: 'sm', md: 'md' }}
+              color={headerTextColor}
+              opacity="0.95"
+              letterSpacing="0.3px"
+              noOfLines={1}
+            >
+              {firstName}
+            </Text>
+          )}
           {customization.headerTitle ? (
             <Text fontWeight="semibold" noOfLines={1} display={{ base: 'none', md: 'block' }}>
               {customization.headerTitle}

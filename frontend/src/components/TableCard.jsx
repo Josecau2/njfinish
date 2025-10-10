@@ -23,7 +23,7 @@ export const TableCard = ({
 }) => {
   // Theme-aware colors
   const borderColor = useColorModeValue('gray.200', 'gray.700')
-  const bgColor = useColorModeValue('white', 'gray.800')
+  const bgColor = useColorModeValue('white', 'gray.900')
 
   return (
     <Card

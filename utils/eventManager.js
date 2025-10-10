@@ -6,11 +6,69 @@ const { sendMail } = require('./mail');
 const { getPuppeteer } = require('./puppeteerLauncher');
 const { escapeHtml, buildPdfHeader, getPdfStyles } = require('./pdfStylingHelpers');
 const PdfCustomization = require('../models/PdfCustomization');
+const fs = require('fs').promises;
+const path = require('path');
 
 class EventManager extends EventEmitter {
     constructor() {
         super();
         this.setupEventListeners();
+    }
+
+    /**
+     * Convert logo file path to Data URI for embedding in PDFs
+     * Similar to frontend's preloadLogoDataUri logic
+     */
+    async convertLogoToDataUri(logoPath) {
+        if (!logoPath || typeof logoPath !== 'string') {
+            return null;
+        }
+
+        const trimmed = logoPath.trim();
+        if (!trimmed) {
+            return null;
+        }
+
+        // Already a data URI or absolute URL - return as is
+        if (/^(data:|https?:\/\/)/i.test(trimmed) || /^\/\//.test(trimmed)) {
+            return trimmed;
+        }
+
+        try {
+            // Resolve the actual file path on the server
+            let filePath;
+
+            // Handle paths starting with /uploads/
+            if (trimmed.startsWith('/uploads/')) {
+                filePath = path.join(process.cwd(), 'public', trimmed);
+            } else if (trimmed.startsWith('/')) {
+                filePath = path.join(process.cwd(), 'public', trimmed);
+            } else {
+                filePath = path.join(process.cwd(), 'public', 'uploads', trimmed);
+            }
+
+            // Read the file
+            const fileBuffer = await fs.readFile(filePath);
+
+            // Determine MIME type from extension
+            const ext = path.extname(filePath).toLowerCase();
+            const mimeTypes = {
+                '.png': 'image/png',
+                '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg',
+                '.gif': 'image/gif',
+                '.svg': 'image/svg+xml',
+                '.webp': 'image/webp',
+            };
+            const mimeType = mimeTypes[ext] || 'image/png';
+
+            // Convert to Data URI
+            const base64 = fileBuffer.toString('base64');
+            return `data:${mimeType};base64,${base64}`;
+        } catch (error) {
+            console.warn('Failed to convert logo to Data URI:', error?.message, 'Path:', logoPath);
+            return null;
+        }
     }
 
     setupEventListeners() {
@@ -148,7 +206,7 @@ class EventManager extends EventEmitter {
         }
     }
 
-        // Build a styled, no-price HTML similar to proposal PDF (suppressed prices)
+    // Build a styled, no-price HTML similar to proposal PDF (suppressed prices)
     async buildNoPriceOrderHtml(snapshot) {
         // Fetch PDF customization for consistent branding
         let pdfCustomization = {};
@@ -156,6 +214,15 @@ class EventManager extends EventEmitter {
             const pdfConfig = await PdfCustomization.findOne({ order: [['updatedAt', 'DESC']] });
             if (pdfConfig) {
                 pdfCustomization = pdfConfig.toJSON();
+
+                // Convert logo to Data URI for embedding (similar to frontend's preloadLogoDataUri)
+                const logoPath = pdfCustomization.headerLogo || pdfCustomization.logo || pdfCustomization.logoImage;
+                if (logoPath) {
+                    const logoDataUri = await this.convertLogoToDataUri(logoPath);
+                    if (logoDataUri) {
+                        pdfCustomization.headerLogoDataUri = logoDataUri;
+                    }
+                }
             }
         } catch (err) {
             console.warn('Failed to fetch PDF customization for order PDF:', err?.message);
@@ -182,6 +249,7 @@ class EventManager extends EventEmitter {
             </tr>`;
         }).join('');
 
+        // Use buildPdfHeader for consistent header rendering including logo
         const header = buildPdfHeader({
             pdfCustomization,
             title: `Order ${escapeHtml(info.orderNumber || '')}`,
@@ -190,6 +258,7 @@ class EventManager extends EventEmitter {
             t: (key, defaultValue) => defaultValue || key,
         });
 
+        // Use getPdfStyles for consistent styling
         const styles = getPdfStyles(pdfCustomization);
 
         return `<!doctype html><html><head><meta charset="utf-8"/>

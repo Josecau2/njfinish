@@ -154,10 +154,10 @@ const PageHeader = ({
         </Box>
 
         {(actions.length > 0 || rightContent || children) && (
-          <Box flexShrink={0}>
+          <Box flexShrink={0} w={{ base: '100%', md: 'auto' }}>
             <HStack
-              spacing={4}
-              flexWrap={{ base: 'wrap', md: 'nowrap' }}
+              spacing={{ base: 2, md: 4 }}
+              flexWrap="wrap"
               justify={{ base: 'flex-start', md: 'flex-end' }}
             >
               {actions.map((action, index) => (

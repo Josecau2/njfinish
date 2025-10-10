@@ -1,0 +1,341 @@
+{
+  "version": "8.2.3",
+  "name": "AI-CONNECT",
+  "dependencies": {
+    "@chakra-ui/react": {
+      "version": "2.10.9",
+      "resolved": "https://registry.npmjs.org/@chakra-ui/react/-/react-2.10.9.tgz",
+      "overridden": false
+    },
+    "@chakra-ui/theme-tools": {
+      "version": "2.2.9",
+      "resolved": "https://registry.npmjs.org/@chakra-ui/theme-tools/-/theme-tools-2.2.9.tgz",
+      "overridden": false
+    },
+    "@emotion/react": {
+      "version": "11.14.0",
+      "resolved": "https://registry.npmjs.org/@emotion/react/-/react-11.14.0.tgz",
+      "overridden": false
+    },
+    "@emotion/styled": {
+      "version": "11.14.1",
+      "resolved": "https://registry.npmjs.org/@emotion/styled/-/styled-11.14.1.tgz",
+      "overridden": false
+    },
+    "@fullcalendar/daygrid": {
+      "version": "6.1.19",
+      "resolved": "https://registry.npmjs.org/@fullcalendar/daygrid/-/daygrid-6.1.19.tgz",
+      "overridden": false
+    },
+    "@fullcalendar/interaction": {
+      "version": "6.1.19",
+      "resolved": "https://registry.npmjs.org/@fullcalendar/interaction/-/interaction-6.1.19.tgz",
+      "overridden": false
+    },
+    "@fullcalendar/list": {
+      "version": "6.1.19",
+      "resolved": "https://registry.npmjs.org/@fullcalendar/list/-/list-6.1.19.tgz",
+      "overridden": false
+    },
+    "@fullcalendar/react": {
+      "version": "6.1.19",
+      "resolved": "https://registry.npmjs.org/@fullcalendar/react/-/react-6.1.19.tgz",
+      "overridden": false
+    },
+    "@fullcalendar/timegrid": {
+      "version": "6.1.19",
+      "resolved": "https://registry.npmjs.org/@fullcalendar/timegrid/-/timegrid-6.1.19.tgz",
+      "overridden": false
+    },
+    "@monaco-editor/react": {
+      "version": "4.7.0",
+      "resolved": "https://registry.npmjs.org/@monaco-editor/react/-/react-4.7.0.tgz",
+      "overridden": false
+    },
+    "@popperjs/core": {
+      "version": "2.11.8",
+      "resolved": "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz",
+      "overridden": false
+    },
+    "@reduxjs/toolkit": {
+      "version": "2.9.0",
+      "resolved": "https://registry.npmjs.org/@reduxjs/toolkit/-/toolkit-2.9.0.tgz",
+      "overridden": false
+    },
+    "@stripe/react-stripe-js": {
+      "version": "4.0.2",
+      "resolved": "https://registry.npmjs.org/@stripe/react-stripe-js/-/react-stripe-js-4.0.2.tgz",
+      "overridden": false
+    },
+    "@stripe/stripe-js": {
+      "version": "7.9.0",
+      "resolved": "https://registry.npmjs.org/@stripe/stripe-js/-/stripe-js-7.9.0.tgz",
+      "overridden": false
+    },
+    "@tanstack/react-query": {
+      "version": "5.90.2",
+      "resolved": "https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.90.2.tgz",
+      "overridden": false
+    },
+    "axios": {
+      "version": "1.12.2",
+      "resolved": "https://registry.npmjs.org/axios/-/axios-1.12.2.tgz",
+      "overridden": false
+    },
+    "bcrypt": {
+      "version": "6.0.0",
+      "resolved": "https://registry.npmjs.org/bcrypt/-/bcrypt-6.0.0.tgz",
+      "overridden": false
+    },
+    "chokidar": {
+      "version": "4.0.3",
+      "resolved": "https://registry.npmjs.org/chokidar/-/chokidar-4.0.3.tgz",
+      "overridden": false
+    },
+    "classnames": {
+      "version": "2.5.1",
+      "resolved": "https://registry.npmjs.org/classnames/-/classnames-2.5.1.tgz",
+      "overridden": false
+    },
+    "core-js": {
+      "version": "3.45.1",
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-3.45.1.tgz",
+      "overridden": false
+    },
+    "cors": {
+      "version": "2.8.5",
+      "resolved": "https://registry.npmjs.org/cors/-/cors-2.8.5.tgz",
+      "overridden": false
+    },
+    "countries-and-timezones": {
+      "version": "3.8.0",
+      "resolved": "https://registry.npmjs.org/countries-and-timezones/-/countries-and-timezones-3.8.0.tgz",
+      "overridden": false
+    },
+    "csv-parser": {
+      "version": "3.2.0",
+      "resolved": "https://registry.npmjs.org/csv-parser/-/csv-parser-3.2.0.tgz",
+      "overridden": false
+    },
+    "date-fns-tz": {
+      "version": "3.2.0",
+      "resolved": "https://registry.npmjs.org/date-fns-tz/-/date-fns-tz-3.2.0.tgz",
+      "overridden": false
+    },
+    "date-fns": {
+      "version": "4.1.0",
+      "resolved": "https://registry.npmjs.org/date-fns/-/date-fns-4.1.0.tgz",
+      "overridden": false
+    },
+    "dotenv": {
+      "version": "17.2.3",
+      "resolved": "https://registry.npmjs.org/dotenv/-/dotenv-17.2.3.tgz",
+      "overridden": false
+    },
+    "exceljs": {
+      "version": "4.4.0",
+      "resolved": "https://registry.npmjs.org/exceljs/-/exceljs-4.4.0.tgz",
+      "overridden": false
+    },
+    "express": {
+      "version": "5.1.0",
+      "resolved": "https://registry.npmjs.org/express/-/express-5.1.0.tgz",
+      "overridden": false
+    },
+    "formik": {
+      "version": "2.4.6",
+      "resolved": "https://registry.npmjs.org/formik/-/formik-2.4.6.tgz",
+      "overridden": false
+    },
+    "framer-motion": {
+      "version": "12.23.22",
+      "resolved": "https://registry.npmjs.org/framer-motion/-/framer-motion-12.23.22.tgz",
+      "overridden": false
+    },
+    "hashids": {
+      "version": "2.3.0",
+      "resolved": "https://registry.npmjs.org/hashids/-/hashids-2.3.0.tgz",
+      "overridden": false
+    },
+    "i18next-browser-languagedetector": {
+      "version": "8.2.0",
+      "resolved": "https://registry.npmjs.org/i18next-browser-languagedetector/-/i18next-browser-languagedetector-8.2.0.tgz",
+      "overridden": false
+    },
+    "i18next": {
+      "version": "25.5.3",
+      "resolved": "https://registry.npmjs.org/i18next/-/i18next-25.5.3.tgz",
+      "overridden": false
+    },
+    "jsonwebtoken": {
+      "version": "9.0.2",
+      "resolved": "https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-9.0.2.tgz",
+      "overridden": false
+    },
+    "jwt-decode": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/jwt-decode/-/jwt-decode-4.0.0.tgz",
+      "overridden": false
+    },
+    "lucide-react": {
+      "version": "0.511.0",
+      "resolved": "https://registry.npmjs.org/lucide-react/-/lucide-react-0.511.0.tgz",
+      "overridden": false
+    },
+    "multer": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/multer/-/multer-2.0.2.tgz",
+      "overridden": false
+    },
+    "mysql2": {
+      "version": "3.15.2",
+      "resolved": "https://registry.npmjs.org/mysql2/-/mysql2-3.15.2.tgz",
+      "overridden": false
+    },
+    "n8n-nodes-base": {
+      "version": "1.113.0",
+      "resolved": "https://registry.npmjs.org/n8n-nodes-base/-/n8n-nodes-base-1.113.0.tgz",
+      "overridden": false
+    },
+    "nodemailer": {
+      "version": "7.0.9",
+      "resolved": "https://registry.npmjs.org/nodemailer/-/nodemailer-7.0.9.tgz",
+      "overridden": false
+    },
+    "pdf-parse": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/pdf-parse/-/pdf-parse-1.1.1.tgz",
+      "overridden": false
+    },
+    "pdfjs-dist": {
+      "version": "5.4.296",
+      "resolved": "https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-5.4.296.tgz",
+      "overridden": false
+    },
+    "pdfmake": {
+      "version": "0.2.20",
+      "resolved": "https://registry.npmjs.org/pdfmake/-/pdfmake-0.2.20.tgz",
+      "overridden": false
+    },
+    "prop-types": {
+      "version": "15.8.1",
+      "resolved": "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz",
+      "overridden": false
+    },
+    "puppeteer-core": {
+      "version": "24.23.0",
+      "resolved": "https://registry.npmjs.org/puppeteer-core/-/puppeteer-core-24.23.0.tgz",
+      "overridden": false
+    },
+    "react-datepicker": {
+      "version": "8.7.0",
+      "resolved": "https://registry.npmjs.org/react-datepicker/-/react-datepicker-8.7.0.tgz",
+      "overridden": false
+    },
+    "react-dom": {
+      "version": "19.2.0",
+      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-19.2.0.tgz",
+      "overridden": false
+    },
+    "react-hook-form": {
+      "version": "7.64.0",
+      "resolved": "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.64.0.tgz",
+      "overridden": false
+    },
+    "react-i18next": {
+      "version": "15.7.4",
+      "resolved": "https://registry.npmjs.org/react-i18next/-/react-i18next-15.7.4.tgz",
+      "overridden": false
+    },
+    "react-lazy-load-image-component": {
+      "version": "1.6.3",
+      "resolved": "https://registry.npmjs.org/react-lazy-load-image-component/-/react-lazy-load-image-component-1.6.3.tgz",
+      "overridden": false
+    },
+    "react-pdf": {
+      "version": "10.2.0",
+      "resolved": "https://registry.npmjs.org/react-pdf/-/react-pdf-10.2.0.tgz",
+      "overridden": false
+    },
+    "react-redux": {
+      "version": "9.2.0",
+      "resolved": "https://registry.npmjs.org/react-redux/-/react-redux-9.2.0.tgz",
+      "overridden": false
+    },
+    "react-router-dom": {
+      "version": "7.9.4",
+      "resolved": "https://registry.npmjs.org/react-router-dom/-/react-router-dom-7.9.4.tgz",
+      "overridden": false
+    },
+    "react-select": {
+      "version": "5.10.2",
+      "resolved": "https://registry.npmjs.org/react-select/-/react-select-5.10.2.tgz",
+      "overridden": false
+    },
+    "react-xml-viewer": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/react-xml-viewer/-/react-xml-viewer-3.0.1.tgz",
+      "overridden": false
+    },
+    "react-zoom-pan-pinch": {
+      "version": "3.7.0",
+      "resolved": "https://registry.npmjs.org/react-zoom-pan-pinch/-/react-zoom-pan-pinch-3.7.0.tgz",
+      "overridden": false
+    },
+    "react": {
+      "version": "19.2.0",
+      "resolved": "https://registry.npmjs.org/react/-/react-19.2.0.tgz",
+      "overridden": false
+    },
+    "redux": {
+      "version": "5.0.1",
+      "resolved": "https://registry.npmjs.org/redux/-/redux-5.0.1.tgz",
+      "overridden": false
+    },
+    "sanitize-html": {
+      "version": "2.17.0",
+      "resolved": "https://registry.npmjs.org/sanitize-html/-/sanitize-html-2.17.0.tgz",
+      "overridden": false
+    },
+    "sequelize": {
+      "version": "6.37.7",
+      "resolved": "https://registry.npmjs.org/sequelize/-/sequelize-6.37.7.tgz",
+      "overridden": false
+    },
+    "simplebar-react": {
+      "version": "3.3.2",
+      "resolved": "https://registry.npmjs.org/simplebar-react/-/simplebar-react-3.3.2.tgz",
+      "overridden": false
+    },
+    "stripe": {
+      "version": "18.5.0",
+      "resolved": "https://registry.npmjs.org/stripe/-/stripe-18.5.0.tgz",
+      "overridden": false
+    },
+    "sweetalert2": {
+      "version": "11.25.0",
+      "resolved": "https://registry.npmjs.org/sweetalert2/-/sweetalert2-11.25.0.tgz",
+      "overridden": false
+    },
+    "umzug": {
+      "version": "3.8.2",
+      "resolved": "https://registry.npmjs.org/umzug/-/umzug-3.8.2.tgz",
+      "overridden": false
+    },
+    "web-vitals": {
+      "version": "5.1.0",
+      "resolved": "https://registry.npmjs.org/web-vitals/-/web-vitals-5.1.0.tgz",
+      "overridden": false
+    },
+    "yet-another-react-lightbox": {
+      "version": "3.25.0",
+      "resolved": "https://registry.npmjs.org/yet-another-react-lightbox/-/yet-another-react-lightbox-3.25.0.tgz",
+      "overridden": false
+    },
+    "yup": {
+      "version": "1.7.1",
+      "resolved": "https://registry.npmjs.org/yup/-/yup-1.7.1.tgz",
+      "overridden": false
+    }
+  }
+}

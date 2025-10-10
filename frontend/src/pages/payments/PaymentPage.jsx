@@ -149,6 +149,14 @@ const PaymentPage = () => {
   const shadowColor = useColorModeValue('lg', 'dark-lg')
   const amountBg = useColorModeValue('blue.50', 'blue.900')
   const amountBorder = useColorModeValue('blue.200', 'blue.700')
+  const warningBg = useColorModeValue('orange.50', 'orange.900')
+  const warningBorder = useColorModeValue('orange.200', 'orange.700')
+  const errorBg = useColorModeValue('red.50', 'red.900')
+  const errorBorder = useColorModeValue('red.200', 'red.700')
+  const successBg = useColorModeValue('green.50', 'green.900')
+  const successBorder = useColorModeValue('green.200', 'green.700')
+  const formSectionBg = useColorModeValue('gray.50', 'gray.900')
+  const outlineHoverBg = useColorModeValue('gray.100', 'gray.700')
 
   const { currentPayment, publicPaymentConfig, loading } = useSelector((state) => state.payments)
   const [stripePromise, setStripePromise] = useState(null)
@@ -372,7 +380,7 @@ const PaymentPage = () => {
               thickness="4px"
               speed="0.65s"
             />
-            <Text color={useColorModeValue('gray.600', 'gray.400')} fontSize="lg">
+            <Text color={textSecondary} fontSize="lg">
               Loading payment details...
             </Text>
           </Stack>
@@ -404,9 +412,9 @@ const PaymentPage = () => {
                 status="warning"
                 borderRadius="xl"
                 mb={8}
-                bg={useColorModeValue('orange.50', 'orange.900')}
+                bg={warningBg}
                 borderWidth="1px"
-                borderColor={useColorModeValue('orange.200', 'orange.700')}
+                borderColor={warningBorder}
                 py={4}
               >
                 <AlertIcon />
@@ -508,9 +516,9 @@ const PaymentPage = () => {
                 <Alert
                   status="info"
                   borderRadius="xl"
-                  bg={useColorModeValue('blue.50', 'blue.900')}
+                  bg={amountBg}
                   borderWidth="1px"
-                  borderColor={useColorModeValue('blue.200', 'blue.700')}
+                  borderColor={amountBorder}
                   py={4}
                 >
                   <AlertIcon color={iconBlue500} />
@@ -559,9 +567,9 @@ const PaymentPage = () => {
                   <Alert
                     status="error"
                     borderRadius="xl"
-                    bg={useColorModeValue('red.50', 'red.900')}
+                    bg={errorBg}
                     borderWidth="1px"
-                    borderColor={useColorModeValue('red.200', 'red.700')}
+                    borderColor={errorBorder}
                     py={4}
                   >
                     <AlertIcon />
@@ -591,9 +599,9 @@ const PaymentPage = () => {
                 <Alert
                   status="success"
                   borderRadius="xl"
-                  bg={useColorModeValue('green.50', 'green.900')}
+                  bg={successBg}
                   borderWidth="1px"
-                  borderColor={useColorModeValue('green.200', 'green.700')}
+                  borderColor={successBorder}
                   py={4}
                 >
                   <AlertIcon />
@@ -633,7 +641,7 @@ const PaymentPage = () => {
               {showPaymentForm && (
                 <Box
                   p={{ base: 4, md: 6 }}
-                  bg={useColorModeValue('gray.50', 'gray.900')}
+                  bg={formSectionBg}
                   borderRadius="xl"
                   borderWidth="1px"
                   borderColor={borderColor}
@@ -654,9 +662,9 @@ const PaymentPage = () => {
                 <Alert
                   status="warning"
                   borderRadius="xl"
-                  bg={useColorModeValue('orange.50', 'orange.900')}
+                  bg={warningBg}
                   borderWidth="1px"
-                  borderColor={useColorModeValue('orange.200', 'orange.700')}
+                  borderColor={warningBorder}
                   py={4}
                 >
                   <AlertIcon />
@@ -703,7 +711,7 @@ const PaymentPage = () => {
                   borderColor={borderColor}
                   color={textSecondary}
                   _hover={{
-                    bg: useColorModeValue('gray.100', 'gray.700'),
+                    bg: outlineHoverBg,
                     transform: 'translateY(-2px)',
                     shadow: 'md'
                   }}

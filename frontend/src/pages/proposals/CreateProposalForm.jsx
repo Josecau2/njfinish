@@ -42,7 +42,7 @@ import PrintProposalModal from '../../components/model/PrintProposalModal'
 import EmailProposalModal from '../../components/model/EmailProposalModal'
 import EmailContractModal from '../../components/model/EmailContractModal'
 import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
-import { sendFormDataToBackend, useCreateProposal } from '../../queries/proposalQueries'
+import { useCreateProposal } from '../../queries/proposalQueries'
 import withContractorScope from '../../components/withContractorScope'
 import PageHeader from '../../components/PageHeader'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
@@ -611,4 +611,3 @@ const ProposalForm = ({
 }
 
 export default withContractorScope(ProposalForm, 'proposals', ['proposals:create'])
-

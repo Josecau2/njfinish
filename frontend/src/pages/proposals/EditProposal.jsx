@@ -48,7 +48,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
 import { setSelectVersionNewEdit } from '../../store/slices/selectVersionNewEditSlice'
-import { sendFormDataToBackend } from '../../queries/proposalQueries'
+import { useUpdateProposal } from '../../queries/proposalQueries'
 // Removed Formik and Yup - using React Hook Form pattern
 // Removed react-select/creatable - using Chakra Select
 // Removed react-datepicker - using native HTML5 date inputs
@@ -109,6 +109,7 @@ const EditProposal = ({
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const toast = useToast()
+  const updateProposalMutation = useUpdateProposal()
 
   // Dark mode colors - MUST be before any useState hooks
   const borderColor = useColorModeValue('gray.200', 'gray.600')
@@ -562,10 +563,10 @@ const EditProposal = ({
         }
       }
 
-      const response = await sendFormDataToBackend(payload)
+      const response = await updateProposalMutation.mutateAsync(payload)
 
-      if (response.data.success) {
-        const savedPayload = { ...(response.data?.data || finalData) }
+      if (response?.success) {
+        const savedPayload = { ...(response?.data || finalData) }
         if (savedPayload.manufacturersData) {
           savedPayload.manufacturersData = parseManufacturersData(savedPayload.manufacturersData)
         }
@@ -592,7 +593,7 @@ const EditProposal = ({
         setFormData(savedPayload)
         setInitialData(savedPayload)
       } else {
-        const apiMsg = response.data?.message
+        const apiMsg = response?.message
         toast({
           title: t('common.error', 'Error'),
           description: apiMsg || t('proposals.errors.operationFailed', 'Operation failed'),
@@ -661,8 +662,9 @@ const EditProposal = ({
               onClick={() => setShowPrintModal(true)}
               size="sm"
               minH="44px"
-              maxW={{ base: '180px', md: 'none' }}
               fontSize={{ base: 'sm', md: 'md' }}
+              whiteSpace="nowrap"
+              flexShrink={0}
             >
               {t('proposals.create.actions.print', 'Print Quote')}
             </Button>,
@@ -674,8 +676,9 @@ const EditProposal = ({
                 onClick={() => setShowEmailModal(true)}
                 size="sm"
                 minH="44px"
-                maxW={{ base: '180px', md: 'none' }}
                 fontSize={{ base: 'sm', md: 'md' }}
+                whiteSpace="nowrap"
+                flexShrink={0}
               >
                 {t('proposals.create.actions.email', 'Email Quote')}
               </Button>,
@@ -686,8 +689,9 @@ const EditProposal = ({
                 onClick={() => setShowContractModal(true)}
                 size="sm"
                 minH="44px"
-                maxW={{ base: '180px', md: 'none' }}
                 fontSize={{ base: 'sm', md: 'md' }}
+                whiteSpace="nowrap"
+                flexShrink={0}
               >
                 {t('proposals.create.actions.contract', 'Email Contract')}
               </Button>,

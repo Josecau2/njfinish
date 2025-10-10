@@ -14,6 +14,7 @@ import { setTableItems as setTableItemsRedux } from '../store/slices/selectedVer
 import { setSelectVersionNew } from '../store/slices/selectVersionNewSlice';
 import { isAdmin } from '../helpers/permissions';
 import { isShowroomModeActive, getShowroomMultiplier, addShowroomSettingsListener } from '../utils/showroomUtils';
+import { useStyleCarousel } from '../hooks/useStyleCarousel';
 import './ItemSelectionContent.css';
 
 const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFormData, setSelectedVersion }) => {
@@ -106,10 +107,16 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     const [stylesMeta, setStylesMeta] = useState([]);
     const [fetchedCollections, setFetchedCollections] = useState([]);
     const [collectionsLoading, setCollectionsLoading] = useState(true);
-    const [carouselCurrentIndex, setCarouselCurrentIndex] = useState(0);
-    const [itemsPerPage, setItemsPerPage] = useState(4); // Desktop default
-    const [touchStart, setTouchStart] = useState(null);
-    const [touchEnd, setTouchEnd] = useState(null);
+
+    // Embla Carousel - replaces custom carousel implementation
+    const {
+        emblaRef,
+        canScrollPrev,
+        canScrollNext,
+        scrollPrev,
+        scrollNext,
+    } = useStyleCarousel(stylesMeta);
+
     // Stable baseline for comparison cards (prevents drift when switching styles) - no longer used
     // const [comparisonBaseline, setComparisonBaseline] = useState({ styleId: null, stylePrice: null });
     const [isStylesCollapsed, setIsStylesCollapsed] = useState(false); // New state for collapse/expand
@@ -375,66 +382,6 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     }, [selectVersion?.selectedStyle, stylesMeta]);
 
     // Handle responsive items per page
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth <= 767) {
-                setItemsPerPage(2); // Mobile: 2 items per page
-            } else if (window.innerWidth <= 992) {
-                setItemsPerPage(4); // Tablet: 4 items per page
-            } else if (window.innerWidth <= 1200) {
-                setItemsPerPage(5); // Small desktop: 5 items per page
-            } else {
-                setItemsPerPage(6); // Large desktop: 6 items per page
-            }
-        };
-
-        handleResize(); // Initial check
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    // Reset carousel when collections change
-    useEffect(() => {
-        setCarouselCurrentIndex(0);
-    }, [fetchedCollections]);
-
-    // Carousel navigation functions
-    const nextSlide = () => {
-        const maxIndex = Math.max(0, stylesMeta.length - itemsPerPage);
-        setCarouselCurrentIndex(prev => Math.min(prev + 1, maxIndex));
-    };
-
-    const prevSlide = () => setCarouselCurrentIndex(prev => Math.max(prev - 1, 0));
-
-    const canGoNext = () => carouselCurrentIndex < stylesMeta.length - itemsPerPage;
-
-    const canGoPrev = () => carouselCurrentIndex > 0;
-
-    // Touch swipe handlers for mobile carousel
-    const minSwipeDistance = 50;
-
-    const onTouchStart = (e) => {
-        setTouchEnd(null);
-        setTouchStart(e.targetTouches[0].clientX);
-    };
-
-    const onTouchMove = (e) => {
-        setTouchEnd(e.targetTouches[0].clientX);
-    };
-
-    const onTouchEnd = () => {
-        if (!touchStart || !touchEnd) return;
-        const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
-
-        if (isLeftSwipe && canGoNext()) {
-            nextSlide();
-        }
-        if (isRightSwipe && canGoPrev()) {
-            prevSlide();
-        }
-    };
 
     // Atomic totals cache (cents) per style for driving the breakdown table, mirroring Edit
     // Shape: { epoch: number, key: string, entries: { [styleId]: { result: { partsCents, assemblyCents, modsCents, customCents, subtotalBeforeDiscountCents, discountCents, totalAfterDiscountCents, deliveryCents, taxRatePct, taxCents, grandTotalCents } } } }
@@ -1716,8 +1663,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                 size="sm"
                                                 variant="outline"
                                                 colorScheme="gray"
-                                                onClick={prevSlide}
-                                                isDisabled={!canGoPrev()}
+                                                onClick={scrollPrev}
+                                                isDisabled={!canScrollPrev}
                                                 aria-label={t('catalog.navigation.previousStyles', 'Previous styles')}
                                                 minH="44px"
                                                 minW="44px"
@@ -1727,8 +1674,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                 size="sm"
                                                 variant="outline"
                                                 colorScheme="gray"
-                                                onClick={nextSlide}
-                                                isDisabled={!canGoNext()}
+                                                onClick={scrollNext}
+                                                isDisabled={!canScrollNext}
                                                 aria-label={t('catalog.navigation.nextStyles', 'Next styles')}
                                                 minH="44px"
                                                 minW="44px"
@@ -1807,18 +1754,11 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                 })}
                                             </Stack>
                                         ) : (
-                                            <Box
-                                                display="flex"
-                                                gap={{ base: '0.6rem', md: '0.85rem' }}
-                                                flexWrap={{ base: 'nowrap', md: 'wrap' }}
-                                                transform={{ base: `translateX(-${carouselCurrentIndex * (100 / itemsPerPage)}%)`, md: 'none' }}
-                                                transition="transform 0.3s ease-in-out"
-                                                width={{ base: stylesMeta.length > itemsPerPage ? `${Math.ceil(stylesMeta.length / itemsPerPage) * 100}%` : '100%', md: '100%' }}
-                                                onTouchStart={onTouchStart}
-                                                onTouchMove={onTouchMove}
-                                                onTouchEnd={onTouchEnd}
-                                            >
-                                                {stylesMeta.map((styleItem, index) => {
+                                            <>
+                                                {/* Embla Carousel - Mobile/Tablet only */}
+                                                <Box className="embla" ref={emblaRef} display={{ base: 'block', md: 'none' }}>
+                                                    <Flex className="embla__container">
+                                                        {stylesMeta.map((styleItem, index) => {
                                                     const variant = styleItem.styleVariants?.[0];
                                                     const hasAnyItems = filteredItems.length > 0;
                                                     const disabled = hasAnyItems && !hasEligibleInStyle(styleItem.id);
@@ -1826,12 +1766,14 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                     return (
                                                         <Box
                                                             key={`style-${styleItem.id}-${index}`}
-                                                            textAlign="center"
+                                                            className="embla__slide"
+                                                            display="flex"
+                                                            flexDirection="column"
+                                                            alignItems="center"
                                                             aria-disabled={disabled}
                                                             cursor={disabled ? 'not-allowed' : 'pointer'}
                                                             opacity={disabled ? 0.5 : 1}
                                                             transition="transform 0.2s ease"
-                                                            flexShrink={0}
                                                             onClick={() => !disabled && handleStyleSelect(styleItem.id)}
                                                             _hover={disabled ? {} : { transform: 'scale(1.02)' }}
                                                         >
@@ -1894,7 +1836,99 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                         </Box>
                                                     );
                                                 })}
-                                            </Box>
+                                                    </Flex>
+                                                </Box>
+
+                                                {/* Desktop Grid - Same styles shown as grid on desktop */}
+                                                <Box
+                                                    display={{ base: 'none', md: 'flex' }}
+                                                    gap="0.85rem"
+                                                    flexWrap="wrap"
+                                                >
+                                                    {stylesMeta.map((styleItem, index) => {
+                                                        const variant = styleItem.styleVariants?.[0];
+                                                        const hasAnyItems = filteredItems.length > 0;
+                                                        const disabled = hasAnyItems && !hasEligibleInStyle(styleItem.id);
+
+                                                        return (
+                                                            <Box
+                                                                key={`style-desktop-${styleItem.id}-${index}`}
+                                                                display="flex"
+                                                                flexDirection="column"
+                                                                alignItems="center"
+                                                                aria-disabled={disabled}
+                                                                cursor={disabled ? 'not-allowed' : 'pointer'}
+                                                                opacity={disabled ? 0.5 : 1}
+                                                                transition="transform 0.2s ease"
+                                                                onClick={() => !disabled && handleStyleSelect(styleItem.id)}
+                                                                _hover={disabled ? {} : { transform: 'scale(1.02)' }}
+                                                            >
+                                                                <Box
+                                                                    display="flex"
+                                                                    alignItems="center"
+                                                                    justifyContent="center"
+                                                                    maxW={`${styleImageContainerWidth}px`}
+                                                                    maxH={`${styleImageContainerHeight}px`}
+                                                                    w="100%"
+                                                                    bg={bgGray50}
+                                                                    borderRadius="md"
+                                                                    borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
+                                                                    borderStyle="solid"
+                                                                    borderColor={styleItem.id === selectedStyleData?.id ? 'blue.500' : 'gray.200'}
+                                                                    p={styleImagePadding}
+                                                                >
+                                                                    <Image
+                                                                        src={
+                                                                            variant?.image
+                                                                                ? `${api_url}/uploads/images/${variant.image}`
+                                                                                : '/images/nologo.png'
+                                                                        }
+                                                                        alt={variant?.shortName || styleItem.style}
+                                                                        maxH={`${styleImageMaxHeight}px`}
+                                                                        maxW="100%"
+                                                                        w="auto"
+                                                                        h="auto"
+                                                                        objectFit="contain"
+                                                                        loading="lazy"
+                                                                        fallbackSrc="/images/nologo.png"
+                                                                        onError={(e) => {
+                                                                            if (variant?.image && !e.target.dataset.fallbackTried) {
+                                                                                e.target.dataset.fallbackTried = '1';
+                                                                                e.target.src = `${api_url}/uploads/manufacturer_catalogs/${variant.image}`;
+                                                                            } else {
+                                                                                e.target.src = '/images/nologo.png';
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </Box>
+                                                                <Box
+                                                                    mt={1.5}
+                                                                    w="100%"
+                                                                    maxW={`${styleImageContainerWidth}px`}
+                                                                    px={2}
+                                                                    py={1}
+                                                                    borderRadius="sm"
+                                                                    bg={styleItem.id === selectedStyleData?.id ? styleCardBgSelected : styleCardBgUnselected}
+                                                                    borderWidth="1px"
+                                                                    borderStyle="solid"
+                                                                    borderColor={styleItem.id === selectedStyleData?.id ? styleCardBorderSelected : styleCardBorderUnselected}
+                                                                    fontWeight={styleItem.id === selectedStyleData?.id ? '600' : 'normal'}
+                                                                    textAlign="center"
+                                                                >
+                                                                    <Text fontSize="xs" mb={0} color={styleCardTextColor} noOfLines={1}>
+                                                                        {styleItem.style}
+                                                                    </Text>
+                                                                    {styleItem.id === selectedStyleData?.id && (
+                                                                        <Text fontSize="2xs" color={styleCardLabelColor} mt={0.5}>
+                                                                            {t('proposalUI.styleComparison.currentStyle', 'Current Style')}
+                                                                        </Text>
+                                                                    )}
+                                                                </Box>
+                                                            </Box>
+                                                        );
+                                                    })}
+                                                </Box>
+                                            </>
                                         )}
                                     </Box>
                                 )}
