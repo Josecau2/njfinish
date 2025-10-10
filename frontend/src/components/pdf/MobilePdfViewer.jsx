@@ -1,14 +1,19 @@
 import React, { useCallback, useState, useMemo, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Document, Page, pdfjs } from 'react-pdf'
-import workerSrc from 'react-pdf/dist/pdf.worker.entry.js?url'
+import PdfJsWorker from 'pdfjs-dist/build/pdf.worker.mjs?worker'
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url'
 import { Box, Button, HStack, useColorModeValue } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight, X } from '@/icons-lucide'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 
-// Configure pdf.js worker explicitly for Vite - FORCE override
+// Configure pdf.js worker explicitly for Vite
 if (pdfjs?.GlobalWorkerOptions) {
-  pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
+  try {
+    pdfjs.GlobalWorkerOptions.workerPort = new PdfJsWorker()
+  } catch (_) {
+    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+  }
 }
 
 const MobilePdfViewer = ({ fileUrl, onClose }) => {
@@ -167,10 +172,14 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
             }}
           >
             <Box textAlign="center">
-              {/* Force worker override right before Document render */}
+              {/* Ensure worker options are set before Document render (idempotent) */}
               {(() => {
-                if (pdfjs?.GlobalWorkerOptions) {
-                  pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
+                if (pdfjs?.GlobalWorkerOptions && !pdfjs.GlobalWorkerOptions.workerPort && !pdfjs.GlobalWorkerOptions.workerSrc) {
+                  try {
+                    pdfjs.GlobalWorkerOptions.workerPort = new PdfJsWorker()
+                  } catch (_) {
+                    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+                  }
                 }
                 return null
               })()}

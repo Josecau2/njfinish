@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
-import workerSrc from 'react-pdf/dist/pdf.worker.entry.js?url'
+// Use pdfjs worker via Vite. Prefer workerPort (constructor) with fallback to URL string
+import PdfJsWorker from 'pdfjs-dist/build/pdf.worker.mjs?worker'
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url'
 import {
   Box,
   Button,
@@ -16,9 +18,15 @@ import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pa
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
 
-// Configure pdf.js worker explicitly - FORCE override
+// Configure pdf.js worker explicitly for Vite
 if (pdfjs?.GlobalWorkerOptions) {
-  pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
+  try {
+    // Preferred: pass a Worker instance
+    pdfjs.GlobalWorkerOptions.workerPort = new PdfJsWorker()
+  } catch (_) {
+    // Fallback: URL string
+    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+  }
 }
 
 const DesktopPdfViewer = ({ fileUrl, onClose }) => {
@@ -379,10 +387,14 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
                 }}
               >
             <Box textAlign="center">
-              {/* Force worker override right before Document render */}
+              {/* Ensure worker options are set before Document render (idempotent) */}
               {(() => {
-                if (pdfjs?.GlobalWorkerOptions) {
-                  pdfjs.GlobalWorkerOptions.workerSrc = workerSrc
+                if (pdfjs?.GlobalWorkerOptions && !pdfjs.GlobalWorkerOptions.workerPort && !pdfjs.GlobalWorkerOptions.workerSrc) {
+                  try {
+                    pdfjs.GlobalWorkerOptions.workerPort = new PdfJsWorker()
+                  } catch (_) {
+                    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+                  }
                 }
                 return null
               })()}
