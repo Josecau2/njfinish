@@ -1778,18 +1778,18 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                             _hover={disabled ? {} : { transform: 'scale(1.02)' }}
                                                         >
                                                             <Box
-                                                                display="inline-flex"
+                                                                display="flex"
                                                                 alignItems="center"
                                                                 justifyContent="center"
-                                                                w="auto"
-                                                                minW="100%"
-                                                                h="auto"
+                                                                maxW={`${styleImageContainerWidth}px`}
+                                                                maxH={`${styleImageContainerHeight}px`}
+                                                                w="100%"
                                                                 bg={bgGray50}
                                                                 borderRadius="md"
                                                                 borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
                                                                 borderStyle="solid"
                                                                 borderColor={styleItem.id === selectedStyleData?.id ? 'blue.500' : 'gray.200'}
-                                                                p={1}
+                                                                p={styleImagePadding}
                                                             >
                                                                 <Image
                                                                     src={
