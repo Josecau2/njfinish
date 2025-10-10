@@ -17,7 +17,7 @@
 
 .embla__slide {
   transform: translate3d(0, 0, 0); /* GPU acceleration for smooth performance */
-  flex: 0 0 32%; /* Default: show 3 slides on narrow screens */
+  flex: 0 0 33.33%; /* Default: show exactly 3 slides on narrow screens */
   min-width: 0; /* Prevent flex items from overflowing */
   padding-left: 0;
   position: relative;
@@ -28,14 +28,14 @@
 /* Small phones (360px+): show 3-4 slides */
 @media (min-width: 360px) {
   .embla__slide {
-    flex: 0 0 30%;
+    flex: 0 0 25%; /* Exactly 4 items */
   }
 }
 
 /* Small Tablet (480px+): 4 items */
 @media (min-width: 480px) {
   .embla__slide {
-    flex: 0 0 24%;
+    flex: 0 0 25%; /* Exactly 4 items */
   }
 }
 
@@ -59,6 +59,19 @@
   height: auto;
   display: block;
   border-radius: var(--chakra-radii-md);
+}
+
+/* Make image container boxes fit content instead of full width */
+.embla__slide > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.embla__slide > div > div {
+  width: 100% !important;
+  padding: 4px !important;
 }
 
 /* Optional: Add smooth transition for resize events */
