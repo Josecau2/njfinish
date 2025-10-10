@@ -205,7 +205,7 @@ const saveProposal = async (req, res) => {
         }
 
         // For contractors, verify customer access if customerId is provided
-    if (customerId && user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
+        if (customerId && user.group_id && user.group && (user.group.group_type === 'contractor' || user.group.type === 'contractor')) {
             const customer = await Customer.findByPk(customerId);
             if (customer && customer.group_id !== user.group_id) {
                 return res.status(403).json({
@@ -215,6 +215,49 @@ const saveProposal = async (req, res) => {
             }
         }
 
+        const sanitizeDateField = (value) => {
+            if (value == null || value === '') return null;
+            if (typeof value === 'string') {
+                const trimmed = value.trim();
+                if (!trimmed || trimmed.toLowerCase() === 'invalid date' || trimmed === '0') {
+                    return null;
+                }
+                const parsed = new Date(trimmed);
+                if (Number.isNaN(parsed.getTime())) {
+                    return null;
+                }
+                return parsed;
+            }
+            if (value instanceof Date && !Number.isNaN(value.getTime())) {
+                return value;
+            }
+            const parsed = new Date(value);
+            return Number.isNaN(parsed.getTime()) ? null : parsed;
+        };
+
+        const dateFields = [
+            'measurementDate',
+            'designDate',
+            'followUp1Date',
+            'followUp2Date',
+            'followUp3Date',
+            'date',
+            'locked_at',
+            'accepted_at',
+            'sent_at'
+        ];
+
+        if (formData && typeof formData === 'object') {
+            for (const field of dateFields) {
+                if (Object.prototype.hasOwnProperty.call(formData, field)) {
+                    const sanitized = sanitizeDateField(formData[field]);
+                    formData[field] = sanitized;
+                }
+            }
+            if (!formData.date) {
+                formData.date = new Date();
+            }
+        }
 
         if (customerId == "" || customerId == null) {
             formData.customerId = null;
@@ -273,8 +316,16 @@ const saveProposal = async (req, res) => {
             }
         } catch (_) {}
 
-        // Compute proposal number (daily unique) with small retry loop on dup
+        // Determine database schema capabilities once so we can stay backward-compatible with
+        // environments that have not yet applied the latest migrations (e.g. proposal numbering
+        // or ownership columns). We only include fields that exist in the active schema.
+        const proposalAttributes = Proposals?.rawAttributes || {};
+        const hasColumn = (name) => Object.prototype.hasOwnProperty.call(proposalAttributes, name);
+        const supportsNumbering = hasColumn('proposal_number') && hasColumn('proposal_number_date') && hasColumn('proposal_number_seq');
+
+        // Compute proposal number (daily unique) with small retry loop on dup, but only if the schema supports it.
         const assignProposalNumber = async () => {
+            if (!supportsNumbering) return { ok: false };
             const maxAttempts = 5;
             for (let attempt = 0; attempt < maxAttempts; attempt++) {
                 const cand = await nextCandidate('proposal');
@@ -298,11 +349,18 @@ const saveProposal = async (req, res) => {
         const dataToSave = {
             ...formData,
             customerId,
-            // Only set owner_group_id for contractor users to satisfy FK constraints
-            owner_group_id: isContractor ? user.group_id : null,
-            created_by_user_id: user.id,
-            ...(numbering.ok ? numbering.fields : {})
         };
+
+        if (hasColumn('owner_group_id')) {
+            dataToSave.owner_group_id = isContractor ? user.group_id : null;
+        }
+        if (hasColumn('created_by_user_id')) {
+            dataToSave.created_by_user_id = user.id;
+        }
+        if (numbering.ok) {
+            Object.assign(dataToSave, numbering.fields);
+        }
+
         let proposal = null;
         {
             const maxAttempts = 5;

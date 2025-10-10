@@ -48,7 +48,7 @@ app.use((req, res, next) => {
   const stripeScriptSrc = 'https://js.stripe.com';
   const cfConnectSrc = 'https://cloudflareinsights.com https://*.cloudflareinsights.com';
   const stripeConnectSrc = 'https://api.stripe.com';
-  const connectSrc = `connect-src 'self' ${originList} ws: wss: ${cfConnectSrc} ${cfScriptSrc} ${stripeConnectSrc}`.trim();
+  const connectSrc = `connect-src 'self' blob: data: ${originList} ws: wss: ${cfConnectSrc} ${cfScriptSrc} ${stripeConnectSrc}`.trim();
   const frameSrc = `frame-src ${stripeScriptSrc} https://hooks.stripe.com`;
   // Some libraries (e.g., pdf.js/react-pdf) use Web Workers via blob: URLs and may import small
   // chunks via data: or blob: URLs. Our hardened CSP needs to explicitly allow those in a
