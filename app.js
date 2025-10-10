@@ -55,8 +55,8 @@ app.use((req, res, next) => {
   // controlled manner. We do NOT enable general inline scripts; we keep nonce for inlined brand payloads.
   const scriptSrc = `script-src 'self' 'nonce-${cspNonce}' ${cfScriptSrc} ${stripeScriptSrc} blob: data:`.trim();
   const scriptSrcElem = `script-src-elem 'self' 'nonce-${cspNonce}' ${cfScriptSrc} ${stripeScriptSrc} blob: data:`.trim();
-  const workerSrc = "worker-src 'self' blob:";
-  const childSrc = "child-src 'self' blob:"; // legacy fallback for some UAs
+  const workerSrc = "worker-src 'self' blob: data:";
+  const childSrc = "child-src 'self' blob: data:"; // legacy fallback for some UAs
   res.setHeader(
     'Content-Security-Policy',
     [
