@@ -19,7 +19,8 @@
       "Bash(npx vite-bundle-visualizer:*)",
       "Bash(npm run build:analyze:*)",
       "Bash(npm run dev:frontend:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

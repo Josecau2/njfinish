@@ -21,7 +21,8 @@ export function useStyleCarousel(stylesMeta = []) {
     loop: false,
     align: 'start',
     dragFree: true, // Enable free scrolling for smoother multi-item view
-    slidesToScroll: 3, // Scroll 3 items at a time when using buttons
+    containScroll: false, // Allow scrolling to last item without restriction
+    slidesToScroll: 1, // Scroll 1 item at a time for precise control
     // Responsive breakpoints - disable carousel on desktop (768px+)
     breakpoints: {
       '(min-width: 768px)': {

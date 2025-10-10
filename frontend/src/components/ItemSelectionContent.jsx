@@ -71,11 +71,11 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     // Dark mode colors
     const bgGray50 = useColorModeValue("gray.50", "gray.800");
     const summaryTableMaxWidth = useBreakpointValue({ base: '100%', md: '440px', lg: '500px' }) || '100%';
-    const styleCarouselMinHeight = useBreakpointValue({ base: '180px', md: '200px', lg: '210px' }) || '200px';
-    const styleImageContainerWidth = useBreakpointValue({ base: 140, md: 180, lg: 200 }) || 180;
-    const styleImageContainerHeight = useBreakpointValue({ base: 120, md: 160, lg: 180 }) || 160;
-    const styleImageMaxHeight = useBreakpointValue({ base: 100, md: 140, lg: 160 }) || 140;
-    const styleImagePadding = useBreakpointValue({ base: 2, md: 2.5 }) || 2;
+    const styleCarouselMinHeight = useBreakpointValue({ base: '216px', md: '200px', lg: '210px' }) || '200px';
+    const styleImageContainerWidth = useBreakpointValue({ base: 110, md: 180, lg: 200 }) || 180;
+    const styleImageContainerHeight = useBreakpointValue({ base: 165, md: 160, lg: 180 }) || 160;
+    const styleImageMaxHeight = useBreakpointValue({ base: 155, md: 140, lg: 160 }) || 140;
+    const styleImagePadding = useBreakpointValue({ base: 1, md: 2.5 }) || 2;
     const colorGray500 = useColorModeValue("gray.500", "gray.400");
     const colorGray600 = useColorModeValue("gray.600", "gray.400");
     const iconBlue = useColorModeValue("blue.500", "blue.300");
