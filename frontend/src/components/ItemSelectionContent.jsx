@@ -778,6 +778,12 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                 if (removeIdx >= 0) {
                     const updatedItems = items.filter((_, i) => i !== removeIdx);
                     md[vIdx] = { ...md[vIdx], items: updatedItems };
+
+                    // Update the selectVersion snapshot consumed by CatalogTable
+                    // This ensures the UI re-renders immediately after delete
+                    if (setSelectedVersion && selectVersion) {
+                        setSelectedVersion({ ...selectVersion, items: updatedItems });
+                    }
                 }
             }
             return { ...prev, manufacturersData: md };
