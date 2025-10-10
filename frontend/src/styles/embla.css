@@ -61,19 +61,6 @@
   border-radius: var(--chakra-radii-md);
 }
 
-/* Make image container boxes fit content instead of full width */
-.embla__slide > div {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.embla__slide > div > div {
-  width: 100% !important;
-  padding: 4px !important;
-}
-
 /* Optional: Add smooth transition for resize events */
 .embla__container,
 .embla__slide {

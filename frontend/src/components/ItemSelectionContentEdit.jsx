@@ -1597,10 +1597,11 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                     _hover={readOnly || disabled ? {} : { transform: 'scale(1.02)' }}
                                                                 >
                                                                     <Box
-                                                                        display="flex"
+                                                                        display="inline-flex"
                                                                         alignItems="center"
                                                                         justifyContent="center"
-                                                                        w="100%"
+                                                                        w="auto"
+                                                                        minW="100%"
                                                                         h="auto"
                                                                         bg={bgGray50}
                                                                         borderRadius="md"
