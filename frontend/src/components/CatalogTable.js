@@ -949,7 +949,7 @@ const CatalogTable = ({
                           py={2}
                           bg={
                             subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed &&
-                            (!item.exposedSide || item.exposedSide === '-')
+                            !item.exposedSide
                               ? bgValidationWarning
                               : 'transparent'
                           }
@@ -957,7 +957,7 @@ const CatalogTable = ({
                           {assembled ? (
                             <VStack align="stretch" spacing={1}>
                               {subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed &&
-                                (!item.exposedSide || item.exposedSide === '-') && (
+                                !item.exposedSide && (
                                   <Text
                                     color={textRed500}
                                     fontSize="2xs"
@@ -1299,7 +1299,7 @@ const CatalogTable = ({
             <Box height={`${mobileVirtual.paddingTop}px`} />
           )}
 
-          <VStack spacing={3} align="stretch">
+          <VStack spacing={2} align="stretch">
             {mobileItems.map((item, virtualIdx) => {
               const rowIndex = mobileStartIndex + virtualIdx
               const assembled = !!isAssembled
@@ -1319,63 +1319,68 @@ const CatalogTable = ({
               return (
                 <React.Fragment key={`mobile-${rowIndex}`}>
                   <Box
-                    border="2px solid"
+                    border="1px solid"
                     borderColor={rowBorder}
-                    borderRadius="md"
+                    borderRadius="lg"
                     bg={rowIndex % 2 === 0 ? rowBgEven : rowBgOdd}
-                    mb={3}
-                    p={4}
+                    mb={2}
+                    p={2.5}
+                    boxShadow="sm"
                   >
-                    <Flex justify="space-between" align="center" mb={3}>
+                    <Flex justify="space-between" align="center" mb={2}>
                       <Flex
                         align="center"
                         justify="center"
-                        minW="36px"
-                        h="28px"
-                        px="10px"
+                        minW="32px"
+                        h="24px"
+                        px="8px"
                         borderRadius="full"
                         bg={headerBg}
                         color={textColor}
                         fontWeight={700}
-                        fontSize="16px"
+                        fontSize="14px"
                         boxShadow="sm"
                       >
                         {rowIndex + 1}
                       </Flex>
-                      <HStack spacing={2}>
+                      <HStack spacing={1}>
                         <IconButton
                           icon={<Icon as={Settings} />}
-                          size="md"
+                          size="sm"
                           variant="ghost"
                           colorScheme="blue"
                           aria-label={t('proposalUI.modifications', 'Modifications')}
                           onClick={() => handleOpenModificationModal(rowIndex, item.id)}
+                          minW="36px"
+                          minH="36px"
                           _hover={{ bg: useColorModeValue('blue.50', 'blue.900') }}
                         />
                         <IconButton
                           icon={<Icon as={Trash} />}
-                          size="md"
+                          size="sm"
                           variant="ghost"
                           colorScheme="red"
                           aria-label={t('common.delete', 'Delete')}
                           onClick={() => handleDelete(rowIndex)}
+                          minW="36px"
+                          minH="36px"
                           _hover={{ bg: useColorModeValue('red.50', 'red.900') }}
                         />
                       </HStack>
                     </Flex>
 
-                    <Flex justify="space-between" align="center" mb={2}>
-                      <Text fontWeight="600" color={labelColor} fontSize="sm">
+                    <Flex justify="space-between" align="center" mb={1.5}>
+                      <Text fontWeight="600" color={labelColor} fontSize="xs">
                         {t('proposalColumns.item')}
                       </Text>
-                      <Flex align="center" gap={2} minW={0} flex="1" justify="flex-end">
+                      <Flex align="center" gap={1.5} minW={0} flex="1" justify="flex-end">
                         <Text
                           color={isUnavailable ? textUnavailable : undefined}
                           textDecoration={isUnavailable ? 'line-through' : undefined}
                           whiteSpace="nowrap"
                           overflow="hidden"
                           textOverflow="ellipsis"
-                          fontSize="sm"
+                          fontSize="xs"
                         >
                           <Text as="strong">{item.code}</Text>
                           {item.description ? (
@@ -1389,9 +1394,9 @@ const CatalogTable = ({
                             size="xs"
                             variant="solid"
                             colorScheme="blue"
-                            fontSize="xs"
-                            px={3}
-                            py={1.5}
+                            fontSize="2xs"
+                            px={2}
+                            py={1}
                             onClick={() => openTypeModal(item.type)}
                             title={`View ${item.type} specifications`}
                             borderRadius="md"
@@ -1399,6 +1404,7 @@ const CatalogTable = ({
                             boxShadow="sm"
                             _hover={{ boxShadow: 'md', transform: 'translateY(-1px)' }}
                             transition="all 0.2s"
+                            flexShrink={0}
                           >
                             Specs
                           </Button>
@@ -1406,8 +1412,8 @@ const CatalogTable = ({
                       </Flex>
                     </Flex>
 
-                    <Flex justify="space-between" align="center" mb={2}>
-                      <Text fontWeight="600" color={labelColor} fontSize="sm">
+                    <Flex justify="space-between" align="center" mb={1.5}>
+                      <Text fontWeight="600" color={labelColor} fontSize="xs">
                         {t('proposalColumns.qty')}
                       </Text>
                       <Input
@@ -1415,19 +1421,21 @@ const CatalogTable = ({
                         min="1"
                         value={item.qty}
                         onChange={(event) => updateQty(rowIndex, parseInt(event.target.value))}
-                        w="80px"
+                        w="70px"
                         size="sm"
+                        fontSize="xs"
                       />
                     </Flex>
 
-                    <Flex justify="space-between" align="center" mb={2}>
-                      <Text fontWeight="600" color={labelColor} fontSize="sm">
+                    <Flex justify="space-between" align="center" mb={1.5}>
+                      <Text fontWeight="600" color={labelColor} fontSize="xs">
                         {t('proposalColumns.price')}
                       </Text>
                       <Text
                         color={isUnavailable ? textUnavailable : undefined}
                         textDecoration={isUnavailable ? 'line-through' : undefined}
-                        fontSize="sm"
+                        fontSize="xs"
+                        fontWeight="600"
                       >
                         {isUnavailable ? formatPrice(0) : formatPrice(item.price)}
                       </Text>
@@ -1443,31 +1451,34 @@ const CatalogTable = ({
                                 ? bgValidationWarning
                                 : 'transparent'
                             }
-                            p={2}
+                            p={1.5}
                             borderRadius="md"
-                            mb={2}
+                            mb={1.5}
                           >
-                            <Text fontWeight="600" color={labelColor} fontSize="sm" mb={2}>
+                            <Text fontWeight="600" color={labelColor} fontSize="xs" mb={1.5}>
                               {t('proposalColumns.hingeSide')}
                             </Text>
                             {subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge &&
                               (!item.hingeSide || item.hingeSide === '-') && (
-                                <Text color={textRed500} mb={2} fontSize="xs" fontWeight="bold">
+                                <Text color={textRed500} mb={1.5} fontSize="2xs" fontWeight="bold">
                                   {t('validation.selectHingeSide', {
                                     defaultValue: 'Select hinge side',
                                   })}
                                 </Text>
                               )}
-                            <Flex gap={2}>
+                            <Flex gap={1.5} flexWrap="wrap">
                               {hingeOptions.map((opt) => (
                                 <Button
                                   key={opt}
-                                  size="sm"
+                                  size="xs"
                                   variant={item.hingeSide === opt ? 'solid' : 'outline'}
                                   colorScheme={item.hingeSide === opt ? undefined : 'gray'}
                                   bg={item.hingeSide === opt ? headerBg : undefined}
                                   color={item.hingeSide === opt ? textColor : undefined}
                                   borderColor={item.hingeSide === opt ? headerBg : undefined}
+                                  fontSize="xs"
+                                  px={2}
+                                  py={1}
                                   onClick={() =>
                                     subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge &&
                                     updateHingeSide(rowIndex, opt)
@@ -1492,35 +1503,38 @@ const CatalogTable = ({
                           <Box
                             bg={
                               subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed &&
-                              (!item.exposedSide || item.exposedSide === '-')
+                              !item.exposedSide
                                 ? bgValidationWarning
                                 : 'transparent'
                             }
-                            p={2}
+                            p={1.5}
                             borderRadius="md"
-                            mb={2}
+                            mb={1.5}
                           >
-                            <Text fontWeight="600" color={labelColor} fontSize="sm" mb={2}>
+                            <Text fontWeight="600" color={labelColor} fontSize="xs" mb={1.5}>
                               {t('proposalColumns.exposedSide')}
                             </Text>
                             {subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed &&
-                              (!item.exposedSide || item.exposedSide === '-') && (
-                                <Text color={textRed500} mb={2} fontSize="xs" fontWeight="bold">
+                              !item.exposedSide && (
+                                <Text color={textRed500} mb={1.5} fontSize="2xs" fontWeight="bold">
                                   {t('validation.selectExposedSide', {
                                     defaultValue: 'Select exposed finished side',
                                   })}
                                 </Text>
                               )}
-                            <Flex gap={2}>
+                            <Flex gap={1.5} flexWrap="wrap">
                               {exposedOptions.map((opt) => (
                                 <Button
                                   key={opt}
-                                  size="sm"
+                                  size="xs"
                                   variant={item.exposedSide === opt ? 'solid' : 'outline'}
                                   colorScheme={item.exposedSide === opt ? undefined : 'gray'}
                                   bg={item.exposedSide === opt ? headerBg : undefined}
                                   color={item.exposedSide === opt ? textColor : undefined}
                                   borderColor={item.exposedSide === opt ? headerBg : undefined}
+                                  fontSize="xs"
+                                  px={2}
+                                  py={1}
                                   onClick={() =>
                                     subTypeRequirements.itemRequirements[rowIndex]
                                       ?.requiresExposed && updateExposedSide(rowIndex, opt)
@@ -1541,14 +1555,15 @@ const CatalogTable = ({
                           </Box>
                         )}
 
-                        <Flex justify="space-between" align="center" mb={2}>
-                          <Text fontWeight="600" color={labelColor} fontSize="sm">
+                        <Flex justify="space-between" align="center" mb={1.5}>
+                          <Text fontWeight="600" color={labelColor} fontSize="xs">
                             {t('proposalColumns.assemblyCost')}
                           </Text>
                           <Text
                             color={isUnavailable ? textUnavailable : undefined}
                             textDecoration={isUnavailable ? 'line-through' : undefined}
-                            fontSize="sm"
+                            fontSize="xs"
+                            fontWeight="600"
                           >
                             {formatPrice(assemblyFee)}
                           </Text>
@@ -1556,22 +1571,22 @@ const CatalogTable = ({
                       </>
                     )}
 
-                    <Flex justify="space-between" align="center" mb={2}>
-                      <Text fontWeight="600" color={labelColor} fontSize="sm">
+                    <Flex justify="space-between" align="center" mb={1.5}>
+                      <Text fontWeight="600" color={labelColor} fontSize="xs">
                         {t('proposalColumns.modifications', { defaultValue: 'Modifications' })}
                       </Text>
-                      <Text fontSize="sm">{formatPrice(modsTotal)}</Text>
+                      <Text fontSize="xs" fontWeight="600">{formatPrice(modsTotal)}</Text>
                     </Flex>
 
                     <Box
-                      mt={3}
-                      pt={3}
-                      borderTop="2px solid"
+                      mt={2}
+                      pt={2}
+                      borderTop="1px solid"
                       borderTopColor={borderColor}
                       color={isUnavailable ? textUnavailable : undefined}
                       textDecoration={isUnavailable ? 'line-through' : undefined}
                     >
-                      <Text fontWeight="bold" fontSize="md">
+                      <Text fontWeight="bold" fontSize="sm">
                         {t('proposalColumns.total')}: {formatPrice(total)}
                       </Text>
                     </Box>
@@ -1586,37 +1601,37 @@ const CatalogTable = ({
                         color={textColor}
                         border="1px solid"
                         borderColor={headerBg}
-                        borderRadius="6px"
-                        p={3}
-                        mt={3}
-                        mb={6}
+                        borderRadius="lg"
+                        p={2}
+                        mt={2}
+                        mb={2}
                         mx="auto"
-                        maxW="90%"
+                        maxW="95%"
                         position="relative"
                         boxShadow="sm"
                       >
                         <Flex
                           position="absolute"
-                          top="-8px"
-                          left="12px"
+                          top="-6px"
+                          left="10px"
                           bg={textColor}
                           color={headerBg}
                           borderRadius="full"
-                          w="24px"
-                          h="24px"
+                          w="20px"
+                          h="20px"
                           align="center"
                           justify="center"
-                          fontSize="12px"
+                          fontSize="10px"
                           fontWeight="bold"
                           border="2px solid"
                           borderColor={headerBg}
                         >
                           {rowIndex + 1}
                         </Flex>
-                        <Flex justify="space-between" align="center" mb={2}>
+                        <Flex justify="space-between" align="center" mb={1.5}>
                           <Text
-                            fontSize="12px"
-                            fontWeight="600"
+                            fontSize="10px"
+                            fontWeight="700"
                             color={textColor}
                             textTransform="uppercase"
                             letterSpacing="0.5px"
@@ -1625,29 +1640,31 @@ const CatalogTable = ({
                           </Text>
                           <IconButton
                             icon={<Icon as={Trash} />}
-                            size="sm"
+                            size="xs"
                             variant="ghost"
                             colorScheme="red"
                             aria-label="Remove modification"
                             onClick={() => handleDeleteModification(rowIndex, modIdx)}
+                            minW="28px"
+                            minH="28px"
                             _hover={{ bg: useColorModeValue('red.50', 'red.900') }}
                           />
                         </Flex>
-                        <Flex justify="space-between" fontSize="14px" mb={1}>
-                          <Text>{mod.name || t('proposalUI.mod.unnamed')}</Text>
+                        <Flex justify="space-between" fontSize="xs" mb={1} flexWrap="wrap" gap={1}>
+                          <Text fontWeight="600">{mod.name || t('proposalUI.mod.unnamed')}</Text>
                           {(() => {
                             const details = buildSelectedOptionsText(mod?.selectedOptions)
-                            return details ? <Text opacity={0.7}> - {details}</Text> : null
+                            return details ? <Text opacity={0.7} fontSize="2xs"> - {details}</Text> : null
                           })()}
-                          <Text>
+                          <Text fontSize="2xs">
                             {t('common.qty', 'Qty')}: {mod.qty}
                           </Text>
                         </Flex>
-                        <Flex justify="space-between" fontSize="14px">
-                          <Text>
+                        <Flex justify="space-between" fontSize="xs" gap={2}>
+                          <Text fontSize="2xs">
                             {t('proposalColumns.price')}: {formatPrice(mod.price || 0)}
                           </Text>
-                          <Text fontWeight="bold">
+                          <Text fontWeight="bold" fontSize="xs">
                             {t('proposalColumns.total')}:{' '}
                             {formatPrice((mod.price || 0) * (mod.qty || 1))}
                           </Text>
