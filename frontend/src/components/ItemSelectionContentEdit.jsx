@@ -99,10 +99,10 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
     const textGreen500 = useColorModeValue('green.500', 'green.300')
     const bgGray50 = useColorModeValue('gray.50', 'gray.800')
     const summaryTableMaxWidth = useBreakpointValue({ base: '100%', md: '440px', lg: '500px' }) || '100%';
-    const styleCarouselMinHeight = useBreakpointValue({ base: '180px', md: '200px', lg: '210px' }) || '200px';
-    const styleImageContainerWidth = useBreakpointValue({ base: 140, md: 180, lg: 200 }) || 180;
-    const styleImageContainerHeight = useBreakpointValue({ base: 120, md: 160, lg: 180 }) || 160;
-    const styleImageMaxHeight = useBreakpointValue({ base: 100, md: 140, lg: 160 }) || 140;
+    const styleCarouselMinHeight = useBreakpointValue({ base: '140px', md: '200px', lg: '210px' }) || '200px';
+    const styleImageContainerWidth = useBreakpointValue({ base: 100, md: 180, lg: 200 }) || 180;
+    const styleImageContainerHeight = useBreakpointValue({ base: 90, md: 160, lg: 180 }) || 160;
+    const styleImageMaxHeight = useBreakpointValue({ base: 75, md: 140, lg: 160 }) || 140;
     const styleImagePadding = useBreakpointValue({ base: 2, md: 2.5 }) || 2;
     const bgGray100 = useColorModeValue('gray.100', 'gray.700')
     const bgGreen50 = useColorModeValue('green.50', 'green.900')
@@ -1600,15 +1600,14 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                         display="flex"
                                                                         alignItems="center"
                                                                         justifyContent="center"
-                                                                        maxW={`${styleImageContainerWidth}px`}
-                                                                        maxH={`${styleImageContainerHeight}px`}
-                                                                        mx="auto"
+                                                                        w="100%"
+                                                                        h="auto"
                                                                         bg={bgGray50}
                                                                         borderRadius="md"
                                                                         borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
                                                                         borderStyle="solid"
                                                                         borderColor={styleItem.id === selectedStyleData?.id ? 'blue.500' : 'gray.200'}
-                                                                        p={styleImagePadding}
+                                                                        p={1}
                                                                     >
                                                                         <Image
                                                                             src={

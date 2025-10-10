@@ -20,8 +20,9 @@ export function useStyleCarousel(stylesMeta = []) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     align: 'start',
-    dragFree: false,
+    dragFree: true, // Enable free scrolling for smoother multi-item view
     containScroll: 'trimSnaps',
+    slidesToScroll: 3, // Scroll 3 items at a time when using buttons
     // Responsive breakpoints - disable carousel on desktop (768px+)
     breakpoints: {
       '(min-width: 768px)': {

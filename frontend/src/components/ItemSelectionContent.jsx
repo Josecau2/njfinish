@@ -1781,15 +1781,14 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                 display="flex"
                                                                 alignItems="center"
                                                                 justifyContent="center"
-                                                                maxW={`${styleImageContainerWidth}px`}
-                                                                maxH={`${styleImageContainerHeight}px`}
-                                                                mx="auto"
+                                                                w="100%"
+                                                                h="auto"
                                                                 bg={bgGray50}
                                                                 borderRadius="md"
                                                                 borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
                                                                 borderStyle="solid"
                                                                 borderColor={styleItem.id === selectedStyleData?.id ? 'blue.500' : 'gray.200'}
-                                                                p={styleImagePadding}
+                                                                p={1}
                                                             >
                                                                 <Image
                                                                     src={

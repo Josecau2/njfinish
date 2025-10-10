@@ -11,13 +11,13 @@
   backface-visibility: hidden;
   will-change: transform;
   margin-left: 0;
-  padding: 0 var(--chakra-space-1);
-  gap: var(--chakra-space-1); /* Tight 4px gap between slides */
+  padding: 0;
+  gap: var(--chakra-space-0-5); /* Very tight 2px gap between slides */
 }
 
 .embla__slide {
   transform: translate3d(0, 0, 0); /* GPU acceleration for smooth performance */
-  flex: 0 0 48%; /* Default: show just over two slides on the narrowest screens */
+  flex: 0 0 32%; /* Default: show 3 slides on narrow screens */
   min-width: 0; /* Prevent flex items from overflowing */
   padding-left: 0;
   position: relative;
@@ -25,17 +25,17 @@
 
 /* Responsive Breakpoints - Match Chakra UI breakpoints */
 
-/* Small phones (360px+): tighten to show ~2.5 slides */
+/* Small phones (360px+): show 3-4 slides */
 @media (min-width: 360px) {
   .embla__slide {
-    flex: 0 0 40%;
+    flex: 0 0 30%;
   }
 }
 
-/* Small Tablet (480px+): 3-3.5 items */
+/* Small Tablet (480px+): 4 items */
 @media (min-width: 480px) {
   .embla__slide {
-    flex: 0 0 30%;
+    flex: 0 0 24%;
   }
 }
 
