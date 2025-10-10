@@ -1,0 +1,87 @@
+/* Embla Carousel Styles - Integrated with Chakra UI */
+
+.embla {
+  overflow: hidden;
+  position: relative;
+}
+
+.embla__container {
+  display: flex;
+  touch-action: pan-y pinch-zoom; /* Enable vertical scroll but allow horizontal swipe */
+  backface-visibility: hidden;
+  will-change: transform;
+  margin-left: 0;
+  padding: 0 var(--chakra-space-1);
+  gap: var(--chakra-space-1); /* Tight 4px gap between slides */
+}
+
+.embla__slide {
+  transform: translate3d(0, 0, 0); /* GPU acceleration for smooth performance */
+  flex: 0 0 48%; /* Default: show just over two slides on the narrowest screens */
+  min-width: 0; /* Prevent flex items from overflowing */
+  padding-left: 0;
+  position: relative;
+}
+
+/* Responsive Breakpoints - Match Chakra UI breakpoints */
+
+/* Small phones (360px+): tighten to show ~2.5 slides */
+@media (min-width: 360px) {
+  .embla__slide {
+    flex: 0 0 40%;
+  }
+}
+
+/* Small Tablet (480px+): 3-3.5 items */
+@media (min-width: 480px) {
+  .embla__slide {
+    flex: 0 0 30%;
+  }
+}
+
+/* Tablet (640px+): 4-5 items */
+@media (min-width: 640px) {
+  .embla__slide {
+    flex: 0 0 22%;
+  }
+}
+
+/* Desktop (768px+): Hide carousel, show grid instead */
+@media (min-width: 768px) {
+  .embla {
+    display: none;
+  }
+}
+
+/* Ensure images within slides are responsive */
+.embla__slide img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--chakra-radii-md);
+}
+
+/* Optional: Add smooth transition for resize events */
+.embla__container,
+.embla__slide {
+  transition: none; /* Embla handles transitions */
+}
+
+/* Focus styles for accessibility */
+.embla:focus-visible {
+  outline: 2px solid var(--chakra-colors-blue-500);
+  outline-offset: 2px;
+}
+
+/* Prevent text selection during drag */
+.embla__container {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Loading state skeleton compatibility */
+.embla__slide .chakra-skeleton {
+  border-radius: var(--chakra-radii-md);
+}
