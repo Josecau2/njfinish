@@ -805,6 +805,12 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
 
             // Also update Redux store
             dispatch(setSelectVersionNewEdit(updatedItems));
+
+            // Update the selectVersion snapshot consumed by CatalogTableEdit
+            // This ensures the UI re-renders immediately after delete
+            if (setSelectedVersion) {
+                setSelectedVersion({ ...selectVersion, items: updatedItems });
+            }
         }
 
         // Update local state as well for consistency
