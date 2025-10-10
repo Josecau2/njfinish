@@ -170,23 +170,31 @@ export const checkSubTypeRequirements = async (items, manufacturerId) => {
     }
 
     // Create a map of item requirements for conditional styling
+    // We need to check ALL requirements (both missing and valid) so that
+    // items that require hinge/exposed sides remain enabled even after selection
     const itemRequirements = {}
-    if (response.data.missingRequirements) {
-      response.data.missingRequirements.forEach((req) => {
-        const itemIndex = req.itemIndex
-        if (itemIndex !== undefined) {
-          if (!itemRequirements[itemIndex]) {
-            itemRequirements[itemIndex] = {}
-          }
-          if (req.requirement === 'hinge side') {
-            itemRequirements[itemIndex].requiresHinge = true
-          }
-          if (req.requirement === 'exposed side') {
-            itemRequirements[itemIndex].requiresExposed = true
-          }
+
+    // Collect all requirements from both missing and valid
+    const allResponseRequirements = [
+      ...(response.data.missingRequirements || []),
+      ...(response.data.validRequirements || []),
+      ...(response.data.allRequirements || []),
+    ]
+
+    allResponseRequirements.forEach((req) => {
+      const itemIndex = req.itemIndex
+      if (itemIndex !== undefined) {
+        if (!itemRequirements[itemIndex]) {
+          itemRequirements[itemIndex] = {}
         }
-      })
-    }
+        if (req.requirement === 'hinge side') {
+          itemRequirements[itemIndex].requiresHinge = true
+        }
+        if (req.requirement === 'exposed side') {
+          itemRequirements[itemIndex].requiresExposed = true
+        }
+      }
+    })
 
     return {
       requiresHinge,
