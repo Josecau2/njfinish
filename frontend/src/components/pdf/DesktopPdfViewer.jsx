@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
-// Leverage react-pdf's worker entry so runtime and worker pdf.js versions stay aligned
-import ReactPdfWorker from 'react-pdf/dist/pdf.worker.entry.js?worker'
-import reactPdfWorkerUrl from 'react-pdf/dist/pdf.worker.entry.js?url'
+// Use pdfjs-dist worker directly so API and worker stay aligned without custom bundling
+const pdfWorkerModuleUrl = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url)
 import {
   Box,
   Button,
@@ -20,12 +19,14 @@ import 'react-pdf/dist/Page/TextLayer.css'
 
 // Configure pdf.js worker explicitly for Vite
 if (pdfjs?.GlobalWorkerOptions) {
-  try {
-    // Preferred: pass a Worker instance that matches react-pdf's bundled pdf.js version
-    pdfjs.GlobalWorkerOptions.workerPort = new ReactPdfWorker()
-  } catch (_) {
-    // Fallback: use URL string for environments without Worker constructor support
-    pdfjs.GlobalWorkerOptions.workerSrc = reactPdfWorkerUrl
+  if (typeof window !== 'undefined' && 'Worker' in window) {
+    try {
+      pdfjs.GlobalWorkerOptions.workerPort = new Worker(pdfWorkerModuleUrl, { type: 'module' })
+    } catch (_) {
+      pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerModuleUrl.toString()
+    }
+  } else {
+    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerModuleUrl.toString()
   }
 }
 
@@ -390,10 +391,14 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
               {/* Ensure worker options are set before Document render (idempotent) */}
               {(() => {
                 if (pdfjs?.GlobalWorkerOptions && !pdfjs.GlobalWorkerOptions.workerPort && !pdfjs.GlobalWorkerOptions.workerSrc) {
-                  try {
-                    pdfjs.GlobalWorkerOptions.workerPort = new ReactPdfWorker()
-                  } catch (_) {
-                    pdfjs.GlobalWorkerOptions.workerSrc = reactPdfWorkerUrl
+                  if (typeof window !== 'undefined' && 'Worker' in window) {
+                    try {
+                      pdfjs.GlobalWorkerOptions.workerPort = new Worker(pdfWorkerModuleUrl, { type: 'module' })
+                    } catch (_) {
+                      pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerModuleUrl.toString()
+                    }
+                  } else {
+                    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerModuleUrl.toString()
                   }
                 }
                 return null
