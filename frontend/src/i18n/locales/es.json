@@ -3511,6 +3511,10 @@
   "payment": {
     "title": "Realizar pago",
     "subtitle": "Completa tu pago de forma segura",
+    "header": {
+      "title": "¡Casi Listo! Completa Tu Pago",
+      "subtitle": "Pago seguro para tu pedido"
+    },
     "details": {
       "title": "Detalles del pago"
     },

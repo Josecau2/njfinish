@@ -451,8 +451,8 @@ const PaymentPage = () => {
   return (
     <PageContainer>
       <PageHeader
-        title={t('payment.title', 'Make Payment')}
-        subtitle={t('payment.subtitle', 'Complete your payment securely')}
+        title={t('payment.header.title', 'Almost There! Complete Your Payment')}
+        subtitle={t('payment.header.subtitle', 'Secure checkout for your order')}
         icon={CreditCard}
       />
 

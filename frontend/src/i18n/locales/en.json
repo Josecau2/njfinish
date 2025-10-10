@@ -967,6 +967,10 @@
   "payment": {
     "title": "Make Payment",
     "subtitle": "Complete your payment securely",
+    "header": {
+      "title": "Almost There! Complete Your Payment",
+      "subtitle": "Secure checkout for your order"
+    },
     "details": {
       "title": "Payment Details"
     },
