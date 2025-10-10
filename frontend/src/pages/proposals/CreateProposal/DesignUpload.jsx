@@ -65,6 +65,7 @@ const DesignImportStep = ({
   const stickyBg = useColorModeValue('white', 'gray.800')
   const hoverBg = useColorModeValue('gray.100', 'gray.700')
   const cardImageBg = useColorModeValue('gray.50', 'gray.800')
+  const overlayTextColor = useColorModeValue('white', 'gray.100')
 
   const gridSpacing = useBreakpointValue({ base: 2, md: 3, lg: 4 }) || 3
   const cardMaxWidth = useBreakpointValue({ base: '140px', md: '180px', lg: '200px' }) || '180px'
@@ -359,7 +360,7 @@ const DesignImportStep = ({
                           transition="opacity 0.2s"
                           px={3}
                         >
-                          <Text color={useColorModeValue('white', 'gray.100')} fontWeight="medium" fontSize="sm" textAlign="center">
+                          <Text color={overlayTextColor} fontWeight="medium" fontSize="sm" textAlign="center">
                             {style.style || t('common.na')}
                           </Text>
                         </Box>

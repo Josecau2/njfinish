@@ -61,6 +61,7 @@ const CustomerInfoStep = ({
 
   const headingColor = useColorModeValue('gray.800', 'gray.200')
   const subheadingColor = useColorModeValue('gray.700', 'gray.200')
+  const emailTextColor = useColorModeValue('gray.600', 'gray.400')
 
   const [showMoreOptions, setShowMoreOptions] = useState(false)
   const [isCreatingDesigner, setIsCreatingDesigner] = useState(false)
@@ -447,7 +448,7 @@ const getCustomerOption = useCallback(
                             <Stack spacing={0} align="flex-start">
                               <Text fontWeight="medium">{option.label}</Text>
                               {option.data?.email && (
-                                <Text fontSize="sm" color={useColorModeValue('gray.600', 'gray.400')}>
+                                <Text fontSize="sm" color={emailTextColor}>
                                   {option.data.email}
                                 </Text>
                               )}
