@@ -20,7 +20,7 @@
   flex: 0 0 33.33%; /* 3 items */
   min-width: 0; /* Prevent flex items from overflowing */
   position: relative;
-  padding-right: 4px; /* Small gap between slides */
+  padding-right: 8px; /* Gap between slides */
 }
 
 .embla__slide:last-child {
