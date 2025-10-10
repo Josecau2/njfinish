@@ -264,11 +264,13 @@ const saveProposal = async (req, res) => {
         }
 
 
-        if (!formData.status || formData.status.trim() === '') {
+        const isBlank = (value) => value == null || (typeof value === 'string' && value.trim() === '');
+
+        if (isBlank(formData.status)) {
             formData.status = 'Draft';
         }
 
-        if (!formData.date || formData.date.trim() === '') {
+        if (isBlank(formData.date)) {
             formData.date = new Date();
         }
 

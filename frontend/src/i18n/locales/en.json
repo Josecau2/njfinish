@@ -705,46 +705,68 @@
     "accept": "Accept"
   },
   "modificationBrowser": {
-    "title": "Modifications",
+    "title": "Browse Modifications",
+    "uncategorized": "Uncategorized",
     "breadcrumb": {
-      "root": "All"
+      "root": "All",
+      "categories": "Categories"
     },
     "buttons": {
       "back": "Back",
       "close": "Close"
     },
+    "header": {
+      "title": "Modification Library",
+      "subtitle": "Pick a modification to apply to this item."
+    },
     "search": {
-      "placeholder": "Search"
+      "placeholder": "Search modifications",
+      "clear": "Clear"
     },
     "loading": "Loading modifications...",
     "empty": {
-      "title": "No Modifications Available",
-      "subtitle": "No modifications have been assigned to this catalog item.",
-      "hint": "Contact your administrator to set up modifications for this item."
+      "title": "No categories found",
+      "subtitle": "Try adjusting the search or assign modifications to this item first."
+    },
+    "templates": {
+      "empty": "No templates match your search in this category."
     },
     "category": {
-      "browse": "Browse →"
+      "browse": "Browse →",
+      "count": "{{count}} items"
     },
     "template": {
-      "configure": "Configure →",
+      "configure": "Configure",
       "status": {
         "ready": "Ready",
         "draft": "Draft"
       },
       "price": {
-        "overrideShort": "(Override)",
+        "overrideShort": "Override",
         "overrideLabel": "Override price"
       }
     },
     "leadTime": {
-      "noticeTitle": "Please Note:",
+      "noticeTitle": "Please note:",
       "noticeText": "This item has an extended lead time of {{days}} days."
     },
     "qty": {
-      "label": "Qty"
+      "label": "Quantity"
+    },
+    "sideSelector": {
+      "label": "Side Selection",
+      "left": "Left",
+      "right": "Right",
+      "both": "Both"
+    },
+    "upload": {
+      "label": "File Upload"
     },
     "actions": {
       "addModification": "Add modification"
+    },
+    "toast": {
+      "loadFailed": "Failed to load modifications."
     },
     "config": {
       "sideSelection": "Side Selection",

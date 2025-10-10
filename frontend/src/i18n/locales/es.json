@@ -405,34 +405,44 @@
     "accept": "Aceptar"
   },
   "modificationBrowser": {
-    "title": "Modificaciones",
+    "title": "Explorar Modificaciones",
+    "uncategorized": "Sin categoría",
     "breadcrumb": {
-      "root": "Todas"
+      "root": "Todas",
+      "categories": "Categorías"
     },
     "buttons": {
       "back": "Atrás",
       "close": "Cerrar"
     },
+    "header": {
+      "title": "Lista de Modificaciones",
+      "subtitle": "Seleccione una modificación para aplicar a este artículo."
+    },
     "search": {
-      "placeholder": "Buscar"
+      "placeholder": "Buscar modificaciones",
+      "clear": "Limpiar"
     },
     "loading": "Cargando modificaciones...",
     "empty": {
-      "title": "No hay modificaciones",
-      "subtitle": "No se han asignado modificaciones a este artículo del catálogo.",
-      "hint": "Contacte a su administrador para configurarlas."
+      "title": "No hay categorías",
+      "subtitle": "Intente ajustar la búsqueda o asigne modificaciones a este artículo primero."
+    },
+    "templates": {
+      "empty": "No hay plantillas que coincidan con su búsqueda en esta categoría."
     },
     "category": {
-      "browse": "Explorar →"
+      "browse": "Explorar →",
+      "count": "{{count}} artículos"
     },
     "template": {
-      "configure": "Configurar →",
+      "configure": "Configurar",
       "status": {
         "ready": "Lista",
         "draft": "Borrador"
       },
       "price": {
-        "overrideShort": "(Anulado)",
+        "overrideShort": "Anulado",
         "overrideLabel": "Precio anulado"
       }
     },
@@ -441,10 +451,22 @@
       "noticeText": "Este artículo tiene un tiempo adicional de entrega de {{days}} días."
     },
     "qty": {
-      "label": "Cant."
+      "label": "Cantidad"
+    },
+    "sideSelector": {
+      "label": "Selección de Lado",
+      "left": "Izquierda",
+      "right": "Derecha",
+      "both": "Ambos"
+    },
+    "upload": {
+      "label": "Subir Archivo"
     },
     "actions": {
       "addModification": "Agregar modificación"
+    },
+    "toast": {
+      "loadFailed": "Error al cargar las modificaciones."
     },
     "config": {
       "sideSelection": "Selección de lado",

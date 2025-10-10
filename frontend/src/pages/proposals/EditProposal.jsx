@@ -1,5 +1,6 @@
 import StandardCard from '../../components/StandardCard'
 import PageContainer from '../../components/PageContainer'
+import PageHeader from '../../components/PageHeader'
 import { useEffect, useState, useRef, useMemo, lazy, Suspense } from 'react'
 import { useParams } from 'react-router-dom'
 import { decodeParam } from '../../utils/obfuscate'
@@ -647,70 +648,64 @@ const EditProposal = ({
 
   return (
     <>
-      <Box
-        py={3}
-        px={4}
-        borderBottom="1px"
-        borderColor={borderColor}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        flexWrap="wrap"
-      >
-        <HStack spacing={4}>
-          <Text fontSize="lg" color={textColor} fontWeight="medium">
-            {t('proposals.edit.title', 'Edit Quote')}
-          </Text>
+      <PageContainer maxW="100%" px={{ base: 3, md: 4 }} bg={pageBg} minH="100vh">
+        <PageHeader
+          title={t('proposals.edit.title', 'Edit Quote')}
+          subtitle={formData?.customer?.name ? `${t('common.customer', 'Customer')}: ${formData.customer.name}` : t('proposals.edit.subtitle', 'Update proposal details')}
+          icon={Edit}
+          actions={[
+            <Button
+              key="print"
+              colorScheme="green"
+              leftIcon={<Icon as={Printer} />}
+              onClick={() => setShowPrintModal(true)}
+              size="sm"
+              minH="44px"
+              maxW={{ base: '180px', md: 'none' }}
+              fontSize={{ base: 'sm', md: 'md' }}
+            >
+              {t('proposals.create.actions.print', 'Print Quote')}
+            </Button>,
+            ...(!(loggedInUser?.group && loggedInUser.group.group_type === 'contractor') ? [
+              <Button
+                key="email"
+                colorScheme="cyan"
+                leftIcon={<Icon as={Mail} />}
+                onClick={() => setShowEmailModal(true)}
+                size="sm"
+                minH="44px"
+                maxW={{ base: '180px', md: 'none' }}
+                fontSize={{ base: 'sm', md: 'md' }}
+              >
+                {t('proposals.create.actions.email', 'Email Quote')}
+              </Button>,
+              <Button
+                key="contract"
+                colorScheme="yellow"
+                leftIcon={<Icon as={FileText} />}
+                onClick={() => setShowContractModal(true)}
+                size="sm"
+                minH="44px"
+                maxW={{ base: '180px', md: 'none' }}
+                fontSize={{ base: 'sm', md: 'md' }}
+              >
+                {t('proposals.create.actions.contract', 'Email Contract')}
+              </Button>,
+            ] : []),
+          ]}
+        >
           {(formData?.status === 'Proposal accepted' || formData?.status === 'accepted') && (
             <Badge colorScheme="green" px={2} py={1}>
               {t('proposals.lockedStatus.title')}
             </Badge>
           )}
           {formData?.is_locked && (
-            <Badge colorScheme="gray" px={2} py={1}>
+            <Badge colorScheme="gray" px={2} py={1} ml={2}>
               {t('common.locked', 'Locked')}
             </Badge>
           )}
-        </HStack>
-        <HStack spacing={4} flexWrap="wrap">
-          <Button
-            colorScheme="green"
-            leftIcon={<Printer />}
-            onClick={() => setShowPrintModal(true)}
-            minH="44px"
-            maxW={{ base: '180px', md: 'none' }}
-            fontSize={{ base: 'sm', md: 'md' }}
-          >
-            {t('proposals.create.actions.print', 'Print Quote')}
-          </Button>
-          {!(loggedInUser?.group && loggedInUser.group.group_type === 'contractor') && (
-            <>
-              <Button
-                colorScheme="cyan"
-                leftIcon={<Mail />}
-                onClick={() => setShowEmailModal(true)}
-                minH="44px"
-                maxW={{ base: '180px', md: 'none' }}
-                fontSize={{ base: 'sm', md: 'md' }}
-              >
-                {t('proposals.create.actions.email', 'Email Quote')}
-              </Button>
-              <Button
-                colorScheme="yellow"
-                leftIcon={<FileText />}
-                onClick={() => setShowContractModal(true)}
-                minH="44px"
-                maxW={{ base: '180px', md: 'none' }}
-                fontSize={{ base: 'sm', md: 'md' }}
-              >
-                {t('proposals.create.actions.contract', 'Email Contract')}
-              </Button>
-            </>
-          )}
-        </HStack>
-      </Box>
+        </PageHeader>
 
-      <PageContainer maxW="100%" px={{ base: 3, md: 4 }} bg={pageBg} minH="100vh">
         <Box as="form" onSubmit={handleSubmit}>
           {/* Basic Information Card */}
           <StandardCard mb={4}>

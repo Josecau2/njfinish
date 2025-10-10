@@ -1295,54 +1295,58 @@ const CatalogTableEdit = ({
                       )}
                     </Flex>
 
-                    <Flex mb={1.5} justify="space-between" align="center">
-                      <Text fontWeight="600" color={labelColor} fontSize="xs">
-                        {t('proposalColumns.item')}
-                      </Text>
-                      <Flex align="center" gap={1.5} minW={0} flex="1" justify="flex-end">
-                        <Text fontWeight="bold" fontSize="xs" {...mobileTextProps}>
-                          {item.code}
-                        </Text>
-                        {item?.description ? (
+                    {/* Item Name/Description - Prominent */}
+                    <Box 
+                      bg={useColorModeValue('blue.50', 'blue.900')}
+                      borderRadius="md"
+                      p={2}
+                      mb={1}
+                    >
+                      <VStack align="stretch" spacing={0.5}>
+                        <Flex align="center" gap={2} justify="space-between">
                           <Text
-                            as="span"
-                            color={descriptionColor}
-                            noOfLines={1}
-                            maxW="180px"
-                            overflow="hidden"
-                            textOverflow="ellipsis"
-                            whiteSpace="nowrap"
-                            title={item.description}
-                            fontSize="xs"
-                            ml={1}
+                            fontWeight="bold"
+                            fontSize="sm"
+                            color={useColorModeValue('gray.800', 'white')}
+                            {...mobileTextProps}
                           >
-                            — {item.description}
+                            {item.code}
                           </Text>
-                        ) : null}
-                        {hasTypeMetadata(getItemType(item)) && (
-                          <Button
-                            size="xs"
-                            variant="solid"
-                            colorScheme="blue"
-                            fontSize="2xs"
-                            px={2}
-                            py={1}
-                            onClick={() => openTypeModal(getItemType(item))}
-                            title={`View ${getItemType(item)} specifications`}
-                            borderRadius="md"
-                            fontWeight="600"
-                            boxShadow="sm"
-                            _hover={{ boxShadow: 'md', transform: 'translateY(-1px)' }}
-                            transition="all 0.2s"
-                            flexShrink={0}
+                          {hasTypeMetadata(getItemType(item)) && (
+                            <Button
+                              size="xs"
+                              variant="solid"
+                              colorScheme="blue"
+                              fontSize="2xs"
+                              px={2}
+                              py={0.5}
+                              onClick={() => openTypeModal(getItemType(item))}
+                              title={`View ${getItemType(item)} specifications`}
+                              borderRadius="md"
+                              fontWeight="600"
+                              boxShadow="sm"
+                              _hover={{ boxShadow: 'md', transform: 'translateY(-1px)' }}
+                              transition="all 0.2s"
+                              flexShrink={0}
+                            >
+                              Specs
+                            </Button>
+                          )}
+                        </Flex>
+                        {item?.description && (
+                          <Text
+                            fontSize="xs"
+                            color={useColorModeValue('gray.600', 'gray.300')}
+                            noOfLines={2}
+                            title={item.description}
                           >
-                            Specs
-                          </Button>
+                            {item.description}
+                          </Text>
                         )}
-                      </Flex>
-                    </Flex>
+                      </VStack>
+                    </Box>
 
-                    <Flex mb={1.5} justify="space-between" align="center">
+                    <Flex mb={1} justify="space-between" align="center">
                       <Text fontWeight="600" color={labelColor} fontSize="xs">
                         {t('proposalColumns.qty')}
                       </Text>
@@ -1359,7 +1363,7 @@ const CatalogTableEdit = ({
                       />
                     </Flex>
 
-                    <Flex mb={1.5} justify="space-between" align="center">
+                    <Flex mb={1} justify="space-between" align="center">
                       <Text fontWeight="600" color={labelColor} fontSize="xs">
                         {t('proposalColumns.price')}
                       </Text>
@@ -1372,7 +1376,7 @@ const CatalogTableEdit = ({
                       <>
                         {subTypeRequirements.requiresHinge && (
                           <Box
-                            mb={1.5}
+                            mb={1}
                             bg={
                               subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge &&
                               (!item.hingeSide || item.hingeSide === '-')
@@ -1382,12 +1386,12 @@ const CatalogTableEdit = ({
                             p={1.5}
                             borderRadius="md"
                           >
-                            <Text fontWeight="600" color={labelColor} fontSize="xs" mb={1.5}>
+                            <Text fontWeight="600" color={labelColor} fontSize="xs" mb={1}>
                               {t('proposalColumns.hingeSide')}
                             </Text>
                             {subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge &&
                               (!item.hingeSide || item.hingeSide === '-') && (
-                                <Text color={textRed500} mb={1.5} fontSize="2xs" fontWeight="bold">
+                                <Text color={textRed500} mb={1} fontSize="2xs" fontWeight="bold">
                                   {t('validation.selectHingeSide', {
                                     defaultValue: 'Select hinge side',
                                   })}
