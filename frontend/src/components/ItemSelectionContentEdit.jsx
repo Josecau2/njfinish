@@ -1441,7 +1441,7 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                     <Flex
                                         justify="space-between"
                                         align="center"
-                                        mb={5}
+                                        mb={8}
                                     >
                                         <Heading size="sm" mb={0}>
                                             {t('proposalUI.otherStyles')}
@@ -1617,10 +1617,8 @@ const ItemSelectionContentEdit = ({ selectVersion, selectedVersion, formData, se
                                                                                     : '/images/nologo.png'
                                                                             }
                                                                             alt={variant?.shortName || styleItem.style}
-                                                                            maxH={`${styleImageMaxHeight}px`}
-                                                                            maxW="100%"
-                                                                            w="auto"
-                                                                            h="auto"
+                                                                            w={`${styleImageContainerWidth}px`}
+                                                                            h={`${styleImageMaxHeight}px`}
                                                                             objectFit="contain"
                                                                             onError={(e) => {
                                                                                 if (variant?.image && !e.target.dataset.fallbackTried) {

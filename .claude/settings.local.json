@@ -20,7 +20,8 @@
       "Bash(npm run build:analyze:*)",
       "Bash(npm run dev:frontend:*)",
       "Bash(npm run dev:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm audit:*)"
     ],
     "deny": [],
     "ask": []

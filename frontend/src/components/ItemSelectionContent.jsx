@@ -1557,10 +1557,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                     : '/images/nologo.png'
                                             }
                                             alt={selectedStyleData.styleVariants?.[0]?.shortName || selectedStyleData.style}
-                                            maxH={`${styleImageMaxHeight}px`}
-                                            maxW="100%"
-                                            w="auto"
-                                            h="auto"
+                                            w={`${styleImageContainerWidth}px`}
+                                            h={`${styleImageMaxHeight}px`}
                                             objectFit="contain"
                                             onError={(e) => {
                                                 const fname = selectedStyleData.styleVariants?.[0]?.image;
@@ -1616,7 +1614,7 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             <Flex
                                 justify="space-between"
                                 align="center"
-                                mb={5}
+                                mb={8}
                             >
                                 <Heading size="sm" mb={0}>
                                     {t('proposalUI.otherStyles')}
@@ -1798,10 +1796,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                             : '/images/nologo.png'
                                                                     }
                                                                     alt={variant?.shortName || styleItem.style}
-                                                                    maxH={`${styleImageMaxHeight}px`}
-                                                                    maxW="100%"
-                                                                    w="auto"
-                                                                    h="auto"
+                                                                    w={`${styleImageContainerWidth}px`}
+                                                                    h={`${styleImageMaxHeight}px`}
                                                                     objectFit="contain"
                                                                     onError={(e) => {
                                                                         if (variant?.image && !e.target.dataset.fallbackTried) {
@@ -1888,10 +1884,8 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                                 : '/images/nologo.png'
                                                                         }
                                                                         alt={variant?.shortName || styleItem.style}
-                                                                        maxH={`${styleImageMaxHeight}px`}
-                                                                        maxW="100%"
-                                                                        w="auto"
-                                                                        h="auto"
+                                                                        w={`${styleImageContainerWidth}px`}
+                                                                        h={`${styleImageMaxHeight}px`}
                                                                         objectFit="contain"
                                                                         loading="lazy"
                                                                         fallbackSrc="/images/nologo.png"
