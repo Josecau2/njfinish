@@ -158,3 +158,4 @@ dist
 
 # Claude MCP configuration (contains API keys)
 .claude/mcp.json
+tmp_*.js
