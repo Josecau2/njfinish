@@ -22,6 +22,7 @@ import {
   ModalCloseButton,
   ModalFooter,
   Icon,
+  IconButton,
   Table,
   TableContainer,
   Thead,
@@ -181,7 +182,9 @@ const CatalogTableEdit = ({
   const textGray500 = useColorModeValue('gray.500', 'gray.400')
   const borderGray100 = useColorModeValue('gray.100', 'gray.700')
   const bgGray800 = useColorModeValue('gray.50', 'gray.800')
+  const bgGray900 = useColorModeValue('gray.50', 'gray.900')
   const bgGreen50 = useColorModeValue('green.50', 'green.900')
+  const textGray300 = useColorModeValue('gray.700', 'gray.300')
 
   // Map internal codes to localized short labels
   const codeToLabel = (code) => {
@@ -373,34 +376,55 @@ const CatalogTableEdit = ({
       <Modal
         isOpen={showTypeModal}
         onClose={() => setShowTypeModal(false)}
-        size={{ base: 'full', md: 'lg', lg: 'xl' }}
+        size={{ base: 'full', md: 'lg', lg: '4xl' }}
         scrollBehavior="inside"
         isCentered
       >
-        <ModalOverlay />
-        <ModalContent borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
-          <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
-            <Text fontSize="lg" fontWeight="semibold">
+        <ModalOverlay bg="blackAlpha.600" backdropFilter="blur(4px)" />
+        <ModalContent 
+          borderRadius={{ base: '0', md: '16px' }}
+          boxShadow="2xl"
+          overflow="hidden"
+        >
+          <ModalHeader 
+            bg={resolvedHeaderBg} 
+            color={headerTextColor}
+            py={4}
+            px={6}
+            borderBottom="1px solid"
+            borderBottomColor={borderGray300}
+          >
+            <Text fontSize={{ base: 'lg', md: 'xl' }} fontWeight="600" letterSpacing="tight">
               {selectedTypeInfo?.type || 'Type Specifications'}
             </Text>
           </ModalHeader>
           <ModalCloseButton
             aria-label={t('common.ariaLabels.closeModal', 'Close modal')}
             color={headerTextColor}
+            size="lg"
+            top={4}
+            right={4}
+            _hover={{ bg: 'whiteAlpha.200' }}
           />
-          <ModalBody p={{ base: 3, md: 4 }}>
+          <ModalBody p={{ base: 4, md: 6 }} bg={bgGray900}>
             {selectedTypeInfo ? (
-              <Flex flexDir={{ base: 'column', md: 'row' }} gap={4}>
+              <Flex 
+                flexDir={{ base: 'column', md: 'row' }} 
+                gap={6}
+                align={{ base: 'center', md: 'flex-start' }}
+              >
                 <Box
-                  textAlign={{ base: 'center', md: 'start' }}
-                  border="1px solid"
+                  textAlign="center"
+                  border="2px solid"
                   borderColor={borderGray300}
-                  borderRadius="md"
-                  p={3}
+                  borderRadius="xl"
+                  p={4}
                   bg={bgGray800}
                   w="full"
-                  maxW="520px"
-                  mx="auto"
+                  maxW={{ base: '100%', md: '420px' }}
+                  boxShadow="md"
+                  transition="all 0.2s"
+                  _hover={{ boxShadow: 'lg' }}
                 >
                   <Image
                     src={
@@ -411,12 +435,10 @@ const CatalogTableEdit = ({
                     alt={selectedTypeInfo.type}
                     maxW="100%"
                     h="auto"
-                    maxH="455px"
+                    maxH="400px"
                     objectFit="contain"
                     bg="white"
-                    borderRadius="6px"
-                    border="1px solid"
-                    borderColor={borderGray300}
+                    borderRadius="lg"
                     onError={(e) => {
                       if (selectedTypeInfo.image && !e.target.dataset.fallbackTried) {
                         e.target.dataset.fallbackTried = '1'
@@ -429,48 +451,94 @@ const CatalogTableEdit = ({
                 </Box>
                 <Box
                   flex="1"
-                  border="1px solid"
+                  border="2px solid"
                   borderColor={borderGray300}
-                  borderRadius="md"
-                  p={3}
+                  borderRadius="xl"
+                  p={5}
                   bg={bgGray800}
+                  boxShadow="md"
                   minW={0}
                 >
-                  <Flex mb={3} align="center" gap={2}>
-                    <Badge colorScheme="gray">{t('Type')}</Badge>
-                    <Text as="strong" fontSize="lg">
+                  <Flex mb={4} align="center" gap={3} flexWrap="wrap">
+                    <Badge 
+                      colorScheme="blue" 
+                      fontSize="sm" 
+                      px={3} 
+                      py={1} 
+                      borderRadius="full"
+                      textTransform="uppercase"
+                      letterSpacing="wide"
+                    >
+                      {t('Type')}
+                    </Badge>
+                    <Text as="strong" fontSize="xl" fontWeight="600">
                       {selectedTypeInfo.type}
                     </Text>
                   </Flex>
                   {selectedTypeInfo.code && (
-                    <Box mb={2} borderBottom="1px solid" borderColor={borderGray200} pb={2}>
-                      <Text as="span" color={textGray600} fontWeight="medium">
+                    <Box 
+                      mb={3} 
+                      borderBottom="1px solid" 
+                      borderColor={borderGray200} 
+                      pb={3}
+                    >
+                      <Text as="span" color={textGray600} fontWeight="600" fontSize="sm">
                         {t('catalog.labels.code', 'Code')}:
                       </Text>{' '}
-                      <Text as="strong">{selectedTypeInfo.code}</Text>
+                      <Text as="strong" fontSize="md">
+                        {selectedTypeInfo.code}
+                      </Text>
                     </Box>
                   )}
                   {selectedTypeInfo.name && (
-                    <Box mb={2} borderBottom="1px solid" borderColor={borderGray200} pb={2}>
-                      <Text as="span" color={textGray600} fontWeight="medium">
+                    <Box 
+                      mb={3} 
+                      borderBottom="1px solid" 
+                      borderColor={borderGray200} 
+                      pb={3}
+                    >
+                      <Text as="span" color={textGray600} fontWeight="600" fontSize="sm">
                         {t('catalog.labels.name', 'Name')}:
                       </Text>{' '}
-                      <Text as="strong">{selectedTypeInfo.name}</Text>
+                      <Text as="strong" fontSize="md">
+                        {selectedTypeInfo.name}
+                      </Text>
                     </Box>
                   )}
                   {selectedTypeInfo.shortName && (
-                    <Box mb={3} borderBottom="1px solid" borderColor={borderGray200} pb={2}>
-                      <Text as="span" color={textGray600} fontWeight="medium">
+                    <Box 
+                      mb={3} 
+                      borderBottom="1px solid" 
+                      borderColor={borderGray200} 
+                      pb={3}
+                    >
+                      <Text as="span" color={textGray600} fontWeight="600" fontSize="sm">
                         {t('catalog.labels.short', 'Short')}:
                       </Text>{' '}
-                      <Text as="strong">{selectedTypeInfo.shortName}</Text>
+                      <Text as="strong" fontSize="md">
+                        {selectedTypeInfo.shortName}
+                      </Text>
                     </Box>
                   )}
-                  <Box mt={3}>
-                    <Text as="strong" color={textGray600} display="block" mb={2}>
+                  <Box mt={4}>
+                    <Text 
+                      as="strong" 
+                      color={textGray600} 
+                      display="block" 
+                      mb={3}
+                      fontSize="sm" 
+                      fontWeight="600"
+                      textTransform="uppercase"
+                      letterSpacing="wide"
+                    >
                       {t('catalog.labels.description', 'Description')}:
                     </Text>
-                    <Text whiteSpace="pre-wrap" lineHeight="1.6" fontSize="md">
+                    <Text 
+                      whiteSpace="pre-wrap" 
+                      lineHeight="1.7" 
+                      fontSize="md"
+                      color={textGray300}
+                    >
                       {selectedTypeInfo.longDescription ||
                         selectedTypeInfo.description ||
                         t('No description available for this type.')}
@@ -482,31 +550,37 @@ const CatalogTableEdit = ({
               <Box
                 color={textGray600}
                 textAlign="center"
-                p={4}
-                border="1px solid"
+                p={6}
+                border="2px solid"
                 borderColor={borderGray200}
-                borderRadius="md"
+                borderRadius="xl"
                 bg={bgGray800}
+                boxShadow="md"
               >
                 {t('No type information available.')}
               </Box>
             )}
           </ModalBody>
-          <ModalFooter>
-            <Box display={{ base: 'block', md: 'none' }} mt={2} textAlign="center" w="full">
-              <Button
-                colorScheme="gray"
-                size="lg"
-                w="full"
-                onClick={() => setShowTypeModal(false)}
-                minW="140px"
-                borderRadius="8px"
-                fontWeight="500"
-                boxShadow="sm"
-              >
-                Close
-              </Button>
-            </Box>
+          <ModalFooter 
+            bg={bgGray900} 
+            borderTop="1px solid" 
+            borderTopColor={borderGray300}
+            py={4}
+            px={6}
+          >
+            <Button
+              colorScheme="blue"
+              size={{ base: 'lg', md: 'md' }}
+              w={{ base: 'full', md: 'auto' }}
+              onClick={() => setShowTypeModal(false)}
+              minW="140px"
+              borderRadius="lg"
+              fontWeight="600"
+              boxShadow="sm"
+              _hover={{ boxShadow: 'md' }}
+            >
+              {t('common.close', 'Close')}
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -572,18 +646,23 @@ const CatalogTableEdit = ({
                     {hasTypeMetadata(getItemType(item)) && (
                       <Button
                         size="xs"
-                        variant="outline"
+                        variant="solid"
                         colorScheme="blue"
                         ml={2}
                         fontSize="xs"
-                        px={1}
-                        py={0.5}
+                        px={3}
+                        py={1.5}
                         flexShrink={0}
                         onClick={(e) => {
                           e.stopPropagation()
                           openTypeModal(getItemType(item))
                         }}
                         title={`View ${getItemType(item)} specifications`}
+                        borderRadius="md"
+                        fontWeight="600"
+                        boxShadow="sm"
+                        _hover={{ boxShadow: 'md', transform: 'translateY(-1px)' }}
+                        transition="all 0.2s"
                       >
                         Specs
                       </Button>
@@ -605,7 +684,15 @@ const CatalogTableEdit = ({
                 sx={{ transform: 'scale(1.1)' }}
               />
               <Flex align="center" gap={2}>
-                <Icon as={Copy} cursor="pointer" onClick={handleCopy} />
+                <IconButton
+                  icon={<Icon as={Copy} />}
+                  size="md"
+                  variant="ghost"
+                  colorScheme="blue"
+                  aria-label={t('proposalUI.copy')}
+                  onClick={handleCopy}
+                  _hover={{ bg: useColorModeValue('blue.50', 'blue.900') }}
+                />
                 <Text fontWeight="bold" fontSize="md">
                   {t('proposalUI.copy')}
                 </Text>
@@ -760,13 +847,18 @@ const CatalogTableEdit = ({
                           {hasTypeMetadata(getItemType(item)) && (
                             <Button
                               size="xs"
-                              variant="outline"
+                              variant="solid"
                               colorScheme="blue"
                               fontSize="xs"
-                              px={2}
-                              py={0.5}
+                              px={3}
+                              py={1.5}
                               onClick={() => openTypeModal(getItemType(item))}
                               title={`View ${getItemType(item)} specifications`}
+                              borderRadius="md"
+                              fontWeight="600"
+                              boxShadow="sm"
+                              _hover={{ boxShadow: 'md', transform: 'translateY(-1px)' }}
+                              transition="all 0.2s"
                             >
                               Specs
                             </Button>
@@ -807,12 +899,12 @@ const CatalogTableEdit = ({
                                     py={1}
                                     borderRadius="md"
                                     fontSize="xs"
-                                    cursor={readOnly ? 'not-allowed' : 'pointer'}
+                                    cursor={readOnly || !subTypeRequirements.itemRequirements[idx]?.requiresHinge ? 'not-allowed' : 'pointer'}
                                     variant={item.hingeSide === opt ? 'solid' : 'outline'}
                                     colorScheme={item.hingeSide === opt ? 'brand' : 'gray'}
-                                    onClick={() => !readOnly && updateHingeSide(idx, opt)}
-                                    opacity={readOnly ? 0.6 : 1}
-                                    _hover={!readOnly ? { opacity: 0.8 } : undefined}
+                                    onClick={() => !readOnly && subTypeRequirements.itemRequirements[idx]?.requiresHinge && updateHingeSide(idx, opt)}
+                                    opacity={readOnly || !subTypeRequirements.itemRequirements[idx]?.requiresHinge ? 0.5 : 1}
+                                    _hover={!readOnly && subTypeRequirements.itemRequirements[idx]?.requiresHinge ? { opacity: 0.8 } : undefined}
                                   >
                                     {codeToLabel(opt)}
                                   </Badge>
@@ -858,12 +950,12 @@ const CatalogTableEdit = ({
                                     py={1}
                                     borderRadius="md"
                                     fontSize="xs"
-                                    cursor={readOnly ? 'not-allowed' : 'pointer'}
+                                    cursor={readOnly || !subTypeRequirements.itemRequirements[idx]?.requiresExposed ? 'not-allowed' : 'pointer'}
                                     variant={item.exposedSide === opt ? 'solid' : 'outline'}
                                     colorScheme={item.exposedSide === opt ? 'brand' : 'gray'}
-                                    onClick={() => !readOnly && updateExposedSide(idx, opt)}
-                                    opacity={readOnly ? 0.6 : 1}
-                                    _hover={!readOnly ? { opacity: 0.8 } : undefined}
+                                    onClick={() => !readOnly && subTypeRequirements.itemRequirements[idx]?.requiresExposed && updateExposedSide(idx, opt)}
+                                    opacity={readOnly || !subTypeRequirements.itemRequirements[idx]?.requiresExposed ? 0.5 : 1}
+                                    _hover={!readOnly && subTypeRequirements.itemRequirements[idx]?.requiresExposed ? { opacity: 0.8 } : undefined}
                                   >
                                     {codeToLabel(opt)}
                                   </Badge>
@@ -898,21 +990,26 @@ const CatalogTableEdit = ({
                       </Td>
 
                       <Td>
-                        <Flex align="center">
+                        <Flex align="center" gap={2}>
                           {!readOnly && (
                             <>
-                              <Icon
-                                as={Settings}
-                                cursor="pointer"
-                                color="black"
-                                mr={4}
+                              <IconButton
+                                icon={<Icon as={Settings} />}
+                                size="md"
+                                variant="ghost"
+                                colorScheme="blue"
+                                aria-label={t('proposalUI.modifications', 'Modifications')}
                                 onClick={() => handleOpenModificationModal(idx, item.id)}
+                                _hover={{ bg: useColorModeValue('blue.50', 'blue.900') }}
                               />
-                              <Icon
-                                as={Trash}
-                                cursor="pointer"
-                                color={textRed500}
+                              <IconButton
+                                icon={<Icon as={Trash} />}
+                                size="md"
+                                variant="ghost"
+                                colorScheme="red"
+                                aria-label={t('common.delete', 'Delete')}
                                 onClick={() => handleDelete(idx)}
+                                _hover={{ bg: useColorModeValue('red.50', 'red.900') }}
                               />
                             </>
                           )}
@@ -1150,20 +1247,24 @@ const CatalogTableEdit = ({
                         {rowIndex + 1}
                       </Box>
                       {!readOnly && (
-                        <Flex gap={3}>
-                          <Icon
-                            as={Settings}
-                            cursor="pointer"
-                            color="blue.500"
-                            fontSize="18px"
+                        <Flex gap={2}>
+                          <IconButton
+                            icon={<Icon as={Settings} />}
+                            size="md"
+                            variant="ghost"
+                            colorScheme="blue"
+                            aria-label={t('proposalUI.modifications', 'Modifications')}
                             onClick={() => handleOpenModificationModal(rowIndex, item.id)}
+                            _hover={{ bg: useColorModeValue('blue.50', 'blue.900') }}
                           />
-                          <Icon
-                            as={Trash}
-                            cursor="pointer"
-                            color={textRed500}
-                            fontSize="18px"
+                          <IconButton
+                            icon={<Icon as={Trash} />}
+                            size="md"
+                            variant="ghost"
+                            colorScheme="red"
+                            aria-label={t('common.delete', 'Delete')}
                             onClick={() => handleDelete(rowIndex)}
+                            _hover={{ bg: useColorModeValue('red.50', 'red.900') }}
                           />
                         </Flex>
                       )}
@@ -1194,13 +1295,18 @@ const CatalogTableEdit = ({
                         {hasTypeMetadata(getItemType(item)) && (
                           <Button
                             size="xs"
-                            variant="outline"
+                            variant="solid"
                             colorScheme="blue"
                             fontSize="xs"
-                            px={2}
-                            py={0.5}
+                            px={3}
+                            py={1.5}
                             onClick={() => openTypeModal(getItemType(item))}
                             title={`View ${getItemType(item)} specifications`}
+                            borderRadius="md"
+                            fontWeight="600"
+                            boxShadow="sm"
+                            _hover={{ boxShadow: 'md', transform: 'translateY(-1px)' }}
+                            transition="all 0.2s"
                           >
                             Specs
                           </Button>
@@ -1263,8 +1369,9 @@ const CatalogTableEdit = ({
                                   bg={item.hingeSide === opt ? headerBg : undefined}
                                   color={item.hingeSide === opt ? textColor : undefined}
                                   borderColor={item.hingeSide === opt ? headerBg : undefined}
-                                  onClick={() => !readOnly && updateHingeSide(rowIndex, opt)}
-                                  isDisabled={readOnly}
+                                  onClick={() => !readOnly && subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge && updateHingeSide(rowIndex, opt)}
+                                  isDisabled={readOnly || !subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge}
+                                  opacity={readOnly || !subTypeRequirements.itemRequirements[rowIndex]?.requiresHinge ? 0.5 : 1}
                                 >
                                   {codeToLabel(opt)}
                                 </Button>
@@ -1291,7 +1398,7 @@ const CatalogTableEdit = ({
                             {subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed &&
                               (!item.exposedSide || item.exposedSide === '-') && (
                                 <Box color={textRed500} mb={2} fontSize="12px" fontWeight="bold">
-                                  {t('validation.selectExposedSide', { defaultValue: 'Select exposed side' })}
+                                  {t('validation.selectExposedSide', { defaultValue: 'Select exposed finished side' })}
                                 </Box>
                               )}
                             <Flex gap={2}>
@@ -1304,8 +1411,9 @@ const CatalogTableEdit = ({
                                   bg={item.exposedSide === opt ? headerBg : undefined}
                                   color={item.exposedSide === opt ? textColor : undefined}
                                   borderColor={item.exposedSide === opt ? headerBg : undefined}
-                                  onClick={() => !readOnly && updateExposedSide(rowIndex, opt)}
-                                  isDisabled={readOnly}
+                                  onClick={() => !readOnly && subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed && updateExposedSide(rowIndex, opt)}
+                                  isDisabled={readOnly || !subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed}
+                                  opacity={readOnly || !subTypeRequirements.itemRequirements[rowIndex]?.requiresExposed ? 0.5 : 1}
                                 >
                                   {codeToLabel(opt)}
                                 </Button>
@@ -1384,11 +1492,14 @@ const CatalogTableEdit = ({
                             {t('proposalDoc.modifications')}
                           </Text>
                           {!readOnly && (
-                            <Icon
-                              as={Trash}
-                              cursor="pointer"
-                              color="red.400"
+                            <IconButton
+                              icon={<Icon as={Trash} />}
+                              size="sm"
+                              variant="ghost"
+                              colorScheme="red"
+                              aria-label="Remove modification"
                               onClick={() => handleDeleteModification(rowIndex, modIdx)}
+                              _hover={{ bg: useColorModeValue('red.50', 'red.900') }}
                             />
                           )}
                         </Flex>
