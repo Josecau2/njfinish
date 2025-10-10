@@ -50,18 +50,28 @@ app.use((req, res, next) => {
   const stripeConnectSrc = 'https://api.stripe.com';
   const connectSrc = `connect-src 'self' ${originList} ws: wss: ${cfConnectSrc} ${cfScriptSrc} ${stripeConnectSrc}`.trim();
   const frameSrc = `frame-src ${stripeScriptSrc} https://hooks.stripe.com`;
+  // Some libraries (e.g., pdf.js/react-pdf) use Web Workers via blob: URLs and may import small
+  // chunks via data: or blob: URLs. Our hardened CSP needs to explicitly allow those in a
+  // controlled manner. We do NOT enable general inline scripts; we keep nonce for inlined brand payloads.
+  const scriptSrc = `script-src 'self' 'nonce-${cspNonce}' ${cfScriptSrc} ${stripeScriptSrc} blob: data:`.trim();
+  const scriptSrcElem = `script-src-elem 'self' 'nonce-${cspNonce}' ${cfScriptSrc} ${stripeScriptSrc} blob: data:`.trim();
+  const workerSrc = "worker-src 'self' blob:";
+  const childSrc = "child-src 'self' blob:"; // legacy fallback for some UAs
   res.setHeader(
     'Content-Security-Policy',
     [
       "default-src 'self'",
       "base-uri 'self'",
-      `script-src 'self' 'nonce-${cspNonce}' ${cfScriptSrc} ${stripeScriptSrc}`,
+      scriptSrc,
+      scriptSrcElem,
       `style-src 'self' 'unsafe-inline'`,
       imgSrc,
       "font-src 'self' data:",
       "object-src 'none'",
       connectSrc,
       frameSrc,
+      workerSrc,
+      childSrc,
       "frame-ancestors 'none'",
     ].join('; ') + ';'
   );
