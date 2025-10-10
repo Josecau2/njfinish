@@ -488,9 +488,8 @@ const getCustomerOption = useCallback(
                   <Controller
                     control={control}
                     name="designer"
-                    rules={{ required: t('proposals.create.customerInfo.validation.designer') }}
                     render={({ field, fieldState }) => (
-                      <FormControl isRequired isInvalid={!!fieldState.error}>
+                      <FormControl isInvalid={!!fieldState.error}>
                         <FormLabel htmlFor="designer">
                           {t('proposals.create.customerInfo.designer')}
                         </FormLabel>

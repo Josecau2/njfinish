@@ -436,11 +436,10 @@ const ItemSelectionStep = ({
           <Box>
             <SimpleGrid columns={{ base: 1, md: 6 }} spacing={4}>
               <FormControl isInvalid={!!errors.designer}>
-                <FormLabel htmlFor="designer">{t('proposals.fields.designer', 'Designer')} *</FormLabel>
+                <FormLabel htmlFor="designer">{t('proposals.fields.designer', 'Designer')}</FormLabel>
                 <Controller
                   name="designer"
                   control={control}
-                  rules={{ required: t('proposals.create.customerInfo.validation.designer') }}
                   render={({ field }) => (
                     <Select
                       {...field}

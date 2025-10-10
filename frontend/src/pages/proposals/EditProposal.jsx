@@ -481,11 +481,7 @@ const EditProposal = ({
   const validateForm = () => {
     const errors = []
 
-    // Designer can be a string (custom name) or number (selected ID)
-    const designerValue = typeof formData.designer === 'string' ? formData.designer.trim() : formData.designer
-    if (!designerValue) {
-      errors.push(t('proposals.validation.designerRequired', 'Designer is required'))
-    }
+    // Designer is optional
 
     if (!formData.description || formData.description.trim() === '') {
       errors.push(t('proposals.validation.descriptionRequired', 'Description is required'))
@@ -724,7 +720,7 @@ const EditProposal = ({
               </Text>
               <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
                 <FormControl>
-                  <FormLabel htmlFor="designer">{t('common.designer', 'Designer')} *</FormLabel>
+                  <FormLabel htmlFor="designer">{t('common.designer', 'Designer')}</FormLabel>
                   {isCreatingDesigner ? (
                     <HStack>
                       <Input
