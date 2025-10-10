@@ -12,7 +12,7 @@
   will-change: transform;
   margin-left: 0;
   padding: 0;
-  gap: var(--chakra-space-0-5); /* Very tight 2px gap between slides */
+  gap: 0.85rem; /* Match desktop grid gap (~13.6px) */
 }
 
 .embla__slide {
