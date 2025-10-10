@@ -42,7 +42,7 @@ import PrintProposalModal from '../../components/model/PrintProposalModal'
 import EmailProposalModal from '../../components/model/EmailProposalModal'
 import EmailContractModal from '../../components/model/EmailContractModal'
 import { fetchManufacturerById } from '../../store/slices/manufacturersSlice'
-import { sendFormDataToBackend } from '../../queries/proposalQueries'
+import { sendFormDataToBackend, useCreateProposal } from '../../queries/proposalQueries'
 import withContractorScope from '../../components/withContractorScope'
 import PageHeader from '../../components/PageHeader'
 import { ICON_SIZE_MD, ICON_BOX_MD } from '../../constants/iconSizes'
@@ -66,6 +66,7 @@ const ProposalForm = ({
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const createProposalMutation = useCreateProposal()
   const alertCancelRef = useRef(null)
   const [alertState, setAlertState] = useState({ isOpen: false, title: '', message: '', onConfirm: null })
 
@@ -273,9 +274,9 @@ const ProposalForm = ({
         formData: { ...formData, type: actionType },
       }
 
-      const response = await sendFormDataToBackend(payload)
+      const response = await createProposalMutation.mutateAsync(payload)
 
-      if (response.data.success === true) {
+      if (response.success === true) {
         setIsFormDirty(false)
         const successMessage =
           actionType === '2'
@@ -289,7 +290,7 @@ const ProposalForm = ({
       } else {
         showAlert(
           t('common.error', 'Error'),
-          response.data?.message ||
+          response.message ||
             t('proposals.errors.operationFailed', 'Operation failed. Please try again.'),
         )
       }
