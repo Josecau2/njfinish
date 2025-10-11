@@ -234,7 +234,8 @@ const DesktopPdfViewer = ({ fileUrl, onClose }) => {
       <HStack
         justify="space-between"
         px={5}
-        py={3}
+        pt="calc(0.75rem + env(safe-area-inset-top, 0px))"
+        pb={3}
         bg={bgHeader}
         borderBottom={`1px solid ${borderColor}`}
       >

@@ -1038,7 +1038,7 @@ const EditProposal = ({
                       >
                         <Icon as={MoreHorizontal} />
                       </MenuButton>
-                      <MenuList>
+                      <MenuList minW={{ base: "calc(100vw - 32px)", sm: "220px" }} maxW={{ base: "calc(100vw - 32px)", sm: "320px" }}>
                         <MenuItem onClick={() => openEditModal(index)}>
                           <Icon as={Edit} mr={2} /> {t('common.edit', 'Edit')}
                         </MenuItem>

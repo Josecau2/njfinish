@@ -120,15 +120,25 @@ app.use('/api/payments', paymentsRoutes);
 app.use('/api/payment-config', paymentConfigRoutes);
 app.use('/api', apiRoutes);
 
-// Swagger API Documentation - accessible without authentication for development
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+// Swagger API Documentation - requires authentication (admin only)
+app.use('/api-docs', verifyTokenWithGroup, (req, res, next) => {
+  // Only allow admin users to access API documentation
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ message: 'Forbidden: Admin access required for API documentation' });
+  }
+  next();
+}, swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   explorer: true,
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'NJCabinets API Documentation',
 }));
 
-// Serve OpenAPI spec as JSON for MCP servers and other tools
-app.get('/api-docs.json', (_req, res) => {
+// Serve OpenAPI spec as JSON for MCP servers and other tools (requires authentication)
+app.get('/api-docs.json', verifyTokenWithGroup, (req, res) => {
+  // Only allow admin users to access OpenAPI spec
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ message: 'Forbidden: Admin access required for API documentation' });
+  }
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });

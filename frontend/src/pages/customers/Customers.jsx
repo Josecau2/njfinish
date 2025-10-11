@@ -685,14 +685,14 @@ const CustomerTable = ({
           isCentered
         >
           <AlertDialogOverlay>
-            <AlertDialogContent>
+            <AlertDialogContent borderRadius={{ base: '0', md: '12px' }}>
               <AlertDialogHeader fontSize="lg" fontWeight="bold">
                 {t('customers.confirmTitle', 'Are you sure?')}
               </AlertDialogHeader>
               <AlertDialogBody>
                 {t('customers.confirmText', 'This action cannot be undone!')}
               </AlertDialogBody>
-              <AlertDialogFooter>
+              <AlertDialogFooter pt={4} pb={{ base: 8, md: 4 }}>
                 <Button ref={cancelRef} onClick={handleCancelDelete} minH="44px">
                   {t('customers.confirmNo', 'No, cancel!')}
                 </Button>

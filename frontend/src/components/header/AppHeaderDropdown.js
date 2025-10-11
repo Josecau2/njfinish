@@ -44,7 +44,7 @@ const AppHeaderDropdown = () => {
           icon={<User size={ICON_SIZE_MD} />}
         />
       </MenuButton>
-      <MenuList minW="220px" py={2}>
+      <MenuList minW={{ base: "calc(100vw - 32px)", sm: "220px" }} maxW={{ base: "calc(100vw - 32px)", sm: "280px" }} py={2}>
         {user?.name && (
           <Box px={4} pb={2}>
             <HStack spacing={3} align="center">

@@ -24,95 +24,6 @@ const STRIPE_ALLOWED_EVENTS = new Set([
   'payment_intent.payment_failed',
 ]);
 
-/**
- * @openapi
- * components:
- *   schemas:
- *     Payment:
- *       type: object
- *       properties:
- *         id:
- *           type: integer
- *           description: Payment ID
- *         orderId:
- *           type: integer
- *           description: Associated order ID
- *         gateway:
- *           type: string
- *           enum: [manual, stripe]
- *           description: Payment gateway used
- *         amount:
- *           type: string
- *           description: Payment amount in decimal format
- *         amount_cents:
- *           type: integer
- *           description: Payment amount in cents
- *         currency:
- *           type: string
- *           description: Currency code (e.g., USD)
- *         status:
- *           type: string
- *           enum: [pending, processing, completed, failed, cancelled]
- *           description: Payment status
- *         transactionId:
- *           type: string
- *           description: Gateway transaction/intent ID
- *         paymentMethod:
- *           type: string
- *           description: Payment method used
- *         receipt_url:
- *           type: string
- *           description: Stripe receipt URL (if available)
- *         gatewayResponse:
- *           type: string
- *           description: Serialized gateway response data
- *         paidAt:
- *           type: string
- *           format: date-time
- *           description: Timestamp when payment was completed
- *         createdBy:
- *           type: integer
- *           description: User ID who created the payment
- *         createdAt:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
- *         order:
- *           type: object
- *           description: Associated order details
- *         creator:
- *           type: object
- *           description: User who created the payment
- *     PaymentIntent:
- *       type: object
- *       properties:
- *         clientSecret:
- *           type: string
- *           description: Stripe client secret for confirming payment
- *         publishableKey:
- *           type: string
- *           description: Stripe publishable key
- *         intentId:
- *           type: string
- *           description: Stripe payment intent ID
- *         paymentId:
- *           type: integer
- *           description: Internal payment record ID
- *         amount_cents:
- *           type: integer
- *           description: Payment amount in cents
- *         currency:
- *           type: string
- *           description: Currency code
- *   securitySchemes:
- *     BearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- */
-
 const coerceBool = (value) => {
   if (typeof value === 'boolean') return value;
   if (typeof value === 'string') {
@@ -251,74 +162,6 @@ const ensureStripeGateway = (payment) => {
   }
 };
 
-/**
- * @openapi
- * /api/payments:
- *   get:
- *     tags:
- *       - Payments
- *     summary: List all payments with pagination and filtering
- *     description: Retrieves a paginated list of payments with optional filters. Users can only see payments for orders they have access to based on their role and group.
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *         description: Page number for pagination
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           default: 10
- *         description: Number of items per page
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *           enum: [all, pending, processing, completed, failed, cancelled]
- *         description: Filter by payment status
- *       - in: query
- *         name: orderId
- *         schema:
- *           type: integer
- *         description: Filter by order ID
- *       - in: query
- *         name: gateway
- *         schema:
- *           type: string
- *           enum: [all, manual, stripe]
- *         description: Filter by payment gateway
- *     responses:
- *       200:
- *         description: Successfully retrieved payments list
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 payments:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Payment'
- *                 pagination:
- *                   type: object
- *                   properties:
- *                     currentPage:
- *                       type: integer
- *                     totalPages:
- *                       type: integer
- *                     totalItems:
- *                       type: integer
- *                     itemsPerPage:
- *                       type: integer
- *       401:
- *         description: Unauthorized - Invalid or missing JWT token
- *       500:
- *         description: Internal server error
- */
 router.get('/', verifyTokenWithGroup, async (req, res) => {
   try {
     const { page = 1, limit = 10, status, orderId, gateway } = req.query;
@@ -371,37 +214,6 @@ router.get('/', verifyTokenWithGroup, async (req, res) => {
   }
 });
 
-/**
- * @openapi
- * /api/payments/{id}:
- *   get:
- *     tags:
- *       - Payments
- *     summary: Get a specific payment by ID
- *     description: Retrieves detailed information about a single payment. Users can only access payments for orders they have permission to view.
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Payment ID
- *     responses:
- *       200:
- *         description: Successfully retrieved payment details
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Payment'
- *       401:
- *         description: Unauthorized - Invalid or missing JWT token
- *       404:
- *         description: Payment not found or user doesn't have access
- *       500:
- *         description: Internal server error
- */
 router.get('/:id', verifyTokenWithGroup, async (req, res) => {
   try {
     const payment = await findPaymentForUser(req.params.id, req.user);
@@ -416,54 +228,6 @@ router.get('/:id', verifyTokenWithGroup, async (req, res) => {
   }
 });
 
-/**
- * @openapi
- * /api/payments:
- *   post:
- *     tags:
- *       - Payments
- *     summary: Create a new payment for an order
- *     description: Creates a new payment record for an existing order. Automatically calculates the payment amount from the order total. Prevents duplicate payments for orders that already have active payments.
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - orderId
- *             properties:
- *               orderId:
- *                 type: integer
- *                 description: ID of the order to create payment for
- *               gateway:
- *                 type: string
- *                 enum: [manual, stripe]
- *                 default: manual
- *                 description: Payment gateway to use
- *               paymentMethod:
- *                 type: string
- *                 description: Payment method description (e.g., "Check", "Wire Transfer")
- *     responses:
- *       201:
- *         description: Payment created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Payment'
- *       400:
- *         description: Bad request - missing orderId, order not found, payment already exists, or unable to determine order total
- *       401:
- *         description: Unauthorized - Invalid or missing JWT token
- *       403:
- *         description: Forbidden - User lacks payments:create permission
- *       404:
- *         description: Order not found
- *       500:
- *         description: Internal server error
- */
 router.post('/', verifyTokenWithGroup, requirePermission('payments:create'), async (req, res) => {
   try {
     const { orderId, gateway = 'manual', paymentMethod } = req.body || {};
@@ -534,58 +298,6 @@ router.post('/', verifyTokenWithGroup, requirePermission('payments:create'), asy
   }
 });
 
-/**
- * @openapi
- * /api/payments/{id}/status:
- *   put:
- *     tags:
- *       - Payments
- *     summary: Update payment status (manual payments only)
- *     description: Updates the status of a manual payment. This endpoint cannot be used for Stripe payments - use the Stripe payment flow instead. Automatically sets paidAt timestamp when status is changed to 'completed'.
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Payment ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               status:
- *                 type: string
- *                 enum: [pending, processing, completed, failed, cancelled]
- *                 description: New payment status
- *               transactionId:
- *                 type: string
- *                 description: Transaction or reference ID
- *               gatewayResponse:
- *                 type: object
- *                 description: Gateway response data to store
- *     responses:
- *       200:
- *         description: Payment status updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Payment'
- *       401:
- *         description: Unauthorized - Invalid or missing JWT token
- *       403:
- *         description: Forbidden - User lacks payments:update permission
- *       404:
- *         description: Payment not found
- *       409:
- *         description: Conflict - Cannot update Stripe payment via this endpoint
- *       500:
- *         description: Internal server error
- */
 router.put('/:id/status', verifyTokenWithGroup, requirePermission('payments:update'), async (req, res) => {
   try {
     const { id } = req.params;
@@ -631,53 +343,6 @@ router.put('/:id/status', verifyTokenWithGroup, requirePermission('payments:upda
   }
 });
 
-/**
- * @openapi
- * /api/payments/{id}/apply:
- *   put:
- *     tags:
- *       - Payments
- *     summary: Apply/complete a manual payment
- *     description: Marks a manual payment as completed. This is a convenience endpoint that sets status to 'completed' and records the paidAt timestamp. Cannot be used for Stripe payments. If the payment is already completed, returns the existing payment without changes.
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Payment ID
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               transactionId:
- *                 type: string
- *                 description: Transaction or reference ID
- *               paymentMethod:
- *                 type: string
- *                 description: Payment method used (e.g., "Check", "Wire Transfer")
- *     responses:
- *       200:
- *         description: Payment applied successfully (or was already completed)
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Payment'
- *       401:
- *         description: Unauthorized - Invalid or missing JWT token
- *       403:
- *         description: Forbidden - User lacks payments:update permission
- *       404:
- *         description: Payment not found
- *       409:
- *         description: Conflict - Cannot apply Stripe payment via this endpoint
- *       500:
- *         description: Internal server error
- */
 router.put('/:id/apply', verifyTokenWithGroup, requirePermission('payments:update'), async (req, res) => {
   try {
     const { id } = req.params;
@@ -723,62 +388,6 @@ router.put('/:id/apply', verifyTokenWithGroup, requirePermission('payments:updat
   }
 });
 
-/**
- * @openapi
- * /api/payments/receipt:
- *   post:
- *     tags:
- *       - Payments
- *     summary: Generate a payment receipt PDF
- *     description: Generates a PDF receipt from HTML content for a payment or order. Admin-only endpoint. Can generate receipts for actual payments or test receipts for orders without payments.
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - html
- *             properties:
- *               html:
- *                 type: string
- *                 description: HTML content to convert to PDF
- *               paymentId:
- *                 type: integer
- *                 description: Payment ID (for actual payment receipts)
- *               orderId:
- *                 type: integer
- *                 description: Order ID (required if paymentId not provided, for test receipts)
- *               options:
- *                 type: object
- *                 description: PDF generation options (passed to PDF generator)
- *                 properties:
- *                   format:
- *                     type: string
- *                     default: Letter
- *                   margin:
- *                     type: object
- *     responses:
- *       200:
- *         description: PDF generated successfully
- *         content:
- *           application/pdf:
- *             schema:
- *               type: string
- *               format: binary
- *       400:
- *         description: Bad request - missing HTML, invalid paymentId/orderId relationship
- *       401:
- *         description: Unauthorized - Invalid or missing JWT token
- *       403:
- *         description: Forbidden - Admin access required
- *       404:
- *         description: Payment or order not found
- *       500:
- *         description: Internal server error
- */
 router.post('/receipt', verifyTokenWithGroup, async (req, res) => {
   try {
     const role = String(req.user?.role || '').toLowerCase();
@@ -833,39 +442,6 @@ router.post('/receipt', verifyTokenWithGroup, async (req, res) => {
   }
 });
 
-/**
- * @openapi
- * /api/payments/{id}/stripe-intent:
- *   post:
- *     tags:
- *       - Payments
- *     summary: Create or retrieve Stripe payment intent
- *     description: Creates a new Stripe PaymentIntent or retrieves an existing one for the payment. Returns the client secret needed to complete the payment on the frontend using Stripe.js. Automatically updates existing intents if the order amount has changed. Requires Stripe to be enabled in payment configuration.
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Payment ID
- *     responses:
- *       200:
- *         description: Payment intent created or retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/PaymentIntent'
- *       400:
- *         description: Bad request - Stripe not enabled or unable to determine order total
- *       401:
- *         description: Unauthorized - Invalid or missing JWT token
- *       404:
- *         description: Payment not found or user doesn't have access
- *       500:
- *         description: Internal server error - Stripe not configured properly
- */
 router.post('/:id/stripe-intent', verifyTokenWithGroup, async (req, res) => {
   try {
     const stripeSettings = await loadStripeSettings();
@@ -964,48 +540,6 @@ router.post('/:id/stripe-intent', verifyTokenWithGroup, async (req, res) => {
   }
 });
 
-/**
- * @openapi
- * /api/payments/{id}:
- *   delete:
- *     tags:
- *       - Payments
- *     summary: Delete a payment record
- *     description: Deletes a payment record. Can only delete payments with status pending, failed, or cancelled. Completed or processing payments cannot be deleted to maintain financial integrity.
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Payment ID
- *     responses:
- *       200:
- *         description: Payment deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: Payment deleted successfully
- *       400:
- *         description: Bad request - Cannot delete completed or processing payments
- *       401:
- *         description: Unauthorized - Invalid or missing JWT token
- *       403:
- *         description: Forbidden - User lacks payments:delete permission
- *       404:
- *         description: Payment not found
- *       500:
- *         description: Internal server error
- */
 router.delete('/:id', verifyTokenWithGroup, requirePermission('payments:delete'), async (req, res) => {
   try {
     const { id } = req.params;
@@ -1027,84 +561,6 @@ router.delete('/:id', verifyTokenWithGroup, requirePermission('payments:delete')
   }
 });
 
-/**
- * @openapi
- * /api/payments/webhook/stripe/{token}:
- *   post:
- *     tags:
- *       - Payments
- *     summary: Stripe webhook endpoint for payment events
- *     description: |
- *       Receives and processes webhook events from Stripe. This endpoint handles payment_intent.succeeded and payment_intent.payment_failed events.
- *
- *       **Important Notes:**
- *       - This endpoint does NOT require JWT authentication (webhooks are authenticated via Stripe signature)
- *       - The {token} path parameter is optional and provides additional security (configured in payment settings)
- *       - Request body must be raw (application/json) for signature verification
- *       - Implements idempotency - duplicate events are detected and ignored
- *       - Only processes allowed event types (payment_intent.succeeded, payment_intent.payment_failed)
- *       - Automatically updates payment status and stores receipt URL when payment succeeds
- *       - Tracks all processed events in ProcessedWebhookEvent table
- *
- *       **Stripe Signature Verification:**
- *       - Requires 'stripe-signature' header
- *       - Validates signature using configured webhook secret
- *       - Configurable tolerance period (default 300 seconds)
- *     parameters:
- *       - in: path
- *         name: token
- *         required: false
- *         schema:
- *           type: string
- *         description: Optional webhook path token for additional security (configured in payment settings)
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             description: Stripe webhook event payload (raw body required for signature verification)
- *             properties:
- *               id:
- *                 type: string
- *                 description: Stripe event ID
- *               type:
- *                 type: string
- *                 description: Event type
- *                 enum: [payment_intent.succeeded, payment_intent.payment_failed]
- *               data:
- *                 type: object
- *                 properties:
- *                   object:
- *                     type: object
- *                     description: PaymentIntent object
- *     responses:
- *       200:
- *         description: Webhook processed successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 received:
- *                   type: boolean
- *                   example: true
- *                 ignored:
- *                   type: boolean
- *                   description: True if event type is not in allowed list
- *                 duplicate:
- *                   type: boolean
- *                   description: True if event was already processed
- *                 paymentMissing:
- *                   type: boolean
- *                   description: True if no matching payment found for the intent
- *       400:
- *         description: Bad request - Invalid signature, missing signature header, or invalid payload
- *       404:
- *         description: Webhook endpoint not found (invalid path token)
- *       500:
- *         description: Internal server error - Stripe not configured or webhook secret missing
- */
 const handleStripeWebhook = async (req, res) => {
   try {
     const stripeSettings = await loadStripeSettings();

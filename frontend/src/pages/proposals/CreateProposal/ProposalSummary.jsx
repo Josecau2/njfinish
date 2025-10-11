@@ -601,7 +601,8 @@ const ItemSelectionStep = ({
                             aria-label={t('common.ariaLabels.moreOptions', 'More options')}
                           />
                           <MenuList
-                            minW="120px"
+                            minW={{ base: "calc(100vw - 32px)", sm: "120px" }}
+                            maxW={{ base: "calc(100vw - 32px)", sm: "320px" }}
                             borderColor={borderGray}
                             boxShadow="md"
                             borderRadius="md"

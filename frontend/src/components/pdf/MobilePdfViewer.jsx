@@ -81,13 +81,15 @@ const MobilePdfViewer = ({ fileUrl, onClose }) => {
       bg={overlayBg}
       display="flex"
       flexDirection="column"
-      zIndex={10000}
+      zIndex={2000}
     >
       {/* Mobile Header Controls */}
       <HStack
         justify="space-between"
         align="center"
-        p={2}
+        pt="calc(0.5rem + env(safe-area-inset-top, 0px))"
+        px={2}
+        pb={2}
         bg={headerBg}
         borderBottom="1px solid"
         borderColor="rgba(255,255,255,0.08)"

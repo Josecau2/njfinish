@@ -1058,6 +1058,7 @@ const CatalogTable = ({
                             colorScheme="blue"
                             aria-label={t('proposalUI.modifications', 'Modifications')}
                             onClick={() => handleOpenModificationModal(rowIndex, item.id)}
+                            minH="44px"
                             _hover={{ bg: actionBlueBg }}
                           />
                           <IconButton
@@ -1251,10 +1252,11 @@ const CatalogTable = ({
                                             size="sm"
                                             variant="ghost"
                                             colorScheme="red"
-                                            aria-label="Remove modification"
+                                            aria-label={t('common.ariaLabels.removeModification', 'Remove modification')}
                                             onClick={() =>
                                               handleDeleteModification(rowIndex, modIdx)
                                             }
+                                            minH="44px"
                                             _hover={{ bg: dangerRedBg }}
                                           />
                                         </Td>
@@ -1350,16 +1352,16 @@ const CatalogTable = ({
                       >
                         {rowIndex + 1}
                       </Flex>
-                      <HStack spacing={0.5}>
+                      <HStack spacing={2}>
                         <IconButton
                           icon={<Icon as={Settings} />}
-                          size="xs"
+                          size="sm"
                           variant="ghost"
                           colorScheme="blue"
                           aria-label={t('proposalUI.modifications', 'Modifications')}
                           onClick={() => handleOpenModificationModal(rowIndex, item.id)}
-                          minW="28px"
-                          minH="28px"
+                          minW="44px"
+                          minH="44px"
                           _hover={{ bg: actionBlueBg }}
                         />
                         <IconButton
@@ -1651,19 +1653,19 @@ const CatalogTable = ({
                           </Text>
                           <IconButton
                             icon={<Icon as={Trash} />}
-                            size="xs"
+                            size="sm"
                             variant="ghost"
                             colorScheme="red"
-                            aria-label="Remove modification"
+                            aria-label={t('common.ariaLabels.removeModification', 'Remove modification')}
                             onClick={() => handleDeleteModification(rowIndex, modIdx)}
-                            minW="20px"
-                            minH="20px"
+                            minW="44px"
+                            minH="44px"
                             _hover={{ bg: dangerRedBg }}
                           />
                         </Flex>
-                        <Flex justify="space-between" fontSize="2xs" mb={0.5} flexWrap="wrap" gap={0.5}>
+                        <Flex justify="space-between" fontSize="xs" mb={0.5} flexWrap="wrap" gap={0.5}>
                           <Text fontWeight="600" noOfLines={1}>{mod.name || t('proposalUI.mod.unnamed')}</Text>
-                          <Text fontSize="2xs">
+                          <Text fontSize="xs">
                             {t('common.qty', 'Qty')}: {mod.qty}
                           </Text>
                         </Flex>

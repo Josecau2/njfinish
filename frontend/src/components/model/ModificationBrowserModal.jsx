@@ -366,7 +366,7 @@ const ModificationBrowserModal = ({
         {config.sideSelector && config.sideSelector.enabled !== false && (
           <Stack spacing={4}>
             <Text fontWeight="medium">{t('modificationBrowser.sideSelector.label', 'Side Selection')}</Text>
-            <HStack spacing={4}>
+            <HStack spacing={{ base: 3, md: 4 }} flexWrap="wrap">
               {(config.sideSelector.options || []).map((option) => {
                 const isSelected = modification.selectedOptions.sideSelector === option
                 const display = option === 'L'
@@ -379,7 +379,8 @@ const ModificationBrowserModal = ({
                     key={option}
                     variant={isSelected ? 'solid' : 'outline'}
                     colorScheme="brand"
-                    size="sm"
+                    size={{ base: "md", md: "sm" }}
+                    minH={{ base: "44px", md: "auto" }}
                     onClick={() =>
                       setModification((prev) => ({
                         ...prev,
@@ -411,9 +412,9 @@ const ModificationBrowserModal = ({
                   quantity: valueNumber,
                 }))
               }
-              maxW="160px"
+              maxW={{ base: "full", md: "160px" }}
             >
-              <NumberInputField />
+              <NumberInputField minH="44px" />
               <NumberInputStepper>
                 <NumberIncrementStepper />
                 <NumberDecrementStepper />
@@ -441,6 +442,7 @@ const ModificationBrowserModal = ({
             <Input
               type="file"
               multiple
+              minH="44px"
               onChange={(event) =>
                 setModification((prev) => ({
                   ...prev,
@@ -663,7 +665,7 @@ const ModificationBrowserModal = ({
   const showBackButton = currentView !== 'categories'
 
   return (
-    <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "full" }} scrollBehavior="inside" isCentered>
+    <Modal isOpen={visible} onClose={onClose} size={{ base: "full", md: "6xl" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
       <ModalContent borderRadius={{ base: '0', md: '12px' }}>
         <ModalHeader px={6} py={4} bg={resolvedHeaderBg} color={headerTextColor}>
@@ -714,10 +716,11 @@ const ModificationBrowserModal = ({
               ]}
             />
 
-            <HStack spacing={4}>
-              <Box flex="1" position="relative">
+            <HStack spacing={{ base: 2, md: 4 }} flexWrap={{ base: "wrap", md: "nowrap" }}>
+              <Box flex="1" position="relative" minW={{ base: "full", md: "200px" }}>
                 <Input
                   pl={10}
+                  minH="44px"
                   value={searchTerm}
                   onChange={(event) => setSearchTerm(event.target.value)}
                   placeholder={t('modificationBrowser.search.placeholder', 'Search modifications')}
@@ -726,7 +729,7 @@ const ModificationBrowserModal = ({
                   <Search size={ICON_SIZE_MD} />
                 </Box>
               </Box>
-              <Button variant="ghost" onClick={() => setSearchTerm('')} isDisabled={!searchTerm}>
+              <Button variant="ghost" onClick={() => setSearchTerm('')} isDisabled={!searchTerm} minH="44px" px={{ base: 3, md: 4 }}>
                 {t('modificationBrowser.search.clear', 'Clear')}
               </Button>
             </HStack>

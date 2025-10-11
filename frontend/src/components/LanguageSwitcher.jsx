@@ -42,7 +42,7 @@ const LanguageSwitcher = ({ compact = false }) => {
       >
         {currentLabel}
       </MenuButton>
-      <MenuList minW={minWidth}>
+      <MenuList minW={{ base: "calc(100vw - 32px)", sm: minWidth }} maxW={{ base: "calc(100vw - 32px)", sm: "240px" }}>
         <MenuOptionGroup type="radio" value={current} onChange={handleChange}>
           {languages.map((lang) => (
             <MenuItemOption key={lang} value={lang}>

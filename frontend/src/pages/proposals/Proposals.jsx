@@ -792,7 +792,7 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
                         minW="44px"
                         minH="44px"
                       />
-                      <MenuList>
+                      <MenuList minW={{ base: "calc(100vw - 32px)", sm: "220px" }} maxW={{ base: "calc(100vw - 32px)", sm: "320px" }}>
                         {(isAdmin(loggedInUser) || !item.is_locked) && (
                           <MenuItem onClick={() => handleDelete(item.id)}>
                             <Box as="span" mr={2}>

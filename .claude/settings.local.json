@@ -28,7 +28,13 @@
       "Bash(code:*)",
       "Bash(echo $MCP_SERVERS)",
       "Bash(echo $APPDATA)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(powershell:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npx vite:*)"
     ],
     "deny": [],
     "ask": []

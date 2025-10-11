@@ -763,7 +763,7 @@ const TypesTab = ({ manufacturer }) => {
                   >
                     {t('types.ui.actions', 'Actions')} ({selectedItems.length})
                   </MenuButton>
-                  <MenuList>
+                  <MenuList minW={{ base: "calc(100vw - 32px)", sm: "220px" }} maxW={{ base: "calc(100vw - 32px)", sm: "360px" }}>
                     {bulkActionItems.map((action) => (
                       <MenuItem
                         key={action.key}

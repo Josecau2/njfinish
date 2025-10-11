@@ -205,7 +205,7 @@ const SettingsTab = ({ manufacturer }) => {
             {selectedFields.length > 3 ? '...' : ''}
           </Text>
         </MenuButton>
-        <MenuList maxH="300px" overflowY="auto">
+        <MenuList minW={{ base: "calc(100vw - 32px)", sm: "280px" }} maxW={{ base: "calc(100vw - 32px)", sm: "400px" }} maxH="300px" overflowY="auto">
           <Box px={3} py={2} fontSize="xs" color={textGray500}>
             {t(
               'settings.manufacturers.settings.dropdownHelp',

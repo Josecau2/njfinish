@@ -399,7 +399,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
                             >
                               <Icon as={MenuIcon} boxSize={ICON_BOX_MD} />
                             </MenuButton>
-                            <MenuList>
+                            <MenuList minW={{ base: "calc(100vw - 32px)", sm: "200px" }} maxW={{ base: "calc(100vw - 32px)", sm: "280px" }}>
                               <MenuItem
                                 icon={<Icon as={Eye} boxSize={ICON_BOX_MD} />}
                                 onClick={() => previewFile(file)}
@@ -475,7 +475,7 @@ const FileUploadSection = ({ proposalId, onFilesChange }) => {
         isCentered
       >
         <AlertDialogOverlay>
-          <AlertDialogContent borderRadius="12px" overflow="hidden">
+          <AlertDialogContent borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
             <AlertDialogHeader bg={resolvedHeaderBg} color={headerTextColor}>
               <Text fontSize="lg" fontWeight="semibold">
                 {t('files.deleteTitle', 'Delete file')}

@@ -617,27 +617,845 @@ router.delete('/manufacturers/:manufacturerId/styles/:styleName', verifyTokenWit
 
 
 // Global Modifications (admin only)
+
+/**
+ * @openapi
+ * /api/global-mods/gallery:
+ *   get:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Get global modifications blueprint gallery
+ *     description: Retrieve all blueprint templates from other manufacturers that can be imported into the current manufacturer (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Blueprint gallery retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 blueprints:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       manufacturerId:
+ *                         type: integer
+ *                       manufacturerName:
+ *                         type: string
+ *                       templateCount:
+ *                         type: integer
+ *                       categoryCount:
+ *                         type: integer
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 router.get('/global-mods/gallery', verifyTokenWithGroup, requirePermission('admin:manufacturers'), globalModsController.getGallery);
+
+/**
+ * @openapi
+ * /api/global-mods/gallery/{blueprintId}/use-here:
+ *   post:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Import blueprint from gallery
+ *     description: Import a blueprint (all categories and templates) from another manufacturer into the specified manufacturer (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blueprintId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Source manufacturer ID to import blueprint from
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - targetManufacturerId
+ *             properties:
+ *               targetManufacturerId:
+ *                 type: integer
+ *                 description: Target manufacturer ID to import blueprint into
+ *     responses:
+ *       200:
+ *         description: Blueprint imported successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 categoriesCreated:
+ *                   type: integer
+ *                 templatesCreated:
+ *                   type: integer
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.post('/global-mods/gallery/:blueprintId/use-here', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('blueprintId'), sanitizeBodyStrings(), globalModsController.useBlueprint);
+
+/**
+ * @openapi
+ * /api/global-mods/manufacturer/{manufacturerId}/mods:
+ *   get:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Get all global modifications for a manufacturer
+ *     description: Retrieve all global modification templates, categories, and assignments for a specific manufacturer (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: manufacturerId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Manufacturer ID
+ *     responses:
+ *       200:
+ *         description: Manufacturer modifications retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 categories:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GlobalModificationCategory'
+ *                 templates:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GlobalModificationTemplate'
+ *                 assignments:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GlobalModificationAssignment'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get('/global-mods/manufacturer/:manufacturerId/mods', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('manufacturerId'), globalModsController.getManufacturerMods);
+
+/**
+ * @openapi
+ * /api/global-mods/categories:
+ *   get:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Get all global modification categories
+ *     description: Retrieve all global modification categories across all manufacturers (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Categories retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 categories:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GlobalModificationCategory'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 router.get('/global-mods/categories', verifyTokenWithGroup, requirePermission('admin:manufacturers'), globalModsController.getCategories);
+
+/**
+ * @openapi
+ * /api/global-mods/assignments:
+ *   get:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Get all global modification assignments
+ *     description: Retrieve all global modification template assignments to catalog items (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Assignments retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 assignments:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GlobalModificationAssignment'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 router.get('/global-mods/assignments', verifyTokenWithGroup, requirePermission('admin:manufacturers'), globalModsController.getAssignments);
+
+/**
+ * @openapi
+ * /api/global-mods/categories:
+ *   post:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Create a new global modification category
+ *     description: Create a new category for organizing global modification templates (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - manufacturerId
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Category name
+ *               manufacturerId:
+ *                 type: integer
+ *                 description: Manufacturer ID this category belongs to
+ *               description:
+ *                 type: string
+ *                 description: Optional category description
+ *     responses:
+ *       201:
+ *         description: Category created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 category:
+ *                   $ref: '#/components/schemas/GlobalModificationCategory'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 router.post('/global-mods/categories', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), globalModsController.createCategory);
+
+/**
+ * @openapi
+ * /api/global-mods/categories/{id}:
+ *   put:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Update a global modification category
+ *     description: Update an existing global modification category (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Category ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Updated category name
+ *               description:
+ *                 type: string
+ *                 description: Updated category description
+ *     responses:
+ *       200:
+ *         description: Category updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 category:
+ *                   $ref: '#/components/schemas/GlobalModificationCategory'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *   patch:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Partially update a global modification category
+ *     description: Partially update an existing global modification category (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Category ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Updated category name
+ *               description:
+ *                 type: string
+ *                 description: Updated category description
+ *     responses:
+ *       200:
+ *         description: Category updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 category:
+ *                   $ref: '#/components/schemas/GlobalModificationCategory'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.put('/global-mods/categories/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.updateCategory);
 router.patch('/global-mods/categories/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.updateCategory);
+
+/**
+ * @openapi
+ * /api/global-mods/categories/{id}:
+ *   delete:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Delete a global modification category
+ *     description: Delete a global modification category and optionally reassign or delete its templates (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Category ID to delete
+ *     responses:
+ *       200:
+ *         description: Category deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.delete('/global-mods/categories/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), globalModsController.deleteCategory);
+
+/**
+ * @openapi
+ * /api/global-mods/categories/{fromId}/merge-into/{toId}:
+ *   post:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Merge two global modification categories
+ *     description: Merge one category into another, moving all templates from the source category to the target category and then deleting the source category (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: fromId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Source category ID to merge from (will be deleted after merge)
+ *       - in: path
+ *         name: toId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Target category ID to merge into (will receive all templates)
+ *     responses:
+ *       200:
+ *         description: Categories merged successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 templatesMoved:
+ *                   type: integer
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.post('/global-mods/categories/:fromId/merge-into/:toId', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('fromId'), validateIdParam('toId'), globalModsController.mergeCategories);
+
+/**
+ * @openapi
+ * /api/global-mods/templates/{id}/reassign-category:
+ *   patch:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Reassign template to different category
+ *     description: Move a global modification template from one category to another (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Template ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - categoryId
+ *             properties:
+ *               categoryId:
+ *                 type: integer
+ *                 description: New category ID to assign template to
+ *     responses:
+ *       200:
+ *         description: Template reassigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 template:
+ *                   $ref: '#/components/schemas/GlobalModificationTemplate'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.patch('/global-mods/templates/:id/reassign-category', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.reassignTemplateCategory);
+
+/**
+ * @openapi
+ * /api/global-mods/templates:
+ *   post:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Create a new global modification template
+ *     description: Create a new global modification template with pricing and descriptive information (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - categoryId
+ *               - manufacturerId
+ *               - modType
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Template name
+ *               categoryId:
+ *                 type: integer
+ *                 description: Category ID this template belongs to
+ *               manufacturerId:
+ *                 type: integer
+ *                 description: Manufacturer ID
+ *               modType:
+ *                 type: string
+ *                 enum: [fixed, percentage, multiplier, formula]
+ *                 description: Type of modification pricing
+ *               value:
+ *                 type: number
+ *                 description: Modification value (price, percentage, or multiplier)
+ *               description:
+ *                 type: string
+ *                 description: Template description
+ *               imageUrl:
+ *                 type: string
+ *                 description: Optional image URL for visual reference
+ *               notes:
+ *                 type: string
+ *                 description: Additional notes
+ *     responses:
+ *       201:
+ *         description: Template created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 template:
+ *                   $ref: '#/components/schemas/GlobalModificationTemplate'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 router.post('/global-mods/templates', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), globalModsController.createTemplate);
+
+/**
+ * @openapi
+ * /api/global-mods/templates/{id}:
+ *   put:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Update a global modification template
+ *     description: Update an existing global modification template (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Template ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Updated template name
+ *               modType:
+ *                 type: string
+ *                 enum: [fixed, percentage, multiplier, formula]
+ *                 description: Updated modification type
+ *               value:
+ *                 type: number
+ *                 description: Updated modification value
+ *               description:
+ *                 type: string
+ *                 description: Updated description
+ *               imageUrl:
+ *                 type: string
+ *                 description: Updated image URL
+ *               notes:
+ *                 type: string
+ *                 description: Updated notes
+ *     responses:
+ *       200:
+ *         description: Template updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 template:
+ *                   $ref: '#/components/schemas/GlobalModificationTemplate'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *   delete:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Delete a global modification template
+ *     description: Delete a global modification template and all its assignments (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Template ID
+ *     responses:
+ *       200:
+ *         description: Template deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.put('/global-mods/templates/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), sanitizeBodyStrings(), globalModsController.updateTemplate);
 router.delete('/global-mods/templates/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), globalModsController.deleteTemplate);
+
+/**
+ * @openapi
+ * /api/global-mods/assignments:
+ *   post:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Create a global modification assignment
+ *     description: Assign a global modification template to one or more catalog items (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - templateId
+ *               - catalogDataIds
+ *             properties:
+ *               templateId:
+ *                 type: integer
+ *                 description: Global modification template ID
+ *               catalogDataIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *                 description: Array of catalog item IDs to assign template to
+ *     responses:
+ *       201:
+ *         description: Assignment(s) created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 assignments:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GlobalModificationAssignment'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 router.post('/global-mods/assignments', verifyTokenWithGroup, requirePermission('admin:manufacturers'), sanitizeBodyStrings(), globalModsController.createAssignment);
+
+/**
+ * @openapi
+ * /api/global-mods/assignments/{id}:
+ *   delete:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Delete a global modification assignment
+ *     description: Remove a global modification template assignment from a catalog item (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Assignment ID
+ *     responses:
+ *       200:
+ *         description: Assignment deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.delete('/global-mods/assignments/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), globalModsController.deleteAssignment);
-// Allow all authenticated users (admins, contractors) to read applicable item assignments
+
+/**
+ * @openapi
+ * /api/global-mods/item/{catalogDataId}:
+ *   get:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Get global modifications for a catalog item
+ *     description: Retrieve all global modification template assignments for a specific catalog item (available to all authenticated users)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: catalogDataId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Catalog item ID
+ *     responses:
+ *       200:
+ *         description: Item assignments retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 assignments:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GlobalModificationAssignment'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get('/global-mods/item/:catalogDataId', verifyTokenWithGroup, validateIdParam('catalogDataId'), globalModsController.getItemAssignments);
 
 // API v1 aliases for Global Modifications (mirror of /global-mods)
+// Note: These routes are exact mirrors of /global-mods/* routes for API versioning compatibility
+
+/**
+ * @openapi
+ * /api/v1/modifications/gallery:
+ *   get:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Get global modifications blueprint gallery (v1 alias)
+ *     description: Retrieve all blueprint templates from other manufacturers that can be imported into the current manufacturer. This is an alias for /api/global-mods/gallery (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Blueprint gallery retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 blueprints:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       manufacturerId:
+ *                         type: integer
+ *                       manufacturerName:
+ *                         type: string
+ *                       templateCount:
+ *                         type: integer
+ *                       categoryCount:
+ *                         type: integer
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 router.get('/v1/modifications/gallery', verifyTokenWithGroup, requirePermission('admin:manufacturers'), globalModsController.getGallery);
+
+// The following /v1/modifications/* routes are aliases for /global-mods/* routes
+// They share the same OpenAPI documentation as their /global-mods/* counterparts
+// Replace "global-mods" with "v1/modifications" in the path when using these endpoints
+
 router.post('/v1/modifications/gallery/:blueprintId/use-here', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('blueprintId'), sanitizeBodyStrings(), globalModsController.useBlueprint);
 router.get('/v1/modifications/manufacturer/:manufacturerId/mods', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('manufacturerId'), globalModsController.getManufacturerMods);
 router.get('/v1/modifications/categories', verifyTokenWithGroup, requirePermission('admin:manufacturers'), globalModsController.getCategories);
@@ -660,6 +1478,755 @@ router.get('/multi-manufacturer', verifyTokenWithGroup, requirePermission(PERMIS
 router.post('/multi-manufacturer', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.MANUFACTURERS), sanitizeBodyStrings(), multiManufacturerController.createMultiManufacturer);
 router.put('/multi-manufacturer/:id', verifyTokenWithGroup, requirePermission(PERMISSIONS.ADMIN.MANUFACTURERS), validateIdParam('id'), sanitizeBodyStrings(), multiManufacturerController.updateMultiManufacturer);
 
+/**
+ * @openapi
+ * /api/users:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: List all users
+ *     description: Retrieve a list of all users in the system (requires admin:users permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Number of items per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by user name or email
+ *       - in: query
+ *         name: role
+ *         schema:
+ *           type: string
+ *           enum: [User, Admin, Manufacturers, Contractor]
+ *         description: Filter by user role
+ *       - in: query
+ *         name: group_id
+ *         schema:
+ *           type: integer
+ *         description: Filter by user group ID
+ *     responses:
+ *       200:
+ *         description: List of users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 users:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *                 total:
+ *                   type: integer
+ *                 page:
+ *                   type: integer
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+
+/**
+ * @openapi
+ * /api/users/{id}:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get user by ID
+ *     description: Retrieve a single user by their ID (requires admin:users permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+
+/**
+ * @openapi
+ * /api/users:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Create a new user
+ *     description: Add a new user to the system (requires admin:users permission)
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: User's full name
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User's email address (must be unique)
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: User's password
+ *               role:
+ *                 type: string
+ *                 enum: [User, Admin, Manufacturers, Contractor]
+ *                 default: User
+ *                 description: User's role in the system
+ *               group_id:
+ *                 type: integer
+ *                 description: User group membership ID
+ *               location:
+ *                 type: string
+ *                 description: User's location
+ *               street_address:
+ *                 type: string
+ *                 description: Personal street address
+ *               city:
+ *                 type: string
+ *                 description: Personal city
+ *               state:
+ *                 type: string
+ *                 description: Personal state
+ *               zip_code:
+ *                 type: string
+ *                 description: Personal ZIP code
+ *               country:
+ *                 type: string
+ *                 description: Personal country
+ *               company_name:
+ *                 type: string
+ *                 description: Company name
+ *               company_street_address:
+ *                 type: string
+ *                 description: Company street address
+ *               company_city:
+ *                 type: string
+ *                 description: Company city
+ *               company_state:
+ *                 type: string
+ *                 description: Company state
+ *               company_zip_code:
+ *                 type: string
+ *                 description: Company ZIP code
+ *               company_country:
+ *                 type: string
+ *                 description: Company country
+ *               isSalesRep:
+ *                 type: boolean
+ *                 default: false
+ *                 description: Whether user is a sales representative
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       409:
+ *         description: Email already exists
+ */
+
+/**
+ * @openapi
+ * /api/users/{id}:
+ *   delete:
+ *     tags:
+ *       - Users
+ *     summary: Delete a user
+ *     description: Soft delete a user by ID (requires admin:users permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User deleted successfully
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+
+/**
+ * @openapi
+ * /api/users/{id}:
+ *   put:
+ *     tags:
+ *       - Users
+ *     summary: Update a user
+ *     description: Update user information by ID (requires admin:users permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: User's full name
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User's email address
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: User's new password (optional)
+ *               role:
+ *                 type: string
+ *                 enum: [User, Admin, Manufacturers, Contractor]
+ *                 description: User's role in the system
+ *               group_id:
+ *                 type: integer
+ *                 description: User group membership ID
+ *               location:
+ *                 type: string
+ *                 description: User's location
+ *               street_address:
+ *                 type: string
+ *                 description: Personal street address
+ *               city:
+ *                 type: string
+ *                 description: Personal city
+ *               state:
+ *                 type: string
+ *                 description: Personal state
+ *               zip_code:
+ *                 type: string
+ *                 description: Personal ZIP code
+ *               country:
+ *                 type: string
+ *                 description: Personal country
+ *               company_name:
+ *                 type: string
+ *                 description: Company name
+ *               company_street_address:
+ *                 type: string
+ *                 description: Company street address
+ *               company_city:
+ *                 type: string
+ *                 description: Company city
+ *               company_state:
+ *                 type: string
+ *                 description: Company state
+ *               company_zip_code:
+ *                 type: string
+ *                 description: Company ZIP code
+ *               company_country:
+ *                 type: string
+ *                 description: Company country
+ *               isSalesRep:
+ *                 type: boolean
+ *                 description: Whether user is a sales representative
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       409:
+ *         description: Email already exists
+ */
+
+/**
+ * @openapi
+ * /api/user-role/{userId}:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get user role information
+ *     description: Retrieve role information for a specific user (requires admin:users permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User role retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userId:
+ *                   type: integer
+ *                 role:
+ *                   type: string
+ *                   enum: [User, Admin, Manufacturers, Contractor]
+ *                 role_id:
+ *                   type: integer
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+
+/**
+ * @openapi
+ * /api/usersgroups:
+ *   get:
+ *     tags:
+ *       - User Groups
+ *     summary: List all user groups
+ *     description: Retrieve a list of all user groups in the system (requires admin:groups permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Number of items per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by group name
+ *       - in: query
+ *         name: group_type
+ *         schema:
+ *           type: string
+ *           enum: [standard, contractor]
+ *         description: Filter by group type
+ *     responses:
+ *       200:
+ *         description: List of user groups retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 groups:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/UserGroup'
+ *                 total:
+ *                   type: integer
+ *                 page:
+ *                   type: integer
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+
+/**
+ * @openapi
+ * /api/usersgroups/{id}:
+ *   get:
+ *     tags:
+ *       - User Groups
+ *     summary: Get user group by ID
+ *     description: Retrieve a single user group by ID (requires admin:groups permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User group ID
+ *     responses:
+ *       200:
+ *         description: User group retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserGroup'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+
+/**
+ * @openapi
+ * /api/usersgroups:
+ *   post:
+ *     tags:
+ *       - User Groups
+ *     summary: Create a new user group
+ *     description: Add a new user group to the system (requires admin:groups permission)
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: User group name
+ *               group_type:
+ *                 type: string
+ *                 enum: [standard, contractor]
+ *                 default: standard
+ *                 description: Type of user group
+ *               modules:
+ *                 type: object
+ *                 description: Module permissions for the group
+ *                 properties:
+ *                   dashboard:
+ *                     type: boolean
+ *                     default: false
+ *                     description: Dashboard module access
+ *                   proposals:
+ *                     type: boolean
+ *                     default: false
+ *                     description: Proposals/quotes module access
+ *                   customers:
+ *                     type: boolean
+ *                     default: false
+ *                     description: Customers module access
+ *                   resources:
+ *                     type: boolean
+ *                     default: false
+ *                     description: Resources module access
+ *               contractor_settings:
+ *                 type: object
+ *                 description: Contractor-specific settings (only for contractor groups)
+ *                 properties:
+ *                   price_multiplier:
+ *                     type: number
+ *                     description: Price multiplier for the group
+ *                   allowed_manufacturers:
+ *                     type: array
+ *                     items:
+ *                       type: integer
+ *                     description: List of allowed manufacturer IDs
+ *     responses:
+ *       201:
+ *         description: User group created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserGroup'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+
+/**
+ * @openapi
+ * /api/usersgroups/{id}:
+ *   delete:
+ *     tags:
+ *       - User Groups
+ *     summary: Delete a user group
+ *     description: Delete a user group by ID (requires admin:groups permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User group ID
+ *     responses:
+ *       200:
+ *         description: User group deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User group deleted successfully
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+
+/**
+ * @openapi
+ * /api/usersgroups/{id}:
+ *   put:
+ *     tags:
+ *       - User Groups
+ *     summary: Update a user group
+ *     description: Update user group information by ID (requires admin:groups permission)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User group ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: User group name
+ *               group_type:
+ *                 type: string
+ *                 enum: [standard, contractor]
+ *                 description: Type of user group
+ *               modules:
+ *                 type: object
+ *                 description: Module permissions for the group
+ *                 properties:
+ *                   dashboard:
+ *                     type: boolean
+ *                     description: Dashboard module access
+ *                   proposals:
+ *                     type: boolean
+ *                     description: Proposals/quotes module access
+ *                   customers:
+ *                     type: boolean
+ *                     description: Customers module access
+ *                   resources:
+ *                     type: boolean
+ *                     description: Resources module access
+ *               contractor_settings:
+ *                 type: object
+ *                 description: Contractor-specific settings (only for contractor groups)
+ *                 properties:
+ *                   price_multiplier:
+ *                     type: number
+ *                     description: Price multiplier for the group
+ *                   allowed_manufacturers:
+ *                     type: array
+ *                     items:
+ *                       type: integer
+ *                     description: List of allowed manufacturer IDs
+ *     responses:
+ *       200:
+ *         description: User group updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserGroup'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+
+/**
+ * @openapi
+ * /api/usersgroupsmultiplier:
+ *   get:
+ *     tags:
+ *       - User Groups
+ *     summary: Get all user group multipliers
+ *     description: Retrieve pricing multipliers for all user groups (requires admin:groups permission)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User group multipliers retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 multipliers:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       group_id:
+ *                         type: integer
+ *                       group_name:
+ *                         type: string
+ *                       price_multiplier:
+ *                         type: number
+ *                       group_type:
+ *                         type: string
+ *                         enum: [standard, contractor]
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+
+/**
+ * @openapi
+ * /api/user/multiplier:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get current user's group multiplier
+ *     description: Retrieve the pricing multiplier for the authenticated user's group
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User multiplier retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 multiplier:
+ *                   type: number
+ *                   description: Price multiplier for the user's group
+ *                 group_id:
+ *                   type: integer
+ *                 group_name:
+ *                   type: string
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
+
+/**
+ * @openapi
+ * /api/designers:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get all designers
+ *     description: Retrieve a list of all users with sales representative or designer roles (requires admin:users permission)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Designers retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 designers:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                       isSalesRep:
+ *                         type: boolean
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 // User CRUD routes - ADMIN ONLY (contractors should not access)
 router.get('/users', verifyTokenWithGroup, requirePermission('admin:users'), authController.fetchUsers);
 router.get('/users/:id', verifyTokenWithGroup, requirePermission('admin:users'), validateIdParam('id'), authController.fetchSingleUser);
@@ -925,7 +2492,61 @@ router.get('/resources/files/download/:id', attachTokenFromQuery(), verifyTokenW
 router.post('/resources/files/:id/thumbnail', verifyTokenWithGroup, resourceUpload.single('thumbnail'), resourcesController.uploadFileThumbnail);
 router.get('/resources/files/:id/thumbnail', attachTokenFromQuery(), verifyTokenWithGroup, resourcesController.getFileThumbnail);
 
-// Upload images for sample images and category cards (admin only)
+/**
+ * @openapi
+ * /api/global-mods/upload/image:
+ *   post:
+ *     tags:
+ *       - Global Modifications
+ *     summary: Upload an image for global modifications
+ *     description: Upload an image file for use in global modification templates, sample images, or category cards (requires admin:manufacturers permission)
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - logoImage
+ *             properties:
+ *               logoImage:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image file to upload (JPEG, PNG, GIF, WebP supported)
+ *     responses:
+ *       200:
+ *         description: Image uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 imageUrl:
+ *                   type: string
+ *                   description: Public URL of the uploaded image
+ *                 filename:
+ *                   type: string
+ *                   description: Uploaded filename
+ *       400:
+ *         description: Invalid file type or upload error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 router.post('/global-mods/upload/image', verifyTokenWithGroup, requirePermission('admin:manufacturers'), upload.imageUpload.single('logoImage'), uploadImage);
 
 router.get('/calendar-events', verifyTokenWithGroup, calenderController.fetchEvents);

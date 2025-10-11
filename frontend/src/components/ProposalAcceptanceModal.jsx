@@ -162,7 +162,7 @@ const ProposalAcceptanceModal = ({
   return (
     <Modal isOpen={show} onClose={handleClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" closeOnOverlayClick={!isSubmitting} isCentered>
       <ModalOverlay as={motion.div} {...overlayMotionProps} />
-      <ModalContent as={motion.div} {...contentMotionProps} borderRadius="12px" >
+      <ModalContent as={motion.div} {...contentMotionProps} borderRadius={{ base: '0', md: '12px' }} >
         <Box as="form" onSubmit={submitProposal}>
           <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
             <Text fontSize="lg" fontWeight="semibold">

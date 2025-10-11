@@ -11,11 +11,15 @@ export default defineConfig(({ mode }) => {
   // Load environment variables based on mode
   const env = loadEnv(mode, __dirname, '')
 
+  // Determine if we're in production mode
+  const isProduction = mode === 'production'
+
   return {
     base: '/',
     // Make env variables available to the application
     define: {
       __APP_ENV__: JSON.stringify(env.VITE_NODE_ENV || mode),
+      'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'),
     },
   // Ensure Vite uses the frontend folder as root (so index.html is resolved correctly)
   root: __dirname,
@@ -96,6 +100,11 @@ export default defineConfig(({ mode }) => {
         fastRefresh: true,
         // Exclude production optimizations from dev
         include: "**/*.{jsx,tsx}",
+        // Ensure proper JSX runtime based on mode
+        jsxRuntime: 'automatic',
+        babel: {
+          plugins: mode === 'production' ? [] : []
+        }
       }),
       // Bundle analyzer - runs in analyze mode only
       mode === 'analyze' && visualizer({

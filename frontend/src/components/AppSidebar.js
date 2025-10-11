@@ -238,7 +238,9 @@ const AppSidebar = () => {
         borderTop="1px solid"
         borderTopColor={borderColor}
         flexShrink={0}
-        p={2}
+        pt={4}
+        px={2}
+        pb={{ base: 8, md: 4 }}
       >
         {/* Footer buttons row - both buttons side by side when expanded */}
         <Flex align="center" justify={collapsed ? "center" : "space-between"} w="100%" gap={2}>

@@ -1,0 +1,262 @@
+/**
+ * @openapi
+ * /api/request-access:
+ *   post:
+ *     tags:
+ *       - Leads
+ *     summary: Submit a request for access (lead submission)
+ *     description: Public endpoint for submitting access requests. Rate limited to 5 requests per 15 minutes per IP. Creates or updates a lead record and sends notification emails to admins and the requester.
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Full name of the requester
+ *                 maxLength: 191
+ *               firstName:
+ *                 type: string
+ *                 description: First name (optional if name is provided)
+ *                 maxLength: 191
+ *               lastName:
+ *                 type: string
+ *                 description: Last name (optional if name is provided)
+ *                 maxLength: 191
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email address of the requester
+ *               company:
+ *                 type: string
+ *                 description: Company name
+ *                 maxLength: 191
+ *               message:
+ *                 type: string
+ *                 description: Message or reason for access request
+ *                 maxLength: 2000
+ *               phone:
+ *                 type: string
+ *                 description: Phone number
+ *                 maxLength: 32
+ *               city:
+ *                 type: string
+ *                 description: City
+ *                 maxLength: 191
+ *               state:
+ *                 type: string
+ *                 description: State (auto-uppercase if <=3 chars)
+ *                 maxLength: 64
+ *               zip:
+ *                 type: string
+ *                 description: ZIP/postal code
+ *                 maxLength: 32
+ *     responses:
+ *       201:
+ *         description: Lead submitted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   description: Success message (customizable via admin settings)
+ *                 lead:
+ *                   $ref: '#/components/schemas/Lead'
+ *                 notifications:
+ *                   type: object
+ *                   properties:
+ *                     adminEmailSent:
+ *                       type: boolean
+ *                     userEmailSent:
+ *                       type: boolean
+ *       400:
+ *         description: Validation error (missing required fields or invalid email format)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Email is required.
+ *       429:
+ *         description: Rate limit exceeded (5 requests per 15 minutes)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Too many requests, please try again later.
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.post('/request-access', requestAccessLimiter, sanitizeBodyStrings(5000), leadController.submitLead);
+
+/**
+ * @openapi
+ * /api/admin/leads:
+ *   get:
+ *     tags:
+ *       - Leads
+ *     summary: List all leads
+ *     description: Retrieve all lead submissions with optional filtering by status and search (requires admin:leads permission)
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *         description: Filter by status (comma-separated for multiple). Allowed values - new, reviewing, contacted, closed
+ *         example: new,reviewing
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search across name, firstName, lastName, email, company, phone, city, state, zip
+ *     responses:
+ *       200:
+ *         description: Leads retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 leads:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Lead'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.get('/admin/leads', verifyTokenWithGroup, requirePermission('admin:leads'), leadController.listLeads);
+
+/**
+ * @openapi
+ * /api/admin/leads/{id}:
+ *   patch:
+ *     tags:
+ *       - Leads
+ *     summary: Update a lead (PATCH)
+ *     description: Update lead status and/or add admin notes (requires admin:leads permission)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Lead ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [new, reviewing, contacted, closed]
+ *                 description: New status for the lead
+ *               adminNote:
+ *                 type: string
+ *                 description: Admin note to add to the lead history
+ *     responses:
+ *       200:
+ *         description: Lead updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 lead:
+ *                   $ref: '#/components/schemas/Lead'
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Invalid status or no updates provided
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ *   put:
+ *     tags:
+ *       - Leads
+ *     summary: Update a lead (PUT)
+ *     description: Update lead status and/or add admin notes (requires admin:leads permission). Same functionality as PATCH.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Lead ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [new, reviewing, contacted, closed]
+ *                 description: New status for the lead
+ *               adminNote:
+ *                 type: string
+ *                 description: Admin note to add to the lead history
+ *     responses:
+ *       200:
+ *         description: Lead updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 lead:
+ *                   $ref: '#/components/schemas/Lead'
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Invalid status or no updates provided
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.patch('/admin/leads/:id', verifyTokenWithGroup, requirePermission('admin:leads'), validateIdParam('id'), sanitizeBodyStrings(5000), leadController.updateLead);
+router.put('/admin/leads/:id', verifyTokenWithGroup, requirePermission('admin:leads'), validateIdParam('id'), sanitizeBodyStrings(5000), leadController.updateLead);

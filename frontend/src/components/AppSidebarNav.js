@@ -388,7 +388,8 @@ const AppSidebarNav = ({ items, collapsed = false, onNavigate, fontColor, sideba
             </Box>
           </MenuButton>
           <MenuList
-            minW="220px"
+            minW={{ base: "calc(100vw - 32px)", sm: "220px" }}
+            maxW={{ base: "calc(100vw - 32px)", sm: "320px" }}
             bg="slate.900"
             color="slate.50"
             border="1px solid"

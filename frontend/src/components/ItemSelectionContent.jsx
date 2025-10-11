@@ -1983,10 +1983,10 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
             {copied && (
                 <Box
                     position="fixed"
-                    bottom={10}
+                    bottom="calc(2.5rem + env(safe-area-inset-bottom, 0px))"
                     left="50%"
                     transform="translateX(-50%)"
-                    zIndex={9999}
+                    zIndex={2500}
                     px={3}
                 >
                     <Alert status="success" variant="solid" borderRadius="md" alignItems="center">
