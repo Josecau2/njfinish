@@ -450,7 +450,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
   return (
     <Modal isOpen={show} onClose={onClose} size={{ base: "full", lg: "lg" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent borderRadius="12px">
+      <ModalContent borderRadius={{ base: '0', md: 'lg' }}>
         <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
           <Text fontSize="lg" fontWeight="semibold">
             {t('paymentReceipt.modal.title', 'Payment receipt')}
@@ -513,7 +513,7 @@ const PrintPaymentReceiptModal = ({ show, onClose, payment, order }) => {
             </Text>
           </Stack>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
           <Button variant="outline" mr={3} onClick={onClose} isDisabled={isLoading} minH="44px">
             {t('common.cancel', 'Cancel')}
           </Button>

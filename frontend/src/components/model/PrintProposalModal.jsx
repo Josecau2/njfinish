@@ -530,7 +530,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius="12px">
+        <ModalContent borderRadius={{ base: '0', md: '12px' }}>
           <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
             <Text fontSize="lg" fontWeight="semibold">
               {t('proposalCommon.printTitle')}
@@ -540,7 +540,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             color={headerTextColor}
             aria-label={t('common.ariaLabels.closeModal', 'Close modal')}
           />
-          <ModalBody>
+          <ModalBody maxH={{ base: 'calc(100vh - 200px)', md: '70vh' }}>
             <Stack spacing={6}>
               <Box borderWidth="1px" borderRadius="lg" p={4}>
                 <Text
@@ -714,7 +714,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
               </Box>
             </Stack>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
             <HStack
               spacing={4}
               flexWrap={isMobile ? 'wrap' : 'nowrap'}
@@ -784,7 +784,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
         isCentered
       >
         <ModalOverlay />
-        <ModalContent borderRadius={{ base: '0', md: '12px' }} maxH="90vh">
+        <ModalContent borderRadius={{ base: '0', md: '12px' }} maxH={{ base: '100vh', md: '90vh' }}>
           <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
             <Text fontSize="lg" fontWeight="semibold">
               {t('proposalCommon.previewTitle', 'Quote Preview')}
@@ -796,13 +796,13 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
           />
           <ModalBody p={0}>
             {isGeneratingPreview || !previewPdfUrl ? (
-              <Center h="70vh" bg={previewContainerBg}>
+              <Center h={previewMaxHeight} bg={previewContainerBg}>
                 <Spinner size="xl" color={spinnerColor} />
                 <Text ml={4}>{t('proposalCommon.generatingPreview', 'Generating preview...')}</Text>
               </Center>
             ) : (
               <Box
-                h="70vh"
+                h={previewMaxHeight}
                 bg={previewContainerBg}
                 overflow="hidden"
               >
@@ -829,7 +829,7 @@ const PrintProposalModal = ({ show, onClose, formData }) => {
             )}
           </ModalBody>
           <Divider />
-          <ModalFooter>
+          <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
             <HStack spacing={4}>
               <MotionButton
                 variant="outline"

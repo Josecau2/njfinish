@@ -599,7 +599,7 @@ const LeadsPage = () => {
           scrollBehavior="inside"
         >
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent borderRadius={{ base: '0', md: '12px' }}>
             <ModalHeader>
               <Flex justify="space-between" align="center" gap={4} wrap="wrap">
                 <Box>

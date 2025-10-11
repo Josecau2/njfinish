@@ -548,7 +548,8 @@ const CatalogTableEdit = ({
             bg={bgGray900}
             borderTop="1px solid"
             borderTopColor={borderGray300}
-            py={4}
+            pt={4}
+            pb={{ base: 8, md: 4 }}
             px={6}
           >
             <Button

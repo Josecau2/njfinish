@@ -15,6 +15,8 @@ const { regenerateBrandSnapshot } = require('./server/branding/regenerateBrandSn
 const { serveUpload } = require('./controllers/uploadServeController');
 const { servePublicUpload } = require('./controllers/publicUploadsController');
 const { attachTokenFromQuery, verifyTokenWithGroup } = require('./middleware/auth');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
 
 // Initialize event manager for domain events
 require('./utils/eventManager');
@@ -117,6 +119,19 @@ app.use('/api/auth', authRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/payment-config', paymentConfigRoutes);
 app.use('/api', apiRoutes);
+
+// Swagger API Documentation - accessible without authentication for development
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  explorer: true,
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'NJCabinets API Documentation',
+}));
+
+// Serve OpenAPI spec as JSON for MCP servers and other tools
+app.get('/api-docs.json', (_req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 // Public readonly image route (whitelisted subpaths) to avoid CORB for assets used in PDFs/emails.
 // Example: <img src="/public-uploads/uploads/branding/logo.png"> (preferred) OR existing absolute URL.

@@ -190,7 +190,7 @@ const EditUserModal = ({ visible, onClose, user }) => {
             </FormControl>
           </VStack>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
           <HStack spacing={3}>
             <Button
               variant="outline"

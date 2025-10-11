@@ -357,7 +357,7 @@ const EditLocation = () => {
         onClose={onCancelClose}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent borderRadius={{ base: '0', md: '12px' }}>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               {t('common.confirm')}
             </AlertDialogHeader>
@@ -366,7 +366,7 @@ const EditLocation = () => {
               {t('settings.locations.alerts.leaveWarning')}
             </AlertDialogBody>
 
-            <AlertDialogFooter>
+            <AlertDialogFooter pt={4} pb={{ base: 8, md: 4 }}>
               <Button ref={cancelRef} onClick={onCancelClose} minH="44px">
                 {t('settings.locations.alerts.stayOnPage')}
               </Button>

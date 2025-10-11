@@ -1,4 +1,3 @@
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Modal,
@@ -35,7 +34,7 @@ const AppModal = ({
       {...props}
     >
       <ModalOverlay bg={overlayBg} />
-      <ModalContent borderRadius="lg">
+      <ModalContent borderRadius={{ base: '0', md: 'lg' }}>
         {title && (
           <ModalHeader borderBottomWidth="1px" borderColor={borderColor}>
             {title}
@@ -46,7 +45,7 @@ const AppModal = ({
           {children}
         </ModalBody>
         {footer && (
-          <ModalFooter>
+          <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
             {footer}
           </ModalFooter>
         )}

@@ -1215,7 +1215,7 @@ const EditProposal = ({
         isCentered
       >
         <ModalOverlay>
-          <ModalContent>
+          <ModalContent borderRadius={{ base: '0', md: '12px' }}>
             <ModalHeader>{t('common.editVersionName', 'Edit Version Name')}</ModalHeader>
             <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
             <ModalBody>
@@ -1226,7 +1226,7 @@ const EditProposal = ({
                 placeholder={t('common.versionName', 'Version Name')}
               />
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
               <Button
                 variant="outline"
                 colorScheme="gray"
@@ -1251,13 +1251,13 @@ const EditProposal = ({
         isCentered
       >
         <ModalOverlay>
-          <ModalContent>
+          <ModalContent borderRadius={{ base: '0', md: '12px' }}>
             <ModalHeader>{t('common.confirmDelete', 'Confirm Delete')}</ModalHeader>
             <ModalCloseButton aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
             <ModalBody>
               {t('common.areYouSureDelete', 'Are you sure you want to delete this version?')}
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
               <Button
                 variant="outline"
                 colorScheme="gray"

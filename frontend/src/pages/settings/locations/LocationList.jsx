@@ -563,12 +563,12 @@ const LocationPage = () => {
 
       <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent borderRadius={{ base: '0', md: '12px' }}>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               {t('common.confirm')}
             </AlertDialogHeader>
             <AlertDialogBody>{t('settings.locations.confirm.text')}</AlertDialogBody>
-            <AlertDialogFooter>
+            <AlertDialogFooter pt={4} pb={{ base: 8, md: 4 }}>
               <Button ref={cancelRef} onClick={onClose} minH="44px">
                 {t('common.cancel')}
               </Button>

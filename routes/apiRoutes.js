@@ -80,21 +80,471 @@ router.get('/auth/ping', verifyTokenWithGroup, (req, res) => {
 });
 
 // Current user (self) profile routes - available to any authenticated user
+
+/**
+ * @openapi
+ * /api/me:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Get current user profile
+ *     description: Retrieve the authenticated user's profile information
+ *     responses:
+ *       200:
+ *         description: User profile retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
 router.get('/me', verifyTokenWithGroup, authController.getCurrentUser);
+
+/**
+ * @openapi
+ * /api/me:
+ *   put:
+ *     tags:
+ *       - Users
+ *     summary: Update current user profile
+ *     description: Update the authenticated user's profile information
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
 router.put('/me', verifyTokenWithGroup, sanitizeBodyStrings(), authController.updateCurrentUser);
 
 // All customer-related routes
+
+/**
+ * @openapi
+ * /api/customers:
+ *   get:
+ *     tags:
+ *       - Customers
+ *     summary: List all customers
+ *     description: Retrieve a list of all customers (requires customers:read permission)
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Number of items per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by customer name or email
+ *     responses:
+ *       200:
+ *         description: List of customers retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 customers:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Customer'
+ *                 total:
+ *                   type: integer
+ *                 page:
+ *                   type: integer
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 router.get('/customers', verifyTokenWithGroup, requirePermission('customers:read'), customerController.fetchCustomer);
+
+/**
+ * @openapi
+ * /api/customers/{id}:
+ *   get:
+ *     tags:
+ *       - Customers
+ *     summary: Get customer by ID
+ *     description: Retrieve a single customer by ID (requires customers:read permission)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Customer ID
+ *     responses:
+ *       200:
+ *         description: Customer retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Customer'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get('/customers/:id', verifyTokenWithGroup, requirePermission('customers:read'), enforceGroupScoping({ resourceType: 'customers' }), validateIdParam('id'), customerController.fetchSingleCustomer);
+
+/**
+ * @openapi
+ * /api/customers/add:
+ *   post:
+ *     tags:
+ *       - Customers
+ *     summary: Create a new customer
+ *     description: Add a new customer to the system (requires customers:create permission)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phone:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               city:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *               zip:
+ *                 type: string
+ *               notes:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Customer created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Customer'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 router.post('/customers/add', verifyTokenWithGroup, requirePermission('customers:create'), enforceGroupScoping({ resourceType: 'customers' }), sanitizeBodyStrings(), customerController.addCustomer);
+
+/**
+ * @openapi
+ * /api/customers/delete/{id}:
+ *   delete:
+ *     tags:
+ *       - Customers
+ *     summary: Delete a customer
+ *     description: Delete a customer by ID (requires customers:delete permission)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Customer ID
+ *     responses:
+ *       200:
+ *         description: Customer deleted successfully
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.delete('/customers/delete/:id', verifyTokenWithGroup, requirePermission('customers:delete'), enforceGroupScoping({ resourceType: 'customers' }), validateIdParam('id'), customerController.deleteCustomer);
+
+/**
+ * @openapi
+ * /api/customers/update/{id}:
+ *   put:
+ *     tags:
+ *       - Customers
+ *     summary: Update a customer
+ *     description: Update customer information by ID (requires customers:update permission)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Customer ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phone:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               city:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *               zip:
+ *                 type: string
+ *               notes:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Customer updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Customer'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.put('/customers/update/:id', verifyTokenWithGroup, requirePermission('customers:update'), enforceGroupScoping({ resourceType: 'customers' }), validateIdParam('id'), sanitizeBodyStrings(), customerController.updateCustomer);
 
 // Manufacturer CRUD routes - Read access for all authenticated users, admin only for modifications
+
+/**
+ * @openapi
+ * /api/manufacturers/create:
+ *   post:
+ *     tags:
+ *       - Manufacturers
+ *     summary: Create a new manufacturer
+ *     description: Add a new manufacturer (requires admin:manufacturers permission)
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               website:
+ *                 type: string
+ *               logo:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Manufacturer created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Manufacturer'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
 router.post('/manufacturers/create', verifyTokenWithGroup, requirePermission('admin:manufacturers'), manufacturerController.addManufacturer);
+
+/**
+ * @openapi
+ * /api/manufacturers:
+ *   get:
+ *     tags:
+ *       - Manufacturers
+ *     summary: List all manufacturers
+ *     description: Retrieve a list of all manufacturers (available to all authenticated users)
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, inactive]
+ *         description: Filter by manufacturer status
+ *     responses:
+ *       200:
+ *         description: List of manufacturers retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Manufacturer'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
 router.get('/manufacturers', verifyTokenWithGroup, manufacturerController.fetchManufacturer);
+
+/**
+ * @openapi
+ * /api/manufacturers/status/{id}:
+ *   put:
+ *     tags:
+ *       - Manufacturers
+ *     summary: Update manufacturer status
+ *     description: Change the status of a manufacturer (requires admin:manufacturers permission)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Manufacturer ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [active, inactive]
+ *     responses:
+ *       200:
+ *         description: Manufacturer status updated successfully
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.put('/manufacturers/status/:id', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), manufacturerController.updateManufacturerStatus);
+
+/**
+ * @openapi
+ * /api/manufacturers/{id}:
+ *   get:
+ *     tags:
+ *       - Manufacturers
+ *     summary: Get manufacturer by ID
+ *     description: Retrieve a single manufacturer by ID (available to all authenticated users)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Manufacturer ID
+ *     responses:
+ *       200:
+ *         description: Manufacturer retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Manufacturer'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.get('/manufacturers/:id', verifyTokenWithGroup, validateIdParam('id'), manufacturerController.fetchManufacturerById);
+
+/**
+ * @openapi
+ * /api/manufacturers/{id}/update:
+ *   put:
+ *     tags:
+ *       - Manufacturers
+ *     summary: Update a manufacturer
+ *     description: Update manufacturer information by ID (requires admin:manufacturers permission)
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Manufacturer ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               website:
+ *                 type: string
+ *               logo:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 enum: [active, inactive]
+ *     responses:
+ *       200:
+ *         description: Manufacturer updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Manufacturer'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
 router.put('/manufacturers/:id/update', verifyTokenWithGroup, requirePermission('admin:manufacturers'), validateIdParam('id'), manufacturerController.updateManufacturer);
 
 

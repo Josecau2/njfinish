@@ -139,7 +139,7 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
   const ModalUI = (
     <Modal isOpen={showModal} onClose={() => setShowModal(false)} isCentered size={{ base: 'full', md: 'sm' }} scrollBehavior="inside">
       <ModalOverlay />
-      <ModalContent borderRadius="12px">
+      <ModalContent borderRadius={{ base: '0', md: '12px' }}>
         <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
           <Text fontSize="lg" fontWeight="semibold">
             {t('showroom.modal.titleExact', 'Showroom Mode Configuration')}
@@ -204,8 +204,8 @@ const ShowroomModeToggle = ({ compact = false, collapsed = false }) => {
             </Text>
           </VStack>
         </ModalBody>
-        <ModalFooter>
-          <Button variant="outline" mr={3} onClick={() => setShowModal(false)}>
+        <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
+          <Button variant="outline" mr={3} onClick={() => setShowModal(false)} minH="44px">
             {t('common.cancel', 'Cancel')}
           </Button>
           <Button colorScheme="brand" onClick={saveMultiplier} isDisabled={!!validationError || !tempMultiplier} minH="44px">

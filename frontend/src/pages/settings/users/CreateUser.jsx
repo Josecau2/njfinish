@@ -682,7 +682,7 @@ const AddUserForm = () => {
         onClose={onRestoreClose}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent borderRadius={{ base: '0', md: '12px' }}>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               {t('settings.users.alerts.emailDeletedTitle')}
             </AlertDialogHeader>
@@ -691,7 +691,7 @@ const AddUserForm = () => {
               {t('settings.users.alerts.emailDeletedText')}
             </AlertDialogBody>
 
-            <AlertDialogFooter>
+            <AlertDialogFooter pt={4} pb={{ base: 8, md: 4 }}>
               <Button ref={restoreRef} onClick={onRestoreClose} minH="44px">
                 {t('common.no')}
               </Button>
@@ -710,7 +710,7 @@ const AddUserForm = () => {
         onClose={onCancelClose}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent borderRadius={{ base: '0', md: '12px' }}>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               {t('common.confirm')}
             </AlertDialogHeader>
@@ -719,7 +719,7 @@ const AddUserForm = () => {
               {t('settings.users.form.alerts.leaveWarning')}
             </AlertDialogBody>
 
-            <AlertDialogFooter>
+            <AlertDialogFooter pt={4} pb={{ base: 8, md: 4 }}>
               <Button ref={cancelRef} onClick={onCancelClose} minH="44px">
                 {t('settings.users.form.alerts.stayOnPage')}
               </Button>

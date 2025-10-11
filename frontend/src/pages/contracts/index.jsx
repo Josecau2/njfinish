@@ -521,7 +521,7 @@ const Contracts = () => {
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius={{ base: '0', md: 'lg' }}>
           <ModalHeader bg={headerBg} color={headerTextColor} borderTopRadius="md">
             {t('contracts.modal.title')}
             <ModalCloseButton color={headerTextColor} />
@@ -558,7 +558,7 @@ const Contracts = () => {
               </Center>
             )}
           </ModalBody>
-          <ModalFooter bg={bgGray50} borderBottomRadius="md">
+          <ModalFooter bg={bgGray50} borderBottomRadius="md" pt={4} pb={{ base: 8, md: 4 }}>
             <Button
               variant="outline"
               onClick={() => setShowModal(false)}

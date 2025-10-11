@@ -696,7 +696,8 @@ const CatalogTable = ({
             bg={sectionBg}
             borderTop="1px solid"
             borderTopColor={modalBorderColor}
-            py={4}
+            pt={4}
+            pb={{ base: 8, md: 4 }}
             px={6}
           >
             <Button

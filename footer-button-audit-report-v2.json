@@ -1,0 +1,452 @@
+{
+  "summary": {
+    "totalFooters": 84,
+    "totalButtons": 148,
+    "compliantButtons": 95,
+    "nonCompliantButtons": 53,
+    "complianceRate": "64.2%"
+  },
+  "issues": [
+    {
+      "file": "frontend/src/components/CatalogTable.js",
+      "line": 703,
+      "footerType": "ModalFooter",
+      "footerLine": 695,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\r\n              colorScheme=\"blue\"\r\n              size={{ base: 'lg', md: 'md' }}\r\n              w={{ base: 'full', md: 'auto' }}\r\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/components/CatalogTableEdit.js",
+      "line": 555,
+      "footerType": "ModalFooter",
+      "footerLine": 547,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\r\n              colorScheme=\"blue\"\r\n              size={{ base: 'lg', md: 'md' }}\r\n              w={{ base: 'full', md: 'auto' }}\r\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/components/showroom/ShowroomModeToggle.jsx",
+      "line": 208,
+      "footerType": "ModalFooter",
+      "footerLine": 207,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button variant=\"outline\" mr={3} onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/contracts/index.jsx",
+      "line": 562,
+      "footerType": "ModalFooter",
+      "footerLine": 561,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              variant=\"outline\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/proposals/CreateProposal/ProposalSummary.jsx",
+      "line": 735,
+      "footerType": "ModalFooter",
+      "footerLine": 734,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button variant=\"ghost\" colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/proposals/CreateProposal/ProposalSummary.jsx",
+      "line": 756,
+      "footerType": "ModalFooter",
+      "footerLine": 755,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button variant=\"ghost\" colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/proposals/CreateProposal/ProposalSummary.jsx",
+      "line": 817,
+      "footerType": "AlertDialogFooter",
+      "footerLine": 816,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button ref={cancelRef} onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/proposals/EditProposal.jsx",
+      "line": 1230,
+      "footerType": "ModalFooter",
+      "footerLine": 1229,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n                variant=\"outline\"\n                colorScheme=\"gray\"\n                onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/proposals/EditProposal.jsx",
+      "line": 1261,
+      "footerType": "ModalFooter",
+      "footerLine": 1260,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n                variant=\"outline\"\n                colorScheme=\"gray\"\n                onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/Resources/index.jsx",
+      "line": 2343,
+      "footerType": "ModalFooter",
+      "footerLine": 2339,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"brand\"\n              onClick={async () =>"
+    },
+    {
+      "file": "frontend/src/pages/Resources/index.jsx",
+      "line": 2626,
+      "footerType": "ModalFooter",
+      "footerLine": 2622,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"brand\"\n              onClick={async () =>"
+    },
+    {
+      "file": "frontend/src/pages/Resources/index.jsx",
+      "line": 2920,
+      "footerType": "ModalFooter",
+      "footerLine": 2916,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"brand\"\n              onClick={async () =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/customization/PdfLayoutCustomization.jsx",
+      "line": 838,
+      "footerType": "ModalFooter",
+      "footerLine": 837,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+      "line": 2128,
+      "footerType": "ModalFooter",
+      "footerLine": 2127,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"gray\"\n              variant=\"outline\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+      "line": 2234,
+      "footerType": "ModalFooter",
+      "footerLine": 2233,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+      "line": 2465,
+      "footerType": "ModalFooter",
+      "footerLine": 2464,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+      "line": 2468,
+      "footerType": "ModalFooter",
+      "footerLine": 2464,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"brand\"\n              onClick={async () =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx",
+      "line": 2606,
+      "footerType": "ModalFooter",
+      "footerLine": 2605,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 3274,
+      "footerType": "ModalFooter",
+      "footerLine": 3273,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button variant=\"outline\" mr={3} onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 3464,
+      "footerType": "ModalFooter",
+      "footerLine": 3463,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button variant=\"outline\" mr={3} onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 3625,
+      "footerType": "ModalFooter",
+      "footerLine": 3624,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 3691,
+      "footerType": "ModalFooter",
+      "footerLine": 3690,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button variant=\"outline\" mr={3} onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 3769,
+      "footerType": "ModalFooter",
+      "footerLine": 3768,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button variant=\"outline\" mr={3} onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 3876,
+      "footerType": "ModalFooter",
+      "footerLine": 3866,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 3950,
+      "footerType": "ModalFooter",
+      "footerLine": 3949,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 4279,
+      "footerType": "ModalFooter",
+      "footerLine": 4278,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"gray\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 4364,
+      "footerType": "ModalFooter",
+      "footerLine": 4363,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 4435,
+      "footerType": "ModalFooter",
+      "footerLine": 4434,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 4546,
+      "footerType": "ModalFooter",
+      "footerLine": 4545,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"gray\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 4608,
+      "footerType": "ModalFooter",
+      "footerLine": 4607,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"gray\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 4671,
+      "footerType": "ModalFooter",
+      "footerLine": 4670,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"gray\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 4751,
+      "footerType": "ModalFooter",
+      "footerLine": 4750,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"gray\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 4858,
+      "footerType": "ModalFooter",
+      "footerLine": 4857,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"gray\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 4935,
+      "footerType": "ModalFooter",
+      "footerLine": 4934,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"gray\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 5592,
+      "footerType": "ModalFooter",
+      "footerLine": 5591,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 6433,
+      "footerType": "ModalFooter",
+      "footerLine": 6431,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"gray\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 6556,
+      "footerType": "ModalFooter",
+      "footerLine": 6555,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n            colorScheme=\"gray\"\n            onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 6803,
+      "footerType": "ModalFooter",
+      "footerLine": 6801,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n                colorScheme=\"gray\"\n                onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx",
+      "line": 6815,
+      "footerType": "ModalFooter",
+      "footerLine": 6801,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n                colorScheme=\"blue\"\n                onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/StylePicturesTab.jsx",
+      "line": 609,
+      "footerType": "ModalFooter",
+      "footerLine": 601,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              variant=\"ghost\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/StylePicturesTab.jsx",
+      "line": 687,
+      "footerType": "ModalFooter",
+      "footerLine": 679,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              variant=\"ghost\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/StylePicturesTab.jsx",
+      "line": 842,
+      "footerType": "ModalFooter",
+      "footerLine": 834,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              variant=\"ghost\"\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+      "line": 1542,
+      "footerType": "ModalFooter",
+      "footerLine": 1541,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n            variant=\"ghost\"\n            mr={3}\n            onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+      "line": 1597,
+      "footerType": "ModalFooter",
+      "footerLine": 1596,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              variant=\"ghost\"\n              mr={3}\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+      "line": 1604,
+      "footerType": "ModalFooter",
+      "footerLine": 1596,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"red\"\n              onClick={async () =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+      "line": 1698,
+      "footerType": "ModalFooter",
+      "footerLine": 1697,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              variant=\"ghost\"\n              mr={3}\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+      "line": 1706,
+      "footerType": "ModalFooter",
+      "footerLine": 1697,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              colorScheme=\"brand\"\n              isDisabled={creatingType || !createForm.typeName.trim()}\n              isLoading={creatingType}\n              loadingText={t('common.saving', 'S"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+      "line": 1809,
+      "footerType": "ModalFooter",
+      "footerLine": 1808,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              variant=\"ghost\"\n              mr={3}\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+      "line": 1879,
+      "footerType": "ModalFooter",
+      "footerLine": 1878,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              variant=\"ghost\"\n              mr={3}\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx",
+      "line": 1946,
+      "footerType": "ModalFooter",
+      "footerLine": 1945,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button\n              variant=\"ghost\"\n              mr={3}\n              onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/users/CreateUser.jsx",
+      "line": 726,
+      "footerType": "AlertDialogFooter",
+      "footerLine": 722,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"red\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/usersGroup/CreateUserGroup.jsx",
+      "line": 362,
+      "footerType": "AlertDialogFooter",
+      "footerLine": 358,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"red\" onClick={() =>"
+    },
+    {
+      "file": "frontend/src/pages/settings/usersGroup/EditUserGroup.jsx",
+      "line": 409,
+      "footerType": "AlertDialogFooter",
+      "footerLine": 405,
+      "issue": "Missing minH=\"44px\" or minH={{ base: \"44px\", ... }}",
+      "buttonTag": "<Button colorScheme=\"red\" onClick={() =>"
+    }
+  ],
+  "fileStats": {
+    "frontend/src/components/CatalogTable.js": 1,
+    "frontend/src/components/CatalogTableEdit.js": 1,
+    "frontend/src/components/showroom/ShowroomModeToggle.jsx": 1,
+    "frontend/src/pages/contracts/index.jsx": 1,
+    "frontend/src/pages/proposals/CreateProposal/ProposalSummary.jsx": 3,
+    "frontend/src/pages/proposals/EditProposal.jsx": 2,
+    "frontend/src/pages/Resources/index.jsx": 3,
+    "frontend/src/pages/settings/customization/PdfLayoutCustomization.jsx": 1,
+    "frontend/src/pages/settings/globalMods/GlobalModsPage.jsx": 5,
+    "frontend/src/pages/settings/manufacturers/tabs/CatalogMappingTab.jsx": 21,
+    "frontend/src/pages/settings/manufacturers/tabs/StylePicturesTab.jsx": 3,
+    "frontend/src/pages/settings/manufacturers/tabs/TypesTab.jsx": 8,
+    "frontend/src/pages/settings/users/CreateUser.jsx": 1,
+    "frontend/src/pages/settings/usersGroup/CreateUserGroup.jsx": 1,
+    "frontend/src/pages/settings/usersGroup/EditUserGroup.jsx": 1
+  }
+}

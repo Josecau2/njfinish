@@ -66,11 +66,15 @@ const DesignImportStep = ({
   const hoverBg = useColorModeValue('gray.100', 'gray.700')
   const cardImageBg = useColorModeValue('gray.50', 'gray.800')
   const overlayTextColor = useColorModeValue('white', 'gray.100')
+  const styleCardBorderColor = useColorModeValue('gray.600', 'gray.500')
+  const styleCardBgUnselected = useColorModeValue('white', 'gray.800')
+  const styleCardTextColor = useColorModeValue('gray.900', 'gray.100')
 
   const gridSpacing = useBreakpointValue({ base: 2, md: 3, lg: 4 }) || 3
-  const cardMaxWidth = useBreakpointValue({ base: '140px', md: '180px', lg: '200px' }) || '180px'
-  const cardImageHeight = useBreakpointValue({ base: 120, md: 160, lg: 180 }) || 160
-  const cardImagePadding = useBreakpointValue({ base: 1, md: 1.5 }) || 1.5
+  // 2:1 aspect ratio for style images: mobile 121x242, desktop 130x260
+  const cardMaxWidth = useBreakpointValue({ base: 121, md: 130, lg: 130 }) || 130
+  const cardImageHeight = useBreakpointValue({ base: 242, md: 260, lg: 260 }) || 260
+  const cardImagePadding = useBreakpointValue({ base: 0.5, md: 0.5, lg: 0.5 }) || 0.5
   const hoverScale = useBreakpointValue({ base: 1.02, md: 1.03 }) || 1.03
 
   const handleTabSelect = (index) => {
@@ -192,6 +196,7 @@ const DesignImportStep = ({
                 onClick={prevStep}
                 whileTap={{ scale: 0.98 }}
                 minW="90px"
+                fontSize={{ base: 'sm', md: 'md' }}
               >
                 {t('common.back')}
               </MotionButton>
@@ -243,6 +248,7 @@ const DesignImportStep = ({
                   colorScheme="brand"
                   whileTap={{ scale: 0.98 }}
                   onClick={handleBrowseClick}
+                  fontSize={{ base: 'sm', md: 'md' }}
                 >
                   {t('proposals.create.design.selectFileCta')}
                 </MotionButton>
@@ -260,11 +266,12 @@ const DesignImportStep = ({
                 colorScheme="brand"
                 onClick={() => setActiveTab('manual')}
                 whileTap={{ scale: 0.98 }}
+                fontSize={{ base: 'sm', md: 'md' }}
               >
                 {t('proposals.create.design.no2020SwitchToManual')}
               </MotionButton>
 
-              <Button variant="link" colorScheme="brand">
+              <Button variant="link" colorScheme="brand" fontSize={{ base: 'sm', md: 'md' }}>
                 {t('proposals.create.design.howToExport')}
               </Button>
             </Stack>
@@ -305,22 +312,27 @@ const DesignImportStep = ({
                       mx="auto"
                     >
                       <Box
-                        borderRadius="lg"
+                        borderRadius="md"
                         overflow="hidden"
-                        boxShadow="sm"
+                        boxShadow="md"
                         transition="transform 0.2s"
                         transform={hoveredId === style.id ? `scale(${hoverScale})` : 'scale(1)'}
-                        maxW={cardMaxWidth}
+                        w="100%"
+                        maxW={`${cardMaxWidth}px`}
                         mx="auto"
                       >
                         <Box
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
+                          w="100%"
+                          maxW={`${cardMaxWidth}px`}
+                          h={`${cardImageHeight}px`}
                           bg={cardImageBg}
+                          borderRadius="md"
+                          borderWidth="3px"
+                          borderStyle="solid"
+                          borderColor={styleCardBorderColor}
                           p={cardImagePadding}
-                          maxW={cardMaxWidth}
-                          maxH={`${cardImageHeight}px`}
+                          position="relative"
+                          overflow="hidden"
                         >
                           <Image
                             src={
@@ -329,11 +341,9 @@ const DesignImportStep = ({
                                 : '/images/nologo.png'
                             }
                             alt={style.styleVariants?.[0]?.shortName || style.style}
-                            maxW={`${cardMaxWidth}`}
-                            maxH={`${cardImageHeight}px`}
-                            w="auto"
-                            h="auto"
-                            objectFit="contain"
+                            w="100%"
+                            h="100%"
+                            objectFit="fill"
                             loading="lazy"
                             fallbackSrc="/images/nologo.png"
                             onError={(event) => {
@@ -365,9 +375,25 @@ const DesignImportStep = ({
                           </Text>
                         </Box>
                       </Box>
-                      <Text mt={2} color={textColor} fontWeight="semibold" noOfLines={1}>
-                        {style.styleVariants?.[0]?.shortName || style.style}
-                      </Text>
+                      <Box
+                        mt={2}
+                        w="100%"
+                        maxW={`${cardMaxWidth}px`}
+                        px={3}
+                        py={2}
+                        borderRadius="md"
+                        bg={styleCardBgUnselected}
+                        borderWidth="2px"
+                        borderStyle="solid"
+                        borderColor={styleCardBorderColor}
+                        boxShadow="sm"
+                        fontWeight="500"
+                        textAlign="center"
+                      >
+                        <Text fontSize="xs" mb={0} color={styleCardTextColor} noOfLines={1}>
+                          {style.styleVariants?.[0]?.shortName || style.style}
+                        </Text>
+                      </Box>
                     </Box>
                   ))}
                 </SimpleGrid>
@@ -388,7 +414,7 @@ const DesignImportStep = ({
           py={3}
           zIndex={1}
         >
-          <SimpleGrid columns={2} spacing={4}>
+          <Stack spacing={3}>
             <MotionButton
               variant={activeTab === 'manual' ? 'solid' : 'outline'}
               colorScheme="brand"
@@ -396,7 +422,7 @@ const DesignImportStep = ({
               whileTap={{ scale: 0.98 }}
               leftIcon={<Icon as={PenSquare} boxSize={ICON_BOX_MD} />}
               minH="44px"
-              maxW={{ base: '180px', md: 'none' }}
+              w="full"
               fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('proposals.create.design.tabs.manualEntry')}
@@ -408,12 +434,12 @@ const DesignImportStep = ({
               whileTap={{ scale: 0.98 }}
               leftIcon={<Icon as={UploadCloud} boxSize={ICON_BOX_MD} />}
               minH="44px"
-              maxW={{ base: '180px', md: 'none' }}
+              w="full"
               fontSize={{ base: 'sm', md: 'md' }}
             >
               {t('proposals.create.design.tabs.import2020')}
             </MotionButton>
-          </SimpleGrid>
+          </Stack>
         </Box>
       )}
     </Box>

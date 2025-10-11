@@ -617,7 +617,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
         scrollBehavior="inside"
       >
         <ModalOverlay>
-          <ModalContent>
+          <ModalContent borderRadius={{ base: '0', md: '12px' }}>
             <ModalHeader>
               <HStack spacing={2}>
                 <BriefcaseBusiness size={ICON_SIZE_MD} aria-hidden="true" />
@@ -954,7 +954,7 @@ const ProposalsTab = ({ contractor, groupId }) => {
                 </Alert>
               )}
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
               <HStack spacing={3} w="full" justify="space-between">
                 <Box>
                   {selectedProposal && (

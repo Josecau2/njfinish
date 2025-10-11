@@ -848,12 +848,12 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       {/* Send Confirmation Dialog */}
       <AlertDialog isOpen={isSendOpen} leastDestructiveRef={cancelRef} onClose={onSendClose}>
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent borderRadius={{ base: '0', md: '12px' }}>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               {t('proposals.confirm.sendTitle')}
             </AlertDialogHeader>
             <AlertDialogBody>{t('proposals.confirm.sendText')}</AlertDialogBody>
-            <AlertDialogFooter>
+            <AlertDialogFooter pt={4} pb={{ base: 8, md: 4 }}>
               <Button ref={cancelRef} onClick={onSendClose} minH="44px">
                 {t('proposals.confirm.cancel')}
               </Button>
@@ -868,12 +868,12 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       {/* Reject Confirmation Dialog */}
       <AlertDialog isOpen={isRejectOpen} leastDestructiveRef={cancelRef} onClose={onRejectClose}>
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent borderRadius={{ base: '0', md: '12px' }}>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               {t('proposals.confirm.rejectTitle')}
             </AlertDialogHeader>
             <AlertDialogBody>{t('proposals.confirm.rejectText')}</AlertDialogBody>
-            <AlertDialogFooter>
+            <AlertDialogFooter pt={4} pb={{ base: 8, md: 4 }}>
               <Button ref={cancelRef} onClick={onRejectClose} minH="44px">
                 {t('proposals.confirm.cancel')}
               </Button>
@@ -888,12 +888,12 @@ const Proposals = ({ isContractor, contractorGroupId, contractorModules, contrac
       {/* Delete Confirmation Dialog */}
       <AlertDialog isOpen={isDeleteOpen} leastDestructiveRef={cancelRef} onClose={onDeleteClose}>
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent borderRadius={{ base: '0', md: '12px' }}>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               {t('proposals.confirm.deleteTitle')}
             </AlertDialogHeader>
             <AlertDialogBody>{t('proposals.confirm.deleteText')}</AlertDialogBody>
-            <AlertDialogFooter>
+            <AlertDialogFooter pt={4} pb={{ base: 8, md: 4 }}>
               <Button ref={cancelRef} onClick={onDeleteClose} minH="44px">
                 {t('proposals.confirm.cancel')}
               </Button>

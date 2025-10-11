@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Modal,
@@ -15,7 +15,7 @@ export default function NeutralModal({
   visible,
   onClose,
   title,
-  size = 'xl',
+  size = { base: 'full', md: 'xl' },
   footer = null,
   children,
 }) {
@@ -46,7 +46,15 @@ export default function NeutralModal({
 
   const headerTextColor = customization?.headerFontColor || getContrastColor(headerBg)
 
-  const chakraSize = size === 'xl' ? '6xl' : size === 'lg' ? '4xl' : '2xl'
+  // Handle both string and responsive object sizes
+  const chakraSize = useMemo(() => {
+    if (typeof size === 'object') {
+      // If it's a responsive object, use it directly
+      return size
+    }
+    // Legacy string size mapping
+    return size === 'xl' ? '6xl' : size === 'lg' ? '4xl' : '2xl'
+  }, [size])
 
   return (
     <Modal
@@ -57,7 +65,7 @@ export default function NeutralModal({
       scrollBehavior="inside"
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent borderRadius={{ base: '0', md: 'lg' }}>
         <ModalHeader
           bg={headerBg}
           color={headerTextColor}
@@ -67,7 +75,7 @@ export default function NeutralModal({
         </ModalHeader>
         <ModalCloseButton color={headerTextColor} aria-label={t('common.ariaLabels.closeModal', 'Close modal')} />
         <ModalBody>{children}</ModalBody>
-        {footer ? <ModalFooter>{footer}</ModalFooter> : null}
+        {footer ? <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>{footer}</ModalFooter> : null}
       </ModalContent>
     </Modal>
   )

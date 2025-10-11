@@ -79,7 +79,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
   return (
     <Modal isOpen={show} onClose={onClose} size={{ base: 'full', md: 'md', lg: 'lg' }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent as='form' onSubmit={handleSubmit} borderRadius="12px" >
+      <ModalContent as='form' onSubmit={handleSubmit} borderRadius={{ base: '0', md: 'lg' }}>
         <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
           <Text fontSize="lg" fontWeight="semibold">
             {t('settings.userGroups.multipliers.modal.title')}
@@ -138,7 +138,7 @@ const EditGroupModal = ({ show, onClose, manufacturer, onSave }) => {
             </FormControl>
           </Stack>
         </ModalBody>
-        <ModalFooter gap={4}>
+        <ModalFooter gap={4} pt={4} pb={{ base: 8, md: 4 }}>
           <Button variant='outline' onClick={onClose} minH="44px">
             {t('common.cancel')}
           </Button>

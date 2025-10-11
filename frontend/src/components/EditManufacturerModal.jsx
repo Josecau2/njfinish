@@ -81,7 +81,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
   return (
     <Modal isOpen={show} onClose={onClose} size={{ base: "full", lg: "lg" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent as="form" onSubmit={handleSubmit} borderRadius="12px" >
+      <ModalContent as="form" onSubmit={handleSubmit} borderRadius={{ base: '0', md: '12px' }} >
         <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
           <Text fontSize="lg" fontWeight="semibold">
             {t('editManufacturerModal.title')}
@@ -151,7 +151,7 @@ const EditManufacturerModal = ({ show, onClose, manufacturer, onSave }) => {
             </FormControl>
           </Stack>
         </ModalBody>
-        <ModalFooter gap={4}>
+        <ModalFooter gap={4} pt={4} pb={{ base: 8, md: 4 }}>
           <Button variant="outline" onClick={onClose} aria-label="Cancel editing manufacturer" minH="44px">
             {t('editManufacturerModal.actions.cancel')}
           </Button>

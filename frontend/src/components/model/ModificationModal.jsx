@@ -253,7 +253,7 @@ const ModificationModal = ({
             )}
           </Stack>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
           <HStack spacing={4}>
             <Button variant="outline" onClick={onClose} minH="44px">
               {t('common.cancel', 'Cancel')}

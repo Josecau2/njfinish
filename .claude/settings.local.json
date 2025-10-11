@@ -21,7 +21,14 @@
       "Bash(npm run dev:frontend:*)",
       "Bash(npm run dev:*)",
       "Bash(npm run build:*)",
-      "Bash(npm audit:*)"
+      "Bash(npm audit:*)",
+      "Bash(find:*)",
+      "Bash(cygpath:*)",
+      "Bash(node:*)",
+      "Bash(code:*)",
+      "Bash(echo $MCP_SERVERS)",
+      "Bash(echo $APPDATA)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

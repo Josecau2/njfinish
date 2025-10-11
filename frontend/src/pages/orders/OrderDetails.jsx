@@ -1142,17 +1142,17 @@ const OrderDetails = () => {
         onClose={() => setPreviewImg(null)}
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius={{ base: '0', md: '12px' }}>
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
             {t('common.preview', 'Preview')}
           </ModalHeader>
           <ModalCloseButton color={textColor} />
-          <ModalBody display="flex" justifyContent="center" alignItems="center" maxH="80vh">
+          <ModalBody display="flex" justifyContent="center" alignItems="center" maxH={{ base: 'calc(100vh - 200px)', md: '80vh' }}>
             {previewImg && (
               <Image
                 src={previewImg}
                 alt={t('common.preview', 'Preview')}
-                maxH="70vh"
+                maxH={{ base: 'calc(100vh - 220px)', md: '70vh' }}
                 borderRadius="md"
               />
             )}
@@ -1162,7 +1162,7 @@ const OrderDetails = () => {
 
       <Modal isOpen={notice.visible} onClose={closeNotice}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius={{ base: '0', md: '12px' }}>
           <ModalHeader bg={backgroundColor} color={textColor} borderTopRadius="md">
             {notice.title || t('common.notice', 'Notice')}
           </ModalHeader>
@@ -1179,7 +1179,7 @@ const OrderDetails = () => {
               </Box>
             </Alert>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
             <Button colorScheme={mapButtonScheme(notice.variant)} onClick={closeNotice} minH="44px">
               {t('common.ok', 'OK')}
             </Button>
@@ -1194,7 +1194,7 @@ const OrderDetails = () => {
         isCentered
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent borderRadius={{ base: '0', md: '12px' }}>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               {t('orders.deleteConfirmTitle', 'Delete Order?')}
             </AlertDialogHeader>
@@ -1204,7 +1204,7 @@ const OrderDetails = () => {
                 'This action cannot be undone. Are you sure you want to delete this order?',
               )}
             </AlertDialogBody>
-            <AlertDialogFooter>
+            <AlertDialogFooter pt={4} pb={{ base: 8, md: 4 }}>
               <Button ref={cancelRef} onClick={deleteDisclosure.onClose} minH="44px">
                 {t('common.cancel', 'Cancel')}
               </Button>

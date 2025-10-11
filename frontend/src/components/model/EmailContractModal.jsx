@@ -25,7 +25,7 @@ const EmailContractModal = ({ show, onClose }) => {
   return (
     <Modal isOpen={show} onClose={onClose} isCentered size={{ base: 'full', md: 'xl', lg: '3xl' }} scrollBehavior='inside'>
       <ModalOverlay />
-      <ModalContent borderRadius="12px">
+      <ModalContent borderRadius={{ base: '0', md: '12px' }}>
         <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
           <Text fontSize="lg" fontWeight="semibold">
             {t('contracts.sendTitle', 'Send contract')}
@@ -40,7 +40,7 @@ const EmailContractModal = ({ show, onClose }) => {
             )}
           </Text>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
           <Button
             variant='outline'
             colorScheme='gray'

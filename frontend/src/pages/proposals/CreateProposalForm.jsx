@@ -328,12 +328,16 @@ const ProposalForm = ({
     if (currentStep !== TOTAL_STEPS) return null
 
     return (
-      <HStack spacing={4} flexWrap="wrap">
+      <Stack
+        direction={{ base: 'column', md: 'row' }}
+        spacing={4}
+        w={{ base: 'full', md: 'auto' }}
+      >
         <Button
           colorScheme="green"
           leftIcon={<Icon as={Printer} boxSize={ICON_BOX_MD} />}
           minH="44px"
-          maxW={{ base: '140px', md: 'none' }}
+          w={{ base: 'full', md: 'auto' }}
           onClick={() => setShowPrintModal(true)}
           fontSize={{ base: 'sm', md: 'md' }}
         >
@@ -345,7 +349,7 @@ const ProposalForm = ({
               colorScheme="brand"
               leftIcon={<Icon as={Mail} boxSize={ICON_BOX_MD} />}
               minH="44px"
-              maxW={{ base: '140px', md: 'none' }}
+              w={{ base: 'full', md: 'auto' }}
               onClick={() => setShowEmailModal(true)}
               fontSize={{ base: 'sm', md: 'md' }}
             >
@@ -355,7 +359,7 @@ const ProposalForm = ({
               colorScheme="yellow"
               leftIcon={<Icon as={FileText} boxSize={ICON_BOX_MD} />}
               minH="44px"
-              maxW={{ base: '140px', md: 'none' }}
+              w={{ base: 'full', md: 'auto' }}
               onClick={() => setShowContractModal(true)}
               fontSize={{ base: 'sm', md: 'md' }}
             >
@@ -363,7 +367,7 @@ const ProposalForm = ({
             </Button>
           </>
         )}
-      </HStack>
+      </Stack>
     )
   }
 
@@ -590,14 +594,14 @@ const ProposalForm = ({
           isCentered
         >
           <AlertDialogOverlay>
-            <AlertDialogContent borderRadius="12px" overflow="hidden">
+            <AlertDialogContent borderRadius={{ base: '0', md: '12px' }} overflow="hidden">
               <AlertDialogHeader bg={resolvedHeaderBg} color={headerTextColor}>
                 <Text fontSize="lg" fontWeight="semibold">
                   {alertState.title}
                 </Text>
               </AlertDialogHeader>
               <AlertDialogBody>{alertState.message}</AlertDialogBody>
-              <AlertDialogFooter>
+              <AlertDialogFooter pt={4} pb={{ base: 8, md: 4 }}>
                 <Button ref={alertCancelRef} colorScheme='brand' onClick={closeAlert} minH="44px">
                   {t('common.ok', 'OK')}
                 </Button>

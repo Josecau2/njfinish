@@ -55,11 +55,184 @@ const tokenLimiter = createRateLimiter({
 })
 
 // Auth routes with rate limiting to prevent abuse
+
+/**
+ * @openapi
+ * /api/auth/signup:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Register a new user
+ *     description: Create a new user account with email and password
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - name
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *               name:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
+ *       429:
+ *         description: Too many signup attempts
+ */
 router.post('/signup', signupLimiter, signup)
+
+/**
+ * @openapi
+ * /api/auth/login:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Login to the system
+ *     description: Authenticate with email and password to receive a JWT token
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/LoginResponse'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       429:
+ *         description: Too many login attempts
+ */
 router.post('/login', loginLimiter, login)
+
+/**
+ * @openapi
+ * /api/auth/logout:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Logout from the system
+ *     description: Invalidate the current JWT token
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ */
 router.post('/logout', verifyToken, logout)
+
+/**
+ * @openapi
+ * /api/auth/forgot-password:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Request password reset
+ *     description: Send a password reset email to the user
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Reset email sent
+ *       429:
+ *         description: Too many reset attempts
+ */
 router.post('/forgot-password', forgotPasswordLimiter, forgotPassword)
+
+/**
+ * @openapi
+ * /api/auth/reset-password:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Reset password
+ *     description: Reset password using the token from the reset email
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - password
+ *             properties:
+ *               token:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *     responses:
+ *       200:
+ *         description: Password reset successful
+ *       400:
+ *         description: Invalid or expired token
+ *       429:
+ *         description: Too many reset attempts
+ */
 router.post('/reset-password', resetPasswordLimiter, resetPassword)
+
+/**
+ * @openapi
+ * /api/auth/token:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Issue API token
+ *     description: Generate a new API token for programmatic access
+ *     responses:
+ *       200:
+ *         description: Token issued successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       429:
+ *         description: Too many token requests
+ */
 router.post('/token', tokenLimiter, verifyTokenWithGroup, issueApiToken)
 
 module.exports = router

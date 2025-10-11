@@ -82,7 +82,7 @@ const ModificationModalEdit = ({
   return (
     <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "lg" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent borderRadius="12px">
+      <ModalContent borderRadius={{ base: '0', md: 'lg' }}>
         <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
           <Text fontSize="lg" fontWeight="semibold">
             {t('modificationModal.title', 'Modification')}
@@ -253,7 +253,7 @@ const ModificationModalEdit = ({
             )}
           </Stack>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter pt={4} pb={{ base: 8, md: 4 }}>
           <HStack spacing={4}>
             <Button variant="outline" onClick={onClose} minH="44px">
               {t('common.cancel', 'Cancel')}

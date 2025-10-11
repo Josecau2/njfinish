@@ -413,7 +413,7 @@ export default function FileViewerModal({
         motionPreset="slideInBottom"
       >
         <ModalOverlay bg="blackAlpha.900" />
-        <ModalContent bg={isFullscreen ? 'black' : modalBg} maxW={isFullscreen ? '100vw' : undefined} borderRadius="12px" >
+        <ModalContent bg={isFullscreen ? 'black' : modalBg} maxW={isFullscreen ? '100vw' : undefined} borderRadius={{ base: '0', md: '12px' }} >
           <ModalHeader bg={resolvedHeaderBg} color={headerTextColor}>
             <Text fontSize="lg" fontWeight="semibold">
               {file?.name || 'Preview'}

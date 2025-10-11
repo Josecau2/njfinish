@@ -665,7 +665,7 @@ const ModificationBrowserModal = ({
   return (
     <Modal isOpen={visible} onClose={onClose} size={{ base: "full", lg: "full" }} scrollBehavior="inside" isCentered>
       <ModalOverlay />
-      <ModalContent borderRadius="12px">
+      <ModalContent borderRadius={{ base: '0', md: '12px' }}>
         <ModalHeader px={6} py={4} bg={resolvedHeaderBg} color={headerTextColor}>
           <HStack justify="space-between" align="center">
             <HStack spacing={4} align="center">
@@ -773,7 +773,7 @@ const ModificationBrowserModal = ({
 
         <Divider borderColor={bgGray100} />
 
-        <ModalFooter px={6} py={4} bg={color6}>
+        <ModalFooter px={6} pt={4} pb={{ base: 8, md: 4 }} bg={color6}>
           <HStack spacing={4} justify="flex-end" w="full">
             <Button variant="outline" onClick={onClose} minH="44px">
               {t('common.cancel', 'Cancel')}

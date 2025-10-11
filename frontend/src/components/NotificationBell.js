@@ -308,8 +308,8 @@ const NotificationBell = () => {
       <MenuList
         bg={menuBg}
         borderColor={menuBorder}
-        minW="320px"
-        maxW="360px"
+        minW={{ base: "calc(100vw - 32px)", sm: "320px" }}
+        maxW={{ base: "calc(100vw - 32px)", sm: "360px" }}
         maxH="420px"
         overflowY="auto"
         p={0}

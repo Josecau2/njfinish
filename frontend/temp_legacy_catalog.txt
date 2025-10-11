@@ -864,6 +864,7 @@ const CatalogTableEdit = ({
                 <div className="item-detail-row">
                   <span className="item-label">{t('proposalColumns.qty')}</span>
                   <input
+                    name={`item-${idx}-qty`}
                     type="number"
                     min="1"
                     value={item.qty}
@@ -1064,4 +1065,3 @@ const CatalogTableEdit = ({
 }
 
 export default CatalogTableEdit
-
