@@ -71,19 +71,20 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
     // Dark mode colors
     const bgGray50 = useColorModeValue("gray.50", "gray.800");
     const summaryTableMaxWidth = useBreakpointValue({ base: '100%', md: '440px', lg: '500px' }) || '100%';
-    const styleCarouselMinHeight = useBreakpointValue({ base: '237px', md: '200px', lg: '210px' }) || '200px';
-    const styleImageContainerWidth = useBreakpointValue({ base: 121, md: 180, lg: 200 }) || 180;
-    const styleImageContainerHeight = useBreakpointValue({ base: 182, md: 160, lg: 180 }) || 160;
-    const styleImageMaxHeight = useBreakpointValue({ base: 171, md: 140, lg: 160 }) || 140;
-    const styleImagePadding = useBreakpointValue({ base: 1, md: 2.5 }) || 2;
+    const styleCarouselMinHeight = useBreakpointValue({ base: '300px', md: '300px', lg: '300px' }) || '300px';
+    const styleImageContainerWidth = useBreakpointValue({ base: 121, md: 130, lg: 130 }) || 130;
+    const styleImageContainerHeight = useBreakpointValue({ base: 242, md: 260, lg: 260 }) || 260;
+    const styleImageMaxHeight = useBreakpointValue({ base: 242, md: 260, lg: 260 }) || 260;
+    const styleImagePadding = useBreakpointValue({ base: 0.5, md: 0.5, lg: 0.5 }) || 0.5;
     const colorGray500 = useColorModeValue("gray.500", "gray.400");
     const colorGray600 = useColorModeValue("gray.600", "gray.400");
     const iconBlue = useColorModeValue("blue.500", "blue.300");
     const iconGray = useColorModeValue("gray.500", "gray.400");
     const styleCardBgSelected = useColorModeValue('blue.50', 'blue.900');
-    const styleCardBgUnselected = useColorModeValue('white', 'gray.700');
+    const styleCardBgUnselected = useColorModeValue('white', 'gray.800');
     const styleCardBorderSelected = useColorModeValue('blue.500', 'blue.400');
-    const styleCardBorderUnselected = useColorModeValue('gray.300', 'gray.600');
+    const styleCardBorderUnselected = useColorModeValue('gray.600', 'gray.500');
+    const styleContainerShadow = useColorModeValue('sm', 'dark-lg');
     const styleCardTextColor = useColorModeValue("gray.900", "gray.100");
     const styleCardLabelColor = useColorModeValue("blue.600", "blue.300");
     const borderGray = useColorModeValue("gray.200", "gray.600");
@@ -1538,16 +1539,17 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                             >
                                 <Box flexShrink={0}>
                                     <Box
-                                        display="flex"
-                                        alignItems="center"
-                                        justifyContent="center"
+                                        w="100%"
                                         maxW={`${styleImageContainerWidth}px`}
-                                        maxH={`${styleImageContainerHeight}px`}
+                                        h={`${styleImageContainerHeight}px`}
                                         mx="auto"
                                         bg={bgGray50}
                                         borderRadius="md"
-                                        borderWidth="1px"
+                                        borderWidth="3px"
                                         borderColor={styleCardBorderSelected}
+                                        boxShadow="lg"
+                                        overflow="hidden"
+                                        position="relative"
                                         p={styleImagePadding}
                                     >
                                         <Image
@@ -1557,9 +1559,9 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                     : '/images/nologo.png'
                                             }
                                             alt={selectedStyleData.styleVariants?.[0]?.shortName || selectedStyleData.style}
-                                            w={`${styleImageContainerWidth}px`}
-                                            h={`${styleImageMaxHeight}px`}
-                                            objectFit="contain"
+                                            w="100%"
+                                            h="100%"
+                                            objectFit="fill"
                                             onError={(e) => {
                                                 const fname = selectedStyleData.styleVariants?.[0]?.image;
                                                 if (fname && !e.target.dataset.fallbackTried) {
@@ -1776,17 +1778,17 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                             _hover={disabled ? {} : { transform: 'scale(1.02)' }}
                                                         >
                                                             <Box
-                                                                display="flex"
-                                                                alignItems="center"
-                                                                justifyContent="center"
-                                                                maxW={`${styleImageContainerWidth}px`}
-                                                                maxH={`${styleImageContainerHeight}px`}
                                                                 w="100%"
+                                                                maxW={`${styleImageContainerWidth}px`}
+                                                                h={`${styleImageContainerHeight}px`}
                                                                 bg={bgGray50}
                                                                 borderRadius="md"
-                                                                borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
+                                                                borderWidth="3px"
                                                                 borderStyle="solid"
-                                                                borderColor={styleItem.id === selectedStyleData?.id ? 'blue.500' : 'gray.200'}
+                                                                borderColor={styleItem.id === selectedStyleData?.id ? styleCardBorderSelected : styleCardBorderUnselected}
+                                                                boxShadow={styleItem.id === selectedStyleData?.id ? 'lg' : 'md'}
+                                                                overflow="hidden"
+                                                                position="relative"
                                                                 p={styleImagePadding}
                                                             >
                                                                 <Image
@@ -1796,9 +1798,11 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                             : '/images/nologo.png'
                                                                     }
                                                                     alt={variant?.shortName || styleItem.style}
-                                                                    w={`${styleImageContainerWidth}px`}
-                                                                    h={`${styleImageMaxHeight}px`}
-                                                                    objectFit="contain"
+                                                                    w="100%"
+                                                                    h="100%"
+                                                                    objectFit="fill"
+                                                                    loading="lazy"
+                                                                    fallbackSrc="/images/nologo.png"
                                                                     onError={(e) => {
                                                                         if (variant?.image && !e.target.dataset.fallbackTried) {
                                                                             e.target.dataset.fallbackTried = '1';
@@ -1810,21 +1814,21 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                 />
                                                             </Box>
                                                             <Box
-                                                                mt={1.5}
-                                                                px={2}
-                                                                py={1}
-                                                                borderRadius="sm"
+                                                                mt={2}
+                                                                w="100%"
+                                                                maxW={`${styleImageContainerWidth}px`}
+                                                                px={3}
+                                                                py={2}
+                                                                borderRadius="md"
                                                                 bg={styleItem.id === selectedStyleData?.id ? styleCardBgSelected : styleCardBgUnselected}
-                                                                borderWidth="1px"
+                                                                borderWidth="2px"
                                                                 borderStyle="solid"
                                                                 borderColor={styleItem.id === selectedStyleData?.id ? styleCardBorderSelected : styleCardBorderUnselected}
-                                                                fontWeight={styleItem.id === selectedStyleData?.id ? '600' : 'normal'}
-                                                                minH="40px"
-                                                                display="flex"
-                                                                flexDirection="column"
-                                                                justifyContent="center"
+                                                                boxShadow={styleItem.id === selectedStyleData?.id ? 'md' : 'sm'}
+                                                                fontWeight={styleItem.id === selectedStyleData?.id ? '700' : '500'}
+                                                                textAlign="center"
                                                             >
-                                                                <Text fontSize="xs" mb={0} color={styleCardTextColor} textAlign="center" lineHeight="1.2">
+                                                                <Text fontSize="xs" mb={0} color={styleCardTextColor} noOfLines={1}>
                                                                     {styleItem.style}
                                                                 </Text>
                                                                 {styleItem.id === selectedStyleData?.id && (
@@ -1864,17 +1868,17 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                 _hover={disabled ? {} : { transform: 'scale(1.02)' }}
                                                             >
                                                                 <Box
-                                                                    display="flex"
-                                                                    alignItems="center"
-                                                                    justifyContent="center"
-                                                                    maxW={`${styleImageContainerWidth}px`}
-                                                                    maxH={`${styleImageContainerHeight}px`}
                                                                     w="100%"
+                                                                    maxW={`${styleImageContainerWidth}px`}
+                                                                    h={`${styleImageContainerHeight}px`}
                                                                     bg={bgGray50}
                                                                     borderRadius="md"
-                                                                    borderWidth={styleItem.id === selectedStyleData?.id ? '2px' : '1px'}
+                                                                    borderWidth="3px"
                                                                     borderStyle="solid"
-                                                                    borderColor={styleItem.id === selectedStyleData?.id ? 'blue.500' : 'gray.200'}
+                                                                    borderColor={styleItem.id === selectedStyleData?.id ? styleCardBorderSelected : styleCardBorderUnselected}
+                                                                    boxShadow={styleItem.id === selectedStyleData?.id ? 'lg' : 'md'}
+                                                                    overflow="hidden"
+                                                                    position="relative"
                                                                     p={styleImagePadding}
                                                                 >
                                                                     <Image
@@ -1884,9 +1888,9 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                                 : '/images/nologo.png'
                                                                         }
                                                                         alt={variant?.shortName || styleItem.style}
-                                                                        w={`${styleImageContainerWidth}px`}
-                                                                        h={`${styleImageMaxHeight}px`}
-                                                                        objectFit="contain"
+                                                                        w="100%"
+                                                                        h="100%"
+                                                                        objectFit="fill"
                                                                         loading="lazy"
                                                                         fallbackSrc="/images/nologo.png"
                                                                         onError={(e) => {
@@ -1900,17 +1904,18 @@ const ItemSelectionContent = ({ selectVersion, selectedVersion, formData, setFor
                                                                     />
                                                                 </Box>
                                                                 <Box
-                                                                    mt={1.5}
+                                                                    mt={2}
                                                                     w="100%"
                                                                     maxW={`${styleImageContainerWidth}px`}
-                                                                    px={2}
-                                                                    py={1}
-                                                                    borderRadius="sm"
+                                                                    px={3}
+                                                                    py={2}
+                                                                    borderRadius="md"
                                                                     bg={styleItem.id === selectedStyleData?.id ? styleCardBgSelected : styleCardBgUnselected}
-                                                                    borderWidth="1px"
+                                                                    borderWidth="2px"
                                                                     borderStyle="solid"
                                                                     borderColor={styleItem.id === selectedStyleData?.id ? styleCardBorderSelected : styleCardBorderUnselected}
-                                                                    fontWeight={styleItem.id === selectedStyleData?.id ? '600' : 'normal'}
+                                                                    boxShadow={styleItem.id === selectedStyleData?.id ? 'md' : 'sm'}
+                                                                    fontWeight={styleItem.id === selectedStyleData?.id ? '700' : '500'}
                                                                     textAlign="center"
                                                                 >
                                                                     <Text fontSize="xs" mb={0} color={styleCardTextColor} noOfLines={1}>
